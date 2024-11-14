@@ -11,45 +11,36 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Clients from "./DropdownGetClients";
 import ProductSelector from "../_components/GetProductList";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export type OrderSaleTypes = {
-  cliente: {
-    documento: string;
-    email: string;
-    inscricaoEstadual: string;
-    nomeDoCliente: string;
-    nomeFantasia: string;
-  };
-  enderecoDeCobranca: {
-    bairro: string;
-    cep: string;
-    codigoIbge: number;
-    complemento: string;
-    logradouro: string;
-    numero: string;
-  };
-  enderecoDeEntrega: {
-    bairro: string;
-    cep: string;
-    codigoIbge: number;
-    complemento: string;
-    logradouro: string;
-    numero: string;
-  };
+  cliente: ClientData | null;
+  enderecoDeCobranca: EnderecoDeEntrega | null;
+  enderecoDeEntrega: EnderecoDeEntrega;
   itens: {
     produtoId: string;
     quantidade: number;
     precoUnitarioBruto: number;
     precoUnitarioLiquido: number;
   }[];
-  meiosDePagamento: {
-    idMeioDePagamento: number;
-    parcelas: number;
-    valor: number;
-  }[];
+  meiosDePagamento: MeioDePagamento[];
   numeroPedidoDeVenda: string;
   observacaoDoPedidoDeVenda: string;
   valorDoFrete: number;
+};
+
+export type ClientData = {
+  documento: string;
+  email: string;
+  inscricaoEstadual?: string;
+  nomeDoCliente: string;
+  nomeFantasia?: string;
 };
 
 export type EnderecoDeEntrega = {
@@ -58,7 +49,13 @@ export type EnderecoDeEntrega = {
   codigoIbge: number;
   complemento: string;
   logradouro: string;
-  numero: string;
+  numero: number;
+};
+
+export type MeioDePagamento = {
+  idMeioDePagamento: number;
+  parcelas: number;
+  valor: number;
 };
 
 interface ProductWithQuantity {
@@ -74,20 +71,14 @@ export type ProductInPriceList = {
 
 const OrderSaleProps: React.FC = () => {
   const [orderSale, setOrderSale] = useState<OrderSaleTypes>({
-    cliente: {
-      documento: "",
-      email: "",
-      inscricaoEstadual: "",
-      nomeDoCliente: "",
-      nomeFantasia: "",
-    },
+    cliente: null,
     enderecoDeCobranca: {
       bairro: "",
       cep: "",
       codigoIbge: 0,
       complemento: "",
       logradouro: "",
-      numero: "",
+      numero: 0,
     },
     enderecoDeEntrega: {
       bairro: "",
@@ -95,7 +86,7 @@ const OrderSaleProps: React.FC = () => {
       codigoIbge: 0,
       complemento: "",
       logradouro: "",
-      numero: "",
+      numero: 0,
     },
     itens: [],
     meiosDePagamento: [],
@@ -114,22 +105,56 @@ const OrderSaleProps: React.FC = () => {
   >([]);
 
   const handleSelectClient = (data: {
+    clientData: ClientData | null;
     enderecoDeEntrega: EnderecoDeEntrega | null;
     priceListId: string | null;
   }) => {
-    const { enderecoDeEntrega, priceListId } = data;
+    const { clientData, enderecoDeEntrega, priceListId } = data;
+
+    const updatedClientData = clientData
+      ? {
+          ...clientData,
+          documento: clientData.documento || "",
+          email: clientData.email || "",
+          inscricaoEstadual: clientData.inscricaoEstadual || "",
+          nomeDoCliente: clientData.nomeDoCliente || "",
+          nomeFantasia: clientData.nomeFantasia || "",
+        }
+      : null;
+
+    const updatedAddressDelivery = enderecoDeEntrega
+      ? {
+          ...enderecoDeEntrega,
+          bairro: enderecoDeEntrega.bairro || "",
+          cep: enderecoDeEntrega.cep || "",
+          codigoIbge: enderecoDeEntrega.codigoIbge || 0,
+          complemento: enderecoDeEntrega.complemento || "",
+          logradouro: enderecoDeEntrega.logradouro || "",
+          numero: enderecoDeEntrega.numero || 0,
+        }
+      : null;
+
+    const updateClientAddress = enderecoDeEntrega
+      ? {
+          ...enderecoDeEntrega,
+          bairro: enderecoDeEntrega.bairro || "",
+          cep: enderecoDeEntrega.cep || "",
+          codigoIbge: enderecoDeEntrega.codigoIbge || 0,
+          complemento: enderecoDeEntrega.complemento || "",
+          logradouro: enderecoDeEntrega.logradouro || "",
+          numero: enderecoDeEntrega.numero || 0,
+        }
+      : null;
 
     setPriceListId(priceListId || "");
 
-    if (enderecoDeEntrega) {
+    if (updatedAddressDelivery) {
       setOrderSale((prevOrderSaleTypes) => ({
         ...prevOrderSaleTypes,
-        cliente: {
-          ...prevOrderSaleTypes.cliente,
-          nomeDoCliente: "Cliente Selecionado",
-        },
+        cliente: updatedClientData,
+        enderecoDeCobranca: updateClientAddress,
         enderecoDeEntrega: useRegisteredAddressForDelivery
-          ? enderecoDeEntrega
+          ? updatedAddressDelivery
           : prevOrderSaleTypes.enderecoDeEntrega,
       }));
       setClienteSelecionado(true);
@@ -190,6 +215,29 @@ const OrderSaleProps: React.FC = () => {
         (item) => item.produtoId !== productId
       ),
     }));
+  };
+
+  const handleSelectPaymentMethod = (value: string) => {
+    const selectedId = parseInt(value, 10);
+
+    if (!isNaN(selectedId)) {
+      // Atualiza o estado de meiosDePagamento
+      setOrderSale((prevState) => {
+        const updatedMeiosDePagamento = [...prevState.meiosDePagamento];
+        updatedMeiosDePagamento.push({
+          idMeioDePagamento: selectedId,
+          parcelas: 1,
+          valor: 0,
+        });
+
+        return {
+          ...prevState,
+          meiosDePagamento: updatedMeiosDePagamento,
+        };
+      });
+    } else {
+      console.error("ID do meio de pagamento inválido");
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -254,7 +302,7 @@ const OrderSaleProps: React.FC = () => {
                 <Input
                   type="text"
                   name="enderecoDeEntrega.bairro"
-                  value={orderSale.enderecoDeEntrega.bairro}
+                  value={orderSale.enderecoDeEntrega?.bairro}
                   onChange={handleChange}
                   placeholder="Bairro"
                   className="w-full"
@@ -263,7 +311,7 @@ const OrderSaleProps: React.FC = () => {
                 <Input
                   type="text"
                   name="enderecoDeEntrega.cep"
-                  value={orderSale.enderecoDeEntrega.cep}
+                  value={orderSale.enderecoDeEntrega?.cep}
                   onChange={handleChange}
                   placeholder="CEP"
                   className="w-full"
@@ -272,7 +320,7 @@ const OrderSaleProps: React.FC = () => {
                 <Input
                   type="text"
                   name="enderecoDeEntrega.complemento"
-                  value={orderSale.enderecoDeEntrega.complemento}
+                  value={orderSale.enderecoDeEntrega?.complemento}
                   onChange={handleChange}
                   placeholder="Complemento"
                   className="w-full"
@@ -281,7 +329,7 @@ const OrderSaleProps: React.FC = () => {
                 <Input
                   type="text"
                   name="enderecoDeEntrega.logradouro"
-                  value={orderSale.enderecoDeEntrega.logradouro}
+                  value={orderSale.enderecoDeEntrega?.logradouro}
                   onChange={handleChange}
                   placeholder="Logradouro"
                   className="w-full"
@@ -290,7 +338,7 @@ const OrderSaleProps: React.FC = () => {
                 <Input
                   type="text"
                   name="enderecoDeEntrega.numero"
-                  value={orderSale.enderecoDeEntrega.numero}
+                  value={orderSale.enderecoDeEntrega?.numero}
                   onChange={handleChange}
                   placeholder="Número"
                   className="w-full"
@@ -328,9 +376,22 @@ const OrderSaleProps: React.FC = () => {
               />
             </fieldset>
           </form>
+
+          <legend>Métodos de pagamento</legend>
+          <Select required onValueChange={handleSelectPaymentMethod}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Método de pagamento:" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="1">Dinheiro</SelectItem>
+              <SelectItem value="2">Cartão de Débito</SelectItem>
+              <SelectItem value="3">Cartão de Crédito</SelectItem>
+              <SelectItem value="4">PIX</SelectItem>
+            </SelectContent>
+          </Select>
         </CardContent>
 
-        <CardFooter>
+        <CardFooter className="justify-end">
           <Button onClick={handleSubmit} disabled={!clienteSelecionado}>
             Enviar Pedido
           </Button>

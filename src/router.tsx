@@ -10,6 +10,8 @@ import { BuyList } from "./pages/buyList";
 import ProtectedRoute from "./_components/ProtectedRoute";
 import { AccessDenied } from "./_components/401";
 import { Clients } from "./_components/GetClients";
+import { GetOrders } from "./pages/getOrders";
+import { PrintPage } from "./pages/printPage";
 
 export const router = createBrowserRouter([
   {
@@ -65,6 +67,14 @@ export const router = createBrowserRouter([
     ),
   },
   {
+    path: "/get-orders",
+    element: (
+      <ProtectedRoute>
+        <GetOrders />
+      </ProtectedRoute>
+    ),
+  },
+  {
     path: "/buyList",
     element: (
       <ProtectedRoute>
@@ -77,6 +87,14 @@ export const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <Clients />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/printPage",
+    element: (
+      <ProtectedRoute>
+        <PrintPage />
       </ProtectedRoute>
     ),
   },

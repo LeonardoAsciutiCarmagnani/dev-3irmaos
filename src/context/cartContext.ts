@@ -27,11 +27,12 @@ export interface Product {
   nome: string;
   peso: number;
   preco: number;
-  quantity: number;
+  quantidade: number;
   id_seq: number;
 }
 
 interface ContextStates {
+  totalValue: number;
   loading: boolean;
   error: string | null;
   products: Product[];
@@ -39,6 +40,7 @@ interface ContextStates {
   listProductsInCart: Product[];
   priceLists: PriceListProps[];
   setProducts: () => void;
+  setTotalValue: () => void;
   setCountItemsInCart: (count: number) => void;
   handleAddItemInList: (newProduct: Product) => void;
   handleRemoveItemFromCart: (productId: string) => void;
@@ -56,6 +58,19 @@ export const useZustandContext = create<ContextStates>((set) => ({
   error: null,
   products: [],
   priceLists: [],
+  totalValue: 0,
+
+  setTotalValue: () =>
+    set((state) => {
+      const totalValue = state.listProductsInCart.reduce((acc, product) => {
+        acc += product.preco * product.quantidade;
+        return acc;
+      }, 0);
+
+      return {
+        totalValue: totalValue,
+      };
+    }),
 
   fetchPriceLists: async () => {
     try {
@@ -130,7 +145,7 @@ export const useZustandContext = create<ContextStates>((set) => ({
       const updateProductsList = response.data.products.produtos.map(
         (product: Product) => ({
           ...product,
-          quantity: 0,
+          quantidade: 0,
           id_seq: (initialIdSeq += 1), // Inicializar quantidade como 0
         })
       );
@@ -157,22 +172,25 @@ export const useZustandContext = create<ContextStates>((set) => ({
         (product) => product.id === newProduct.id
       );
 
+      console.log(newProduct.id);
+
       const updateList = [...state.listProductsInCart];
       let updateCountInCard = 0;
+
       if (existingProductIndex !== -1) {
         updateCountInCard = state.countItemsInCart + 1;
         updateList[existingProductIndex] = {
           ...updateList[existingProductIndex],
-          quantity: updateList[existingProductIndex].quantity + 1,
+          quantidade: updateList[existingProductIndex].quantidade + 1,
         };
       } else {
         updateCountInCard = state.countItemsInCart + 1;
-        updateList.push({ ...newProduct, quantity: 1 });
+        updateList.push({ ...newProduct, quantidade: 1 });
       }
 
       const updateProducts = state.products.map((product) =>
         product.id === newProduct.id
-          ? { ...product, quantity: product.quantity + 1 }
+          ? { ...product, quantidade: product.quantidade + 1 }
           : product
       );
 
@@ -194,24 +212,24 @@ export const useZustandContext = create<ContextStates>((set) => ({
 
             return {
               ...item,
-              quantity: item.quantity - 1,
+              quantidade: item.quantidade - 1,
             };
           }
           return item;
         })
-        .filter((item) => item.quantity > 0);
+        .filter((item) => item.quantidade > 0);
 
       const updateProducts = state.products.map((product) => {
         if (product.id === productId) {
-          if (product.quantity > 0) {
+          if (product.quantidade > 0) {
             return {
               ...product,
-              quantity: product.quantity - 1,
+              quantidade: product.quantidade - 1,
             };
           } else {
             return {
               ...product,
-              quantity: 0,
+              quantidade: 0,
             };
           }
         } else {

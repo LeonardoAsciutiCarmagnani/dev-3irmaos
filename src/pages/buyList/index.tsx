@@ -8,27 +8,27 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { useZustandContext } from "@/context/cartContext";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
 export const BuyList = () => {
-  const { listProductsInCart } = useZustandContext();
+  const { listProductsInCart, totalValue, setTotalValue } = useZustandContext();
 
-  const [totalValue, setTotalValueOrder] = useState(0);
+  // const [totalValue, setTotalValueOrder] = useState(0);
 
   console.log(listProductsInCart);
 
-  const handleTotalValueOrder = () => {
+  /* const handleTotalValueOrder = () => {
     const totalValue = listProductsInCart.reduce((acc, product) => {
       acc += product.preco * product.quantity;
       return acc;
     }, 0);
 
     setTotalValueOrder(totalValue);
-  };
+  }; */
 
   useEffect(() => {
-    handleTotalValueOrder();
+    setTotalValue();
   }, []);
 
   return (

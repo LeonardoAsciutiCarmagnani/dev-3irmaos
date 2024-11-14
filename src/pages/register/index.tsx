@@ -69,6 +69,7 @@ export const Register = () => {
         id_priceList: selectPriceList,
         type_user: selectState,
         user_name: data.userName,
+        user_email: data.userEmail,
         user_CPF: data.CPF,
         user_phone: data.phone,
         user_IE: data.IE,

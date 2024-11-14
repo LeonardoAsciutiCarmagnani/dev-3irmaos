@@ -40,8 +40,8 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
   priceListId,
 }) => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [selectedProductId, setSelectedProductId] = useState<string>(""); // Produto selecionado
-  const [quantity, setQuantity] = useState<number>(1); // Quantidade do produto
+  const [selectedProductId, setSelectedProductId] = useState(""); // Produto selecionado
+  const [quantity, setQuantity] = useState(1); // Quantidade do produto
 
   // Fetch de produtos da Firestore
   const fetchProducts = async () => {
@@ -97,11 +97,11 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="p-4">
       {/* Dropdown para selecionar produtos */}
-      <div className="flex items-center space-x-2">
-        <Select value={selectedProductId} onValueChange={handleSelectProduct}>
-          <SelectTrigger className="w-full">
+      <div className="mb-4">
+        <Select onValueChange={handleSelectProduct} value={selectedProductId}>
+          <SelectTrigger className="w-full md:w-1/2 lg:w-1/3">
             {selectedProductId
               ? products.find((product) => product.id === selectedProductId)
                   ?.name
@@ -115,48 +115,58 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
             ))}
           </SelectContent>
         </Select>
+      </div>
 
-        {/* Input para quantidade */}
+      {/* Input para quantidade */}
+      <div className="mb-4">
         <Input
           type="number"
           value={quantity}
           onChange={(e) => setQuantity(Number(e.target.value))}
           min={1}
-          className="w-min"
+          className="w-full md:w-20"
         />
+      </div>
 
-        {/* Botão para adicionar o produto */}
-        <Button variant="outline" onClick={handleAddProduct}>
+      {/* Botão para adicionar o produto */}
+      <div className="mb-4">
+        <Button onClick={handleAddProduct} className="w-full md:w-auto">
           Adicionar
         </Button>
       </div>
 
       {/* Tabela para exibir produtos selecionados */}
-      <div className="mt-4">
-        <Table>
+      <div className="overflow-x-auto">
+        <Table className="w-full">
           <TableHeader>
             <TableRow>
-              <TableHead>Produto</TableHead>
-              <TableHead>Valor</TableHead>
-              <TableHead>Quantidade</TableHead>
-              <TableHead>Ações</TableHead>
+              <TableHead className="w-1/4 p-1 text-center">Produto</TableHead>
+              <TableHead className="w-1/4 p-1 text-center">Valor</TableHead>
+              <TableHead className="w-1/4 p-1 text-center">
+                Quantidade
+              </TableHead>
+              <TableHead className="w-1/4 p-1 text-center">Ações</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
+          <TableBody className="">
             {selectedProducts.map((item) => (
               <TableRow key={item.product.id}>
-                <TableCell>{item.product.name}</TableCell>
-                <TableCell>
+                <TableCell className="p-1 text-xs text-center">
+                  {item.product.name}
+                </TableCell>
+                <TableCell className="p-1 text-xs">
                   {item.product.value.toLocaleString("pt-BR", {
                     style: "currency",
                     currency: "BRL",
                   })}
                 </TableCell>
-                <TableCell>{item.quantity}</TableCell>
+                <TableCell className="p-1 text-center">
+                  {item.quantity}
+                </TableCell>
                 <TableCell>
                   <Button
-                    variant="destructive"
-                    onClick={() => onRemoveProduct(item.product.id)} // Usando a função onRemoveProduct diretamente
+                    variant="outline"
+                    onClick={() => onRemoveProduct(item.product.id)}
                   >
                     <LucideTrash2 size={16} />
                   </Button>
@@ -164,13 +174,12 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
               </TableRow>
             ))}
           </TableBody>
-          {/* Rodapé da Tabela */}
           <TableFooter>
             <TableRow>
-              <TableCell colSpan={3} className="text-right font-semibold">
+              <TableCell colSpan={3} className="text-right font-bold p-1">
                 Total:
               </TableCell>
-              <TableCell>
+              <TableCell className="p-1">
                 {calculateTotal().toLocaleString("pt-BR", {
                   style: "currency",
                   currency: "BRL",

@@ -15,7 +15,7 @@ import {
   DialogHeader,
   DialogFooter,
   DialogTitle,
-} from "@/components/ui/dialog"; // shadcn Dialog components
+} from "@/components/ui/dialog";
 import { deleteUser, getAuth } from "firebase/auth";
 import { Badge } from "@/components/ui/badge";
 

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { collection, doc, getDoc } from "firebase/firestore";
-import { firestore as db } from "../firebaseConfig"; // Supondo que o Firestore foi configurado e exportado em 'firebase.ts'
+import { firestore as db } from "../firebaseConfig";
 
 interface ProductProps {
   id: string;
