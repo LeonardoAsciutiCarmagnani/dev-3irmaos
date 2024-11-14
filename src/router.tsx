@@ -7,13 +7,18 @@ import PriceListDetails from "./_components/PriceListDetails";
 import CreatePriceList from "./_components/CreatePriceList";
 import PedidoVendaForm from "./_components/PostSaleOrder";
 import { BuyList } from "./pages/buyList";
-import { PrintPage } from "./pages/printPage";
-// import CreatePriceList from "./_components/CreatePriceList";
+import ProtectedRoute from "./_components/ProtectedRoute";
+import { AccessDenied } from "./_components/401";
+import { Clients } from "./_components/GetClients";
 
 export const router = createBrowserRouter([
   {
     path: "/register",
-    element: <Register />,
+    element: (
+      <ProtectedRoute>
+        <Register />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/login",
@@ -21,30 +26,66 @@ export const router = createBrowserRouter([
   },
   {
     path: "/",
-    element: <Home />,
+    element: (
+      <ProtectedRoute>
+        <Home />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/prices-lists",
-    element: <GetPricesLists />,
+    element: (
+      <ProtectedRoute>
+        <GetPricesLists />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/prices-lists/:id",
-    element: <PriceListDetails />,
+    element: (
+      <ProtectedRoute>
+        <PriceListDetails />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/create-prices-list",
-    element: <CreatePriceList />,
+    element: (
+      <ProtectedRoute>
+        <CreatePriceList />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/create-order-sale",
-    element: <PedidoVendaForm />,
+    element: (
+      <ProtectedRoute>
+        <PedidoVendaForm />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/buyList",
-    element: <BuyList />,
+    element: (
+      <ProtectedRoute>
+        <BuyList />
+      </ProtectedRoute>
+    ),
   },
   {
-    path: "/printPage",
-    element: <PrintPage />,
+    path: "/clients",
+    element: (
+      <ProtectedRoute>
+        <Clients />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/401",
+    element: (
+      <ProtectedRoute>
+        <AccessDenied />
+      </ProtectedRoute>
+    ),
   },
 ]);

@@ -9,16 +9,10 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Clients from "./GetClients";
+import Clients from "./DropdownGetClients";
 import ProductSelector from "../_components/GetProductList";
 
-export type Product = {
-  id: string;
-  name: string;
-  value: number;
-};
-
-export type Form = {
+export type OrderSaleTypes = {
   cliente: {
     documento: string;
     email: string;
@@ -67,8 +61,19 @@ export type EnderecoDeEntrega = {
   numero: string;
 };
 
-const PedidoVendaForm: React.FC = () => {
-  const [form, setForm] = useState<Form>({
+interface ProductWithQuantity {
+  product: ProductInPriceList;
+  quantity: number;
+}
+
+export type ProductInPriceList = {
+  id: string;
+  name: string;
+  value: number;
+};
+
+const OrderSaleProps: React.FC = () => {
+  const [orderSale, setOrderSale] = useState<OrderSaleTypes>({
     cliente: {
       documento: "",
       email: "",
@@ -100,35 +105,42 @@ const PedidoVendaForm: React.FC = () => {
   });
 
   const [useRegisteredAddressForDelivery, setUseRegisteredAddressForDelivery] =
-    useState(false);
-
+    useState(true);
   const [clienteSelecionado, setClienteSelecionado] = useState<boolean>(false);
+  const [priceListId, setPriceListId] = useState<string>("");
 
-  const handleSelectClient = (enderecoDeEntrega: EnderecoDeEntrega | null) => {
+  const [selectedProducts, setSelectedProducts] = useState<
+    ProductWithQuantity[]
+  >([]);
+
+  const handleSelectClient = (data: {
+    enderecoDeEntrega: EnderecoDeEntrega | null;
+    priceListId: string | null;
+  }) => {
+    const { enderecoDeEntrega, priceListId } = data;
+
+    setPriceListId(priceListId || "");
+
     if (enderecoDeEntrega) {
-      setForm((prevForm) => ({
-        ...prevForm,
+      setOrderSale((prevOrderSaleTypes) => ({
+        ...prevOrderSaleTypes,
         cliente: {
-          ...prevForm.cliente,
+          ...prevOrderSaleTypes.cliente,
           nomeDoCliente: "Cliente Selecionado",
         },
         enderecoDeEntrega: useRegisteredAddressForDelivery
           ? enderecoDeEntrega
-          : prevForm.enderecoDeEntrega,
+          : prevOrderSaleTypes.enderecoDeEntrega,
       }));
-
-      setClienteSelecionado(true); // Marca o cliente como selecionado
+      setClienteSelecionado(true);
     }
   };
 
   useEffect(() => {
     if (useRegisteredAddressForDelivery && clienteSelecionado) {
-      // Preenche os campos de entrega se o checkbox estiver marcado e o cliente selecionado
-      setForm((prevForm) => ({
-        ...prevForm,
-        enderecoDeEntrega: {
-          ...prevForm.enderecoDeEntrega,
-        },
+      setOrderSale((prevOrderSaleTypes) => ({
+        ...prevOrderSaleTypes,
+        enderecoDeEntrega: { ...prevOrderSaleTypes.enderecoDeEntrega },
       }));
     }
   }, [useRegisteredAddressForDelivery, clienteSelecionado]);
@@ -137,40 +149,53 @@ const PedidoVendaForm: React.FC = () => {
     const { name, value } = e.target;
     const [section, key] = name.split(".");
 
-    setForm((prev) => ({
+    setOrderSale((prev) => ({
       ...prev,
       [section]: {
-        ...(prev[section as keyof Form] as object),
+        ...(prev[section as keyof OrderSaleTypes] as object),
         [key]: value,
       },
     }));
   };
 
-  const handleProductSelect = (product: Product) => {
-    setForm((prevForm) => ({
-      ...prevForm,
-      itens: [
-        ...prevForm.itens,
-        {
-          produtoId: product.id,
-          quantidade: 1,
-          precoUnitarioBruto: product.value,
-          precoUnitarioLiquido: product.value,
-        },
-      ],
-    }));
+  const handleProductSelect = (products: ProductWithQuantity[]) => {
+    // Atualiza o estado com os produtos e suas quantidades
+    setSelectedProducts(products);
+
+    // Atualiza os itens no pedido
+    setOrderSale((prevOrderSaleTypes) => {
+      const updatedItems = products.map(({ product, quantity }) => ({
+        produtoId: product.id,
+        quantidade: quantity,
+        precoUnitarioBruto: product.value,
+        precoUnitarioLiquido: product.value,
+      }));
+
+      return {
+        ...prevOrderSaleTypes,
+        itens: updatedItems,
+      };
+    });
   };
 
   const handleRemoveProduct = (productId: string) => {
-    setForm((prevForm) => ({
-      ...prevForm,
-      itens: prevForm.itens.filter((item) => item.produtoId !== productId),
+    // Remove o produto da lista de produtos selecionados
+    setSelectedProducts((prevProducts) =>
+      prevProducts.filter((product) => product.product.id !== productId)
+    );
+
+    setOrderSale((prevOrderSaleTypes) => ({
+      ...prevOrderSaleTypes,
+      itens: prevOrderSaleTypes.itens.filter(
+        (item) => item.produtoId !== productId
+      ),
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("JSON a ser enviado:", JSON.stringify(form));
+    console.log("JSON a ser enviado:", JSON.stringify(orderSale));
+    console.log("Price List ID:", priceListId);
 
     const user = localStorage.getItem("user");
     const clientId = user ? JSON.parse(user).uid : null;
@@ -180,7 +205,7 @@ const PedidoVendaForm: React.FC = () => {
       try {
         const response = await axios.post(
           `https://us-central1-server-kyoto.cloudfunctions.net/api/v1/pedido-de-venda/${clientId}`,
-          form,
+          orderSale,
           {
             headers: {
               "Content-Type": "application/json",
@@ -212,7 +237,6 @@ const PedidoVendaForm: React.FC = () => {
 
         <CardContent>
           <form className="space-y-6">
-            {/* Seção Cliente */}
             <fieldset className="border border-gray-200 rounded-lg p-4">
               <legend className="text-lg font-semibold text-gray-700">
                 Cliente
@@ -230,98 +254,85 @@ const PedidoVendaForm: React.FC = () => {
                 <Input
                   type="text"
                   name="enderecoDeEntrega.bairro"
-                  value={form.enderecoDeEntrega.bairro}
+                  value={orderSale.enderecoDeEntrega.bairro}
                   onChange={handleChange}
                   placeholder="Bairro"
                   className="w-full"
                 />
+
                 <Input
                   type="text"
                   name="enderecoDeEntrega.cep"
-                  value={form.enderecoDeEntrega.cep}
+                  value={orderSale.enderecoDeEntrega.cep}
                   onChange={handleChange}
                   placeholder="CEP"
                   className="w-full"
                 />
-                <Input
-                  type="text"
-                  name="enderecoDeEntrega.codigoIbge"
-                  value={form.enderecoDeEntrega.codigoIbge.toString()}
-                  onChange={handleChange}
-                  placeholder="Código IBGE"
-                  className="w-full"
-                />
+
                 <Input
                   type="text"
                   name="enderecoDeEntrega.complemento"
-                  value={form.enderecoDeEntrega.complemento}
+                  value={orderSale.enderecoDeEntrega.complemento}
                   onChange={handleChange}
                   placeholder="Complemento"
                   className="w-full"
                 />
+
                 <Input
                   type="text"
                   name="enderecoDeEntrega.logradouro"
-                  value={form.enderecoDeEntrega.logradouro}
+                  value={orderSale.enderecoDeEntrega.logradouro}
                   onChange={handleChange}
                   placeholder="Logradouro"
                   className="w-full"
                 />
+
                 <Input
                   type="text"
                   name="enderecoDeEntrega.numero"
-                  value={form.enderecoDeEntrega.numero}
+                  value={orderSale.enderecoDeEntrega.numero}
                   onChange={handleChange}
                   placeholder="Número"
                   className="w-full"
                 />
               </div>
 
-              {/* Checkbox para usar o endereço registrado */}
               <div className="mt-4">
                 <label className="inline-flex items-center">
                   <input
                     type="checkbox"
-                    disabled={!clienteSelecionado} // Desabilita o checkbox se o cliente não foi selecionado
+                    disabled={!clienteSelecionado}
                     checked={useRegisteredAddressForDelivery}
                     onChange={() =>
                       setUseRegisteredAddressForDelivery(
                         !useRegisteredAddressForDelivery
                       )
                     }
-                    className="form-checkbox"
+                    className="OrderSaleTypes-checkbox"
                   />
-                  <span className="ml-2">
-                    Usar endereço registrado para entrega
-                  </span>
+                  <span className="ml-2">Usar endereço cadastrado ?</span>
                 </label>
               </div>
             </fieldset>
 
-            {/* Seção Produtos */}
+            {/* Produtos */}
             <fieldset className="border border-gray-200 rounded-lg p-4">
               <legend className="text-lg font-semibold text-gray-700">
                 Produtos
               </legend>
               <ProductSelector
+                priceListId={priceListId}
+                selectedProducts={selectedProducts}
                 onProductSelect={handleProductSelect}
-                selectedProducts={form.itens.map((item) => ({
-                  id: item.produtoId,
-                  name: item.produtoId, // Ajuste conforme necessário para obter o nome do produto
-                  value: item.precoUnitarioBruto,
-                }))}
                 onRemoveProduct={handleRemoveProduct}
               />
             </fieldset>
           </form>
         </CardContent>
 
-        <CardFooter className="flex justify-end">
-          <Button
-            className="px-6 py-2 bg-green-500 text-white"
-            onClick={handleSubmit}
-          >
-            Finalizar pedido
+        <CardFooter>
+          <Button onClick={handleSubmit} disabled={!clienteSelecionado}>
+            Enviar Pedido
           </Button>
         </CardFooter>
       </Card>
@@ -329,4 +340,4 @@ const PedidoVendaForm: React.FC = () => {
   );
 };
 
-export default PedidoVendaForm;
+export default OrderSaleProps;

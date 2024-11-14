@@ -6,9 +6,12 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  deleteUser,
+  updateProfile,
+} from "firebase/auth";
 import { auth } from "../../firebaseConfig";
 import { api } from "@/lib/axios";
 import {
@@ -33,39 +36,35 @@ interface CreateUserProps {
   cep: string;
   ibge: string;
   complement: string;
-  logra: string;
+  logradouro: string;
+  number: number;
 }
 
 export const Register = () => {
-  const navigate = useNavigate();
   const { register, handleSubmit } = useForm<CreateUserProps>();
   const [selectState, setSelectState] = useState("");
   const [selectPriceList, setSelectPriceList] = useState("");
   const { priceLists, fetchPriceLists } = useZustandContext();
 
-  console.log("selectPriceList: ", selectPriceList);
-
-  useEffect(() => {
-    fetchPriceLists();
-  }, []);
-
   async function handleCreateUser(data: CreateUserProps) {
+    let userCredential = null;
+    let userId = null;
+
     try {
-      const userCredential = await createUserWithEmailAndPassword(
+      userCredential = await createUserWithEmailAndPassword(
         auth,
         data.userEmail,
         data.userPassword
       );
-
       const user = userCredential.user;
-      const userId = user.uid;
+      userId = user.uid;
 
+      // Atualiza o perfil do usuário no Firebase
       await updateProfile(user, {
         displayName: data.userName,
       });
 
-      // Adiciona o restante dos dados no Firestore
-      await api.post("/v1/create-user", {
+      const response = await api.post("/v1/create-user", {
         user_id: userId,
         id_priceList: selectPriceList,
         type_user: selectState,
@@ -78,98 +77,130 @@ export const Register = () => {
         user_cep: data.cep,
         user_ibgeCode: data.ibge,
         user_complement: data.complement,
-        user_logra: data.logra,
+        user_logradouro: data.logradouro,
+        user_houseNumber: data.number,
       });
 
+      // Verifica se a resposta do back-end foi bem-sucedida
+      if (response.status !== 200) {
+        await deleteUser(userCredential.user); // Exclui o usuário do Firebase
+        throw new Error("Falha ao criar o usuário no back-end.");
+      }
+
       console.log("Usuário cadastrado com sucesso!");
-      setTimeout(() => {
-        navigate("/login");
-      }, 2000);
     } catch (e) {
       console.error("Ocorreu um erro ao criar o usuário!", { message: e });
+
+      // Rollback caso algo falhe durante a criação no Firebase ou no back-end
+      if (userCredential && userCredential.user) {
+        await deleteUser(userCredential.user); // Exclui o usuário do Firebase
+      }
     }
   }
 
+  useEffect(() => {
+    fetchPriceLists();
+  }, []);
+
   return (
-    <div className="w-screen h-screen flex justify-center md:py-8">
-      <div className="flex flex-col w-full border-2 p-4 rounded-lg space-y-2 md:w-2/5 ">
-        <h1 className="text-lg font-medium underline">Cadastro de usuário:</h1>
-        <form
-          onSubmit={handleSubmit(handleCreateUser)}
-          className="flex flex-col space-y-2"
-        >
-          <Accordion type="multiple" className="w-full h-auto space-y-2">
+    <div className="w-screen h-screen flex justify-center items-center p-4 bg-gray-100">
+      <div className="flex flex-col w-full max-w-lg border border-gray-300 shadow-lg rounded-lg bg-white p-6 space-y-4">
+        <h1 className="text-2xl font-semibold text-gray-700 text-center">
+          Cadastro de Usuário
+        </h1>
+        <form onSubmit={handleSubmit(handleCreateUser)} className="space-y-6">
+          <Accordion type="multiple" className="space-y-4">
             <AccordionItem value="item-1">
-              <AccordionTrigger className="font-semibold text-base md:text-lg">
-                Informações do usuário
+              <AccordionTrigger className="font-semibold text-base md:text-lg text-gray-700">
+                Informações do Usuário
               </AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent className="space-y-3">
                 <div>
-                  <label htmlFor="userName">Nome do cliente:</label>
+                  <label htmlFor="userName" className="text-gray-600">
+                    Nome do Cliente:
+                  </label>
                   <Input
                     id="userName"
                     type="text"
                     placeholder="Digite o nome do usuário"
-                    className="flex-1"
+                    className="w-full mt-1"
                     {...register("userName")}
                     required
                   />
                 </div>
                 <div>
-                  <label htmlFor="userEmail">Email:</label>
+                  <label htmlFor="userEmail" className="text-gray-600">
+                    Email:
+                  </label>
                   <Input
                     id="userEmail"
                     type="email"
                     placeholder="Digite o email para acesso"
+                    className="w-full mt-1"
                     {...register("userEmail")}
                     required
                   />
                 </div>
                 <div>
-                  <label htmlFor="userPassword">Senha:</label>
+                  <label htmlFor="userPassword" className="text-gray-600">
+                    Senha:
+                  </label>
                   <Input
                     id="userPassword"
                     type="password"
                     placeholder="Digite sua senha"
+                    className="w-full mt-1"
                     {...register("userPassword")}
                     required
                   />
                 </div>
                 <div>
-                  <label htmlFor="CPF">CPF:</label>
+                  <label htmlFor="CPF" className="text-gray-600">
+                    CPF/CNPJ:
+                  </label>
                   <Input
                     id="CPF"
                     type="text"
-                    placeholder="Informe seu CPF"
+                    placeholder="Informe seu CPF ou CNPJ"
+                    className="w-full mt-1"
                     {...register("CPF")}
                     required
                   />
                 </div>
                 <div>
-                  <label htmlFor="phone">Telefone:</label>
+                  <label htmlFor="phone" className="text-gray-600">
+                    Telefone:
+                  </label>
                   <Input
                     id="phone"
                     type="tel"
                     placeholder="Informe seu telefone"
+                    className="w-full mt-1"
                     {...register("phone")}
                     required
                   />
                 </div>
                 <div>
-                  <label htmlFor="IE">Inscrição estadual:</label>
+                  <label htmlFor="IE" className="text-gray-600">
+                    Inscrição Estadual:
+                  </label>
                   <Input
                     id="IE"
                     type="text"
                     placeholder="Inscrição estadual"
+                    className="w-full mt-1"
                     {...register("IE")}
                   />
                 </div>
                 <div>
-                  <label htmlFor="fantasyName">Nome Fantasia:</label>
+                  <label htmlFor="fantasyName" className="text-gray-600">
+                    Nome Fantasia:
+                  </label>
                   <Input
                     id="fantasyName"
                     type="text"
                     placeholder="Digite o Nome Fantasia"
+                    className="w-full mt-1"
                     {...register("fantasyName")}
                   />
                 </div>
@@ -177,56 +208,84 @@ export const Register = () => {
             </AccordionItem>
 
             <AccordionItem value="item-2">
-              <AccordionTrigger className="font-semibold text-base md:text-lg">
-                Endereço de cobrança:
+              <AccordionTrigger className="font-semibold text-base md:text-lg text-gray-700">
+                Endereço de Cobrança
               </AccordionTrigger>
               <AccordionContent className="space-y-3">
                 <div>
-                  <label htmlFor="neighborhood">Bairro:</label>
+                  <label htmlFor="neighborhood" className="text-gray-600">
+                    Bairro:
+                  </label>
                   <Input
                     id="neighborhood"
                     type="text"
                     placeholder="Informe seu bairro"
+                    className="w-full mt-1"
                     {...register("neighborhood")}
                     required
                   />
                 </div>
                 <div>
-                  <label htmlFor="cep">Cep:</label>
+                  <label htmlFor="cep" className="text-gray-600">
+                    CEP:
+                  </label>
                   <Input
                     id="cep"
                     type="text"
                     placeholder="Informe seu CEP"
+                    className="w-full mt-1"
                     {...register("cep")}
                     required
                   />
                 </div>
                 <div>
-                  <label htmlFor="ibge">Código IBGE:</label>
+                  <label htmlFor="ibge" className="text-gray-600">
+                    Código IBGE:
+                  </label>
                   <Input
                     id="ibge"
                     type="text"
                     placeholder="Informe o código IBGE"
+                    className="w-full mt-1"
                     {...register("ibge")}
                     required
                   />
                 </div>
                 <div>
-                  <label htmlFor="complement">Complemento:</label>
+                  <label htmlFor="complement" className="text-gray-600">
+                    Complemento:
+                  </label>
                   <Input
                     id="complement"
                     type="text"
                     placeholder="Complemento"
+                    className="w-full mt-1"
                     {...register("complement")}
                   />
                 </div>
                 <div>
-                  <label htmlFor="logra">Logradouro:</label>
+                  <label htmlFor="logradouro" className="text-gray-600">
+                    Logradouro:
+                  </label>
                   <Input
-                    id="logra"
+                    id="logradouro"
                     type="text"
                     placeholder="Informe seu logradouro"
-                    {...register("logra")}
+                    className="w-full mt-1"
+                    {...register("logradouro")}
+                    required
+                  />
+                </div>
+                <div>
+                  <label htmlFor="number" className="text-gray-600">
+                    Número:
+                  </label>
+                  <Input
+                    id="number"
+                    type="number"
+                    placeholder="Informe o número"
+                    className="w-full mt-1"
+                    {...register("number")}
                     required
                   />
                 </div>
@@ -234,12 +293,12 @@ export const Register = () => {
             </AccordionItem>
 
             <Select onValueChange={(value) => setSelectState(value)}>
-              <SelectTrigger className="w-[200px]">
+              <SelectTrigger className="w-full mt-2 bg-gray-100 rounded-md border border-gray-300">
                 <SelectValue placeholder="Permissões de usuário" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="adm">Administrador</SelectItem>
-                <SelectItem value="comun">Usuário comum</SelectItem>
+                <SelectItem value="comun">Usuário Comum</SelectItem>
               </SelectContent>
             </Select>
 
@@ -248,13 +307,19 @@ export const Register = () => {
                 <SelectValue placeholder="Lista de preços" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="default">Lista padrão</SelectItem>
                 {priceLists.map((item) => (
                   <SelectItem value={item.id}>{item.name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </Accordion>
-          <Button type="submit">Cadastrar</Button>
+          <Button
+            type="submit"
+            className="w-full bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200"
+          >
+            Cadastrar
+          </Button>
         </form>
       </div>
     </div>

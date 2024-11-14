@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { auth } from "../firebaseConfig"; // Instância do Firebase Auth
-import { signOut } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { Link, useNavigate } from "react-router-dom";
 import { ShoppingCart } from "lucide-react";
 import voidCart from "../assets/cart-xmark-svgrepo-com.svg";
@@ -24,15 +24,6 @@ const Header: React.FC = () => {
     console.log("Contando os itens no carrinho: ", countItemsInCart);
   }, [countItemsInCart]);
 
-  const fetchUserData = () => {
-    const user = auth.currentUser;
-    if (user?.displayName) {
-      localStorage.setItem("userName", user.displayName);
-      const getUserName = localStorage.getItem("userName");
-      setUserName(getUserName);
-    }
-  };
-
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -43,14 +34,24 @@ const Header: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchUserData();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const displayName = user.displayName || "...";
+        setUserName(displayName);
+        localStorage.setItem("userName", displayName);
+      } else {
+        setUserName(null);
+        localStorage.removeItem("userName");
+      }
+    });
+    return () => unsubscribe();
   }, [countItemsInCart]);
 
   return (
     <header className="flex items-center justify-between p-4 bg-white shadow-md">
       <div className="flex items-center">
         <span className="text-xl font-semibold text-gray-800">
-          {userName ? `Olá, ${userName}` : "Bem-vindo!"}
+          {userName === null ? "..." : `Olá, ${userName}`}
         </span>
       </div>
 

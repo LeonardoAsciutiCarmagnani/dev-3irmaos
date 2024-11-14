@@ -1,241 +1,236 @@
 import { useEffect, useState } from "react";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
 import {
-  Select,
-  SelectItem,
-  SelectTrigger,
-  SelectContent,
-  SelectValue,
-} from "@/components/ui/select";
-import "tailwindcss/tailwind.css";
-import { PlusIcon, MinusIcon } from "lucide-react";
+  getFirestore,
+  collection,
+  getDocs,
+  doc,
+  deleteDoc,
+} from "firebase/firestore";
+import { User, Trash2, Eye } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { EnderecoDeEntrega } from "./PostSaleOrder";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+} from "@/components/ui/dialog"; // shadcn Dialog components
+import { deleteUser, getAuth } from "firebase/auth";
+import { Badge } from "@/components/ui/badge";
 
-interface Client {
-  id: string;
-  CPF: string;
-  IE?: number;
-  cep: number;
-  complement: string;
-  fantasyName?: string;
-  ibge: number;
-  logra: string;
-  neighborhood: string;
-  phone: string;
-  userName: string;
+interface ClientInFirestore {
+  id_priceList: string;
+  type_user: string;
+  user_IE?: number;
+  user_cep: number;
+  user_complement?: string;
+  user_fantasyName?: string;
+  user_ibgeCode: number;
+  user_logradouro: string;
+  user_id: string;
+  user_name: string;
+  user_neighborhood: string;
+  user_phone: string;
 }
 
-interface ClientsProps {
-  onSelectClient: (client: EnderecoDeEntrega | null) => void;
-}
-
-const Clients = ({ onSelectClient }: ClientsProps) => {
-  const [clientes, setClientes] = useState<Client[]>([]);
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
-  const [showDetails, setShowDetails] = useState(false);
+export const Clients = () => {
+  const [clientes, setClientes] = useState<ClientInFirestore[]>([]);
+  const [filteredClientes, setFilteredClientes] = useState<ClientInFirestore[]>(
+    []
+  );
+  const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedClient, setSelectedClient] =
+    useState<ClientInFirestore | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<ClientInFirestore | null>(
+    null
+  );
   const db = getFirestore();
+  const authInstance = getAuth();
 
   useEffect(() => {
     const fetchClientes = async () => {
       try {
         const clientesCollection = collection(db, "clients");
         const clientesSnapshot = await getDocs(clientesCollection);
-        const clientesList = clientesSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Client[];
+        const clientesList = clientesSnapshot.docs.map((doc) => {
+          const data = doc.data() as Omit<ClientInFirestore, "user_id">;
+          return { user_id: doc.id, ...data };
+        });
         setClientes(clientesList);
-        console.log("Requisição feita");
+        setFilteredClientes(clientesList);
       } catch (error) {
         console.error("Erro ao buscar clientes:", error);
+        setError("Erro ao buscar clientes");
+      } finally {
+        setLoading(false);
       }
     };
-
     fetchClientes();
   }, [db]);
 
-  const handleSelectClient = (id: string) => {
-    const client = clientes.find((cliente) => cliente.id === id) || null;
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    setFilteredClientes(
+      clientes.filter((cliente) =>
+        cliente.user_name.toLowerCase().includes(query.toLowerCase())
+      )
+    );
+  };
 
-    if (client) {
-      const enderecoDeEntrega = {
-        bairro: client.neighborhood,
-        cep: client.cep.toString(),
-        codigoIbge: client.ibge,
-        complemento: client.complement,
-        logradouro: client.logra,
-        numero: "",
-      };
+  const handleDelete = async () => {
+    if (!confirmDelete) return;
+    try {
+      // Excluir do Firestore
+      await deleteDoc(doc(db, "clients", confirmDelete.user_id));
 
-      setSelectedClient(client);
-      onSelectClient(enderecoDeEntrega); // Envia apenas o endereço para o componente pai
-    } else {
-      setSelectedClient(null);
-      onSelectClient(null);
+      // Excluir do Firebase Authentication
+      const userToDelete = authInstance.currentUser;
+      if (userToDelete && userToDelete.uid === confirmDelete.user_id) {
+        await deleteUser(userToDelete);
+      }
+
+      // Atualizar listas de clientes
+      setClientes(
+        clientes.filter((client) => client.user_id !== confirmDelete.user_id)
+      );
+      setFilteredClientes(
+        filteredClientes.filter(
+          (client) => client.user_id !== confirmDelete.user_id
+        )
+      );
+      setConfirmDelete(null);
+    } catch (error) {
+      console.error("Erro ao excluir cliente:", error);
+      setError("Erro ao excluir cliente");
     }
-
-    setShowDetails(false);
   };
 
   return (
-    <div className="p-4">
-      <Select onValueChange={(value) => handleSelectClient(value)}>
-        <SelectTrigger className="w-full flex items-center justify-between border border-gray-300 rounded-md p-2">
-          <SelectValue placeholder="Selecione um cliente" />
-        </SelectTrigger>
-        <SelectContent className="w-full border border-gray-300 rounded-md mt-2">
-          {clientes.map((cliente) => (
-            <SelectItem
-              key={cliente.id}
-              value={cliente.id}
-              className="p-2 hover:bg-gray-100"
-            >
-              {cliente.userName}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+    <div className="flex flex-col items-center p-4 bg-gray-50 min-h-screen">
+      {/* Barra de Pesquisa */}
+      <div className="w-full mb-4">
+        <Input
+          placeholder="Buscar cliente..."
+          value={searchQuery}
+          onChange={(e) => handleSearch(e.target.value)}
+          className="w-full border border-gray-300 rounded-md px-4 py-2 text-sm"
+        />
+      </div>
 
-      {selectedClient && (
-        <div className="mt-4 space-y-2">
-          <Button
-            onClick={() => setShowDetails(!showDetails)}
-            variant="link"
-            className="text-blue-500 hover:underline"
-            type="button"
-          >
-            {showDetails ? (
-              <span className="flex items-center gap-x-1">
-                {" "}
-                <MinusIcon /> Ocultar Detalhes
-              </span>
-            ) : (
-              <span className="flex items-center gap-x-1">
-                {" "}
-                <PlusIcon /> Detalhes
-              </span>
-            )}
-          </Button>
+      {/* Loading e Mensagem de Erro */}
+      {loading ? (
+        <p className="text-gray-500">Carregando clientes...</p>
+      ) : error ? (
+        <p className="text-red-500">{error}</p>
+      ) : (
+        <>
+          {/* Lista de Clientes */}
+          {filteredClientes.length === 0 ? (
+            <p className="text-gray-500">Nenhum cliente encontrado.</p>
+          ) : (
+            <ul className="w-full space-y-4">
+              {filteredClientes.map((cliente) => (
+                <li
+                  key={cliente.user_id}
+                  className="flex items-center justify-between bg-white shadow rounded-lg p-4"
+                >
+                  <div className="flex items-center space-x-4">
+                    <User className="w-6 h-6 text-gray-500" />
+                    <div>
+                      <p className="text-gray-800 font-semibold">
+                        {cliente.user_name}
+                      </p>
+                      <Badge variant="destructive">
+                        {cliente.type_user.toUpperCase()}
+                      </Badge>
+                    </div>
+                  </div>
 
-          {/* Detalhes do cliente */}
-          {showDetails && (
-            <div className="mt-4 space-y-2">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  CPF:
-                </label>
-                <input
-                  type="text"
-                  value={selectedClient.CPF}
-                  readOnly
-                  className="w-full border border-gray-300 rounded-md p-2"
-                />
-              </div>
-              {selectedClient.IE !== undefined && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    IE:
-                  </label>
-                  <input
-                    type="text"
-                    value={
-                      selectedClient.IE
-                        ? selectedClient.IE.toString()
-                        : "Não informado"
-                    }
-                    readOnly
-                    className="w-full border border-gray-300 rounded-md p-2"
-                  />
-                </div>
-              )}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  CEP:
-                </label>
-                <input
-                  type="text"
-                  value={
-                    selectedClient.cep ? selectedClient.cep.toString() : ""
-                  }
-                  readOnly
-                  className="w-full border border-gray-300 rounded-md p-2"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Complemento:
-                </label>
-                <input
-                  type="text"
-                  value={selectedClient.complement}
-                  readOnly
-                  className="w-full border border-gray-300 rounded-md p-2"
-                />
-              </div>
-              {selectedClient.fantasyName && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Nome Fantasia:
-                  </label>
-                  <input
-                    type="text"
-                    value={selectedClient.fantasyName || "Não informado"}
-                    readOnly
-                    className="w-full border border-gray-300 rounded-md p-2"
-                  />
-                </div>
-              )}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  IBGE:
-                </label>
-                <input
-                  type="text"
-                  value={
-                    selectedClient.ibge ? selectedClient.ibge.toString() : ""
-                  }
-                  readOnly
-                  className="w-full border border-gray-300 rounded-md p-2"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Logradouro:
-                </label>
-                <input
-                  type="text"
-                  value={selectedClient.logra}
-                  readOnly
-                  className="w-full border border-gray-300 rounded-md p-2"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Bairro:
-                </label>
-                <input
-                  type="text"
-                  value={selectedClient.neighborhood}
-                  readOnly
-                  className="w-full border border-gray-300 rounded-md p-2"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Telefone:
-                </label>
-                <input
-                  type="text"
-                  value={selectedClient.phone}
-                  readOnly
-                  className="w-full border border-gray-300 rounded-md p-2"
-                />
-              </div>
-            </div>
+                  <div>
+                    <Button
+                      variant="ghost"
+                      onClick={() => setSelectedClient(cliente)}
+                    >
+                      <Eye size={15} />
+                    </Button>
+                    {cliente.type_user === "adm" && (
+                      <Button
+                        variant="ghost"
+                        className="text-red-500 hover:text-red-700"
+                        onClick={() => setConfirmDelete(cliente)}
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </Button>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
           )}
-        </div>
+        </>
       )}
+
+      {/* Modal de Detalhes */}
+      <Dialog
+        open={!!selectedClient}
+        onOpenChange={() => setSelectedClient(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Detalhes do Cliente</DialogTitle>
+          </DialogHeader>
+          <p>
+            <strong>Nome:</strong> {selectedClient?.user_name}
+          </p>
+          <p>
+            <strong>Telefone:</strong> {selectedClient?.user_phone}
+          </p>
+          <p>
+            <strong>CEP:</strong> {selectedClient?.user_cep}
+          </p>
+          <p>
+            <strong>Bairro:</strong> {selectedClient?.user_neighborhood}
+          </p>
+          <p>
+            <strong>Rua:</strong> {selectedClient?.user_logradouro}
+          </p>
+          <p>
+            <strong>ID Lista de preços:</strong> {selectedClient?.id_priceList}
+          </p>
+          <DialogFooter>
+            <Button onClick={() => setSelectedClient(null)} variant="ghost">
+              Fechar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de Confirmação de Exclusão */}
+      <Dialog
+        open={!!confirmDelete}
+        onOpenChange={() => setConfirmDelete(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Excluir Cliente</DialogTitle>
+          </DialogHeader>
+          <p>
+            Tem certeza de que deseja excluir o cliente{" "}
+            {confirmDelete?.user_name}?
+          </p>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setConfirmDelete(null)}>
+              Cancelar
+            </Button>
+            <Button variant="destructive" onClick={handleDelete}>
+              Excluir
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
