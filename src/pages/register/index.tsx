@@ -5,11 +5,14 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+import InputMask from "react-input-mask";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
+import { cpf, cnpj } from "cpf-cnpj-validator";
 import {
   createUserWithEmailAndPassword,
   deleteUser,
+  sendPasswordResetEmail,
   updateProfile,
 } from "firebase/auth";
 import { auth } from "../../firebaseConfig";
@@ -21,8 +24,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useZustandContext } from "@/context/cartContext";
+import axios from "axios";
+import { CheckCircleIcon, CircleXIcon } from "lucide-react";
 
 interface CreateUserProps {
   userName: string;
@@ -40,64 +45,157 @@ interface CreateUserProps {
   number: number;
 }
 
-export const Register = () => {
-  const { register, handleSubmit } = useForm<CreateUserProps>();
-  const [selectState, setSelectState] = useState("");
-  const [selectPriceList, setSelectPriceList] = useState("");
-  const { priceLists, fetchPriceLists } = useZustandContext();
+interface CepData {
+  bairro: string;
+  ibge: number;
+  localidade: string;
+  logradouro: string;
+  uf: string;
+}
 
-  async function handleCreateUser(data: CreateUserProps) {
+export const Register = () => {
+  const { priceLists, fetchPriceLists } = useZustandContext();
+  const { register, handleSubmit, watch, setValue, getValues } =
+    useForm<CreateUserProps>();
+  const [selectState, setSelectState] = useState("");
+  const [selectPriceList, setSelectPriceList] = useState({ id: "", name: "" });
+  const [isCpf, setIsCpf] = useState(true);
+
+  const [endereco, setEndereco] = useState<CepData | null>(null);
+  const [cepError, setCepError] = useState<React.ReactNode | null>(null);
+  const [cepSucess, setCepSucess] = useState<React.ReactNode | null>(null);
+  const [cpfCnpjError, setCpfCnpjError] = useState("");
+
+  const cpfOrCnpjValue = watch("CPF");
+  const cepValue = watch("cep");
+
+  const toggleCpfCnpj = () => {
+    setIsCpf((prev) => !prev);
+  };
+
+  const validateCPFOrCNPJ = (value: string) => {
+    if (isCpf) {
+      // Validação de CPF
+      if (!cpf.isValid(value)) {
+        setCpfCnpjError("CPF inválido");
+      } else {
+        setCpfCnpjError("");
+      }
+    } else {
+      // Validação de CNPJ
+      if (!cnpj.isValid(value)) {
+        setCpfCnpjError("CNPJ inválido");
+      } else {
+        setCpfCnpjError("");
+      }
+    }
+  };
+
+  const fetchCEP = async (cep: string) => {
+    try {
+      setCepError("");
+      const response = await axios.post(
+        "https://us-central1-server-kyoto.cloudfunctions.net/api/v1/CEP",
+        { cep }
+      );
+
+      const enderecoData = response.data.endereco;
+
+      if (!enderecoData) {
+        setCepError(<CircleXIcon size={30} color="red" />);
+        setCepSucess(null);
+        setEndereco(null);
+        setValue("neighborhood", "");
+        setValue("logradouro", "");
+        setValue("ibge", "");
+      } else {
+        setEndereco(enderecoData);
+        setCepSucess(<CheckCircleIcon size={30} color="green" />);
+        setCepError(null);
+        setValue("neighborhood", enderecoData.bairro);
+        setValue("logradouro", enderecoData.logradouro);
+        setValue("ibge", String(enderecoData.ibge));
+      }
+    } catch (error) {
+      console.error("Erro ao buscar o endereço:", error);
+      setCepError("Erro ao buscar o endereço. Tente novamente.");
+    }
+  };
+
+  const handleFetchCEP = async () => {
+    const values = getValues();
+    console.log("Valor do cep:" + values.cep);
+    const rawCep = cepValue.replace(/[^\d]/g, "");
+    console.log("RawCep:", rawCep);
+    if (!rawCep || rawCep.length !== 8) {
+      setCepError("Insira um CEP válido.");
+      setEndereco(null);
+      return;
+    }
+    try {
+      await fetchCEP(cepValue);
+    } catch (error) {
+      console.error("Erro ao buscar o endereço:", error);
+      setCepError("Erro ao buscar o endereço.");
+    }
+  };
+
+  const determineMask = () => {
+    return isCpf ? "999.999.999-99" : "99.999.999/9999-99";
+  };
+
+  const handleCreateUser = async (data: CreateUserProps) => {
+    if (!endereco) {
+      setCepError("Por favor, preencha um CEP válido.");
+      return;
+    }
     let userCredential = null;
     let userId = null;
 
     try {
+      const temporaryPassword = Math.random().toString(36).slice(-10);
       userCredential = await createUserWithEmailAndPassword(
         auth,
         data.userEmail,
-        data.userPassword
+        temporaryPassword
       );
       const user = userCredential.user;
       userId = user.uid;
 
-      // Atualiza o perfil do usuário no Firebase
-      await updateProfile(user, {
-        displayName: data.userName,
-      });
+      await updateProfile(user, { displayName: data.userName });
 
       const response = await api.post("/v1/create-user", {
         user_id: userId,
-        id_priceList: selectPriceList,
+        id_priceList: selectPriceList.id,
+        priceListName: selectPriceList.name,
         type_user: selectState,
         user_name: data.userName,
         user_email: data.userEmail,
         user_CPF: data.CPF,
         user_phone: data.phone,
-        user_IE: data.IE,
-        user_fantasyName: data.fantasyName,
+        user_IE: data.IE || "",
+        user_fantasyName: data.fantasyName || "",
         user_neighborhood: data.neighborhood,
         user_cep: data.cep,
         user_ibgeCode: data.ibge,
-        user_complement: data.complement,
+        user_complement: data.complement || "",
         user_logradouro: data.logradouro,
         user_houseNumber: data.number,
       });
 
-      // Verifica se a resposta do back-end foi bem-sucedida
       if (response.status !== 200) {
-        await deleteUser(userCredential.user); // Exclui o usuário do Firebase
+        await deleteUser(userCredential.user);
         throw new Error("Falha ao criar o usuário no back-end.");
       }
-
+      await sendPasswordResetEmail(auth, data.userEmail);
       console.log("Usuário cadastrado com sucesso!");
     } catch (e) {
-      console.error("Ocorreu um erro ao criar o usuário!", { message: e });
-
-      // Rollback caso algo falhe durante a criação no Firebase ou no back-end
-      if (userCredential && userCredential.user) {
-        await deleteUser(userCredential.user); // Exclui o usuário do Firebase
+      console.error("Erro ao criar o usuário", e);
+      if (userCredential?.user) {
+        await deleteUser(userCredential.user);
       }
     }
-  }
+  };
 
   useEffect(() => {
     fetchPriceLists();
@@ -143,76 +241,114 @@ export const Register = () => {
                   />
                 </div>
                 <div>
-                  <label htmlFor="userPassword" className="text-gray-600">
-                    Senha:
-                  </label>
-                  <Input
-                    id="userPassword"
-                    type="password"
-                    placeholder="Digite sua senha"
-                    className="w-full mt-1"
-                    {...register("userPassword")}
-                    required
-                  />
-                </div>
-                <div>
-                  <label htmlFor="CPF" className="text-gray-600">
-                    CPF/CNPJ:
-                  </label>
-                  <Input
-                    id="CPF"
-                    type="text"
-                    placeholder="Informe seu CPF ou CNPJ"
-                    className="w-full mt-1"
-                    {...register("CPF")}
-                    required
-                  />
-                </div>
-                <div>
                   <label htmlFor="phone" className="text-gray-600">
                     Telefone:
                   </label>
-                  <Input
+                  <InputMask
+                    mask={"(99) 99999-9999"}
                     id="phone"
                     type="tel"
-                    placeholder="Informe seu telefone"
+                    placeholder="Informe o telefone"
                     className="w-full mt-1"
                     {...register("phone")}
                     required
                   />
                 </div>
                 <div>
-                  <label htmlFor="IE" className="text-gray-600">
-                    Inscrição Estadual:
+                  <label htmlFor="CPF" className="text-gray-600">
+                    {isCpf ? "CPF" : "CNPJ"}
                   </label>
-                  <Input
-                    id="IE"
-                    type="text"
-                    placeholder="Inscrição estadual"
-                    className="w-full mt-1"
-                    {...register("IE")}
-                  />
+                  <InputMask
+                    mask={determineMask()}
+                    maskChar={null}
+                    value={cpfOrCnpjValue}
+                    {...register("CPF", {
+                      onBlur: (e) => {
+                        validateCPFOrCNPJ(e.target.value);
+                      },
+                    })}
+                  >
+                    {(inputProps) => (
+                      <Input
+                        {...inputProps}
+                        id="CPF"
+                        placeholder="Informe o CPF ou CNPJ"
+                        className="w-full mt-1"
+                        required
+                      />
+                    )}
+                  </InputMask>
+                  {cpfCnpjError && (
+                    <span className="text-red-600">{cpfCnpjError}</span>
+                  )}
                 </div>
-                <div>
-                  <label htmlFor="fantasyName" className="text-gray-600">
-                    Nome Fantasia:
-                  </label>
-                  <Input
-                    id="fantasyName"
-                    type="text"
-                    placeholder="Digite o Nome Fantasia"
-                    className="w-full mt-1"
-                    {...register("fantasyName")}
-                  />
+
+                {/* Botão para alternar entre CPF e CNPJ */}
+                <div className="flex justify-between items-center mt-4">
+                  <button
+                    type="button"
+                    onClick={toggleCpfCnpj}
+                    className="text-blue-600 hover:text-blue-800"
+                  >
+                    Alterar para {isCpf ? "CNPJ" : "CPF"}
+                  </button>
                 </div>
+                {isCpf ? null : (
+                  <div>
+                    <label htmlFor="IE" className="text-gray-600">
+                      Inscrição Estadual:
+                    </label>
+                    <Input
+                      id="IE"
+                      type="text"
+                      placeholder="Inscrição estadual"
+                      className="w-full mt-1"
+                      {...register("IE")}
+                    />
+                  </div>
+                )}
+                {isCpf ? null : (
+                  <div>
+                    <label htmlFor="fantasyName" className="text-gray-600">
+                      Nome Fantasia:
+                    </label>
+                    <Input
+                      id="fantasyName"
+                      type="text"
+                      placeholder="Digite o Nome Fantasia"
+                      className="w-full mt-1"
+                      {...register("fantasyName")}
+                    />
+                  </div>
+                )}
               </AccordionContent>
             </AccordionItem>
 
             <AccordionItem value="item-2">
               <AccordionTrigger className="font-semibold text-base md:text-lg text-gray-700">
-                Endereço de Cobrança
+                Endereço
               </AccordionTrigger>
               <AccordionContent className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <label htmlFor="cep" className="text-gray-600">
+                    CEP:
+                  </label>
+                  <InputMask
+                    mask={"99999-999"}
+                    id="cep"
+                    type="text"
+                    placeholder="Informe seu CEP"
+                    className="w-min mt-1"
+                    {...register("cep", { onBlur: handleFetchCEP })}
+                    required
+                  />
+                  {cepError && (
+                    <span className="text-red-600 px-2 text-sx antialiased">
+                      {cepError}
+                    </span>
+                  )}
+                  {cepSucess && <span>{cepSucess}</span>}
+                </div>
                 <div>
                   <label htmlFor="neighborhood" className="text-gray-600">
                     Bairro:
@@ -224,19 +360,7 @@ export const Register = () => {
                     className="w-full mt-1"
                     {...register("neighborhood")}
                     required
-                  />
-                </div>
-                <div>
-                  <label htmlFor="cep" className="text-gray-600">
-                    CEP:
-                  </label>
-                  <Input
-                    id="cep"
-                    type="text"
-                    placeholder="Informe seu CEP"
-                    className="w-full mt-1"
-                    {...register("cep")}
-                    required
+                    readOnly
                   />
                 </div>
                 <div>
@@ -250,18 +374,7 @@ export const Register = () => {
                     className="w-full mt-1"
                     {...register("ibge")}
                     required
-                  />
-                </div>
-                <div>
-                  <label htmlFor="complement" className="text-gray-600">
-                    Complemento:
-                  </label>
-                  <Input
-                    id="complement"
-                    type="text"
-                    placeholder="Complemento"
-                    className="w-full mt-1"
-                    {...register("complement")}
+                    readOnly
                   />
                 </div>
                 <div>
@@ -275,19 +388,32 @@ export const Register = () => {
                     className="w-full mt-1"
                     {...register("logradouro")}
                     required
+                    readOnly
                   />
                 </div>
                 <div>
-                  <label htmlFor="number" className="text-gray-600">
-                    Número:
+                  <div>
+                    <label htmlFor="number" className="text-gray-600">
+                      Número:
+                    </label>
+                    <Input
+                      id="number"
+                      type="number"
+                      placeholder="Informe o número"
+                      className="w-full mt-1"
+                      {...register("number")}
+                      required
+                    />
+                  </div>
+                  <label htmlFor="complement" className="text-gray-600">
+                    Complemento:
                   </label>
                   <Input
-                    id="number"
-                    type="number"
-                    placeholder="Informe o número"
+                    id="complement"
+                    type="text"
+                    placeholder="Complemento"
                     className="w-full mt-1"
-                    {...register("number")}
-                    required
+                    {...register("complement")}
                   />
                 </div>
               </AccordionContent>
@@ -299,25 +425,36 @@ export const Register = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="adm">Administrador</SelectItem>
-                <SelectItem value="comun">Usuário Comum</SelectItem>
+                <SelectItem value="cliente">Cliente</SelectItem>
               </SelectContent>
             </Select>
 
-            <Select onValueChange={(value) => setSelectPriceList(value)}>
-              <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="Lista de preços" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="default">Lista padrão</SelectItem>
-                {priceLists.map((item) => (
-                  <SelectItem value={item.id}>{item.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {selectState === "cliente" && (
+              <Select
+                onValueChange={(value) => {
+                  const selected = priceLists.find((item) => item.id === value);
+                  if (selected) {
+                    setSelectPriceList(selected);
+                  }
+                }}
+              >
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Lista de preços" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="default">Lista padrão</SelectItem>
+                  {priceLists.map((item) => (
+                    <SelectItem key={item.id} value={item.id}>
+                      {item.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </Accordion>
           <Button
             type="submit"
-            className="w-full bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition duration-200"
+            className="w-full bg-blue-600 text-white hover:bg-blue-700 mt-4"
           >
             Cadastrar
           </Button>

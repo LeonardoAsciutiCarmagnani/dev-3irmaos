@@ -99,10 +99,10 @@ const OrderSaleProps: React.FC = () => {
     useState(true);
   const [clienteSelecionado, setClienteSelecionado] = useState<boolean>(false);
   const [priceListId, setPriceListId] = useState<string>("");
-
   const [selectedProducts, setSelectedProducts] = useState<
     ProductWithQuantity[]
   >([]);
+  const [total, setTotal] = useState<number>(0);
 
   const handleSelectClient = (data: {
     clientData: ClientData | null;
@@ -227,7 +227,7 @@ const OrderSaleProps: React.FC = () => {
         updatedMeiosDePagamento.push({
           idMeioDePagamento: selectedId,
           parcelas: 1,
-          valor: 0,
+          valor: total,
         });
 
         return {
@@ -238,6 +238,10 @@ const OrderSaleProps: React.FC = () => {
     } else {
       console.error("ID do meio de pagamento inválido");
     }
+  };
+
+  const handleTotalChange = (newTotal: number) => {
+    setTotal(newTotal);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -373,6 +377,7 @@ const OrderSaleProps: React.FC = () => {
                 selectedProducts={selectedProducts}
                 onProductSelect={handleProductSelect}
                 onRemoveProduct={handleRemoveProduct}
+                onTotalChange={handleTotalChange}
               />
             </fieldset>
           </form>
@@ -384,9 +389,13 @@ const OrderSaleProps: React.FC = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="1">Dinheiro</SelectItem>
-              <SelectItem value="2">Cartão de Débito</SelectItem>
-              <SelectItem value="3">Cartão de Crédito</SelectItem>
-              <SelectItem value="4">PIX</SelectItem>
+              <SelectItem value="2">Cheque</SelectItem>
+              <SelectItem value="3">Devolução</SelectItem>
+              <SelectItem value="4">Cartão de crédito</SelectItem>
+              <SelectItem value="5">Cartão de débito</SelectItem>
+              <SelectItem value="6">Crediário</SelectItem>
+              <SelectItem value="7">Cartão Voucher</SelectItem>
+              <SelectItem value="8">PIX</SelectItem>
             </SelectContent>
           </Select>
         </CardContent>

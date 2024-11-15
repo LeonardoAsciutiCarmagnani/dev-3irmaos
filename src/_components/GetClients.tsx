@@ -1,12 +1,6 @@
 import { useEffect, useState } from "react";
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  doc,
-  deleteDoc,
-} from "firebase/firestore";
-import { User, Trash2, Eye } from "lucide-react";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { User, Trash2, Eye, KeyRoundIcon, CheckCircleIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,11 +10,14 @@ import {
   DialogFooter,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { deleteUser, getAuth } from "firebase/auth";
 import { Badge } from "@/components/ui/badge";
+import axios from "axios";
+import { sendPasswordResetEmail } from "firebase/auth";
+import { auth } from "@/firebaseConfig";
 
 interface ClientInFirestore {
   id_priceList: string;
+  priceListName: string;
   type_user: string;
   user_IE?: number;
   user_cep: number;
@@ -30,6 +27,7 @@ interface ClientInFirestore {
   user_logradouro: string;
   user_id: string;
   user_name: string;
+  user_email: string;
   user_neighborhood: string;
   user_phone: string;
 }
@@ -47,8 +45,10 @@ export const Clients = () => {
   const [confirmDelete, setConfirmDelete] = useState<ClientInFirestore | null>(
     null
   );
+  const [resetPasswordError, setResetPasswordError] = useState("");
+  const [resetPasswordSucess, setPasswordSucess] = useState<React.ReactNode>();
+
   const db = getFirestore();
-  const authInstance = getAuth();
 
   useEffect(() => {
     const fetchClientes = async () => {
@@ -82,35 +82,58 @@ export const Clients = () => {
 
   const handleDelete = async () => {
     if (!confirmDelete) return;
+
     try {
-      // Excluir do Firestore
-      await deleteDoc(doc(db, "clients", confirmDelete.user_id));
+      const response = await axios.delete(
+        `https://us-central1-server-kyoto.cloudfunctions.net/api/v1/clientes/${confirmDelete.user_id}`
+      );
 
-      // Excluir do Firebase Authentication
-      const userToDelete = authInstance.currentUser;
-      if (userToDelete && userToDelete.uid === confirmDelete.user_id) {
-        await deleteUser(userToDelete);
+      if (response.status === 200) {
+        setClientes(
+          clientes.filter((client) => client.user_id !== confirmDelete.user_id)
+        );
+        setFilteredClientes(
+          filteredClientes.filter(
+            (client) => client.user_id !== confirmDelete.user_id
+          )
+        );
+        setConfirmDelete(null);
+        console.log("Cliente excluído com sucesso!");
+      } else {
+        console.error("Erro inesperado:", response.data.message);
+        setError(response.data.message || "Erro ao excluir cliente.");
       }
-
-      // Atualizar listas de clientes
-      setClientes(
-        clientes.filter((client) => client.user_id !== confirmDelete.user_id)
-      );
-      setFilteredClientes(
-        filteredClientes.filter(
-          (client) => client.user_id !== confirmDelete.user_id
-        )
-      );
-      setConfirmDelete(null);
     } catch (error) {
-      console.error("Erro ao excluir cliente:", error);
-      setError("Erro ao excluir cliente");
+      if (axios.isAxiosError(error)) {
+        console.error("Erro na solicitação:", error.response?.data.message);
+        setError(
+          error.response?.data.message || "Erro ao comunicar com o servidor."
+        );
+      } else {
+        console.error("Erro desconhecido:", error);
+        setError("Erro inesperado. Por favor, tente novamente.");
+      }
     }
+  };
+
+  const handleResetPassword = async () => {
+    if (selectedClient) {
+      await sendPasswordResetEmail(auth, selectedClient.user_email);
+      console.log(selectedClient.user_email);
+      setPasswordSucess(<CheckCircleIcon size={30} />);
+    } else {
+      setResetPasswordError("Ocorreu um erro.");
+    }
+  };
+
+  const closeDialog = () => {
+    setResetPasswordError("");
+    setPasswordSucess(null);
+    setSelectedClient(null);
   };
 
   return (
     <div className="flex flex-col items-center p-4 bg-gray-50 min-h-screen">
-      {/* Barra de Pesquisa */}
       <div className="w-full mb-4">
         <Input
           placeholder="Buscar cliente..."
@@ -143,9 +166,22 @@ export const Clients = () => {
                       <p className="text-gray-800 font-semibold">
                         {cliente.user_name}
                       </p>
-                      <Badge variant="destructive">
-                        {cliente.type_user.toUpperCase()}
-                      </Badge>
+                      <div className="flex space-x-2">
+                        <Badge
+                          variant={`${
+                            cliente.type_user == "adm"
+                              ? "destructive"
+                              : "default"
+                          }`}
+                        >
+                          {cliente.type_user.toUpperCase()}
+                        </Badge>
+                        {cliente.priceListName && (
+                          <Badge className="bg-cyan-500">
+                            {cliente.priceListName}
+                          </Badge>
+                        )}
+                      </div>
                     </div>
                   </div>
 
@@ -156,7 +192,7 @@ export const Clients = () => {
                     >
                       <Eye size={15} />
                     </Button>
-                    {cliente.type_user === "adm" && (
+                    {cliente.type_user === "cliente" && (
                       <Button
                         variant="ghost"
                         className="text-red-500 hover:text-red-700"
@@ -174,10 +210,7 @@ export const Clients = () => {
       )}
 
       {/* Modal de Detalhes */}
-      <Dialog
-        open={!!selectedClient}
-        onOpenChange={() => setSelectedClient(null)}
-      >
+      <Dialog open={!!selectedClient} onOpenChange={closeDialog}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Detalhes do Cliente</DialogTitle>
@@ -198,10 +231,25 @@ export const Clients = () => {
             <strong>Rua:</strong> {selectedClient?.user_logradouro}
           </p>
           <p>
-            <strong>ID Lista de preços:</strong> {selectedClient?.id_priceList}
+            <strong>Lista de preços:</strong> {selectedClient?.priceListName}
           </p>
+          <div className="flex items-center gap-x-2">
+            <button
+              className="flex items-center px-4 py-2 bg-gray-100 rounded-md hover:bg-gray-200"
+              onClick={handleResetPassword}
+            >
+              <KeyRoundIcon className="w-5 h-5 mr-2" />
+              <span>Redefinir Senha</span>
+            </button>
+            {resetPasswordError && (
+              <p className="text-red-500 mt-2">{resetPasswordError}</p>
+            )}
+            {resetPasswordSucess && (
+              <p className="text-green-500 mt-2">{resetPasswordSucess}</p>
+            )}
+          </div>
           <DialogFooter>
-            <Button onClick={() => setSelectedClient(null)} variant="ghost">
+            <Button onClick={closeDialog} variant="ghost">
               Fechar
             </Button>
           </DialogFooter>

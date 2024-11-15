@@ -30,6 +30,7 @@ interface ProductSelectorProps {
   onProductSelect: (products: { product: Product; quantity: number }[]) => void;
   selectedProducts: { product: Product; quantity: number }[];
   onRemoveProduct: (productId: string) => void;
+  onTotalChange: (total: number) => void;
   priceListId: string;
 }
 
@@ -38,10 +39,11 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
   selectedProducts,
   onRemoveProduct,
   priceListId,
+  onTotalChange,
 }) => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [selectedProductId, setSelectedProductId] = useState(""); // Produto selecionado
-  const [quantity, setQuantity] = useState(1); // Quantidade do produto
+  const [selectedProductId, setSelectedProductId] = useState("");
+  const [quantity, setQuantity] = useState(1);
 
   // Fetch de produtos da Firestore
   const fetchProducts = async () => {
@@ -83,6 +85,9 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
       const updatedProducts = [...selectedProducts, newProduct];
       onProductSelect(updatedProducts);
 
+      const total = calculateTotal();
+      onTotalChange(total);
+
       // Limpar o valor do dropdown após adicionar o produto à tabela
       setQuantity(1); // Resetar quantidade após adicionar
       setSelectedProductId(""); // Resetar seleção de produto
@@ -90,10 +95,12 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
   };
 
   const calculateTotal = () => {
-    return selectedProducts.reduce(
+    const total = selectedProducts.reduce(
       (total, item) => total + item.product.value * item.quantity,
       0
     );
+
+    return parseFloat(total.toFixed(2));
   };
 
   return (

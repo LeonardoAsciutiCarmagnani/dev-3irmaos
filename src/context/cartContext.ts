@@ -29,6 +29,7 @@ export interface Product {
   preco: number;
   quantidade: number;
   id_seq: number;
+  quantity?: number;
 }
 
 interface ContextStates {
