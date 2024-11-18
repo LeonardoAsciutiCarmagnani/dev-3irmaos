@@ -1,5 +1,4 @@
 import PedidoVendaForm from "@/_components/FormTesteLucas";
-import { Button } from "@/components/ui/button";
 import {
   Carousel,
   CarouselContent,
@@ -9,23 +8,11 @@ import {
 } from "@/components/ui/carousel";
 import { useZustandContext } from "@/context/cartContext";
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
 
 export const BuyList = () => {
   const { listProductsInCart, totalValue, setTotalValue } = useZustandContext();
 
-  // const [totalValue, setTotalValueOrder] = useState(0);
-
   console.log(listProductsInCart);
-
-  /* const handleTotalValueOrder = () => {
-    const totalValue = listProductsInCart.reduce((acc, product) => {
-      acc += product.preco * product.quantity;
-      return acc;
-    }, 0);
-
-    setTotalValueOrder(totalValue);
-  }; */
 
   useEffect(() => {
     setTotalValue();
@@ -64,7 +51,7 @@ export const BuyList = () => {
                       <span>{item.nome}</span>
                     </div>
                     <div>
-                      <span>quantidade: {item.quantity}</span>
+                      <span>quantidade: {item.quantidade}</span>
                     </div>
                     <div>
                       <span>
@@ -82,12 +69,6 @@ export const BuyList = () => {
             <CarouselPrevious />
             <CarouselNext />
           </Carousel>
-        </div>
-        {/* Mudar para a listagem dos pedidos de venda */}
-        <div>
-          <Link to={"/printPage"}>
-            <Button>Imprimir</Button>
-          </Link>
         </div>
       </div>
     </div>

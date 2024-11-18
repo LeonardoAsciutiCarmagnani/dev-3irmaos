@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Input } from "@/components/ui/input";
 import {
@@ -15,8 +16,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useZustandContext } from "@/context/cartContext";
+import { useNavigate } from "react-router-dom";
+import ToastNotifications from "@/_components/Toasts";
 
-export type Form = {
+type OrderSaleTypes = {
+  status_order: number;
   cliente: {
     documento: string;
     email: string;
@@ -43,8 +48,8 @@ export type Form = {
   itens: {
     produtoId: string;
     quantidade: number;
-    precoUnitarioBruto: number;
-    precoUnitarioLiquido: number;
+    preco: number;
+    precoUnitarioLiquido?: number;
   }[];
   meiosDePagamento: {
     idMeioDePagamento: number;
@@ -56,98 +61,160 @@ export type Form = {
   valorDoFrete: number;
 };
 
+export type EnderecoDeEntrega = {
+  bairro: string;
+  cep: string;
+  codigoIbge: number;
+  complemento: string;
+  logradouro: string;
+  numero: string;
+};
+
+export type ProductInPriceList = {
+  id: string;
+  name: string;
+  value: number;
+};
+
+interface ItensProps {
+  produtoId: string;
+  quantidade: number;
+  preco: number;
+  precoUnitarioLiquido?: number;
+}
+
 const PedidoVendaForm: React.FC = () => {
-  const [form, setForm] = useState<Form>({
+  const [orderSale, setOrderSale] = useState<OrderSaleTypes>({
+    status_order: 1,
     cliente: {
-      documento: "12345678901",
-      email: "lasciuti@multipoint.com.br",
+      documento: "05.709.957/0001-25",
+      email: "",
       inscricaoEstadual: "",
-      nomeDoCliente: "Leonardo",
+      nomeDoCliente: "",
       nomeFantasia: "",
     },
     enderecoDeCobranca: {
-      bairro: "Centro",
-      cep: "88351001",
-      codigoIbge: 4202909,
+      bairro: "",
+      cep: "",
+      codigoIbge: 1234567,
       complemento: "",
-      logradouro: "Rua Principal",
-      numero: "01",
+      logradouro: "",
+      numero: "",
     },
     enderecoDeEntrega: {
-      bairro: "Centro",
-      cep: "88351001",
-      codigoIbge: 4202909,
-      complemento: "Sala 2",
-      logradouro: "Rua Principal",
-      numero: "22",
+      bairro: "",
+      cep: "",
+      codigoIbge: 1234567,
+      complemento: "",
+      logradouro: "",
+      numero: "",
     },
-    itens: [
-      {
-        produtoId: "c343676f-25b2-4bd7-923b-2c35c6da53c9",
-        quantidade: 3,
-        precoUnitarioBruto: 15.99,
-        precoUnitarioLiquido: 15.99,
-      },
-    ],
-    meiosDePagamento: [
-      {
+    itens: [],
+    meiosDePagamento: [],
+    numeroPedidoDeVenda: "",
+    observacaoDoPedidoDeVenda: "",
+    valorDoFrete: 0,
+  });
+
+  const { totalValue, listProductsInCart } = useZustandContext();
+  const { toastSuccess } = ToastNotifications();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const includingIdInProduct: ItensProps[] = listProductsInCart.map(
+      (item) => {
+        return {
+          ...item,
+          produtoId: item.id,
+        };
+      }
+    );
+
+    orderSale.itens = includingIdInProduct;
+  }, []);
+
+  const handlePaymentMethod = (paymentMethod: string) => {
+    let paymentObject: {
+      idMeioDePagamento: number;
+      parcelas: number;
+      valor: number;
+    };
+    if (paymentMethod === "1") {
+      paymentObject = {
         idMeioDePagamento: 1,
         parcelas: 1,
-        valor: 99.99,
-      },
-    ],
-    numeroPedidoDeVenda: "APP01",
-    observacaoDoPedidoDeVenda: "",
-    valorDoFrete: 10,
-  });
+        valor: totalValue,
+      };
+      console.log(paymentObject);
+      orderSale.meiosDePagamento.push({
+        idMeioDePagamento: paymentObject.idMeioDePagamento,
+        parcelas: paymentObject.parcelas,
+        valor: paymentObject.valor,
+      });
+      console.log(orderSale.meiosDePagamento);
+      return paymentObject;
+    } else if (paymentMethod === "2") {
+      paymentObject = {
+        idMeioDePagamento: 2,
+        parcelas: 1,
+        valor: totalValue,
+      };
+      orderSale.meiosDePagamento.push({
+        idMeioDePagamento: paymentObject.idMeioDePagamento,
+        parcelas: paymentObject.parcelas,
+        valor: paymentObject.valor,
+      });
+      return paymentObject;
+    } else if (paymentMethod === "3") {
+      paymentObject = {
+        idMeioDePagamento: 3,
+        parcelas: 1,
+        valor: totalValue,
+      };
+      orderSale.meiosDePagamento.push({
+        idMeioDePagamento: paymentObject.idMeioDePagamento,
+        parcelas: paymentObject.parcelas,
+        valor: paymentObject.valor,
+      });
+      return paymentObject;
+    } else {
+      paymentObject = {
+        idMeioDePagamento: 4,
+        parcelas: 1,
+        valor: totalValue,
+      };
+      orderSale.meiosDePagamento.push({
+        idMeioDePagamento: paymentObject.idMeioDePagamento,
+        parcelas: paymentObject.parcelas,
+        valor: paymentObject.valor,
+      });
+      return paymentObject;
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     const [section, key] = name.split(".");
 
-    setForm((prev) => {
-      const sectionValue = prev[section as keyof Form];
-      if (
-        !(section in prev) ||
-        typeof sectionValue !== "object" ||
-        sectionValue === null
-      ) {
-        return prev;
-      }
-
-      if (Array.isArray(sectionValue)) {
-        const match = key.match(/\[(\d+)\]/);
-        const index = match ? parseInt(match[1], 10) : 0;
-        const field = key.split("]")[1].slice(1);
-
-        const updatedArray = sectionValue.map((item, i) =>
-          i === index ? { ...item, [field]: value } : item
-        );
-        return {
-          ...prev,
-          [section]: updatedArray,
-        };
-      }
-
-      // Caso não seja um array, trata como objeto
-      return {
-        ...prev,
-        [section]: {
-          ...sectionValue,
-          [key]: value,
-        },
-      };
-    });
+    setOrderSale((prev) => ({
+      ...prev,
+      [section]: {
+        ...(prev[section as keyof OrderSaleTypes] as object),
+        [key]: value,
+      },
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("JSON a ser enviado:", JSON.stringify(form));
-    const userId = "5juuHVSxz2iZ2Mfls9GN";
+
+    const getUserId = localStorage.getItem("user");
+
+    const userId = getUserId && JSON.parse(getUserId);
     try {
       const response = await axios.post(
-        `https://us-central1-server-kyoto.cloudfunctions.net/api/v1/pedido-de-venda/${userId}`,
-        form,
+        `https://us-central1-server-kyoto.cloudfunctions.net/api/v1/pedido-de-venda/${userId.uid}`,
+        orderSale,
         {
           headers: {
             "Content-Type": "application/json",
@@ -155,12 +222,14 @@ const PedidoVendaForm: React.FC = () => {
         }
       );
       console.log("Pedido enviado com sucesso:", response.data);
+      toastSuccess("Pedido criado com sucesso !");
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
-        console.error(
-          "Erro ao enviar pedido:",
-          error.response?.data || error.message
-        );
+        console.log("Dados enviados na requisição que deu erro: ", orderSale);
+        console.error("Erro ao enviar pedido:", error.message);
       } else {
         console.error("Erro desconhecido:", error);
       }
@@ -178,35 +247,35 @@ const PedidoVendaForm: React.FC = () => {
             <Input
               type="text"
               name="cliente.documento"
-              value={form.cliente.documento}
+              value={orderSale.cliente.documento}
               onChange={handleChange}
               placeholder="Documento"
             />
             <Input
               type="email"
               name="cliente.email"
-              value={form.cliente.email}
+              value={orderSale.cliente.email}
               onChange={handleChange}
               placeholder="Email"
             />
             <Input
               type="text"
               name="cliente.inscricaoEstadual"
-              value={form.cliente.inscricaoEstadual}
+              value={orderSale.cliente.inscricaoEstadual}
               onChange={handleChange}
               placeholder="Inscrição Estadual"
             />
             <Input
               type="text"
               name="cliente.nomeDoCliente"
-              value={form.cliente.nomeDoCliente}
+              value={orderSale.cliente.nomeDoCliente}
               onChange={handleChange}
               placeholder="Nome do Cliente"
             />
             <Input
               type="text"
               name="cliente.nomeFantasia"
-              value={form.cliente.nomeFantasia}
+              value={orderSale.cliente.nomeFantasia}
               onChange={handleChange}
               placeholder="Nome Fantasia"
             />
@@ -221,42 +290,43 @@ const PedidoVendaForm: React.FC = () => {
             <Input
               type="text"
               name="enderecoDeCobranca.bairro"
-              value={form.enderecoDeCobranca.bairro}
+              value={orderSale.enderecoDeCobranca.bairro}
               onChange={handleChange}
               placeholder="Bairro"
             />
             <Input
               type="text"
               name="enderecoDeCobranca.cep"
-              value={form.enderecoDeCobranca.cep}
+              value={orderSale.enderecoDeCobranca.cep}
               onChange={handleChange}
               placeholder="CEP"
             />
             <Input
               type="text"
               name="enderecoDeCobranca.codigoIbge"
-              value={form.enderecoDeCobranca.codigoIbge.toString()}
+              value={orderSale.enderecoDeCobranca.codigoIbge}
               onChange={handleChange}
+              max={7}
               placeholder="Código IBGE"
             />
             <Input
               type="text"
               name="enderecoDeCobranca.complemento"
-              value={form.enderecoDeCobranca.complemento}
+              value={orderSale.enderecoDeCobranca.complemento}
               onChange={handleChange}
               placeholder="Complemento"
             />
             <Input
               type="text"
               name="enderecoDeCobranca.logradouro"
-              value={form.enderecoDeCobranca.logradouro}
+              value={orderSale.enderecoDeCobranca.logradouro}
               onChange={handleChange}
               placeholder="Logradouro"
             />
             <Input
               type="text"
               name="enderecoDeCobranca.numero"
-              value={form.enderecoDeCobranca.numero}
+              value={orderSale.enderecoDeCobranca.numero}
               onChange={handleChange}
               placeholder="Número"
             />
@@ -271,42 +341,42 @@ const PedidoVendaForm: React.FC = () => {
             <Input
               type="text"
               name="enderecoDeEntrega.bairro"
-              value={form.enderecoDeEntrega.bairro}
+              value={orderSale.enderecoDeEntrega.bairro}
               onChange={handleChange}
               placeholder="Bairro"
             />
             <Input
               type="text"
               name="enderecoDeEntrega.cep"
-              value={form.enderecoDeEntrega.cep}
+              value={orderSale.enderecoDeEntrega.cep}
               onChange={handleChange}
               placeholder="CEP"
             />
             <Input
               type="text"
               name="enderecoDeEntrega.codigoIbge"
-              value={form.enderecoDeEntrega.codigoIbge.toString()}
+              value={orderSale.enderecoDeEntrega.codigoIbge}
               onChange={handleChange}
               placeholder="Código IBGE"
             />
             <Input
               type="text"
               name="enderecoDeEntrega.complemento"
-              value={form.enderecoDeEntrega.complemento}
+              value={orderSale.enderecoDeEntrega.complemento}
               onChange={handleChange}
               placeholder="Complemento"
             />
             <Input
               type="text"
               name="enderecoDeEntrega.logradouro"
-              value={form.enderecoDeEntrega.logradouro}
+              value={orderSale.enderecoDeEntrega.logradouro}
               onChange={handleChange}
               placeholder="Logradouro"
             />
             <Input
               type="text"
               name="enderecoDeEntrega.numero"
-              value={form.enderecoDeEntrega.numero}
+              value={orderSale.enderecoDeEntrega.numero}
               onChange={handleChange}
               placeholder="Número"
             />
@@ -314,22 +384,19 @@ const PedidoVendaForm: React.FC = () => {
         </AccordionItem>
       </Accordion>
 
-      <Select required>
+      <Select required onValueChange={(value) => handlePaymentMethod(value)}>
         <SelectTrigger className="w-full">
           <SelectValue placeholder="Método de pagamento:" />
         </SelectTrigger>
-        <SelectContent
-          onChange={(e) => {
-            const newValue = e;
-
-            /* Set no estado */
-            console.log(newValue);
-          }}
-        >
+        <SelectContent>
           <SelectItem value="1">Dinheiro</SelectItem>
-          <SelectItem value="2">Cartão de Débito</SelectItem>
-          <SelectItem value="3">Cartão de Crédito</SelectItem>
-          <SelectItem value="4">PIX</SelectItem>
+          <SelectItem value="2">Cheque</SelectItem>
+          <SelectItem value="3">Devolução</SelectItem>
+          <SelectItem value="4">Cartão de crédito</SelectItem>
+          <SelectItem value="5">Cartão de débito</SelectItem>
+          <SelectItem value="6">Crediário</SelectItem>
+          <SelectItem value="7">Cartão Voucher</SelectItem>
+          <SelectItem value="8">PIX</SelectItem>
         </SelectContent>
       </Select>
 

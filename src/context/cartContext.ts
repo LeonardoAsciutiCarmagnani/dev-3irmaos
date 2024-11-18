@@ -9,27 +9,16 @@ export interface PriceListProps {
   name: string;
 }
 
-export interface Product {
-  pontoDeSincronizacao: number;
-  altura: number;
-  ativo: number;
+interface Product {
+  ativo: boolean;
   categoria: string;
   codigo: string;
-  comprimento: number;
-  descricao: string;
-  grade: string;
   id: string;
   imagem: string;
-  imagensAdicionais: string;
-  largura: number;
-  marca: string;
-  ncm: string;
   nome: string;
-  peso: number;
   preco: number;
   quantidade: number;
   id_seq: number;
-  quantity?: number;
 }
 
 interface ContextStates {

@@ -106,7 +106,7 @@ export const FetchProducts = React.memo(() => {
                       <Minus size={16} />
                     </button>
                     <span className="text-lg font-semibold">
-                      {product.quantity}
+                      {product.quantidade}
                     </span>
                     <button
                       disabled={!product.ativo}

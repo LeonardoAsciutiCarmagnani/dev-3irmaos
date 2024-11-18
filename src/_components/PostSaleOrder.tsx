@@ -21,11 +21,16 @@ import {
 import ToastNotifications from "./Toasts";
 
 export type OrderSaleTypes = {
+  status_order?: number;
+  id?: string;
+  total?: number;
   cliente: ClientData | null;
   enderecoDeCobranca: EnderecoDeEntrega | null;
   enderecoDeEntrega: EnderecoDeEntrega;
   itens: {
     produtoId: string;
+    nome?: string;
+    preco?: number;
     quantidade: number;
     precoUnitarioBruto: number;
     precoUnitarioLiquido: number;

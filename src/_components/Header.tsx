@@ -100,7 +100,7 @@ const Header: React.FC = () => {
                       <div className="text-gray-600">
                         <span>
                           Quantidade:{" "}
-                          <span className="font-medium">{item.quantity}</span>
+                          <span className="font-medium">{item.quantidade}</span>
                         </span>
                       </div>
                       <div className="text-gray-600">

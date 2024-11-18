@@ -98,7 +98,7 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
       (total, item) => total + item.product.value * item.quantity,
       0
     );
-
+    console.log("total calculado", total);
     return total;
   };
 

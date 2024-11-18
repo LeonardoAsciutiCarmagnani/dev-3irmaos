@@ -48,7 +48,7 @@ export function PrintPage() {
               <span className="font-semibold">{item.nome}</span>
             </div>
             <div>
-              <span>quantidade: {item.quantity}</span>
+              <span>quantidade: {item.quantidade}</span>
             </div>
           </div>
         ))}
