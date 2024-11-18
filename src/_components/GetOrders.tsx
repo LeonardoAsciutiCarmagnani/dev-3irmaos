@@ -56,7 +56,8 @@ export function GetOrdersComponent() {
         setOrderList(queryList);
       }
     } catch (e) {
-      toastError("Ocorreu um erro ao buscar os pedidos !", e);
+      console.log(e);
+      toastError("Ocorreu um erro ao buscar os pedidos !");
     }
   };
 
