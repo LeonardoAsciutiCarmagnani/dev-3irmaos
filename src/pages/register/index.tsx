@@ -15,7 +15,7 @@ import {
   sendPasswordResetEmail,
   updateProfile,
 } from "firebase/auth";
-import { auth } from "../../firebaseConfig";
+import { auth, firestore } from "../../firebaseConfig";
 import { api } from "@/lib/axios";
 import {
   Select,
@@ -27,7 +27,9 @@ import {
 import React, { useEffect, useState } from "react";
 import { useZustandContext } from "@/context/cartContext";
 import axios from "axios";
-import { CheckCircleIcon, CircleXIcon } from "lucide-react";
+import { ArrowRightLeftIcon, CheckCircleIcon, CircleXIcon } from "lucide-react";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import ToastNotifications from "@/_components/Toasts";
 
 interface CreateUserProps {
   userName: string;
@@ -55,16 +57,18 @@ interface CepData {
 
 export const Register = () => {
   const { priceLists, fetchPriceLists } = useZustandContext();
-  const { register, handleSubmit, watch, setValue, getValues } =
+  const { toastSuccess, toastError } = ToastNotifications();
+  const { register, handleSubmit, watch, setValue, getValues, trigger } =
     useForm<CreateUserProps>();
   const [selectState, setSelectState] = useState("");
   const [selectPriceList, setSelectPriceList] = useState({ id: "", name: "" });
   const [isCpf, setIsCpf] = useState(true);
-
   const [endereco, setEndereco] = useState<CepData | null>(null);
   const [cepError, setCepError] = useState<React.ReactNode | null>(null);
   const [cepSucess, setCepSucess] = useState<React.ReactNode | null>(null);
   const [cpfCnpjError, setCpfCnpjError] = useState("");
+  const [activeItem, setActiveItem] = useState<string | undefined>("item-1");
+  const [isSubmitButtonDisabled, setIsSubmitButtonDisabled] = useState(true);
 
   const cpfOrCnpjValue = watch("CPF");
   const cepValue = watch("cep");
@@ -88,6 +92,26 @@ export const Register = () => {
       } else {
         setCpfCnpjError("");
       }
+    }
+  };
+
+  const checkUserExistInFirestore = async (cpf: string) => {
+    const q = query(
+      collection(firestore, "clients"),
+      where("user_CPF", "==", cpf)
+    );
+
+    try {
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        return true; // CPF já existe
+      } else {
+        return false; // CPF não encontrado
+      }
+    } catch (error) {
+      console.log(error);
+      return false; // Caso haja erro na consulta
     }
   };
 
@@ -128,7 +152,8 @@ export const Register = () => {
     const rawCep = cepValue.replace(/[^\d]/g, "");
     console.log("RawCep:", rawCep);
     if (!rawCep || rawCep.length !== 8) {
-      setCepError("Insira um CEP válido.");
+      setCepSucess(null);
+      setCepError("O CEP deve conter 8 dígitos.");
       setEndereco(null);
       return;
     }
@@ -145,6 +170,14 @@ export const Register = () => {
   };
 
   const handleCreateUser = async (data: CreateUserProps) => {
+    const cpf = data.CPF.replace(/\D/g, "");
+    const cpfExistente = await checkUserExistInFirestore(cpf);
+
+    if (cpfExistente) {
+      toastError("CPF/CNPJ já cadastrado.");
+      return;
+    }
+
     if (!endereco) {
       setCepError("Por favor, preencha um CEP válido.");
       return;
@@ -171,9 +204,9 @@ export const Register = () => {
         type_user: selectState,
         user_name: data.userName,
         user_email: data.userEmail,
-        user_CPF: data.CPF,
+        user_CPF: data.CPF.replace(/\D/g, ""),
         user_phone: data.phone,
-        user_IE: data.IE || "",
+        user_IE: data.IE.replace(/\D/g, "") || "",
         user_fantasyName: data.fantasyName || "",
         user_neighborhood: data.neighborhood,
         user_cep: data.cep,
@@ -186,9 +219,10 @@ export const Register = () => {
       if (response.status !== 200) {
         await deleteUser(userCredential.user);
         throw new Error("Falha ao criar o usuário no back-end.");
+      } else {
+        await sendPasswordResetEmail(auth, data.userEmail);
+        toastSuccess("Usuário criado com sucesso!");
       }
-      await sendPasswordResetEmail(auth, data.userEmail);
-      console.log("Usuário cadastrado com sucesso!");
     } catch (e) {
       console.error("Erro ao criar o usuário", e);
       if (userCredential?.user) {
@@ -197,21 +231,36 @@ export const Register = () => {
     }
   };
 
+  const handleSelectTypeUser = (value: string) => {
+    setSelectState(value);
+
+    if (value) {
+      setIsSubmitButtonDisabled(false);
+    } else {
+      setIsSubmitButtonDisabled(true);
+    }
+  };
+
   useEffect(() => {
     fetchPriceLists();
   }, []);
 
   return (
-    <div className="w-screen h-screen flex justify-center items-center p-4 bg-gray-100">
+    <div className="w-screen h-screen flex justify-center items-center px-7 bg-gray-100">
       <div className="flex flex-col w-full max-w-lg border border-gray-300 shadow-lg rounded-lg bg-white p-6 space-y-4">
         <h1 className="text-2xl font-semibold text-gray-700 text-center">
-          Cadastro de Usuário
+          Cadastro de usuários
         </h1>
-        <form onSubmit={handleSubmit(handleCreateUser)} className="space-y-6">
-          <Accordion type="multiple" className="space-y-4">
+        <form onSubmit={handleSubmit(handleCreateUser)} className="space-y-4">
+          <Accordion
+            value={activeItem}
+            onValueChange={(value) => setActiveItem(value)}
+            type="single"
+            className="space-y-2"
+          >
             <AccordionItem value="item-1">
               <AccordionTrigger className="font-semibold text-base md:text-lg text-gray-700">
-                Informações do Usuário
+                Informações do usuário
               </AccordionTrigger>
               <AccordionContent className="space-y-3">
                 <div>
@@ -234,7 +283,7 @@ export const Register = () => {
                   <Input
                     id="userEmail"
                     type="email"
-                    placeholder="Digite o email para acesso"
+                    placeholder="Digite o e-mail para acesso"
                     className="w-full mt-1"
                     {...register("userEmail")}
                     required
@@ -251,13 +300,31 @@ export const Register = () => {
                     placeholder="Informe o telefone"
                     className="w-full mt-1"
                     {...register("phone")}
+                    onChange={(e) => {
+                      setValue("phone", e.target.value); // Atualiza o valor
+                      trigger("phone"); // Valida e atualiza o estado
+                    }}
+                    value={watch("phone")}
                     required
                   />
                 </div>
                 <div>
-                  <label htmlFor="CPF" className="text-gray-600">
-                    {isCpf ? "CPF" : "CNPJ"}
-                  </label>
+                  <div className="flex items-end gap-x-3">
+                    <label htmlFor="CPF" className="text-gray-600">
+                      {isCpf ? "CPF:" : "CNPJ:"}
+                    </label>
+                    <div className="flex items-center mt-1 w-full justify-end mr-1">
+                      <span
+                        onClick={toggleCpfCnpj}
+                        className="flex items-center gap-x-1 cursor-pointer"
+                      >
+                        <ArrowRightLeftIcon className="h-4 w-4" color="black" />
+                        <span className="text-[0.8rem] text-blue-600 font-bold">
+                          {isCpf ? "CNPJ" : "CPF"}
+                        </span>
+                      </span>
+                    </div>
+                  </div>
                   <InputMask
                     mask={determineMask()}
                     maskChar={null}
@@ -272,7 +339,7 @@ export const Register = () => {
                       <Input
                         {...inputProps}
                         id="CPF"
-                        placeholder="Informe o CPF ou CNPJ"
+                        placeholder={isCpf ? "Digite o CPF" : "Digite o CNPJ"}
                         className="w-full mt-1"
                         required
                       />
@@ -284,26 +351,24 @@ export const Register = () => {
                 </div>
 
                 {/* Botão para alternar entre CPF e CNPJ */}
-                <div className="flex justify-between items-center mt-4">
-                  <button
-                    type="button"
-                    onClick={toggleCpfCnpj}
-                    className="text-blue-600 hover:text-blue-800"
-                  >
-                    Alterar para {isCpf ? "CNPJ" : "CPF"}
-                  </button>
-                </div>
+
                 {isCpf ? null : (
                   <div>
                     <label htmlFor="IE" className="text-gray-600">
                       Inscrição Estadual:
                     </label>
-                    <Input
+                    <InputMask
                       id="IE"
-                      type="text"
-                      placeholder="Inscrição estadual"
+                      mask={"999.999.999.999"}
+                      placeholder="Inscrição Estadual"
+                      alwaysShowMask
                       className="w-full mt-1"
                       {...register("IE")}
+                      onChange={(e) => {
+                        setValue("IE", e.target.value);
+                        trigger("IE");
+                      }}
+                      value={watch("IE")}
                     />
                   </div>
                 )}
@@ -315,7 +380,7 @@ export const Register = () => {
                     <Input
                       id="fantasyName"
                       type="text"
-                      placeholder="Digite o Nome Fantasia"
+                      placeholder="Nome fantasia"
                       className="w-full mt-1"
                       {...register("fantasyName")}
                     />
@@ -328,8 +393,8 @@ export const Register = () => {
               <AccordionTrigger className="font-semibold text-base md:text-lg text-gray-700">
                 Endereço
               </AccordionTrigger>
-              <AccordionContent className="space-y-3">
-                <div className="flex items-center space-x-2">
+              <AccordionContent className="space-y-2">
+                <div className="flex items-center space-x-2 ">
                   <label htmlFor="cep" className="text-gray-600">
                     CEP:
                   </label>
@@ -337,9 +402,15 @@ export const Register = () => {
                     mask={"99999-999"}
                     id="cep"
                     type="text"
-                    placeholder="Informe seu CEP"
-                    className="w-min mt-1"
+                    alwaysShowMask
+                    placeholder="Informe o CEP"
+                    className="w-[6rem] text-center rounded-md p-1 mt-1 text-xs"
                     {...register("cep", { onBlur: handleFetchCEP })}
+                    onChange={(e) => {
+                      setValue("cep", e.target.value);
+                      trigger("cep");
+                    }}
+                    value={watch("cep")}
                     required
                   />
                   {cepError && (
@@ -405,6 +476,8 @@ export const Register = () => {
                       required
                     />
                   </div>
+                </div>
+                <div>
                   <label htmlFor="complement" className="text-gray-600">
                     Complemento:
                   </label>
@@ -419,7 +492,7 @@ export const Register = () => {
               </AccordionContent>
             </AccordionItem>
 
-            <Select onValueChange={(value) => setSelectState(value)}>
+            <Select onValueChange={(value) => handleSelectTypeUser(value)}>
               <SelectTrigger className="w-full mt-2 bg-gray-100 rounded-md border border-gray-300">
                 <SelectValue placeholder="Permissões de usuário" />
               </SelectTrigger>
@@ -454,6 +527,7 @@ export const Register = () => {
           </Accordion>
           <Button
             type="submit"
+            disabled={isSubmitButtonDisabled}
             className="w-full bg-blue-600 text-white hover:bg-blue-700 mt-4"
           >
             Cadastrar

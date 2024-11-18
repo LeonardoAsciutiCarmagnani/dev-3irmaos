@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import axios from "axios";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "@/firebaseConfig";
+import ToastNotifications from "./Toasts";
 
 interface ClientInFirestore {
   id_priceList: string;
@@ -33,6 +34,7 @@ interface ClientInFirestore {
 }
 
 export const Clients = () => {
+  const { toastSuccess, toastError } = ToastNotifications();
   const [clientes, setClientes] = useState<ClientInFirestore[]>([]);
   const [filteredClientes, setFilteredClientes] = useState<ClientInFirestore[]>(
     []
@@ -47,7 +49,6 @@ export const Clients = () => {
   );
   const [resetPasswordError, setResetPasswordError] = useState("");
   const [resetPasswordSucess, setPasswordSucess] = useState<React.ReactNode>();
-
   const db = getFirestore();
 
   useEffect(() => {
@@ -98,17 +99,17 @@ export const Clients = () => {
           )
         );
         setConfirmDelete(null);
-        console.log("Cliente excluído com sucesso!");
+        toastSuccess("Cliente excluido com sucesso!");
       } else {
         console.error("Erro inesperado:", response.data.message);
         setError(response.data.message || "Erro ao excluir cliente.");
+        toastError("Erro ao excluir cliente.");
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error("Erro na solicitação:", error.response?.data.message);
-        setError(
-          error.response?.data.message || "Erro ao comunicar com o servidor."
-        );
+        toastError(error.response?.data.message || "Erro ao excluir cliente.");
+        setError("Erro ao comunicar com o servidor.");
       } else {
         console.error("Erro desconhecido:", error);
         setError("Erro inesperado. Por favor, tente novamente.");
@@ -123,6 +124,8 @@ export const Clients = () => {
       setPasswordSucess(<CheckCircleIcon size={30} />);
     } else {
       setResetPasswordError("Ocorreu um erro.");
+      setPasswordSucess(null);
+      toastError("Ocorreu um erro ao redefinir senha.");
     }
   };
 

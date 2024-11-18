@@ -10,6 +10,7 @@ import {
 import { PlusIcon, MinusIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ClientData, EnderecoDeEntrega } from "./PostSaleOrder";
+import InputMask from "react-input-mask";
 
 interface Client {
   id_priceList: string;
@@ -140,45 +141,101 @@ const Clients = ({ onSelectClient }: ClientsProps) => {
           </Button>
 
           {showDetails && (
-            <div className="mt-4 space-y-2">
-              <DetailField label="CPF" value={selectedClient.user_CPF} />
-              {selectedClient.user_IE && (
-                <DetailField
-                  label="IE"
-                  value={selectedClient.user_IE.toString() || "Não informado"}
+            <div className="mt-4 space-y-1 flex flex-col">
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-700">
+                  Inscrição Estadual
+                </label>
+                {selectedClient.user_IE && (
+                  <InputMask
+                    mask={"999.999.999.999"}
+                    readOnly
+                    value={selectedClient.user_IE.toString() || ""}
+                    className="p-2 border border-gray-300 rounded-md w-full text-sm"
+                  />
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-700">
+                  CEP
+                </label>
+                <InputMask
+                  mask={"99999-999"}
+                  value={selectedClient.user_cep.toString()}
+                  className="p-2 border border-gray-300 rounded-md w-full text-sm"
                 />
-              )}
-              <DetailField
-                label="CEP"
-                value={selectedClient.user_cep.toString()}
-              />
-              <DetailField
-                label="Complemento"
-                value={selectedClient.user_complement || "Não informado"}
-              />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-700">
+                  Endereço
+                </label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <input
+                    readOnly
+                    value={selectedClient.user_logradouro || ""}
+                    className="p-2 border border-gray-300 rounded-md w-full text-sm"
+                  />
+                  <input
+                    value={selectedClient.user_neighborhood || ""}
+                    className="p-2 border border-gray-300 rounded-md w-full text-sm"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-700">
+                  Número e Complemento
+                </label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <input
+                    readOnly
+                    value={selectedClient.user_houseNumber.toString() || ""}
+                    className="p-2 border border-gray-300 rounded-md w-full text-sm"
+                  />
+                  <input
+                    readOnly
+                    value={selectedClient.user_complement || ""}
+                    className="p-2 border border-gray-300 rounded-md w-full text-sm"
+                  />
+                </div>
+              </div>
+
               {selectedClient.user_fantasyName && (
-                <DetailField
-                  label="Nome Fantasia"
-                  value={selectedClient.user_fantasyName || "Não informado"}
-                />
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-gray-700">
+                    Nome Fantasia
+                  </label>
+                  <input
+                    readOnly
+                    value={selectedClient.user_fantasyName || ""}
+                    className="p-2 border border-gray-300 rounded-md w-full text-sm"
+                  />
+                </div>
               )}
-              <DetailField
-                label="IBGE"
-                value={selectedClient.user_ibgeCode.toString()}
-              />
-              <DetailField
-                label="Bairro"
-                value={selectedClient.user_neighborhood}
-              />
-              <DetailField
-                label="Logradouro"
-                value={selectedClient.user_logradouro}
-              />
-              <DetailField
-                label="Logradouro"
-                value={selectedClient.user_houseNumber.toString()}
-              />
-              <DetailField label="Telefone" value={selectedClient.user_phone} />
+
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-700">
+                  Código IBGE
+                </label>
+                <input
+                  readOnly
+                  value={selectedClient.user_ibgeCode.toString() || ""}
+                  className="p-2 border border-gray-300 rounded-md w-full text-sm"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-semibold text-gray-700">
+                  Telefone
+                </label>
+                <input
+                  readOnly
+                  value={selectedClient.user_phone || ""}
+                  className="p-2 border border-gray-300 rounded-md w-full text-sm"
+                />
+              </div>
             </div>
           )}
         </div>
@@ -186,18 +243,5 @@ const Clients = ({ onSelectClient }: ClientsProps) => {
     </div>
   );
 };
-
-// Componente para exibir detalhes
-const DetailField = ({ label, value }: { label: string; value: string }) => (
-  <div>
-    <label className="block text-sm font-medium text-gray-700">{label}:</label>
-    <input
-      type="text"
-      value={value}
-      readOnly
-      className="w-full border border-gray-300 rounded-md p-2"
-    />
-  </div>
-);
 
 export default Clients;

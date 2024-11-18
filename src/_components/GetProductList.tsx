@@ -73,11 +73,11 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
   }, [priceListId]);
 
   const handleSelectProduct = (productId: string) => {
-    setSelectedProductId(productId); // Atualiza o ID do produto selecionado
+    setSelectedProductId(productId);
   };
 
   const handleAddProduct = (event: React.MouseEvent) => {
-    event.preventDefault(); // Impede o recarregamento da página
+    event.preventDefault();
 
     const product = products.find((p) => p.id === selectedProductId);
     if (product && quantity > 0) {
@@ -88,9 +88,8 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
       const total = calculateTotal();
       onTotalChange(total);
 
-      // Limpar o valor do dropdown após adicionar o produto à tabela
-      setQuantity(1); // Resetar quantidade após adicionar
-      setSelectedProductId(""); // Resetar seleção de produto
+      setQuantity(1);
+      setSelectedProductId("");
     }
   };
 
@@ -100,7 +99,7 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
       0
     );
 
-    return parseFloat(total.toFixed(2));
+    return total;
   };
 
   return (

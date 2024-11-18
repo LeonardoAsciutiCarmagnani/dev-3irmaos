@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import ToastNotifications from "./Toasts";
 
 export type OrderSaleTypes = {
   cliente: ClientData | null;
@@ -95,14 +96,19 @@ const OrderSaleProps: React.FC = () => {
     valorDoFrete: 0,
   });
 
-  const [useRegisteredAddressForDelivery, setUseRegisteredAddressForDelivery] =
-    useState(true);
+  const [
+    isUseRegisteredAddressForDelivery,
+    setisUseRegisteredAddressForDelivery,
+  ] = useState(true);
+  const { toastSuccess, toastError } = ToastNotifications();
   const [clienteSelecionado, setClienteSelecionado] = useState<boolean>(false);
   const [priceListId, setPriceListId] = useState<string>("");
   const [selectedProducts, setSelectedProducts] = useState<
     ProductWithQuantity[]
   >([]);
   const [total, setTotal] = useState<number>(0);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] =
+    useState<string>("");
 
   const handleSelectClient = (data: {
     clientData: ClientData | null;
@@ -153,7 +159,7 @@ const OrderSaleProps: React.FC = () => {
         ...prevOrderSaleTypes,
         cliente: updatedClientData,
         enderecoDeCobranca: updateClientAddress,
-        enderecoDeEntrega: useRegisteredAddressForDelivery
+        enderecoDeEntrega: isUseRegisteredAddressForDelivery
           ? updatedAddressDelivery
           : prevOrderSaleTypes.enderecoDeEntrega,
       }));
@@ -162,13 +168,13 @@ const OrderSaleProps: React.FC = () => {
   };
 
   useEffect(() => {
-    if (useRegisteredAddressForDelivery && clienteSelecionado) {
+    if (isUseRegisteredAddressForDelivery && clienteSelecionado) {
       setOrderSale((prevOrderSaleTypes) => ({
         ...prevOrderSaleTypes,
         enderecoDeEntrega: { ...prevOrderSaleTypes.enderecoDeEntrega },
       }));
     }
-  }, [useRegisteredAddressForDelivery, clienteSelecionado]);
+  }, [isUseRegisteredAddressForDelivery, clienteSelecionado]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -204,7 +210,6 @@ const OrderSaleProps: React.FC = () => {
   };
 
   const handleRemoveProduct = (productId: string) => {
-    // Remove o produto da lista de produtos selecionados
     setSelectedProducts((prevProducts) =>
       prevProducts.filter((product) => product.product.id !== productId)
     );
@@ -218,6 +223,7 @@ const OrderSaleProps: React.FC = () => {
   };
 
   const handleSelectPaymentMethod = (value: string) => {
+    setSelectedPaymentMethod(value);
     const selectedId = parseInt(value, 10);
 
     if (!isNaN(selectedId)) {
@@ -244,39 +250,41 @@ const OrderSaleProps: React.FC = () => {
     setTotal(newTotal);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handlePostSaleOrder = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("JSON a ser enviado:", JSON.stringify(orderSale));
-    console.log("Price List ID:", priceListId);
+
+    // Validação de campos obrigatórios
+    if (
+      !orderSale.cliente ||
+      !orderSale.enderecoDeEntrega ||
+      orderSale.itens.length === 0
+    ) {
+      toastError("Por favor, preencha todos os campos.");
+      return;
+    }
 
     const user = localStorage.getItem("user");
     const clientId = user ? JSON.parse(user).uid : null;
-    console.log("Id do usuário:", clientId);
+    if (!clientId) {
+      toastError("Usuário não encontrado.");
+      return;
+    }
 
-    if (clientId) {
-      try {
-        const response = await axios.post(
-          `https://us-central1-server-kyoto.cloudfunctions.net/api/v1/pedido-de-venda/${clientId}`,
-          orderSale,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        console.log("Pedido enviado com sucesso:", response.data);
-      } catch (error: unknown) {
-        if (axios.isAxiosError(error)) {
-          console.error(
-            "Erro ao enviar pedido:",
-            error.response?.data || error.message
-          );
-        } else {
-          console.error("Erro desconhecido:", error);
+    try {
+      await axios.post(
+        `https://us-central1-server-kyoto.cloudfunctions.net/api/v1/pedido-de-venda/${clientId}`,
+        orderSale,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
-      }
-    } else {
-      console.error("Usuário não encontrado no localStorage.");
+      );
+
+      toastSuccess("Pedido de venda criado com sucesso.");
+    } catch (error) {
+      console.error("Erro ao enviar pedido:", error);
+      toastError("Erro ao criar o pedido.");
     }
   };
 
@@ -306,6 +314,7 @@ const OrderSaleProps: React.FC = () => {
                 <Input
                   type="text"
                   name="enderecoDeEntrega.bairro"
+                  readOnly={isUseRegisteredAddressForDelivery}
                   value={orderSale.enderecoDeEntrega?.bairro}
                   onChange={handleChange}
                   placeholder="Bairro"
@@ -315,6 +324,7 @@ const OrderSaleProps: React.FC = () => {
                 <Input
                   type="text"
                   name="enderecoDeEntrega.cep"
+                  readOnly={isUseRegisteredAddressForDelivery}
                   value={orderSale.enderecoDeEntrega?.cep}
                   onChange={handleChange}
                   placeholder="CEP"
@@ -324,6 +334,7 @@ const OrderSaleProps: React.FC = () => {
                 <Input
                   type="text"
                   name="enderecoDeEntrega.complemento"
+                  readOnly={isUseRegisteredAddressForDelivery}
                   value={orderSale.enderecoDeEntrega?.complemento}
                   onChange={handleChange}
                   placeholder="Complemento"
@@ -333,6 +344,7 @@ const OrderSaleProps: React.FC = () => {
                 <Input
                   type="text"
                   name="enderecoDeEntrega.logradouro"
+                  readOnly={isUseRegisteredAddressForDelivery}
                   value={orderSale.enderecoDeEntrega?.logradouro}
                   onChange={handleChange}
                   placeholder="Logradouro"
@@ -342,6 +354,7 @@ const OrderSaleProps: React.FC = () => {
                 <Input
                   type="text"
                   name="enderecoDeEntrega.numero"
+                  readOnly={isUseRegisteredAddressForDelivery}
                   value={orderSale.enderecoDeEntrega?.numero}
                   onChange={handleChange}
                   placeholder="Número"
@@ -353,11 +366,10 @@ const OrderSaleProps: React.FC = () => {
                 <label className="inline-flex items-center">
                   <input
                     type="checkbox"
-                    disabled={!clienteSelecionado}
-                    checked={useRegisteredAddressForDelivery}
+                    checked={isUseRegisteredAddressForDelivery}
                     onChange={() =>
-                      setUseRegisteredAddressForDelivery(
-                        !useRegisteredAddressForDelivery
+                      setisUseRegisteredAddressForDelivery(
+                        !isUseRegisteredAddressForDelivery
                       )
                     }
                     className="OrderSaleTypes-checkbox"
@@ -367,41 +379,63 @@ const OrderSaleProps: React.FC = () => {
               </div>
             </fieldset>
 
-            {/* Produtos */}
-            <fieldset className="border border-gray-200 rounded-lg p-4">
-              <legend className="text-lg font-semibold text-gray-700">
-                Produtos
-              </legend>
-              <ProductSelector
-                priceListId={priceListId}
-                selectedProducts={selectedProducts}
-                onProductSelect={handleProductSelect}
-                onRemoveProduct={handleRemoveProduct}
-                onTotalChange={handleTotalChange}
-              />
-            </fieldset>
+            {clienteSelecionado && (
+              <>
+                {/* Produtos */}
+                <fieldset className="border border-gray-200 rounded-lg p-4">
+                  <legend className="text-lg font-semibold text-gray-700">
+                    Produtos
+                  </legend>
+                  <ProductSelector
+                    priceListId={priceListId}
+                    selectedProducts={selectedProducts}
+                    onProductSelect={handleProductSelect}
+                    onRemoveProduct={handleRemoveProduct}
+                    onTotalChange={handleTotalChange}
+                  />
+                </fieldset>
+
+                {/* Métodos de pagamento */}
+                <fieldset className="border border-gray-200 rounded-lg p-4 mt-4">
+                  <legend className="text-lg font-semibold text-gray-700">
+                    Métodos de pagamento
+                  </legend>
+                  <Select
+                    required
+                    onValueChange={handleSelectPaymentMethod}
+                    value={selectedPaymentMethod}
+                    disabled={selectedProducts.length === 0}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue
+                        placeholder={
+                          selectedPaymentMethod
+                            ? selectedPaymentMethod
+                            : "Método de pagamento:"
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">Dinheiro</SelectItem>
+                      <SelectItem value="2">Cheque</SelectItem>
+                      <SelectItem value="3">Devolução</SelectItem>
+                      <SelectItem value="4">Cartão de crédito</SelectItem>
+                      <SelectItem value="5">Cartão de débito</SelectItem>
+                      <SelectItem value="6">Crediário</SelectItem>
+                      <SelectItem value="7">Cartão Voucher</SelectItem>
+                      <SelectItem value="8">PIX</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </fieldset>
+              </>
+            )}
           </form>
-
-          <legend>Métodos de pagamento</legend>
-          <Select required onValueChange={handleSelectPaymentMethod}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Método de pagamento:" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="1">Dinheiro</SelectItem>
-              <SelectItem value="2">Cheque</SelectItem>
-              <SelectItem value="3">Devolução</SelectItem>
-              <SelectItem value="4">Cartão de crédito</SelectItem>
-              <SelectItem value="5">Cartão de débito</SelectItem>
-              <SelectItem value="6">Crediário</SelectItem>
-              <SelectItem value="7">Cartão Voucher</SelectItem>
-              <SelectItem value="8">PIX</SelectItem>
-            </SelectContent>
-          </Select>
         </CardContent>
-
         <CardFooter className="justify-end">
-          <Button onClick={handleSubmit} disabled={!clienteSelecionado}>
+          <Button
+            onClick={handlePostSaleOrder}
+            disabled={selectedProducts.length === 0}
+          >
             Enviar Pedido
           </Button>
         </CardFooter>

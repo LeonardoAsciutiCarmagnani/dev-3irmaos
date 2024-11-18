@@ -8,8 +8,6 @@ import { PriceListProps, useZustandContext } from "@/context/cartContext";
 const PriceListsOverview = () => {
   const { priceLists, loading, filterPricesList, fetchPriceLists } =
     useZustandContext();
-  // const [priceLists, setPriceLists] = useState<PriceList[] | null>(null);
-  // const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedPriceList, setSelectedPriceList] =
