@@ -15,6 +15,7 @@ export const FetchProducts = React.memo(() => {
 
   useEffect(() => {
     setProducts();
+    console.log("Produtos: ", products);
   }, []);
 
   const categories = ["TRADICIONAIS", "ESPECIAIS"];

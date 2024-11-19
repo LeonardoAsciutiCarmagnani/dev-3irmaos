@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Input } from "@/components/ui/input";
@@ -19,47 +18,8 @@ import {
 import { useZustandContext } from "@/context/cartContext";
 import { useNavigate } from "react-router-dom";
 import ToastNotifications from "@/_components/Toasts";
-
-type OrderSaleTypes = {
-  status_order: number;
-  cliente: {
-    documento: string;
-    email: string;
-    inscricaoEstadual: string;
-    nomeDoCliente: string;
-    nomeFantasia: string;
-  };
-  enderecoDeCobranca: {
-    bairro: string;
-    cep: string;
-    codigoIbge: number;
-    complemento: string;
-    logradouro: string;
-    numero: string;
-  };
-  enderecoDeEntrega: {
-    bairro: string;
-    cep: string;
-    codigoIbge: number;
-    complemento: string;
-    logradouro: string;
-    numero: string;
-  };
-  itens: {
-    produtoId: string;
-    quantidade: number;
-    preco: number;
-    precoUnitarioLiquido?: number;
-  }[];
-  meiosDePagamento: {
-    idMeioDePagamento: number;
-    parcelas: number;
-    valor: number;
-  }[];
-  numeroPedidoDeVenda: string;
-  observacaoDoPedidoDeVenda: string;
-  valorDoFrete: number;
-};
+import { OrderSaleTypes } from "./PostSaleOrder";
+import { format } from "date-fns";
 
 export type EnderecoDeEntrega = {
   bairro: string;
@@ -77,15 +37,19 @@ export type ProductInPriceList = {
 };
 
 interface ItensProps {
-  produtoId: string;
+  // produtoId: string;
   quantidade: number;
   preco: number;
   precoUnitarioLiquido?: number;
 }
 
 const PedidoVendaForm: React.FC = () => {
+  const orderCreationDate = format(new Date(), "yyyy/MM/dd  HH:mm:ss");
+
   const [orderSale, setOrderSale] = useState<OrderSaleTypes>({
     status_order: 1,
+    created_at: orderCreationDate,
+    updated_at: orderCreationDate,
     cliente: {
       documento: "05.709.957/0001-25",
       email: "",
@@ -99,7 +63,7 @@ const PedidoVendaForm: React.FC = () => {
       codigoIbge: 1234567,
       complemento: "",
       logradouro: "",
-      numero: "",
+      numero: 0,
     },
     enderecoDeEntrega: {
       bairro: "",
@@ -107,7 +71,7 @@ const PedidoVendaForm: React.FC = () => {
       codigoIbge: 1234567,
       complemento: "",
       logradouro: "",
-      numero: "",
+      numero: 0,
     },
     itens: [],
     meiosDePagamento: [],
@@ -130,7 +94,9 @@ const PedidoVendaForm: React.FC = () => {
       }
     );
 
-    orderSale.itens = includingIdInProduct;
+    if (orderSale.itens) {
+      orderSale.itens = includingIdInProduct;
+    }
   }, []);
 
   const handlePaymentMethod = (paymentMethod: string) => {
@@ -208,6 +174,8 @@ const PedidoVendaForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    console.log("informações: ", orderSale);
+
     const getUserId = localStorage.getItem("user");
 
     const userId = getUserId && JSON.parse(getUserId);
@@ -247,35 +215,35 @@ const PedidoVendaForm: React.FC = () => {
             <Input
               type="text"
               name="cliente.documento"
-              value={orderSale.cliente.documento}
+              value={orderSale.cliente?.documento}
               onChange={handleChange}
               placeholder="Documento"
             />
             <Input
               type="email"
               name="cliente.email"
-              value={orderSale.cliente.email}
+              value={orderSale.cliente?.email}
               onChange={handleChange}
               placeholder="Email"
             />
             <Input
               type="text"
               name="cliente.inscricaoEstadual"
-              value={orderSale.cliente.inscricaoEstadual}
+              value={orderSale.cliente?.inscricaoEstadual}
               onChange={handleChange}
               placeholder="Inscrição Estadual"
             />
             <Input
               type="text"
               name="cliente.nomeDoCliente"
-              value={orderSale.cliente.nomeDoCliente}
+              value={orderSale.cliente?.nomeDoCliente}
               onChange={handleChange}
               placeholder="Nome do Cliente"
             />
             <Input
               type="text"
               name="cliente.nomeFantasia"
-              value={orderSale.cliente.nomeFantasia}
+              value={orderSale.cliente?.nomeFantasia}
               onChange={handleChange}
               placeholder="Nome Fantasia"
             />
@@ -290,21 +258,21 @@ const PedidoVendaForm: React.FC = () => {
             <Input
               type="text"
               name="enderecoDeCobranca.bairro"
-              value={orderSale.enderecoDeCobranca.bairro}
+              value={orderSale.enderecoDeCobranca?.bairro}
               onChange={handleChange}
               placeholder="Bairro"
             />
             <Input
               type="text"
               name="enderecoDeCobranca.cep"
-              value={orderSale.enderecoDeCobranca.cep}
+              value={orderSale.enderecoDeCobranca?.cep}
               onChange={handleChange}
               placeholder="CEP"
             />
             <Input
               type="text"
               name="enderecoDeCobranca.codigoIbge"
-              value={orderSale.enderecoDeCobranca.codigoIbge}
+              value={orderSale.enderecoDeCobranca?.codigoIbge}
               onChange={handleChange}
               max={7}
               placeholder="Código IBGE"
@@ -312,21 +280,21 @@ const PedidoVendaForm: React.FC = () => {
             <Input
               type="text"
               name="enderecoDeCobranca.complemento"
-              value={orderSale.enderecoDeCobranca.complemento}
+              value={orderSale.enderecoDeCobranca?.complemento}
               onChange={handleChange}
               placeholder="Complemento"
             />
             <Input
               type="text"
               name="enderecoDeCobranca.logradouro"
-              value={orderSale.enderecoDeCobranca.logradouro}
+              value={orderSale.enderecoDeCobranca?.logradouro}
               onChange={handleChange}
               placeholder="Logradouro"
             />
             <Input
               type="text"
               name="enderecoDeCobranca.numero"
-              value={orderSale.enderecoDeCobranca.numero}
+              value={orderSale.enderecoDeCobranca?.numero}
               onChange={handleChange}
               placeholder="Número"
             />
