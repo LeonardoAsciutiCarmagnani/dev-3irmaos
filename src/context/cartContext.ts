@@ -9,16 +9,16 @@ export interface PriceListProps {
   name: string;
 }
 
-interface Product {
-  ativo: boolean;
-  categoria: string;
-  codigo: string;
+export interface Product {
+  ativo?: boolean;
+  categoria?: string;
+  codigo?: string;
   id: string;
-  imagem: string;
+  imagem?: string;
   nome: string;
   preco: number;
   quantidade: number;
-  id_seq: number;
+  id_seq?: number;
 }
 
 interface ContextStates {
@@ -53,7 +53,10 @@ export const useZustandContext = create<ContextStates>((set) => ({
   setTotalValue: () =>
     set((state) => {
       const totalValue = state.listProductsInCart.reduce((acc, product) => {
-        acc += product.preco * product.quantidade;
+        if (product.preco) {
+          acc += product.preco * product.quantidade;
+          return acc;
+        }
         return acc;
       }, 0);
 
@@ -158,36 +161,41 @@ export const useZustandContext = create<ContextStates>((set) => ({
 
   handleAddItemInList: (newProduct) =>
     set((state) => {
+      const { id, nome, preco } = newProduct;
+
       const existingProductIndex = state.listProductsInCart.findIndex(
-        (product) => product.id === newProduct.id
+        (product) => product.id === id
       );
 
-      console.log(newProduct.id);
-
       const updateList = [...state.listProductsInCart];
-      let updateCountInCard = 0;
+      let updateCountInCart = state.countItemsInCart;
 
       if (existingProductIndex !== -1) {
-        updateCountInCard = state.countItemsInCart + 1;
         updateList[existingProductIndex] = {
           ...updateList[existingProductIndex],
           quantidade: updateList[existingProductIndex].quantidade + 1,
         };
       } else {
-        updateCountInCard = state.countItemsInCart + 1;
-        updateList.push({ ...newProduct, quantidade: 1 });
+        updateList.push({
+          id,
+          nome,
+          preco,
+          quantidade: 1, // Inicializar com quantidade 1
+        });
       }
 
       const updateProducts = state.products.map((product) =>
-        product.id === newProduct.id
+        product.id === id
           ? { ...product, quantidade: product.quantidade + 1 }
           : product
       );
 
+      updateCountInCart += 1;
+      console.log(updateList);
       return {
         listProductsInCart: updateList,
         products: updateProducts,
-        countItemsInCart: updateCountInCard,
+        countItemsInCart: updateCountInCart,
       };
     }),
 

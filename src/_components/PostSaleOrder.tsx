@@ -24,16 +24,18 @@ export type OrderSaleTypes = {
   status_order?: number;
   id?: string;
   total?: number;
+  created_at?: string;
+  updated_at?: string;
   cliente: ClientData | null;
   enderecoDeCobranca: EnderecoDeEntrega | null;
   enderecoDeEntrega: EnderecoDeEntrega;
   itens: {
-    produtoId: string;
+    produtoId?: string;
     nome?: string;
     preco?: number;
     quantidade: number;
-    precoUnitarioBruto: number;
-    precoUnitarioLiquido: number;
+    precoUnitarioBruto?: number;
+    precoUnitarioLiquido?: number;
   }[];
   meiosDePagamento: MeioDePagamento[];
   numeroPedidoDeVenda: string;
@@ -202,7 +204,9 @@ const OrderSaleProps: React.FC = () => {
     setOrderSale((prevOrderSaleTypes) => {
       const updatedItems = products.map(({ product, quantity }) => ({
         produtoId: product.id,
+        nome: product.name,
         quantidade: quantity,
+        preco: product.value,
         precoUnitarioBruto: product.value,
         precoUnitarioLiquido: product.value,
       }));
@@ -257,6 +261,8 @@ const OrderSaleProps: React.FC = () => {
 
   const handlePostSaleOrder = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    console.log("Produtos sendo enviados: ", orderSale);
 
     // Validação de campos obrigatórios
     if (

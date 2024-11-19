@@ -15,6 +15,7 @@ export const FetchProducts = React.memo(() => {
 
   useEffect(() => {
     setProducts();
+    console.log("Produtos: ", products);
   }, []);
 
   return (
@@ -83,7 +84,7 @@ export const FetchProducts = React.memo(() => {
                     {product.categoria || "Sem categoria"}
                   </p>
                   <p className="text-lg font-bold text-green-600 text-center">
-                    {product.preco.toLocaleString("pt-BR", {
+                    {product.preco?.toLocaleString("pt-BR", {
                       style: "currency",
                       currency: "BRL",
                     })}

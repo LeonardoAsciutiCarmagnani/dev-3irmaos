@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import ToastNotifications from "@/_components/Toasts";
+import { format } from "date-fns";
 
 interface StatusProps {
   0: "Todos os pedidos";
@@ -68,10 +69,12 @@ export function GetOrdersComponent() {
     console.log(orderId);
 
     try {
+      const orderUpdateDate = format(new Date(), "yyyy/MM/dd  HH:mm:ss");
       const orderRef = doc(firestore, "sales_orders", orderId);
 
       await updateDoc(orderRef, {
         status_order: newStatus,
+        updated_at: orderUpdateDate,
       });
 
       setOrderList((prevList) => {
@@ -116,12 +119,12 @@ export function GetOrdersComponent() {
 
   const handlePrintItens = (pedido: OrderSaleTypes) => {
     let arrayForPrint: {
-      produtoId: string;
+      produtoId?: string;
       nome?: string;
       preco?: number;
       quantidade: number;
-      precoUnitarioBruto: number;
-      precoUnitarioLiquido: number;
+      precoUnitarioBruto?: number;
+      precoUnitarioLiquido?: number;
     }[] = [];
     arrayForPrint = pedido.itens.map((item, index) => ({
       ...item,
