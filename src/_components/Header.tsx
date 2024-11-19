@@ -59,9 +59,11 @@ const Header: React.FC = () => {
         {/* Icone do carrinho de compras + o count de produtos selecionados */}
         <Sheet>
           <SheetTrigger>
-            <div className="flex  items-center rounded-md p-2 gap-1 bg-red-500">
-              <ShoppingCart color="white" />
-              <span className="text-base text-white">{countItemsInCart}</span>
+            <div className="flex items-center rounded-md p-2 gap-1 ">
+              <ShoppingCart color="black" size={32} />
+              <span className="relative right-[1.4rem] bottom-2.5 flex items-center justify-center text-lg text-black bg-yellow-400 border-2 border-black rounded-full size-6 font-semibold">
+                {countItemsInCart}
+              </span>
             </div>
           </SheetTrigger>
           <SheetContent className="flex flex-col p-2 text-center items-center overflow-scroll">

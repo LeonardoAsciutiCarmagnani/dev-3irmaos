@@ -9,7 +9,7 @@ export interface PriceListProps {
   name: string;
 }
 
-interface Product {
+export interface Product {
   ativo: boolean;
   categoria: string;
   codigo: string;
