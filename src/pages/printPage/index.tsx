@@ -38,7 +38,7 @@ export function PrintPage() {
       className="flex flex-col space-y-3 items-center justify-center p-8 w-full mr-2"
     >
       {listProductsInCart
-        .sort((a, b) => a.id_seq - b.id_seq)
+        .sort((a, b) => (a.id_seq ?? 0) - (b.id_seq ?? 0))
         .map((item) => (
           <div
             key={item.id}

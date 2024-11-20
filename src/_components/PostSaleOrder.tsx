@@ -23,6 +23,7 @@ import { Product } from "@/context/cartContext";
 import { format } from "date-fns";
 
 export type OrderSaleTypes = {
+  order_code?: number;
   status_order?: number;
   created_at?: string;
   updated_at?: string;

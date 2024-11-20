@@ -15,19 +15,15 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import ToastNotifications from "@/_components/Toasts";
 import { format } from "date-fns";
+import Sidebar from "./Sidebar";
 
 interface StatusProps {
-  0: "Todos os pedidos";
-  1: "Pedido Aberto";
-  2: "Em produção";
-  3: "Pedido pronto";
-  4: "Pedido faturado";
-  5: "Pedido enviado";
-  6: "Entregue";
+  [key: number]: string;
 }
 
 interface IFormInput {
   inputText: string;
+  selectDate: string;
   selectStatus: StatusProps;
 }
 
@@ -53,6 +49,8 @@ export function GetOrdersComponent() {
           );
 
           queryList.push({ ...data, total });
+
+          queryList.sort((a, b) => (a.order_code ?? 0) - (b.order_code ?? 0));
         });
         setOrderList(queryList);
       }
@@ -66,10 +64,8 @@ export function GetOrdersComponent() {
     orderId: string,
     newStatus: number
   ) => {
-    console.log(orderId);
-
     try {
-      const orderUpdateDate = format(new Date(), "yyyy/MM/dd  HH:mm:ss");
+      const orderUpdateDate = format(new Date(), "yyyy/MM/dd HH:mm:ss");
       const orderRef = doc(firestore, "sales_orders", orderId);
 
       await updateDoc(orderRef, {
@@ -78,6 +74,18 @@ export function GetOrdersComponent() {
       });
 
       setOrderList((prevList) => {
+        return prevList.map((order) => {
+          if (order.id === orderId) {
+            return {
+              ...order,
+              status_order: newStatus,
+            };
+          }
+          return order;
+        });
+      });
+
+      setFilteredOrders((prevList) => {
         return prevList.map((order) => {
           if (order.id === orderId) {
             return {
@@ -97,17 +105,32 @@ export function GetOrdersComponent() {
 
   const handleSearchOrders: SubmitHandler<IFormInput> = (data) => {
     const searchName = data.inputText.trim();
-    const selectData = Number(data.selectStatus);
+    const selectStatus = isNaN(Number(data.selectStatus))
+      ? 0
+      : Number(data.selectStatus);
+
+    const normalizedSelectDate = data.selectDate.replace(/-/g, "/");
 
     const filteredList = orderList.filter((order) => {
       const matchesName =
         searchName.length > 1
-          ? order.cliente?.nomeDoCliente === searchName
+          ? order.cliente?.nomeDoCliente?.toLowerCase() ===
+            searchName.toLowerCase()
           : true;
-      const matchesStatus =
-        selectData > 0 ? order.status_order === selectData : true;
 
-      return matchesName && matchesStatus;
+      const matchesStatus =
+        selectStatus > 0 ? order.status_order === selectStatus : true;
+
+      const createdAtDate = order.created_at
+        ? order.created_at.trim().split(" ")[0]
+        : null;
+
+      const matchesDate =
+        normalizedSelectDate && createdAtDate
+          ? createdAtDate === normalizedSelectDate
+          : true;
+
+      return matchesName && matchesStatus && matchesDate;
     });
 
     if (filteredList.length > 0) {
@@ -141,10 +164,13 @@ export function GetOrdersComponent() {
   }, []);
 
   return (
-    <div className="flex flex-col w-screen h-screen ">
-      <div className="flex flex-col text-center border-2 ">
-        <header className="flex flex-1   p-4 bg-gray-100">
-          <h1 className="text-xl font-bold">Lista de Pedidos</h1>
+    <>
+      <div className="flex flex-col text-center  border-2">
+        <header className="flex  w-full items-center justify-between  p-4 bg-gray-100">
+          <Sidebar />
+          <div className="flex w-full text-center items-center justify-center">
+            <h1 className="text-xl font-bold">Lista de Pedidos</h1>
+          </div>
         </header>
         <form
           onSubmit={handleSubmit(handleSearchOrders)}
@@ -168,7 +194,11 @@ export function GetOrdersComponent() {
             <option value="5">Pedido enviado</option>
             <option value="6">Entregue</option>
           </select>
-          {/* <input type="date" className="border px-4 py-2 rounded" /> */}
+          <input
+            type="date"
+            className="border px-4 py-2 rounded"
+            {...register("selectDate")}
+          />
           <button
             className="bg-green-500 text-white px-4 py-2 rounded"
             type="submit"
@@ -183,6 +213,7 @@ export function GetOrdersComponent() {
             <th className="border md:px-4 py-2 hidden md:table-cell">
               Número do pedido
             </th>
+            <th className="border md:px-4 py-2">Data de criação</th>
             <th className="border md:px-4 py-2">Cliente</th>
             <th className="border md:px-4 py-2">Status</th>
             <th className="border md:px-4 py-2">Vizualizar produtos</th>
@@ -193,272 +224,145 @@ export function GetOrdersComponent() {
           </tr>
         </thead>
         <tbody>
-          {filteredOrders.length > 0 ? (
-            <>
-              {filteredOrders.map((order) => (
-                <tr key={order.id} className="hover:bg-gray-50">
-                  <td className="border px-4 py-2 hidden md:table-cell">
-                    {order.id}
-                  </td>
-                  <td className="border px-4 py-2">
-                    {order.cliente?.nomeDoCliente}
-                  </td>
-                  <td className="border px-4 py-2 ">
-                    <Button
-                      onClick={() => {
-                        if (order.status_order && order.id) {
-                          const nextStatus =
-                            order.status_order < 6 ? order.status_order + 1 : 6;
-                          handleUpdatedStatusOrder(order.id, nextStatus);
-                        }
-                      }}
-                      disabled={(order.status_order ?? 0) >= 6}
-                      className={`px-2 py-1 rounded  ${
-                        order.status_order === 1
-                          ? "bg-green-100 text-green-700 hover:bg-green-200"
-                          : order.status_order === 2
-                          ? "bg-yellow-200 text-yellow-800 hover:bg-yellow-300"
-                          : order.status_order === 3
-                          ? "bg-blue-200 text-blue-800 hover:bg-blue-300"
-                          : order.status_order === 4
-                          ? "bg-purple-200 text-purple-800 hover:bg-purple-300"
-                          : order.status_order === 5
-                          ? "bg-orange-200 text-orange-800 hover:bg-orange-300"
-                          : order.status_order === 6
-                          ? "bg-green-300 text-green-900 "
-                          : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-                      }`}
-                    >
-                      {order.status_order === 1
-                        ? "Pedido Aberto"
-                        : order.status_order === 2
-                        ? "Em produção"
-                        : order.status_order === 3
-                        ? "Pedido pronto"
-                        : order.status_order === 4
-                        ? "Pedido faturado"
-                        : order.status_order === 5
-                        ? "Pedido enviado"
-                        : order.status_order === 6 && "Entregue"}
-                    </Button>
-                  </td>
-                  <td className="border px-4 py-2">
-                    <Dialog>
-                      <DialogTrigger>
-                        <span className="bg-blue-500 text-white px-2 py-1 rounded">
-                          Ver
-                        </span>
-                      </DialogTrigger>
-                      <DialogContent
-                        className="overflow-y-scroll h-96"
-                        aria-describedby={undefined}
-                      >
-                        <DialogHeader>
-                          <DialogTitle>Lista de produtos: </DialogTitle>
-                        </DialogHeader>
-                        <div className=" md:hidden space-y-2">
-                          <div className="flex justify-between border-2 rounded-lg p-2">
-                            <span className="font-semibold text-sm items-start">
-                              ID:
-                            </span>
-                            <span className="text-sm text-center ">
-                              {order.id}
-                            </span>
-                          </div>
-                          <div>
-                            <Button
-                              onClick={() => handlePrintItens(order)}
-                              className="bg-blue-500 text-white px-2 py-1 rounded"
-                            >
-                              Imprimir
-                            </Button>
-                          </div>
-                          <div className="flex justify-between border-2 rounded-lg items-center p-1">
-                            <span className="text-sm font-semibold">
-                              Valor total do pedido:
-                            </span>
-                            <span>
-                              {order.total?.toLocaleString("pt-BR", {
-                                style: "currency",
-                                currency: "BRL",
-                              })}
-                            </span>
-                          </div>
-                        </div>
-                        <div className=" rounded-lg text-sm space-y-2 p-2 md:text-base">
-                          {order.itens.map((product) => (
-                            <div
-                              key={product.produtoId}
-                              className="flex flex-col border-2 space-y-2 p-2 rounded-lg items-center"
-                            >
-                              <span>{product.nome}</span>
-                              <span>Quantidade: {product.quantidade}</span>
-                              <span>
-                                {product.preco?.toLocaleString("pt-BR", {
-                                  style: "currency",
-                                  currency: "BRL",
-                                })}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                  </td>
-                  <td className="border px-4 py-2 hidden md:table-cell">
-                    {order.total?.toLocaleString("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    })}
-                  </td>
-                  <td className="border px-4 py-2 hidden md:table-cell">
-                    <div>
-                      <Button
-                        onClick={() => handlePrintItens(order)}
-                        className="bg-blue-500 text-white px-2 py-1 rounded"
-                      >
-                        Imprimir
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </>
-          ) : (
-            <>
-              {orderList.map((order) => (
-                <tr key={order.id} className="hover:bg-gray-50">
-                  <td className="border px-4 py-2 hidden md:table-cell">
-                    {order.id}
-                  </td>
-                  <td className="border px-4 py-2">
-                    {order.cliente?.nomeDoCliente}
-                  </td>
-                  <td className="border px-4 py-2 ">
-                    <Button
-                      onClick={() => {
-                        if (order.status_order && order.id) {
-                          const nextStatus =
-                            order.status_order < 6 ? order.status_order + 1 : 6;
-                          handleUpdatedStatusOrder(order.id, nextStatus);
-                        }
-                      }}
-                      disabled={(order.status_order ?? 0) >= 6}
-                      className={`px-2 py-1 rounded  ${
-                        order.status_order === 1
-                          ? "bg-green-100 text-green-700 hover:bg-green-200"
-                          : order.status_order === 2
-                          ? "bg-yellow-200 text-yellow-800 hover:bg-yellow-300"
-                          : order.status_order === 3
-                          ? "bg-blue-200 text-blue-800 hover:bg-blue-300"
-                          : order.status_order === 4
-                          ? "bg-purple-200 text-purple-800 hover:bg-purple-300"
-                          : order.status_order === 5
-                          ? "bg-orange-200 text-orange-800 hover:bg-orange-300"
-                          : order.status_order === 6
-                          ? "bg-green-300 text-green-900 "
-                          : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-                      }`}
-                    >
-                      {order.status_order === 1
-                        ? "Pedido Aberto"
-                        : order.status_order === 2
-                        ? "Em produção"
-                        : order.status_order === 3
-                        ? "Pedido pronto"
-                        : order.status_order === 4
-                        ? "Pedido faturado"
-                        : order.status_order === 5
-                        ? "Pedido enviado"
-                        : order.status_order === 6 && "Entregue"}
-                    </Button>
-                  </td>
-                  <td className="border px-4 py-2">
-                    <Dialog>
-                      <DialogTrigger>
-                        <span className="bg-blue-500 text-white px-2 py-1 rounded">
-                          Ver
-                        </span>
-                      </DialogTrigger>
-                      <DialogContent
-                        className="overflow-y-scroll h-96"
-                        aria-describedby={undefined}
-                      >
-                        <DialogHeader>
-                          <DialogTitle>Lista de produtos: </DialogTitle>
-                        </DialogHeader>
-                        <div className=" md:hidden space-y-2">
-                          <div className="flex justify-between border-2 rounded-lg p-2">
-                            <span className="font-semibold text-sm items-start">
-                              ID:
-                            </span>
-                            <span className="text-sm text-center ">
-                              {order.id}
-                            </span>
-                          </div>
+          {filteredOrders.map((order) => (
+            <tr
+              key={order.id}
+              className={
+                order.created_at === undefined ? "hidden" : "hover:bg-gray-50"
+              }
+            >
+              <td className="border px-4 py-2 hidden md:table-cell">
+                {order.order_code}
+              </td>
 
-                          <div className="flex justify-between border-2 rounded-lg items-center p-1">
-                            <span className="text-sm font-semibold">
-                              Valor total do pedido:
-                            </span>
-                            <span>
-                              {order.total?.toLocaleString("pt-BR", {
-                                style: "currency",
-                                currency: "BRL",
-                              })}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-center">
-                            <Button
-                              onClick={() => handlePrintItens(order)}
-                              className="bg-blue-500 text-white px-2 py-1 rounded"
-                            >
-                              Imprimir
-                            </Button>
-                          </div>
-                        </div>
-                        <div className="text-sm space-y-2 p-2 md:text-base">
-                          {order.itens.map((product) => (
-                            <div
-                              key={product.produtoId}
-                              className="flex flex-col border-2  space-y-2 p-2 rounded-lg items-center"
-                            >
-                              <span>{product.nome}</span>
-                              <span>Quantidade: {product.quantidade}</span>
-                              <span>
-                                {product.preco?.toLocaleString("pt-BR", {
-                                  style: "currency",
-                                  currency: "BRL",
-                                })}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                  </td>
-                  <td className="border px-4 py-2 hidden md:table-cell">
-                    {order.total?.toLocaleString("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    })}
-                  </td>
-                  <td className="border px-4 py-2 hidden md:table-cell">
-                    <div>
-                      <Button
-                        onClick={() => handlePrintItens(order)}
-                        className="bg-blue-500 text-white px-2 py-1 rounded"
-                      >
-                        Imprimir
-                      </Button>
+              <td className="border px-4 py-2 hidden md:table-cell">
+                {order.created_at
+                  ? format(order.created_at, "dd/MM/yyyy 'ás' HH:mm:ss")
+                  : "Data indisponível"}
+              </td>
+              <td className="border px-4 py-2">
+                {order.cliente?.nomeDoCliente}
+              </td>
+              <td className="border px-4 py-2 ">
+                <Button
+                  onClick={() => {
+                    if (order.status_order && order.id) {
+                      const nextStatus =
+                        order.status_order < 6 ? order.status_order + 1 : 6;
+                      handleUpdatedStatusOrder(order.id, nextStatus);
+                    }
+                  }}
+                  disabled={(order.status_order ?? 0) >= 6}
+                  className={`px-2 py-1 rounded  ${
+                    order.status_order === 1
+                      ? "bg-green-100 text-green-700 hover:bg-green-200"
+                      : order.status_order === 2
+                      ? "bg-yellow-200 text-yellow-800 hover:bg-yellow-300"
+                      : order.status_order === 3
+                      ? "bg-blue-200 text-blue-800 hover:bg-blue-300"
+                      : order.status_order === 4
+                      ? "bg-purple-200 text-purple-800 hover:bg-purple-300"
+                      : order.status_order === 5
+                      ? "bg-orange-200 text-orange-800 hover:bg-orange-300"
+                      : order.status_order === 6
+                      ? "bg-green-300 text-green-900 "
+                      : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                  }`}
+                >
+                  {order.status_order === 1
+                    ? "Pedido Aberto"
+                    : order.status_order === 2
+                    ? "Em produção"
+                    : order.status_order === 3
+                    ? "Pedido pronto"
+                    : order.status_order === 4
+                    ? "Pedido faturado"
+                    : order.status_order === 5
+                    ? "Pedido enviado"
+                    : order.status_order === 6 && "Entregue"}
+                </Button>
+              </td>
+              <td className="border px-4 py-2">
+                <Dialog>
+                  <DialogTrigger>
+                    <span className="bg-blue-500 text-white px-2 py-1 rounded">
+                      Ver
+                    </span>
+                  </DialogTrigger>
+                  <DialogContent
+                    className="overflow-y-scroll h-96"
+                    aria-describedby={undefined}
+                  >
+                    <DialogHeader>
+                      <DialogTitle>Lista de produtos: </DialogTitle>
+                    </DialogHeader>
+                    <div className=" md:hidden space-y-2">
+                      <div className="flex justify-between border-2 rounded-lg p-2">
+                        <span className="font-semibold text-sm items-start">
+                          ID:
+                        </span>
+                        <span className="text-sm text-center ">{order.id}</span>
+                      </div>
+                      <div>
+                        <Button
+                          onClick={() => handlePrintItens(order)}
+                          className="bg-blue-500 text-white px-2 py-1 rounded"
+                        >
+                          Imprimir
+                        </Button>
+                      </div>
+                      <div className="flex justify-between border-2 rounded-lg items-center p-1">
+                        <span className="text-sm font-semibold">
+                          Valor total do pedido:
+                        </span>
+                        <span>
+                          {order.total?.toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
+                          })}
+                        </span>
+                      </div>
                     </div>
-                  </td>
-                </tr>
-              ))}
-            </>
-          )}
+                    <div className=" rounded-lg text-sm space-y-2 p-2 md:text-base">
+                      {order.itens.map((product) => (
+                        <div
+                          key={product.produtoId}
+                          className="flex flex-col border-2 space-y-2 p-2 rounded-lg items-center"
+                        >
+                          <span>{product.nome}</span>
+                          <span>Quantidade: {product.quantidade}</span>
+                          <span>
+                            {product.preco?.toLocaleString("pt-BR", {
+                              style: "currency",
+                              currency: "BRL",
+                            })}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </td>
+              <td className="border px-4 py-2 hidden md:table-cell">
+                {order.total?.toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                })}
+              </td>
+              <td className="border px-4 py-2 hidden md:table-cell">
+                <div>
+                  <Button
+                    onClick={() => handlePrintItens(order)}
+                    className="bg-blue-500 text-white px-2 py-1 rounded"
+                  >
+                    Imprimir
+                  </Button>
+                </div>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
-    </div>
+    </>
   );
 }

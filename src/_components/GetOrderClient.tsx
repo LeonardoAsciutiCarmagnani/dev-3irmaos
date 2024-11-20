@@ -12,19 +12,16 @@ import {
 import { Button } from "@/components/ui/button";
 import { SubmitHandler, useForm } from "react-hook-form";
 import ToastNotifications from "./Toasts";
+import { format } from "date-fns";
+import Sidebar from "./Sidebar";
 
 interface StatusProps {
-  0: "Todos os pedidos";
-  1: "Pedido Aberto";
-  2: "Em produção";
-  3: "Pedido pronto";
-  4: "Pedido faturado";
-  5: "Pedido enviado";
-  6: "Entregue";
+  [key: number]: string;
 }
 
 interface IFormInput {
   inputText: string;
+  selectDate: string;
   selectStatus: StatusProps;
 }
 
@@ -66,14 +63,11 @@ export function GetOrdersClientComponent() {
   };
 
   const handleSearchOrders: SubmitHandler<IFormInput> = (data) => {
-    // const searchName = data.inputText.trim();
     const selectedStatus = Number(data.selectStatus);
+    const formalizedDate = data.selectDate.replace(/-/g, "/");
+    console.log(formalizedDate);
 
     const filteredList = orderList.filter((order) => {
-      //   const matchesName =
-      //     searchName.length > 1
-      //       ? order.cliente?.nomeDoCliente === searchName
-      //       : true;
       const matchesStatus =
         selectedStatus > 0 ? order.status_order === selectedStatus : true;
 
@@ -94,19 +88,16 @@ export function GetOrdersClientComponent() {
   return (
     <div className="flex flex-col w-screen h-screen">
       <div className="flex flex-col text-center border-2">
-        <header className="flex flex-1   p-4 bg-gray-100">
-          <h1 className="text-xl font-bold">Lista de Pedidos</h1>
+        <header className="flex  w-full items-center justify-between  p-4 bg-gray-100">
+          <Sidebar />
+          <div className="flex w-full text-center items-center justify-center">
+            <h1 className="text-xl font-bold">Lista de Pedidos</h1>
+          </div>
         </header>
         <form
           onSubmit={handleSubmit(handleSearchOrders)}
           className="flex flex-wrap items-center gap-4 p-4 bg-gray-50"
         >
-          {/* <Input
-            type="text"
-            placeholder="Buscar por cliente ou ID"
-            {...register("inputText")}
-            className="border px-4 py-2 rounded w-full text-sm md:w-1/3 placeholder:text-sm"
-          /> */}
           <select
             className="border px-4 py-2 rounded"
             {...register("selectStatus")}
@@ -119,7 +110,11 @@ export function GetOrdersClientComponent() {
             <option value="5">Pedido enviado</option>
             <option value="6">Entregue</option>
           </select>
-          {/* <input type="date" className="border px-4 py-2 rounded" /> */}
+          <input
+            type="date"
+            className="border px-4 py-2 rounded"
+            {...register("selectDate")}
+          />
           <button
             className="bg-green-500 text-white px-4 py-2 rounded"
             type="submit"
@@ -132,6 +127,7 @@ export function GetOrdersClientComponent() {
         <thead className="bg-gray-100">
           <tr>
             <th className="border md:px-4 py-2 hidden md:table-cell">ID</th>
+            <th className="border md:px-4 py-2">Data de criação</th>
             <th className="border md:px-4 py-2">Cliente</th>
             <th className="border md:px-4 py-2">Status</th>
             <th className="border md:px-4 py-2">Vizualizar produtos</th>
@@ -144,7 +140,12 @@ export function GetOrdersClientComponent() {
               {filteredOrders.map((order) => (
                 <tr key={order.id} className="hover:bg-gray-50">
                   <td className="border px-4 py-2 hidden md:table-cell">
-                    {order.id}
+                    {order.order_code}
+                  </td>
+                  <td className="border px-4 py-2">
+                    {order.created_at
+                      ? format(order.created_at, "dd/MM/yyyy 'ás' HH:mm:ss")
+                      : "Data indisponível"}
                   </td>
                   <td className="border px-4 py-2">
                     {order.cliente?.nomeDoCliente}
@@ -250,7 +251,12 @@ export function GetOrdersClientComponent() {
               {orderList.map((order) => (
                 <tr key={order.id} className="hover:bg-gray-50">
                   <td className="border px-4 py-2 hidden md:table-cell">
-                    {order.id}
+                    {order.order_code}
+                  </td>
+                  <td className="border px-4 py-2">
+                    {order.created_at
+                      ? format(order.created_at, "dd/MM/yyyy 'ás' HH:mm:ss")
+                      : "Data indisponível"}
                   </td>
                   <td className="border px-4 py-2">
                     {order.cliente?.nomeDoCliente}

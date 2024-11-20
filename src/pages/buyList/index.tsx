@@ -1,4 +1,4 @@
-import PedidoVendaForm from "@/_components/FormTesteLucas";
+import PedidoVendaForm from "@/_components/PostedOrderOfBuyList";
 import {
   Carousel,
   CarouselContent,

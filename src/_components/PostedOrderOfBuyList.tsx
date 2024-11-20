@@ -20,6 +20,8 @@ import { useNavigate } from "react-router-dom";
 import ToastNotifications from "@/_components/Toasts";
 import { OrderSaleTypes } from "./PostSaleOrder";
 import { format } from "date-fns";
+import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
+import { firestore } from "@/firebaseConfig";
 
 export type EnderecoDeEntrega = {
   bairro: string;
@@ -37,16 +39,16 @@ export type ProductInPriceList = {
 };
 
 interface ItensProps {
-  // produtoId: string;
   quantidade: number;
   preco: number;
   precoUnitarioLiquido?: number;
 }
 
 const PedidoVendaForm: React.FC = () => {
-  const orderCreationDate = format(new Date(), "yyyy/MM/dd  HH:mm:ss");
+  const orderCreationDate = format(new Date(), "yyyy/MM/dd HH:mm:ss");
 
   const [orderSale, setOrderSale] = useState<OrderSaleTypes>({
+    order_code: 0,
     status_order: 1,
     created_at: orderCreationDate,
     updated_at: orderCreationDate,
@@ -85,18 +87,37 @@ const PedidoVendaForm: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const includingIdInProduct: ItensProps[] = listProductsInCart.map(
-      (item) => {
-        return {
-          ...item,
-          produtoId: item.id,
-        };
-      }
-    );
+    const fetchLastOrders = async () => {
+      const collectionRef = collection(firestore, "sales_orders");
+      const q = query(collectionRef, orderBy("order_code", "desc"), limit(1));
+      const queryDocs = await getDocs(q);
 
-    if (orderSale.itens) {
-      orderSale.itens = includingIdInProduct;
-    }
+      let lastOrderNumber = 0;
+
+      if (!queryDocs.empty) {
+        const lastOrder = queryDocs.docs[0].data();
+        lastOrderNumber = lastOrder.order_code || 0;
+      }
+
+      const newOrderNumber = lastOrderNumber + 1;
+
+      orderSale.order_code = newOrderNumber;
+
+      const includingIdInProduct: ItensProps[] = listProductsInCart.map(
+        (item) => {
+          return {
+            ...item,
+            produtoId: item.id,
+          };
+        }
+      );
+
+      if (orderSale.itens) {
+        orderSale.itens = includingIdInProduct;
+      }
+    };
+
+    fetchLastOrders();
   }, []);
 
   const handlePaymentMethod = (paymentMethod: string) => {
@@ -205,13 +226,13 @@ const PedidoVendaForm: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col  w-full">
+    <form onSubmit={handleSubmit} className="flex flex-col space-y-2  w-full">
       <Accordion type="multiple">
         <AccordionItem value="item-1" className="w-full">
           <AccordionTrigger>
             <h2>Cliente</h2>
           </AccordionTrigger>
-          <AccordionContent>
+          <AccordionContent className="space-y-2">
             <Input
               type="text"
               name="cliente.documento"
@@ -254,7 +275,7 @@ const PedidoVendaForm: React.FC = () => {
           <AccordionTrigger>
             <h2>Endereço de Cobrança</h2>
           </AccordionTrigger>
-          <AccordionContent>
+          <AccordionContent className="space-y-2">
             <Input
               type="text"
               name="enderecoDeCobranca.bairro"
@@ -305,7 +326,7 @@ const PedidoVendaForm: React.FC = () => {
           <AccordionTrigger>
             <h2>Endereço de Entrega</h2>
           </AccordionTrigger>
-          <AccordionContent>
+          <AccordionContent className="space-y-2">
             <Input
               type="text"
               name="enderecoDeEntrega.bairro"

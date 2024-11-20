@@ -5,6 +5,7 @@ import {
   PackageIcon,
   PackagePlusIcon,
   ReceiptIcon,
+  ShoppingBasket,
   UserIcon,
   UserRoundPlusIcon,
   UsersIcon,
@@ -107,6 +108,17 @@ export default function Sidebar() {
           </div>
 
           <ul className="space-y-4">
+            <li>
+              <Link
+                to="/"
+                className="block text-gray-800 hover:text-white hover:bg-gray-700 rounded-md px-3 py-2 transition-colors"
+              >
+                <span className="flex items-center gap-x-4">
+                  <ShoppingBasket className="text-gray-800" size={24} />
+                  Tela principal
+                </span>
+              </Link>
+            </li>
             <li>
               <Link
                 to="/get-orders-client"
