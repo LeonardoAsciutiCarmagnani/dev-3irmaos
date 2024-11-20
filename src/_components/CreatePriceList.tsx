@@ -3,11 +3,12 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { collection, doc, getDoc } from "firebase/firestore";
 import { firestore as db } from "../firebaseConfig";
+import ToastNotifications from "./Toasts";
 
 interface ProductProps {
   id: string;
-  name: string;
-  value: number;
+  nome: string;
+  preco: number;
 }
 
 interface PriceListProps {
@@ -19,7 +20,7 @@ const PostPricesList = () => {
   const [defaultProducts, setDefaultProducts] = useState<ProductProps[]>([]);
   const [priceListName, setPriceListName] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { toastSuccess, toastError } = ToastNotifications();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -38,7 +39,7 @@ const PostPricesList = () => {
         }
       } catch (error) {
         console.error("Erro ao buscar produtos da coleção DEFAULT:", error);
-        setError("Erro ao buscar produtos da coleção DEFAULT.");
+        toastError("Erro ao buscar produtos da coleção DEFAULT.");
       }
     };
 
@@ -50,13 +51,13 @@ const PostPricesList = () => {
     index: number
   ) => {
     const updatedProducts = [...defaultProducts];
-    updatedProducts[index].value = parseFloat(e.target.value) || 0;
+    updatedProducts[index].preco = parseFloat(e.target.value) || 0;
     setDefaultProducts(updatedProducts);
   };
 
   const postPriceList = async () => {
     if (!priceListName || defaultProducts.length === 0) {
-      setError("Nome da lista de preços e produtos são obrigatórios.");
+      toastError("Nome da lista de preços e produtos são obrigatórios.");
       return;
     }
 
@@ -75,11 +76,11 @@ const PostPricesList = () => {
           },
         }
       );
-      console.log("Lista de preços criada com sucesso!");
+      toastSuccess("Lista de preços criada com sucesso!");
       navigate("/prices-lists");
     } catch (error) {
       console.error("Erro ao criar lista de preços:", error);
-      setError("Erro ao criar lista de preços.");
+      toastError("Erro ao criar lista de preços.");
     } finally {
       setLoading(false);
     }
@@ -90,8 +91,6 @@ const PostPricesList = () => {
       <h1 className="text-2xl font-semibold text-center mb-6 text-gray-800">
         Criar Lista de Preços
       </h1>
-
-      {error && <p className="text-center text-red-500 mb-4">{error}</p>}
 
       <div className="mb-6">
         <label className="block text-gray-700 font-medium mb-2">
@@ -114,13 +113,13 @@ const PostPricesList = () => {
             key={product.id}
             className="mb-4 p-4 bg-white rounded-lg shadow-sm border"
           >
-            <p className="text-gray-700 font-medium mb-2">{product.name}</p>
+            <p className="text-gray-700 font-medium mb-2">{product.nome}</p>
             <label className="block text-gray-700 font-medium mb-2">
               Valor
             </label>
             <input
               type="number"
-              value={product.value}
+              value={product.preco}
               onChange={(e) => handleProductValueChange(e, index)}
               className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
             />

@@ -4,14 +4,15 @@ import axios from "axios";
 import { EditIcon, LucideTrash2, PlusIcon } from "lucide-react";
 import DialogExclusion from "./DialogExclusion";
 import { PriceListProps, useZustandContext } from "@/context/cartContext";
+import ToastNotifications from "./Toasts";
 
 const PriceListsOverview = () => {
-  const { priceLists, loading, filterPricesList, fetchPriceLists } =
+  const { priceLists, loading, fetchPriceLists, filterPricesList } =
     useZustandContext();
-  const [error, setError] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedPriceList, setSelectedPriceList] =
     useState<PriceListProps | null>(null);
+  const { toastSuccess, toastError } = ToastNotifications();
   const navigate = useNavigate();
 
   const deletePriceList = async (id: string) => {
@@ -20,10 +21,14 @@ const PriceListsOverview = () => {
       await axios.delete(
         `https://us-central1-server-kyoto.cloudfunctions.net/api/v1/prices-lists/${id}`
       );
+
       filterPricesList(id);
+
+      setIsDialogOpen(false);
+      toastSuccess("Lista de preços excluida com sucesso.");
     } catch (error) {
       console.error("Erro ao excluir lista de preços:", error);
-      setError("Erro ao excluir lista de preços.");
+      toastError("Erro ao excluir lista de preços.");
     }
   };
 
@@ -57,7 +62,6 @@ const PriceListsOverview = () => {
           Carregando listas de preços...
         </p>
       )}
-      {error && <p className="text-center text-red-500">{error}</p>}
       <div className="mb-3 flex justify-center">
         <button
           className="bg-green-500 hover:bg-green-600 text-white text-sm font-bold rounded flex items-center gap-2 px-4 py-2"

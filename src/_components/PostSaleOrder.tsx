@@ -19,13 +19,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import ToastNotifications from "./Toasts";
+import { Product } from "@/context/cartContext";
+import { format } from "date-fns";
 
 export type OrderSaleTypes = {
   status_order?: number;
-  id?: string;
-  total?: number;
   created_at?: string;
   updated_at?: string;
+  id?: string;
+  total?: number;
   cliente: ClientData | null;
   enderecoDeCobranca: EnderecoDeEntrega | null;
   enderecoDeEntrega: EnderecoDeEntrega;
@@ -67,18 +69,16 @@ export type MeioDePagamento = {
 };
 
 interface ProductWithQuantity {
-  product: ProductInPriceList;
+  product: Product;
   quantity: number;
 }
 
-export type ProductInPriceList = {
-  id: string;
-  name: string;
-  value: number;
-};
-
 const OrderSaleProps: React.FC = () => {
+  const orderCreationDate = format(new Date(), "yyyy/MM/dd  HH:mm:ss");
   const [orderSale, setOrderSale] = useState<OrderSaleTypes>({
+    status_order: 1,
+    created_at: orderCreationDate,
+    updated_at: orderCreationDate,
     cliente: null,
     enderecoDeCobranca: {
       bairro: "",
@@ -204,11 +204,11 @@ const OrderSaleProps: React.FC = () => {
     setOrderSale((prevOrderSaleTypes) => {
       const updatedItems = products.map(({ product, quantity }) => ({
         produtoId: product.id,
-        nome: product.name,
+        nome: product.nome,
         quantidade: quantity,
-        preco: product.value,
-        precoUnitarioBruto: product.value,
-        precoUnitarioLiquido: product.value,
+        preco: product.preco,
+        precoUnitarioBruto: product.preco,
+        precoUnitarioLiquido: product.preco,
       }));
 
       return {
@@ -234,6 +234,7 @@ const OrderSaleProps: React.FC = () => {
   const handleSelectPaymentMethod = (value: string) => {
     setSelectedPaymentMethod(value);
     const selectedId = parseInt(value, 10);
+    console.log("total no pai: ", total);
 
     if (!isNaN(selectedId)) {
       // Atualiza o estado de meiosDePagamento
@@ -242,7 +243,7 @@ const OrderSaleProps: React.FC = () => {
         updatedMeiosDePagamento.push({
           idMeioDePagamento: selectedId,
           parcelas: 1,
-          valor: total,
+          valor: Number(total.toFixed(2)),
         });
 
         return {
@@ -256,6 +257,7 @@ const OrderSaleProps: React.FC = () => {
   };
 
   const handleTotalChange = (newTotal: number) => {
+    console.log("Setando total...", newTotal);
     setTotal(newTotal);
   };
 

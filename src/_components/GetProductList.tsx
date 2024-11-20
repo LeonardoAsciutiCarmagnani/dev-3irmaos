@@ -19,12 +19,7 @@ import {
 } from "@/components/ui/table";
 import { LucideTrash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-
-type Product = {
-  id: string;
-  name: string;
-  value: number;
-};
+import { Product } from "@/context/cartContext";
 
 interface ProductSelectorProps {
   onProductSelect: (products: { product: Product; quantity: number }[]) => void;
@@ -95,10 +90,10 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
 
   const calculateTotal = () => {
     const total = selectedProducts.reduce(
-      (total, item) => total + item.product.value * item.quantity,
+      (total, item) => total + item.product.preco * item.quantity,
       0
     );
-    console.log("total calculado", total);
+    console.log("total calculado no filho", total.toFixed(2));
     return total;
   };
 
@@ -110,13 +105,13 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
           <SelectTrigger className="w-full md:w-1/2 lg:w-1/3">
             {selectedProductId
               ? products.find((product) => product.id === selectedProductId)
-                  ?.name
+                  ?.nome
               : "Selecione um Produto"}
           </SelectTrigger>
           <SelectContent>
             {products.map((product) => (
               <SelectItem key={product.id} value={product.id}>
-                {product.name}
+                {product.nome}
               </SelectItem>
             ))}
           </SelectContent>
@@ -158,10 +153,10 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
             {selectedProducts.map((item) => (
               <TableRow key={item.product.id}>
                 <TableCell className="p-1 text-xs text-center">
-                  {item.product.name}
+                  {item.product.nome}
                 </TableCell>
                 <TableCell className="p-1 text-xs">
-                  {item.product.value.toLocaleString("pt-BR", {
+                  {item.product.preco.toLocaleString("pt-BR", {
                     style: "currency",
                     currency: "BRL",
                   })}

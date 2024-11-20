@@ -206,7 +206,7 @@ export const Register = () => {
         user_email: data.userEmail,
         user_CPF: data.CPF.replace(/\D/g, ""),
         user_phone: data.phone,
-        user_IE: data.IE.replace(/\D/g, "") || "",
+        user_IE: data.IE || "",
         user_fantasyName: data.fantasyName || "",
         user_neighborhood: data.neighborhood,
         user_cep: data.cep,

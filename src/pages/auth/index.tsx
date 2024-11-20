@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebaseConfig";
 import { useAuthStore } from "@/context/authStore";
+import ToastNotifications from "@/_components/Toasts";
 
 interface AuthUserProps {
   userLogin: string;
@@ -21,6 +22,7 @@ export const Auth = () => {
     formState: { errors },
   } = useForm<AuthUserProps>();
   const { setUser } = useAuthStore();
+  const { toastSuccess } = ToastNotifications();
 
   const handleUserLogin = async (data: AuthUserProps) => {
     try {
@@ -37,8 +39,8 @@ export const Auth = () => {
       };
       setUser(userCredentials);
       localStorage.setItem("user", JSON.stringify(userCredentials));
-      alert("Acesso Liberado");
       navigate("/");
+      toastSuccess("Login realizado com sucesso!");
     } catch (error) {
       console.error("Erro de autenticação:", error);
       setError("userLogin", {

@@ -99,23 +99,17 @@ export const useZustandContext = create<ContextStates>((set) => ({
         priceLists: updatePricesList,
       };
     }),
-
-  filterPricesList: (id) =>
-    set((state) => {
-      const filteredPricesList = [...state.priceLists];
-      filteredPricesList.filter((list) => list.id !== id);
-
-      return {
-        priceLists: filteredPricesList,
-      };
-    }),
+  filterPricesList: (id: string) =>
+    set((state) => ({
+      priceLists: state.priceLists.filter((list) => list.id !== id),
+    })),
 
   updateDefaultFirebasePriceList: async (fetchedProducts) => {
     try {
       const priceListData = fetchedProducts.map((product) => ({
         id: product.id,
-        value: product.preco,
-        name: product.nome,
+        preco: product.preco,
+        nome: product.nome,
       }));
 
       await setDoc(doc(firestore, "default_prices-list", "DEFAULT"), {

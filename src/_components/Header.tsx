@@ -1,7 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { auth } from "../firebaseConfig"; // Instância do Firebase Auth
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Link } from "react-router-dom";
 import { ShoppingCart } from "lucide-react";
 import voidCart from "../assets/cart-xmark-svgrepo-com.svg";
 import { useZustandContext } from "../context/cartContext";
@@ -14,54 +12,38 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "../components/ui/sheet";
+import logoKyoto from "../assets/logo.png";
+import Sidebar from "./Sidebar";
 
 const Header: React.FC = () => {
-  const [userName, setUserName] = useState<string | null>(null);
+  // const [userName, setUserName] = useState<string | null>(null);
   const { countItemsInCart, listProductsInCart } = useZustandContext();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   useEffect(() => {
     console.log("Contando os itens no carrinho: ", countItemsInCart);
   }, [countItemsInCart]);
 
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      navigate("/login");
-    } catch (error) {
-      console.error("Erro ao fazer logout:", error);
-    }
-  };
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        const displayName = user.displayName || "...";
-        setUserName(displayName);
-        localStorage.setItem("userName", displayName);
-      } else {
-        setUserName(null);
-        localStorage.removeItem("userName");
-      }
-    });
-    return () => unsubscribe();
-  }, [countItemsInCart]);
+  useEffect(() => {}, [countItemsInCart]);
 
   return (
-    <header className="flex items-center justify-between p-4 bg-white shadow-md">
-      <div className="flex items-center">
-        <span className="text-xl font-semibold text-gray-800">
-          {userName === null ? "..." : `Olá, ${userName}`}
-        </span>
+    <header className="flex items-center justify-between p-4 bg-white shadow-md fixed top-0 w-full z-10">
+      <div className="flex items-center gap-x-4">
+        <Sidebar />
       </div>
-
+      <div>
+        <img src={logoKyoto} alt="Kyoto" className="rounded-full size-[4rem]" />
+      </div>
       <div className="flex items-center gap-3">
         {/* Icone do carrinho de compras + o count de produtos selecionados */}
         <Sheet>
           <SheetTrigger>
-            <div className="flex items-center rounded-md p-2 gap-1 ">
-              <ShoppingCart color="black" size={32} />
-              <span className="relative right-[1.4rem] bottom-2.5 flex items-center justify-center text-lg text-black bg-yellow-400 border-2 border-black rounded-full size-6 font-semibold">
+            <div className="flex items-center">
+              <ShoppingCart
+                className="text-gray-800 relative left-3"
+                size={32}
+              />
+              <span className="relative right-[0.2rem] bottom-2.5 flex items-center justify-center text-lg text-black bg-yellow-400 border-2 border-black rounded-full size-6 font-semibold">
                 {countItemsInCart}
               </span>
             </div>
@@ -134,13 +116,6 @@ const Header: React.FC = () => {
             )}
           </SheetContent>
         </Sheet>
-        {/* Botão de Logout */}
-        <button
-          onClick={handleLogout}
-          className="bg-transparent text-gray-600 hover:text-gray-800 border-2 border-gray-600 hover:bg-gray-100 py-2 px-4 rounded-md text-sm "
-        >
-          Sair
-        </button>
       </div>
     </header>
   );
