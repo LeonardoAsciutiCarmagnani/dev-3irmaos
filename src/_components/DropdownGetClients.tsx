@@ -150,7 +150,7 @@ const Clients = ({ onSelectClient }: ClientsProps) => {
                   <InputMask
                     mask={"999.999.999.999"}
                     readOnly
-                    value={selectedClient.user_IE.toString() || ""}
+                    defaultValue={selectedClient.user_IE.toString() || ""}
                     className="p-2 border border-gray-300 rounded-md w-full text-sm"
                   />
                 )}
@@ -162,7 +162,7 @@ const Clients = ({ onSelectClient }: ClientsProps) => {
                 </label>
                 <InputMask
                   mask={"99999-999"}
-                  value={selectedClient.user_cep.toString()}
+                  defaultValue={selectedClient.user_cep.toString()}
                   className="p-2 border border-gray-300 rounded-md w-full text-sm"
                 />
               </div>
@@ -174,11 +174,11 @@ const Clients = ({ onSelectClient }: ClientsProps) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <input
                     readOnly
-                    value={selectedClient.user_logradouro || ""}
+                    defaultValue={selectedClient.user_logradouro || ""}
                     className="p-2 border border-gray-300 rounded-md w-full text-sm"
                   />
                   <input
-                    value={selectedClient.user_neighborhood || ""}
+                    defaultValue={selectedClient.user_neighborhood || ""}
                     className="p-2 border border-gray-300 rounded-md w-full text-sm"
                   />
                 </div>
@@ -191,12 +191,14 @@ const Clients = ({ onSelectClient }: ClientsProps) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <input
                     readOnly
-                    value={selectedClient.user_houseNumber.toString() || ""}
+                    defaultValue={
+                      selectedClient.user_houseNumber.toString() || ""
+                    }
                     className="p-2 border border-gray-300 rounded-md w-full text-sm"
                   />
                   <input
                     readOnly
-                    value={selectedClient.user_complement || ""}
+                    defaultValue={selectedClient.user_complement || ""}
                     className="p-2 border border-gray-300 rounded-md w-full text-sm"
                   />
                 </div>
@@ -209,7 +211,7 @@ const Clients = ({ onSelectClient }: ClientsProps) => {
                   </label>
                   <input
                     readOnly
-                    value={selectedClient.user_fantasyName || ""}
+                    defaultValue={selectedClient.user_fantasyName || ""}
                     className="p-2 border border-gray-300 rounded-md w-full text-sm"
                   />
                 </div>
@@ -221,7 +223,7 @@ const Clients = ({ onSelectClient }: ClientsProps) => {
                 </label>
                 <input
                   readOnly
-                  value={selectedClient.user_ibgeCode.toString() || ""}
+                  defaultValue={selectedClient.user_ibgeCode.toString() || ""}
                   className="p-2 border border-gray-300 rounded-md w-full text-sm"
                 />
               </div>
@@ -232,7 +234,7 @@ const Clients = ({ onSelectClient }: ClientsProps) => {
                 </label>
                 <input
                   readOnly
-                  value={selectedClient.user_phone || ""}
+                  defaultValue={selectedClient.user_phone || ""}
                   className="p-2 border border-gray-300 rounded-md w-full text-sm"
                 />
               </div>

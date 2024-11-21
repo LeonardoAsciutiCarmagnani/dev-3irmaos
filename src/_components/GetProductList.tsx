@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { firestore } from "@/firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 import {
@@ -20,12 +20,12 @@ import {
 import { LucideTrash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Product } from "@/context/cartContext";
+import { usePostOrderStore } from "@/context/postOrder";
 
 interface ProductSelectorProps {
   onProductSelect: (products: { product: Product; quantity: number }[]) => void;
   selectedProducts: { product: Product; quantity: number }[];
   onRemoveProduct: (productId: string) => void;
-  onTotalChange: (total: number) => void;
   priceListId: string;
 }
 
@@ -34,11 +34,11 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
   selectedProducts,
   onRemoveProduct,
   priceListId,
-  onTotalChange,
 }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProductId, setSelectedProductId] = useState("");
   const [quantity, setQuantity] = useState(1);
+  const { setTotal } = usePostOrderStore();
 
   // Fetch de produtos da Firestore
   const fetchProducts = async () => {
@@ -61,12 +61,6 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
     }
   };
 
-  useEffect(() => {
-    if (priceListId) {
-      fetchProducts();
-    }
-  }, [priceListId]);
-
   const handleSelectProduct = (productId: string) => {
     setSelectedProductId(productId);
   };
@@ -80,22 +74,38 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
       const updatedProducts = [...selectedProducts, newProduct];
       onProductSelect(updatedProducts);
 
-      const total = calculateTotal();
-      onTotalChange(total);
+      const total = updatedProducts.reduce(
+        (total, item) => total + item.product.preco * item.quantity,
+        0
+      );
+      setTotal(total);
 
       setQuantity(1);
       setSelectedProductId("");
     }
   };
 
-  const calculateTotal = () => {
+  const totalFormatted = useMemo(() => {
     const total = selectedProducts.reduce(
       (total, item) => total + item.product.preco * item.quantity,
       0
     );
-    console.log("total calculado no filho", total.toFixed(2));
-    return total;
-  };
+    return total.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    });
+  }, [selectedProducts]);
+
+  useEffect(() => {
+    const total = selectedProducts.reduce(
+      (total, item) => total + item.product.preco * item.quantity,
+      0
+    );
+    setTotal(total);
+    if (priceListId) {
+      fetchProducts();
+    }
+  }, [priceListId, setTotal]);
 
   return (
     <div className="p-4">
@@ -180,12 +190,7 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
               <TableCell colSpan={3} className="text-right font-bold p-1">
                 Total:
               </TableCell>
-              <TableCell className="p-1">
-                {calculateTotal().toLocaleString("pt-BR", {
-                  style: "currency",
-                  currency: "BRL",
-                })}
-              </TableCell>
+              <TableCell className="p-1">{totalFormatted}</TableCell>
             </TableRow>
           </TableFooter>
         </Table>

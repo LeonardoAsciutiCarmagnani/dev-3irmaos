@@ -247,8 +247,8 @@ export const Register = () => {
   }, []);
 
   return (
-    <div className="w-screen h-screen flex-col items-center px-7 bg-gray-100 pt-5">
-      <div className="mb-6">
+    <div className="w-screen h-full flex-col items-center place-items-center px-7 bg-gray-50 pt-5">
+      <div className="mb-6 justify-self-start">
         <Sidebar />
       </div>
       <div className="flex flex-col w-full max-w-lg border border-gray-300 shadow-lg rounded-lg bg-white p-6 space-y-4">

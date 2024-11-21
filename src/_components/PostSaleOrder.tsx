@@ -22,6 +22,7 @@ import ToastNotifications from "./Toasts";
 import { Product } from "@/context/cartContext";
 import { format } from "date-fns";
 import Sidebar from "./Sidebar";
+import { usePostOrderStore } from "@/context/postOrder";
 
 export type OrderSaleTypes = {
   order_code?: number;
@@ -115,9 +116,9 @@ const OrderSaleProps: React.FC = () => {
   const [selectedProducts, setSelectedProducts] = useState<
     ProductWithQuantity[]
   >([]);
-  const [total, setTotal] = useState<number>(0);
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<string>("");
+  const { total } = usePostOrderStore();
 
   const handleSelectClient = (data: {
     clientData: ClientData | null;
@@ -245,7 +246,7 @@ const OrderSaleProps: React.FC = () => {
         updatedMeiosDePagamento.push({
           idMeioDePagamento: selectedId,
           parcelas: 1,
-          valor: Number(total.toFixed(2)),
+          valor: total,
         });
 
         return {
@@ -256,11 +257,6 @@ const OrderSaleProps: React.FC = () => {
     } else {
       console.error("ID do meio de pagamento inválido");
     }
-  };
-
-  const handleTotalChange = (newTotal: number) => {
-    console.log("Setando total...", newTotal);
-    setTotal(newTotal);
   };
 
   const handlePostSaleOrder = async (e: React.FormEvent) => {
@@ -409,7 +405,6 @@ const OrderSaleProps: React.FC = () => {
                     selectedProducts={selectedProducts}
                     onProductSelect={handleProductSelect}
                     onRemoveProduct={handleRemoveProduct}
-                    onTotalChange={handleTotalChange}
                   />
                 </fieldset>
 

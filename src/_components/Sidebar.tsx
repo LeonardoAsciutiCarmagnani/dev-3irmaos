@@ -16,11 +16,13 @@ import { signOut } from "firebase/auth";
 import { auth, firestore } from "@/firebaseConfig";
 import ToastNotifications from "./Toasts";
 import { doc, getDoc } from "firebase/firestore";
+import useUserTypeStore from "@/context/typeUserStore";
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const [email, setEmail] = useState<string | null>(null);
   const [username, setUserName] = useState<string | null>(null);
+  const { typeUser } = useUserTypeStore();
 
   const { toastSuccess } = ToastNotifications();
 
@@ -38,7 +40,7 @@ export default function Sidebar() {
     }
   };
 
-  const getUidAndEmailFromLocalStorage = (): string | null => {
+  const getUidFromLocalStorage = (): string | null => {
     const userJSON = localStorage.getItem("user");
     if (userJSON) {
       try {
@@ -53,7 +55,7 @@ export default function Sidebar() {
   };
 
   const fetchUserName = async (): Promise<string | null> => {
-    const id = getUidAndEmailFromLocalStorage();
+    const id = getUidFromLocalStorage();
 
     if (!id) {
       console.error("ID não encontrado no localStorage.");
@@ -68,7 +70,38 @@ export default function Sidebar() {
       if (docSnap.exists()) {
         const userName = docSnap.data()?.user_name;
         localStorage.setItem("userName", userName);
+
         return userName || null;
+      } else {
+        console.error("Documento não encontrado.");
+        return null;
+      }
+    } catch (error) {
+      console.error("Erro ao buscar user_name no Firestore:", error);
+      return null;
+    }
+  };
+
+  const fetchTypeUser = async (): Promise<string | null> => {
+    const id = getUidFromLocalStorage();
+
+    if (!id) {
+      console.error("ID não encontrado no localStorage.");
+      return null;
+    }
+
+    try {
+      const clientDoc = doc(firestore, "clients", id);
+      const docSnap = await getDoc(clientDoc);
+      console.log("Fetched type user");
+
+      if (docSnap.exists()) {
+        const typeUser = docSnap.data()?.type_user || null;
+
+        const setTypeUser = useUserTypeStore.getState().setTypeUser;
+        setTypeUser(typeUser);
+
+        return typeUser;
       } else {
         console.error("Documento não encontrado.");
         return null;
@@ -95,6 +128,9 @@ export default function Sidebar() {
   };
 
   useEffect(() => {
+    if (!typeUser) {
+      fetchTypeUser();
+    }
     const userJSON = localStorage.getItem("user");
     if (userJSON) {
       const user = JSON.parse(userJSON);
@@ -173,49 +209,54 @@ export default function Sidebar() {
                 </span>
               </Link>
             </li>
-            <li>
-              <Link
-                to="/prices-lists"
-                className="block text-gray-800 hover:text-white hover:bg-gray-700 rounded-md px-3 py-2 transition-colors"
-              >
-                <span className="flex items-center gap-x-4">
-                  <ReceiptIcon className="text-amber-500" size={24} /> Listas de
-                  preços
-                </span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/clients"
-                className="block text-gray-800 hover:text-white hover:bg-gray-700 rounded-md px-3 py-2 transition-colors"
-              >
-                <span className="flex items-center gap-x-4">
-                  <UsersIcon className="text-amber-500" size={24} /> Clientes
-                </span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/register"
-                className="block text-gray-800 hover:text-white hover:bg-gray-700 rounded-md px-3 py-2 transition-colors"
-              >
-                <span className="flex items-center gap-x-4">
-                  <UserRoundPlusIcon className="text-amber-500" size={24} />{" "}
-                  Cadastro de cliente
-                </span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/create-order-sale"
-                className="block text-gray-800 hover:text-white hover:bg-gray-700 rounded-md px-3 py-2 transition-colors"
-              >
-                <span className="flex items-center gap-x-4">
-                  <PackagePlusIcon className="text-amber-500" size={24} />{" "}
-                  Criação de pedido
-                </span>
-              </Link>
-            </li>
+            {typeUser === "adm" && (
+              <>
+                <li>
+                  <Link
+                    to="/prices-lists"
+                    className="block text-gray-800 hover:text-white hover:bg-gray-700 rounded-md px-3 py-2 transition-colors"
+                  >
+                    <span className="flex items-center gap-x-4">
+                      <ReceiptIcon className="text-amber-500" size={24} />{" "}
+                      Listas de preços
+                    </span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/clients"
+                    className="block text-gray-800 hover:text-white hover:bg-gray-700 rounded-md px-3 py-2 transition-colors"
+                  >
+                    <span className="flex items-center gap-x-4">
+                      <UsersIcon className="text-amber-500" size={24} />{" "}
+                      Clientes
+                    </span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/register"
+                    className="block text-gray-800 hover:text-white hover:bg-gray-700 rounded-md px-3 py-2 transition-colors"
+                  >
+                    <span className="flex items-center gap-x-4">
+                      <UserRoundPlusIcon className="text-amber-500" size={24} />{" "}
+                      Cadastro de cliente
+                    </span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/create-order-sale"
+                    className="block text-gray-800 hover:text-white hover:bg-gray-700 rounded-md px-3 py-2 transition-colors"
+                  >
+                    <span className="flex items-center gap-x-4">
+                      <PackagePlusIcon className="text-amber-500" size={24} />{" "}
+                      Criação de pedido
+                    </span>
+                  </Link>
+                </li>{" "}
+              </>
+            )}
             <li>
               <span
                 onClick={handleLogout}
