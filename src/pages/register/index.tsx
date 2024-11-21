@@ -30,6 +30,7 @@ import axios from "axios";
 import { ArrowRightLeftIcon, CheckCircleIcon, CircleXIcon } from "lucide-react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import ToastNotifications from "@/_components/Toasts";
+import Sidebar from "@/_components/Sidebar";
 
 interface CreateUserProps {
   userName: string;
@@ -246,10 +247,13 @@ export const Register = () => {
   }, []);
 
   return (
-    <div className="w-screen h-screen flex justify-center items-center px-7 bg-gray-100">
+    <div className="w-screen h-screen flex-col items-center px-7 bg-gray-100 pt-5">
+      <div className="mb-6">
+        <Sidebar />
+      </div>
       <div className="flex flex-col w-full max-w-lg border border-gray-300 shadow-lg rounded-lg bg-white p-6 space-y-4">
         <h1 className="text-2xl font-semibold text-gray-700 text-center">
-          Cadastro de usuários
+          Cadastro de cliente
         </h1>
         <form onSubmit={handleSubmit(handleCreateUser)} className="space-y-4">
           <Accordion

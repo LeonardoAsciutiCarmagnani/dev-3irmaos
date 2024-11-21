@@ -5,6 +5,7 @@ import { EditIcon, LucideTrash2, PlusIcon } from "lucide-react";
 import DialogExclusion from "./DialogExclusion";
 import { PriceListProps, useZustandContext } from "@/context/cartContext";
 import ToastNotifications from "./Toasts";
+import Sidebar from "./Sidebar";
 
 const PriceListsOverview = () => {
   const { priceLists, loading, fetchPriceLists, filterPricesList } =
@@ -54,15 +55,16 @@ const PriceListsOverview = () => {
 
   return (
     <div className="p-4 bg-gray-100 min-h-screen">
-      <h1 className="text-2xl font-semibold text-center mb-4">
-        Listas de Preços
-      </h1>
+      <div className=" flex items-center gap-x-8 mb-6">
+        <Sidebar />
+        <h1 className="text-2xl font-semibold text-center">Listas de Preços</h1>
+      </div>
       {loading && (
         <p className="text-center text-gray-500">
           Carregando listas de preços...
         </p>
       )}
-      <div className="mb-3 flex justify-center">
+      <div className="mb-7 flex justify-center">
         <button
           className="bg-green-500 hover:bg-green-600 text-white text-sm font-bold rounded flex items-center gap-2 px-4 py-2"
           onClick={() => navigate("/create-prices-list/")}

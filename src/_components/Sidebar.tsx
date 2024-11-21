@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import {
+  HomeIcon,
   LogOutIcon,
   MenuIcon,
   PackageIcon,
   PackagePlusIcon,
   ReceiptIcon,
-  ShoppingBasket,
   UserIcon,
   UserRoundPlusIcon,
   UsersIcon,
@@ -13,13 +13,14 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { signOut } from "firebase/auth";
-import { auth } from "@/firebaseConfig";
+import { auth, firestore } from "@/firebaseConfig";
 import ToastNotifications from "./Toasts";
+import { doc, getDoc } from "firebase/firestore";
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [username, setUsername] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
+  const [username, setUserName] = useState<string | null>(null);
 
   const { toastSuccess } = ToastNotifications();
 
@@ -37,26 +38,69 @@ export default function Sidebar() {
     }
   };
 
-  useEffect(() => {
-    const storedUsername = localStorage.getItem("userName");
-    if (storedUsername) {
-      setUsername(storedUsername);
-    } else {
-      console.log("Nenhum username encontrado no localStorage.");
+  const getUidAndEmailFromLocalStorage = (): string | null => {
+    const userJSON = localStorage.getItem("user");
+    if (userJSON) {
+      try {
+        const user = JSON.parse(userJSON);
+        return user?.uid || null;
+      } catch (e) {
+        console.error("Erro ao parsear o objeto user do localStorage", e);
+        return null;
+      }
+    }
+    return null;
+  };
+
+  const fetchUserName = async (): Promise<string | null> => {
+    const id = getUidAndEmailFromLocalStorage();
+
+    if (!id) {
+      console.error("ID não encontrado no localStorage.");
+      return null;
     }
 
-    // Obtendo o email do objeto user
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser);
-        setEmail(parsedUser.email || null);
-      } catch (error) {
-        console.error("Erro ao analisar o JSON do user:", error);
+    try {
+      const clientDoc = doc(firestore, "clients", id);
+      const docSnap = await getDoc(clientDoc);
+      console.log("Requisição feita");
+
+      if (docSnap.exists()) {
+        const userName = docSnap.data()?.user_name;
+        localStorage.setItem("userName", userName);
+        return userName || null;
+      } else {
+        console.error("Documento não encontrado.");
+        return null;
+      }
+    } catch (error) {
+      console.error("Erro ao buscar user_name no Firestore:", error);
+      return null;
+    }
+  };
+
+  const fetchData = async () => {
+    const localStorageName = localStorage.getItem("userName");
+
+    if (!localStorageName) {
+      console.log("Buscando dados...");
+      const name = await fetchUserName();
+      if (name) {
+        localStorage.setItem("userName", name);
+        setUserName(name);
       }
     } else {
-      console.log("Nenhum objeto user encontrado no localStorage.");
+      setUserName(localStorageName);
     }
+  };
+
+  useEffect(() => {
+    const userJSON = localStorage.getItem("user");
+    if (userJSON) {
+      const user = JSON.parse(userJSON);
+      setEmail(user.email);
+    }
+    fetchData();
   }, []);
 
   return (
@@ -100,9 +144,9 @@ export default function Sidebar() {
         <div className="p-4">
           {/* Informações do Usuário */}
           <div className="flex items-center gap-x-4 mb-6">
-            <UserIcon className="text-gray-800" size={32} />
+            <UserIcon className="text-amber-500" size={32} />
             <div>
-              <p className="font-semibold text-gray-800">{username}</p>
+              <p className="font-semibold text-amber-600">{username}</p>
               <p className="text-sm text-gray-500">{email}</p>
             </div>
           </div>
@@ -114,8 +158,8 @@ export default function Sidebar() {
                 className="block text-gray-800 hover:text-white hover:bg-gray-700 rounded-md px-3 py-2 transition-colors"
               >
                 <span className="flex items-center gap-x-4">
-                  <ShoppingBasket className="text-gray-800" size={24} />
-                  Tela principal
+                  <HomeIcon className="text-amber-500" size={24} />
+                  Home
                 </span>
               </Link>
             </li>
@@ -125,7 +169,7 @@ export default function Sidebar() {
                 className="block text-gray-800 hover:text-white hover:bg-gray-700 rounded-md px-3 py-2 transition-colors"
               >
                 <span className="flex items-center gap-x-4">
-                  <PackageIcon className="text-gray-800" size={24} /> Pedidos
+                  <PackageIcon className="text-amber-500" size={24} /> Pedidos
                 </span>
               </Link>
             </li>
@@ -135,7 +179,7 @@ export default function Sidebar() {
                 className="block text-gray-800 hover:text-white hover:bg-gray-700 rounded-md px-3 py-2 transition-colors"
               >
                 <span className="flex items-center gap-x-4">
-                  <ReceiptIcon className="text-gray-800" size={24} /> Listas de
+                  <ReceiptIcon className="text-amber-500" size={24} /> Listas de
                   preços
                 </span>
               </Link>
@@ -146,7 +190,7 @@ export default function Sidebar() {
                 className="block text-gray-800 hover:text-white hover:bg-gray-700 rounded-md px-3 py-2 transition-colors"
               >
                 <span className="flex items-center gap-x-4">
-                  <UsersIcon className="text-gray-800" size={24} /> Clientes
+                  <UsersIcon className="text-amber-500" size={24} /> Clientes
                 </span>
               </Link>
             </li>
@@ -156,7 +200,7 @@ export default function Sidebar() {
                 className="block text-gray-800 hover:text-white hover:bg-gray-700 rounded-md px-3 py-2 transition-colors"
               >
                 <span className="flex items-center gap-x-4">
-                  <UserRoundPlusIcon className="text-gray-800" size={24} />{" "}
+                  <UserRoundPlusIcon className="text-amber-500" size={24} />{" "}
                   Cadastro de cliente
                 </span>
               </Link>
@@ -167,7 +211,7 @@ export default function Sidebar() {
                 className="block text-gray-800 hover:text-white hover:bg-gray-700 rounded-md px-3 py-2 transition-colors"
               >
                 <span className="flex items-center gap-x-4">
-                  <PackagePlusIcon className="text-gray-800" size={24} />{" "}
+                  <PackagePlusIcon className="text-amber-500" size={24} />{" "}
                   Criação de pedido
                 </span>
               </Link>
@@ -178,7 +222,7 @@ export default function Sidebar() {
                 className="block text-gray-800 hover:text-white hover:bg-gray-700 rounded-md px-3 py-2 transition-colors"
               >
                 <span className="flex items-center gap-x-4">
-                  <LogOutIcon className="text-gray-800" size={24} /> Sair
+                  <LogOutIcon className="text-red-600" size={24} /> Sair
                 </span>
               </span>
             </li>

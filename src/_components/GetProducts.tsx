@@ -44,52 +44,65 @@ const ProductCard: React.FC<ProductCardProps> = ({
   handleAddItemInList,
   handleRemoveItemFromCart,
 }) => (
-  <div className="flex flex-col w-[180px] sm:w-[200px] p-4 bg-white rounded-lg shadow-xl border-[0.1rem]  border-gray-100">
-    <div className="mb-3">
+  <div className="flex flex-col w-[180px] sm:w-[200px] p-4 bg-white rounded-lg shadow-md border border-gray-200 hover:shadow-lg transition-shadow duration-300">
+    {/* Imagem do Produto */}
+    <div className="relative mb-3 group">
       {product.imagem ? (
         <img
           src={product.imagem}
           alt={product.nome}
-          className="w-full h-24 sm:h-28 object-cover rounded-md border border-yellow-400"
+          className="w-full h-28 sm:h-32 object-cover rounded-lg group-hover:brightness-90 transition duration-300"
         />
       ) : (
-        <div className="w-full h-24 sm:h-28 bg-gray-100 rounded-md flex items-center justify-center text-sm text-gray-500">
+        <div className="w-full h-28 sm:h-32 bg-gray-100 rounded-lg flex items-center justify-center text-sm text-gray-500">
           Sem imagem
         </div>
       )}
+      {product.categoria && (
+        <span
+          className={`absolute top-2 left-2 px-3 py-1 text-xs font-bold text-white rounded-lg ${
+            product.categoria === "ESPECIAIS" ? "bg-yellow-500" : "bg-red-500"
+          }`}
+        >
+          {product.categoria}
+        </span>
+      )}
+      {!product.ativo && (
+        <span className="absolute bottom-2 left-2 px-2 py-1 text-xs font-bold text-white bg-red-600 rounded-md">
+          Indisponível
+        </span>
+      )}
     </div>
-    <h3 className="text-sm font-semibold truncate text-gray-900 mb-1">
-      {product.nome}
-    </h3>
-    <p className="text-xs text-gray-500 mb-2">
-      {product.categoria || "Sem categoria"}
-    </p>
-    <p className="text-lg font-bold text-yellow-600 mb-2">
-      {product.preco.toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-      })}
-    </p>
-    <p
-      className={`text-sm font-medium ${
-        product.ativo ? "text-green-600" : "text-red-600"
-      }`}
-    >
-      {product.ativo ? "Disponível" : "Indisponível"}
-    </p>
-    <div className="flex items-center gap-3 mt-3">
+
+    {/* Informações do Produto */}
+    <div className="flex flex-col flex-1">
+      <h3 className="text-sm font-semibold text-gray-900 truncate mb-1">
+        {product.nome}
+      </h3>
+      <p className="text-lg font-bold text-green-600 mb-2">
+        {product.preco.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        })}
+      </p>
+    </div>
+
+    {/* Controle de Quantidade */}
+    <div className="flex items-center justify-between gap-2 mt-3">
       <button
         onClick={() => handleRemoveItemFromCart(product.id)}
-        className="flex items-center justify-center w-8 h-8 bg-yellow-100 hover:bg-yellow-200 rounded-full text-yellow-600 shadow-sm transition-all"
+        className="flex items-center justify-center w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-600 shadow-sm transition-transform hover:scale-105"
       >
-        <Minus className="w-5 h-5" />
+        <Minus className="w-4 h-4" />
       </button>
-      <span className="text-sm font-medium">{product.quantidade}</span>
+      <span className="text-sm font-medium text-gray-800">
+        {product.quantidade}
+      </span>
       <button
         onClick={() => handleAddItemInList(product)}
-        className="flex items-center justify-center w-8 h-8 bg-yellow-100 hover:bg-yellow-200 rounded-full text-yellow-600 shadow-sm transition-all"
+        className="flex items-center justify-center w-8 h-8 bg-yellow-500 hover:bg-yellow-600 rounded-full text-white shadow-sm transition-transform hover:scale-105"
       >
-        <Plus className="w-5 h-5" />
+        <Plus className="w-4 h-4" />
       </button>
     </div>
   </div>
@@ -102,12 +115,12 @@ const ProductCategory: React.FC<ProductCategoryProps> = ({
   handleRemoveItemFromCart,
 }) => (
   <div className="mb-6">
-    <div className="flex justify-start">
+    <div className="flex justify-start ">
       <h2 className="text-xl sm:text-2xl font-bold text-gray-800 bg-yellow-50 border-l-8 border-yellow-500 pl-4 p-2 mb-4 rounded-md shadow-md tracking-wider">
         {categoria.charAt(0).toUpperCase() + categoria.slice(1)}
       </h2>
     </div>
-    <div className="flex gap-4 overflow-x-auto">
+    <div className="grid grid-cols-2 gap-4">
       {products.map((product) => (
         <ProductCard
           key={product.id}
@@ -126,7 +139,6 @@ export const FetchProducts: React.FC = React.memo(() => {
     handleRemoveItemFromCart,
     products,
     loading,
-    error,
     setProducts,
   } = useZustandContext();
 
@@ -138,9 +150,8 @@ export const FetchProducts: React.FC = React.memo(() => {
   const categories = ["TRADICIONAIS", "ESPECIAIS"];
 
   return (
-    <div className="p-4 bg-white h-screen overflow-y-auto mt-[6rem]">
+    <div className="p-4 bg-gray-50 h-screen overflow-y-auto mt-[6rem]">
       {loading && <LoadingSkeleton />}
-      {error && <div className="text-red-600 text-center mt-4">{error}</div>}
       {!loading &&
         categories.map((categoria) => {
           const productsPerCategorie = products.filter(

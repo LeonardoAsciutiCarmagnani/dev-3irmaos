@@ -15,6 +15,7 @@ import axios from "axios";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "@/firebaseConfig";
 import ToastNotifications from "./Toasts";
+import Sidebar from "./Sidebar";
 
 interface ClientInFirestore {
   id_priceList: string;
@@ -137,7 +138,8 @@ export const Clients = () => {
 
   return (
     <div className="flex flex-col items-center p-4 bg-gray-50 min-h-screen">
-      <div className="w-full mb-4">
+      <div className="w-full mb-4 flex items-center">
+        <Sidebar />
         <Input
           placeholder="Buscar cliente..."
           value={searchQuery}

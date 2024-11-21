@@ -21,6 +21,7 @@ import {
 import ToastNotifications from "./Toasts";
 import { Product } from "@/context/cartContext";
 import { format } from "date-fns";
+import Sidebar from "./Sidebar";
 
 export type OrderSaleTypes = {
   order_code?: number;
@@ -304,6 +305,9 @@ const OrderSaleProps: React.FC = () => {
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
+      <div className="mb-5">
+        <Sidebar />
+      </div>
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl font-bold">Novo pedido</CardTitle>
