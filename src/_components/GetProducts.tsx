@@ -27,14 +27,38 @@ interface ProductCategoryProps {
 }
 
 const LoadingSkeleton: React.FC = () => (
-  <div className="flex gap-4 overflow-x-auto">
+  <div className="grid grid-cols-2 gap-4 p-4">
     {Array(8)
       .fill(null)
       .map((_, index) => (
         <div
           key={index}
-          className="min-w-[150px] h-24 bg-gray-200 rounded-md animate-pulse"
-        ></div>
+          className="w-full h-[350px] bg-gray-200 rounded-md animate-pulse"
+        >
+          {/* Imagem do Produto */}
+          <div className="relative mb-3 group">
+            <div className="w-full h-32 bg-gray-300 rounded-lg"></div>
+            {/* Categoria */}
+            <div className="absolute top-2 left-2 px-3 py-1 text-xs font-bold text-white rounded-lg bg-gray-400"></div>
+            {/* Status Indisponível */}
+            <div className="absolute bottom-2 left-2 px-2 py-1 text-xs font-bold text-white bg-gray-400 rounded-md"></div>
+          </div>
+
+          {/* Informações do Produto */}
+          <div className="flex flex-col flex-1">
+            {/* Nome do Produto */}
+            <div className="h-4 bg-gray-300 rounded mb-2"></div>
+            {/* Preço do Produto */}
+            <div className="h-6 bg-gray-300 rounded mb-2"></div>
+          </div>
+
+          {/* Controle de Quantidade */}
+          <div className="flex items-center justify-between gap-2 mt-3">
+            <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
+            <div className="h-4 bg-gray-300 w-12 rounded"></div>
+            <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
+          </div>
+        </div>
       ))}
   </div>
 );
