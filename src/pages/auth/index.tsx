@@ -18,11 +18,10 @@ export const Auth = () => {
   const {
     register,
     handleSubmit,
-    setError,
     formState: { errors },
   } = useForm<AuthUserProps>();
   const { setUser } = useAuthStore();
-  const { toastSuccess } = ToastNotifications();
+  const { toastSuccess, toastError } = ToastNotifications();
 
   const handleUserLogin = async (data: AuthUserProps) => {
     try {
@@ -38,15 +37,12 @@ export const Auth = () => {
         accessToken: await user.getIdToken(),
       };
       setUser(userCredentials);
-      localStorage.setItem("user", JSON.stringify(userCredentials));
+      localStorage.setItem("loggedUser", JSON.stringify(userCredentials));
       navigate("/");
       toastSuccess("Login realizado com sucesso!");
     } catch (error) {
       console.error("Erro de autenticação:", error);
-      setError("userLogin", {
-        type: "manual",
-        message: "Usuário ou senha incorretos!",
-      });
+      toastError("Login ou senha incorretos.");
     }
   };
 

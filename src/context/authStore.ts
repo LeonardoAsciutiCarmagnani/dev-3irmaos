@@ -41,13 +41,13 @@ export const useAuthStore = create<AuthState>((set) => ({
       email: userCredential.user.email,
     };
     set({ user });
-    localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem("loggedUser", JSON.stringify(user));
   },
 
   logout: async () => {
     await signOut(auth);
     set({ user: null });
-    localStorage.removeItem("user");
+    localStorage.removeItem("loggedUser");
   },
 }));
 

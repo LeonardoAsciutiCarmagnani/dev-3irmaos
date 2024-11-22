@@ -31,6 +31,7 @@ import { ArrowRightLeftIcon, CheckCircleIcon, CircleXIcon } from "lucide-react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import ToastNotifications from "@/_components/Toasts";
 import Sidebar from "@/_components/Sidebar";
+import { useNavigate } from "react-router-dom";
 
 interface CreateUserProps {
   userName: string;
@@ -73,6 +74,7 @@ export const Register = () => {
 
   const cpfOrCnpjValue = watch("CPF");
   const cepValue = watch("cep");
+  const navigate = useNavigate();
 
   const toggleCpfCnpj = () => {
     setIsCpf((prev) => !prev);
@@ -171,6 +173,7 @@ export const Register = () => {
   };
 
   const handleCreateUser = async (data: CreateUserProps) => {
+    const newUser = { ...data };
     const cpf = data.CPF.replace(/\D/g, "");
     const cpfExistente = await checkUserExistInFirestore(cpf);
 
@@ -190,7 +193,7 @@ export const Register = () => {
       const temporaryPassword = Math.random().toString(36).slice(-10);
       userCredential = await createUserWithEmailAndPassword(
         auth,
-        data.userEmail,
+        newUser.userEmail,
         temporaryPassword
       );
       const user = userCredential.user;
@@ -223,6 +226,7 @@ export const Register = () => {
       } else {
         await sendPasswordResetEmail(auth, data.userEmail);
         toastSuccess("Usuário criado com sucesso!");
+        navigate("/clients");
       }
     } catch (e) {
       console.error("Erro ao criar o usuário", e);
@@ -255,6 +259,7 @@ export const Register = () => {
         <h1 className="text-2xl font-semibold text-gray-700 text-center">
           Cadastro de cliente
         </h1>
+
         <form onSubmit={handleSubmit(handleCreateUser)} className="space-y-4">
           <Accordion
             value={activeItem}
@@ -344,7 +349,7 @@ export const Register = () => {
                         {...inputProps}
                         id="CPF"
                         placeholder={isCpf ? "Digite o CPF" : "Digite o CNPJ"}
-                        className="w-full mt-1"
+                        className="w-full mt-1 "
                         required
                       />
                     )}

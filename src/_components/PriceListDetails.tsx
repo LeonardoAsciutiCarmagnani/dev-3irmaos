@@ -9,6 +9,7 @@ interface ProductProps {
   id: string;
   nome: string;
   preco: number;
+  imagem: string;
 }
 
 interface PriceListProps {

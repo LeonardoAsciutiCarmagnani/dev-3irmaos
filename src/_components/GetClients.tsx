@@ -1,6 +1,20 @@
 import { useEffect, useState } from "react";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
-import { User, Trash2, Eye, KeyRoundIcon, CheckCircleIcon } from "lucide-react";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
+import {
+  User,
+  Trash2,
+  Eye,
+  KeyRoundIcon,
+  CheckCircleIcon,
+  SquarePenIcon,
+  PlusIcon,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +30,15 @@ import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "@/firebaseConfig";
 import ToastNotifications from "./Toasts";
 import Sidebar from "./Sidebar";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useZustandContext } from "@/context/cartContext";
+import { Link } from "react-router-dom";
 
 interface ClientInFirestore {
   id_priceList: string;
@@ -51,8 +74,12 @@ export const Clients = () => {
   const [resetPasswordError, setResetPasswordError] = useState("");
   const [resetPasswordSucess, setPasswordSucess] = useState<React.ReactNode>();
   const db = getFirestore();
+  const { priceLists, fetchPriceLists } = useZustandContext();
+  const [selectPriceList, setSelectPriceList] = useState({ id: "", name: "" });
+  const [isUpdatePriceList, setIsUpdatePriceList] = useState(false);
 
   useEffect(() => {
+    fetchPriceLists();
     const fetchClientes = async () => {
       try {
         const clientesCollection = collection(db, "clients");
@@ -84,10 +111,10 @@ export const Clients = () => {
 
   const handleDelete = async () => {
     if (!confirmDelete) return;
-
+    console.log("Deletando o id:", confirmDelete.user_id);
     try {
       const response = await axios.delete(
-        `https://us-central1-server-kyoto.cloudfunctions.net/api/v1/clientes/${confirmDelete.user_id}`
+        `https://us-central1-server-kyoto.cloudfunctions.net/api/v1/clients/${confirmDelete.user_id}`
       );
 
       if (response.status === 200) {
@@ -134,6 +161,44 @@ export const Clients = () => {
     setResetPasswordError("");
     setPasswordSucess(null);
     setSelectedClient(null);
+    setIsUpdatePriceList(false);
+  };
+
+  const handleUpdatePriceList = async () => {
+    if (!selectedClient) {
+      toastError("Selecione um cliente.");
+      return;
+    }
+
+    const priceListIdToSave =
+      selectPriceList.id === "default" ? "" : selectPriceList.id;
+
+    try {
+      const clientRef = doc(db, "clients", selectedClient.user_id);
+      await updateDoc(clientRef, {
+        id_priceList: priceListIdToSave,
+        priceListName: selectPriceList.name,
+      });
+
+      const updatedClientes = clientes.map((client) =>
+        client.user_id === selectedClient.user_id
+          ? {
+              ...client,
+              id_priceList: priceListIdToSave,
+              priceListName: selectPriceList.name,
+            }
+          : client
+      );
+      setClientes(updatedClientes);
+      setFilteredClientes(updatedClientes);
+      closeDialog();
+      toastSuccess("Lista de preços atualizada com sucesso!");
+      setIsUpdatePriceList(false);
+    } catch (error) {
+      closeDialog();
+      console.error("Erro ao atualizar a lista de preços:", error);
+      toastError("Erro ao atualizar a lista de preços.");
+    }
   };
 
   return (
@@ -155,6 +220,15 @@ export const Clients = () => {
         <p className="text-red-500">{error}</p>
       ) : (
         <>
+          <div className=" w-full flex justify-end mb-3">
+            <Link
+              to="/register"
+              className="bg-green-400 p-2 flex items-center justify-center rounded-md text-sm text-white gap-x-[0.2rem] w-fit"
+            >
+              <PlusIcon size={18} />
+              Novo cliente
+            </Link>
+          </div>
           {/* Lista de Clientes */}
           {filteredClientes.length === 0 ? (
             <p className="text-gray-500">Nenhum cliente encontrado.</p>
@@ -166,7 +240,7 @@ export const Clients = () => {
                   className="flex items-center justify-between bg-white shadow rounded-lg p-4"
                 >
                   <div className="flex items-center space-x-4">
-                    <User className="w-6 h-6 text-gray-500" />
+                    <User className="w-8 h-8 text-amber-500" />
                     <div>
                       <p className="text-gray-800 font-semibold">
                         {cliente.user_name}
@@ -181,9 +255,10 @@ export const Clients = () => {
                         >
                           {cliente.type_user.toUpperCase()}
                         </Badge>
-                        {cliente.priceListName && (
-                          <Badge className="bg-cyan-500">
-                            {cliente.priceListName}
+                        {cliente.type_user !== "adm" && (
+                          <Badge className="bg-amber-500">
+                            {cliente.priceListName.toUpperCase() ||
+                              "lista padrão".toUpperCase()}
                           </Badge>
                         )}
                       </div>
@@ -220,8 +295,12 @@ export const Clients = () => {
           <DialogHeader>
             <DialogTitle>Detalhes do Cliente</DialogTitle>
           </DialogHeader>
+
           <p>
             <strong>Nome:</strong> {selectedClient?.user_name}
+          </p>
+          <p>
+            <strong>Email:</strong> {selectedClient?.user_email}
           </p>
           <p>
             <strong>Telefone:</strong> {selectedClient?.user_phone}
@@ -235,9 +314,52 @@ export const Clients = () => {
           <p>
             <strong>Rua:</strong> {selectedClient?.user_logradouro}
           </p>
-          <p>
-            <strong>Lista de preços:</strong> {selectedClient?.priceListName}
-          </p>
+          <div>
+            <strong>Lista de preços:</strong>
+            <div className="flex gap-x-2">
+              {selectedClient?.priceListName || "Não atribuída"}
+              {selectedClient?.type_user !== "adm" && (
+                <SquarePenIcon
+                  color="#3b82f6"
+                  size={20}
+                  onClick={() => setIsUpdatePriceList(true)}
+                />
+              )}
+            </div>
+          </div>
+          {isUpdatePriceList && selectedClient?.type_user !== "adm" && (
+            <div className="flex gap-x-4">
+              <Select
+                onValueChange={(value) => {
+                  if (value === "default") {
+                    setSelectPriceList({ id: "", name: "Lista padrão" });
+                  } else {
+                    const selected = priceLists.find(
+                      (item) => item.id === value
+                    );
+                    if (selected) {
+                      setSelectPriceList(selected);
+                    }
+                  }
+                }}
+              >
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Lista de preços" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="default">Lista padrão</SelectItem>
+                  {priceLists.map((item) => (
+                    <SelectItem key={item.id} value={item.id}>
+                      {item.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button onClick={handleUpdatePriceList}>
+                <CheckCircleIcon className="size-8" />
+              </Button>
+            </div>
+          )}
           <div className="flex items-center gap-x-2">
             <button
               className="flex items-center px-4 py-2 bg-gray-100 rounded-md hover:bg-gray-200"

@@ -35,13 +35,14 @@ export default function Sidebar() {
       // Limpa o localStorage ou qualquer outro dado de sessão
       localStorage.removeItem("userName");
       localStorage.removeItem("user");
+      localStorage.removeItem("loggedUser");
     } catch (error) {
       console.error("Erro ao fazer logout:", error);
     }
   };
 
   const getUidFromLocalStorage = (): string | null => {
-    const userJSON = localStorage.getItem("user");
+    const userJSON = localStorage.getItem("loggedUser");
     if (userJSON) {
       try {
         const user = JSON.parse(userJSON);
@@ -131,7 +132,7 @@ export default function Sidebar() {
     if (!typeUser) {
       fetchTypeUser();
     }
-    const userJSON = localStorage.getItem("user");
+    const userJSON = localStorage.getItem("loggedUser");
     if (userJSON) {
       const user = JSON.parse(userJSON);
       setEmail(user.email);
@@ -153,7 +154,7 @@ export default function Sidebar() {
       {/* Overlay */}
       {isOpen && (
         <div
-          onClick={() => setIsOpen(false)} // Fecha a sidebar ao clicar no overlay
+          onClick={() => setIsOpen(false)}
           className="fixed inset-0 z-40 bg-black/50"
         ></div>
       )}
@@ -224,23 +225,23 @@ export default function Sidebar() {
                 </li>
                 <li>
                   <Link
-                    to="/clients"
-                    className="block text-gray-800 hover:text-white hover:bg-gray-700 rounded-md px-3 py-2 transition-colors"
-                  >
-                    <span className="flex items-center gap-x-4">
-                      <UsersIcon className="text-amber-500" size={24} />{" "}
-                      Clientes
-                    </span>
-                  </Link>
-                </li>
-                <li>
-                  <Link
                     to="/register"
                     className="block text-gray-800 hover:text-white hover:bg-gray-700 rounded-md px-3 py-2 transition-colors"
                   >
                     <span className="flex items-center gap-x-4">
                       <UserRoundPlusIcon className="text-amber-500" size={24} />{" "}
                       Cadastro de cliente
+                    </span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/clients"
+                    className="block text-gray-800 hover:text-white hover:bg-gray-700 rounded-md px-3 py-2 transition-colors"
+                  >
+                    <span className="flex items-center gap-x-4">
+                      <UsersIcon className="text-amber-500" size={24} />{" "}
+                      Clientes
                     </span>
                   </Link>
                 </li>

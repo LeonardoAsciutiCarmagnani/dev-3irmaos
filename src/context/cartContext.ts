@@ -110,6 +110,7 @@ export const useZustandContext = create<ContextStates>((set) => ({
         id: product.id,
         preco: product.preco,
         nome: product.nome,
+        imagem: product.imagem,
       }));
 
       await setDoc(doc(firestore, "default_prices-list", "DEFAULT"), {
@@ -155,7 +156,7 @@ export const useZustandContext = create<ContextStates>((set) => ({
 
   handleAddItemInList: (newProduct) =>
     set((state) => {
-      const { id, nome, preco } = newProduct;
+      const { id, nome, preco, imagem } = newProduct;
 
       const existingProductIndex = state.listProductsInCart.findIndex(
         (product) => product.id === id
@@ -174,7 +175,8 @@ export const useZustandContext = create<ContextStates>((set) => ({
           id,
           nome,
           preco,
-          quantidade: 1, // Inicializar com quantidade 1
+          quantidade: 1,
+          imagem,
         });
       }
 

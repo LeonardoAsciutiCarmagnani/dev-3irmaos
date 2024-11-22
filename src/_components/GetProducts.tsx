@@ -18,7 +18,6 @@ interface ProductCardProps {
   handleAddItemInList: (product: Product) => void;
   handleRemoveItemFromCart: (id: string) => void;
 }
-
 interface ProductCategoryProps {
   categoria: string;
   products: Product[];
@@ -229,15 +228,15 @@ const ProductCategory: React.FC<ProductCategoryProps> = ({
   handleAddItemInList,
   handleRemoveItemFromCart,
 }) => (
-  <div className="mb-6">
-    <div className="flex justify-start ">
-      <h2 className="text-md sm:text-2xl font-bold text-gray-800 bg-yellow-50 border-l-8 border-yellow-500 pl-4 p-2 mb-4 rounded-md shadow-md tracking-wider">
+  <div className="mb-6 px-4">
+    <div className="flex justify-start">
+      <h2 className="relative right-[1rem] text-md sm:text-2xl font-bold text-gray-800 bg-yellow-50 border-l-8 border-yellow-500 pl-4 p-2 mb-4 rounded-md shadow-md tracking-wider">
         {categoria
           ? categoria.charAt(0).toUpperCase() + categoria.slice(1)
           : "SEM CATEGORIA"}
       </h2>
     </div>
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
       {products.map((product) => (
         <ProductCard
           key={product.id}
