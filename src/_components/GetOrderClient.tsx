@@ -54,6 +54,8 @@ export function GetOrdersClientComponent() {
           );
 
           queryList.push({ ...data, total });
+
+          queryList.sort((a, b) => (a.order_code ?? 0) - (b.order_code ?? 0));
         });
         setOrderList(queryList);
       }
@@ -126,34 +128,56 @@ export function GetOrdersClientComponent() {
       <table className="w-full border-collapse text-center border-gray-200">
         <thead className="bg-gray-100">
           <tr>
-            <th className="border md:px-4 py-2 hidden md:table-cell">ID</th>
-            <th className="border md:px-4 py-2">Data de criação</th>
-            <th className="border md:px-4 py-2">Cliente</th>
-            <th className="border md:px-4 py-2">Status</th>
-            <th className="border md:px-4 py-2">Vizualizar produtos</th>
-            <th className="border md:px-4 py-2 hidden md:table-cell">Valor</th>
+            <th className="border md:px-4 py-2 text-sm md:text-base"></th>
+            <th className="border md:px-4 py-2 hidden text-sm md:text-base md:table-cell">
+              Número do pedido
+            </th>
+            <th className="border md:px-4 py-2 hidden md:table-cell text-sm md:text-base md:table-cel">
+              Data de criação
+            </th>
+            <th className="border md:px-4 py-2 text-sm md:text-base">
+              Cliente
+            </th>
+            <th className="border md:px-4 py-2 text-sm md:text-base">Status</th>
+            <th className="border md:px-4 py-2 text-sm md:text-base">
+              Detalhes
+            </th>
+            <th className="border md:px-4 py-2 text-sm md:text-base hidden md:table-cell">
+              Valor
+            </th>
           </tr>
         </thead>
         <tbody>
           {filteredOrders.length > 0 ? (
             <>
               {filteredOrders.map((order) => (
-                <tr key={order.id} className="hover:bg-gray-50">
-                  <td className="border px-4 py-2 hidden md:table-cell">
+                <tr
+                  key={order.id}
+                  className={
+                    order.created_at === undefined
+                      ? "hidden"
+                      : "hover:bg-gray-50"
+                  }
+                >
+                  <td className="border px-4 py-2 text-sm md:text-base ">
+                    <input type="checkbox" name="" id="" />
+                  </td>
+                  <td className="border px-4 py-2 hidden md:table-cell text-sm md:text-base">
                     {order.order_code}
                   </td>
-                  <td className="border px-4 py-2">
+
+                  <td className="border px-4 py-2 hidden md:table-cell text-sm md:text-base">
                     {order.created_at
                       ? format(order.created_at, "dd/MM/yyyy 'ás' HH:mm:ss")
                       : "Data indisponível"}
                   </td>
-                  <td className="border px-4 py-2">
+                  <td className="border px-4 py-2 text-xs md:text-base">
                     {order.cliente?.nomeDoCliente}
                   </td>
                   <td className="border px-4 py-2 ">
                     <Button
-                      disabled
-                      className={`px-2 py-1 rounded  ${
+                      disabled={(order.status_order ?? 0) >= 6}
+                      className={`px-2 py-1 rounded text-xs md:text-base  ${
                         order.status_order === 1
                           ? "bg-green-100 text-green-700 hover:bg-green-200"
                           : order.status_order === 2
@@ -182,10 +206,10 @@ export function GetOrdersClientComponent() {
                         : order.status_order === 6 && "Entregue"}
                     </Button>
                   </td>
-                  <td className="border px-4 py-2">
+                  <td className="border px-4 py-2 text-sm md:text-base">
                     <Dialog>
                       <DialogTrigger>
-                        <span className="bg-blue-500 text-white px-2 py-1 rounded">
+                        <span className="bg-blue-500 text-white px-2  text-xs md:text-base py-1 rounded hover:bg-blue-700">
                           Ver
                         </span>
                       </DialogTrigger>
@@ -196,7 +220,7 @@ export function GetOrdersClientComponent() {
                         <DialogHeader>
                           <DialogTitle>Lista de produtos: </DialogTitle>
                         </DialogHeader>
-                        <div className=" md:hidden space-y-2">
+                        <div className=" md:hidden space-y-2 flex flex-col items-center justify-center">
                           <div className="flex justify-between border-2 rounded-lg p-2">
                             <span className="font-semibold text-sm items-start">
                               ID:
@@ -205,6 +229,7 @@ export function GetOrdersClientComponent() {
                               {order.id}
                             </span>
                           </div>
+                          <div></div>
                           <div className="flex justify-between border-2 rounded-lg items-center p-1">
                             <span className="text-sm font-semibold">
                               Valor total do pedido:
@@ -243,28 +268,46 @@ export function GetOrdersClientComponent() {
                       currency: "BRL",
                     })}
                   </td>
+                  <td className="border px-4 py-2 hidden md:table-cell">
+                    <div>
+                      <Button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-700">
+                        Imprimir
+                      </Button>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </>
           ) : (
             <>
               {orderList.map((order) => (
-                <tr key={order.id} className="hover:bg-gray-50">
-                  <td className="border px-4 py-2 hidden md:table-cell">
+                <tr
+                  key={order.id}
+                  className={
+                    order.created_at === undefined
+                      ? "hidden"
+                      : "hover:bg-gray-50"
+                  }
+                >
+                  <td className="border px-4 py-2 text-sm md:text-base ">
+                    <input type="checkbox" name="" id="" />
+                  </td>
+                  <td className="border px-4 py-2 hidden md:table-cell text-sm md:text-base">
                     {order.order_code}
                   </td>
-                  <td className="border px-4 py-2">
+
+                  <td className="border px-4 py-2 hidden md:table-cell text-sm md:text-base">
                     {order.created_at
                       ? format(order.created_at, "dd/MM/yyyy 'ás' HH:mm:ss")
                       : "Data indisponível"}
                   </td>
-                  <td className="border px-4 py-2">
+                  <td className="border px-4 py-2 text-xs md:text-base">
                     {order.cliente?.nomeDoCliente}
                   </td>
                   <td className="border px-4 py-2 ">
                     <Button
-                      disabled
-                      className={`px-2 py-1 rounded opacity-100  ${
+                      disabled={(order.status_order ?? 0) >= 6}
+                      className={`px-2 opacity-60 py-1 rounded text-xs md:text-base  ${
                         order.status_order === 1
                           ? "bg-green-100 text-green-700 hover:bg-green-200"
                           : order.status_order === 2
@@ -293,10 +336,10 @@ export function GetOrdersClientComponent() {
                         : order.status_order === 6 && "Entregue"}
                     </Button>
                   </td>
-                  <td className="border px-4 py-2">
+                  <td className="border px-4 py-2 text-sm md:text-base">
                     <Dialog>
                       <DialogTrigger>
-                        <span className="bg-blue-500 text-white px-2 py-1 rounded">
+                        <span className="bg-blue-500 text-white px-2  text-xs md:text-base py-1 rounded hover:bg-blue-700">
                           Ver
                         </span>
                       </DialogTrigger>
@@ -307,7 +350,7 @@ export function GetOrdersClientComponent() {
                         <DialogHeader>
                           <DialogTitle>Lista de produtos: </DialogTitle>
                         </DialogHeader>
-                        <div className=" md:hidden space-y-2">
+                        <div className=" md:hidden space-y-2 flex flex-col items-center justify-center">
                           <div className="flex justify-between border-2 rounded-lg p-2">
                             <span className="font-semibold text-sm items-start">
                               ID:
@@ -316,6 +359,7 @@ export function GetOrdersClientComponent() {
                               {order.id}
                             </span>
                           </div>
+                          <div></div>
                           <div className="flex justify-between border-2 rounded-lg items-center p-1">
                             <span className="text-sm font-semibold">
                               Valor total do pedido:
@@ -327,12 +371,15 @@ export function GetOrdersClientComponent() {
                               })}
                             </span>
                           </div>
+                          <Button className="bg-blue-500 text-white px-2 py-1 rounded">
+                            Imprimir
+                          </Button>
                         </div>
-                        <div className="text-sm space-y-2 p-2 md:text-base">
+                        <div className=" rounded-lg text-sm space-y-2 p-2 md:text-base">
                           {order.itens.map((product) => (
                             <div
                               key={product.produtoId}
-                              className="flex flex-col border-2  space-y-2 p-2 rounded-lg items-center"
+                              className="flex flex-col border-2 space-y-2 p-2 rounded-lg items-center"
                             >
                               <span>{product.nome}</span>
                               <span>Quantidade: {product.quantidade}</span>
