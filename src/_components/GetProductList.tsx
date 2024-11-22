@@ -108,7 +108,7 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
   }, [priceListId, setTotal]);
 
   return (
-    <div className="p-4">
+    <div className="p-[0.45rem]">
       {/* Dropdown para selecionar produtos */}
       <div className="mb-4">
         <Select onValueChange={handleSelectProduct} value={selectedProductId}>
@@ -147,37 +147,44 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
       </div>
 
       {/* Tabela para exibir produtos selecionados */}
-      <div className="overflow-x-auto">
-        <Table className="w-full">
+      <div>
+        <Table className="w-full max-w-full overflow-x-hidden">
           <TableHeader>
             <TableRow>
-              <TableHead className="w-1/4 p-1 text-center">Produto</TableHead>
-              <TableHead className="w-1/4 p-1 text-center">Valor</TableHead>
-              <TableHead className="w-1/4 p-1 text-center">
-                Quantidade
+              <TableHead className="w-1/4 p-2 text-center text-xs text-gray-700">
+                Produto
               </TableHead>
-              <TableHead className="w-1/4 p-1 text-center">Ações</TableHead>
+              <TableHead className="w-1/4 p-2 text-center text-xs text-gray-700">
+                Valor
+              </TableHead>
+              <TableHead className="w-[1rem] p-1 text-center text-xs text-gray-700">
+                Qtd
+              </TableHead>
+              <TableHead className="w-1/4 p-1 text-center text-xs text-gray-700">
+                Ações
+              </TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody className="">
+          <TableBody>
             {selectedProducts.map((item) => (
-              <TableRow key={item.product.id}>
-                <TableCell className="p-1 text-xs text-center">
+              <TableRow key={item.product.id} className="hover:bg-gray-50">
+                <TableCell className="p-2 text-xs text-center font-medium text-gray-800 whitespace-wrap">
                   {item.product.nome}
                 </TableCell>
-                <TableCell className="p-1 text-xs">
+                <TableCell className="p-2 text-xs text-center font-medium text-gray-800 whitespace-nowrap">
                   {item.product.preco.toLocaleString("pt-BR", {
                     style: "currency",
                     currency: "BRL",
                   })}
                 </TableCell>
-                <TableCell className="p-1 text-center">
+                <TableCell className="p-2 text-center font-medium text-gray-800">
                   {item.quantity}
                 </TableCell>
-                <TableCell>
+                <TableCell className="p-2 text-center">
                   <Button
                     variant="outline"
                     onClick={() => onRemoveProduct(item.product.id)}
+                    className="text-red-500 hover:bg-red-100"
                   >
                     <LucideTrash2 size={16} />
                   </Button>
@@ -187,10 +194,15 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
           </TableBody>
           <TableFooter>
             <TableRow>
-              <TableCell colSpan={3} className="text-right font-bold p-1">
+              <TableCell
+                colSpan={3}
+                className="text-right font-bold p-3 text-gray-800"
+              >
                 Total:
               </TableCell>
-              <TableCell className="p-1">{totalFormatted}</TableCell>
+              <TableCell className="p-3 text-xs font-medium text-gray-800">
+                {totalFormatted}
+              </TableCell>
             </TableRow>
           </TableFooter>
         </Table>

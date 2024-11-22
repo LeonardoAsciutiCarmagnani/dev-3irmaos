@@ -44,7 +44,7 @@ export const BuyList = () => {
                   >
                     <img
                       src={item.imagem}
-                      className="size-52 border-2"
+                      className="size-48 border-2"
                       alt="Imagem referente ao produto selecionado"
                     />
                     <div>

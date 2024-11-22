@@ -300,7 +300,7 @@ const OrderSaleProps: React.FC = () => {
   };
 
   return (
-    <div className="p-6 max-w-3xl mx-auto">
+    <div className="p-2 max-w-3xl mx-auto">
       <div className="mb-5">
         <Sidebar />
       </div>
@@ -396,7 +396,7 @@ const OrderSaleProps: React.FC = () => {
             {clienteSelecionado && (
               <>
                 {/* Produtos */}
-                <fieldset className="border border-gray-200 rounded-lg p-4">
+                <fieldset className="border border-gray-200 rounded-lg min-w-full max-w-full overflow-x-hidden">
                   <legend className="text-lg font-semibold text-gray-700">
                     Produtos
                   </legend>
