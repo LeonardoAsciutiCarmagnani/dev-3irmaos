@@ -1,5 +1,6 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createBrowserRouter } from "react-router-dom";
-import React from "react";
+import React, { Suspense } from "react";
 import ProtectedAdminRoute from "./_components/ProtectedAdminRoute";
 
 const Register = React.lazy(() => import("./pages/register"));
@@ -26,129 +27,129 @@ export const router = createBrowserRouter(
     {
       path: "/register",
       element: (
-        <React.Suspense fallback={<div>Carregando...</div>}>
+        <Suspense fallback={<div>Carregando...</div>}>
           <ProtectedAdminRoute>
             <Register />
           </ProtectedAdminRoute>
-        </React.Suspense>
+        </Suspense>
       ),
     },
     {
       path: "/login",
       element: (
-        <React.Suspense fallback={<div>Carregando...</div>}>
+        <Suspense fallback={<div>Carregando...</div>}>
           <Auth />
-        </React.Suspense>
+        </Suspense>
       ),
     },
     {
       path: "/",
       element: (
-        <React.Suspense fallback={<div>Carregando...</div>}>
+        <Suspense fallback={<div>Carregando...</div>}>
           <ProtectedRoute>
             <Home />
           </ProtectedRoute>
-        </React.Suspense>
+        </Suspense>
       ),
     },
     {
       path: "/prices-lists",
       element: (
-        <React.Suspense fallback={<div>Carregando...</div>}>
+        <Suspense fallback={<div>Carregando...</div>}>
           <ProtectedAdminRoute>
             <GetPricesLists />
           </ProtectedAdminRoute>
-        </React.Suspense>
+        </Suspense>
       ),
     },
     {
       path: "/prices-lists/:id",
       element: (
-        <React.Suspense fallback={<div>Carregando...</div>}>
+        <Suspense fallback={<div>Carregando...</div>}>
           <ProtectedRoute>
             <PriceListDetails />
           </ProtectedRoute>
-        </React.Suspense>
+        </Suspense>
       ),
     },
     {
       path: "/create-prices-list",
       element: (
-        <React.Suspense fallback={<div>Carregando...</div>}>
+        <Suspense fallback={<div>Carregando...</div>}>
           <ProtectedAdminRoute>
             <CreatePriceList />
           </ProtectedAdminRoute>
-        </React.Suspense>
+        </Suspense>
       ),
     },
     {
       path: "/create-order-sale",
       element: (
-        <React.Suspense fallback={<div>Carregando...</div>}>
+        <Suspense fallback={<div>Carregando...</div>}>
           <ProtectedAdminRoute>
             <PedidoVendaForm />
           </ProtectedAdminRoute>
-        </React.Suspense>
+        </Suspense>
       ),
     },
     {
       path: "/get-orders",
       element: (
-        <React.Suspense fallback={<div>Carregando...</div>}>
+        <Suspense fallback={<div>Carregando...</div>}>
           <ProtectedAdminRoute>
             <GetOrders />
           </ProtectedAdminRoute>
-        </React.Suspense>
+        </Suspense>
       ),
     },
     {
       path: "/get-orders-client",
       element: (
-        <React.Suspense fallback={<div>Carregando...</div>}>
+        <Suspense fallback={<div>Carregando...</div>}>
           <ProtectedRoute>
             <GetOrdersClient />
           </ProtectedRoute>
-        </React.Suspense>
+        </Suspense>
       ),
     },
     {
       path: "/buyList",
       element: (
-        <React.Suspense fallback={<div>Carregando...</div>}>
+        <Suspense fallback={<div>Carregando...</div>}>
           <ProtectedRoute>
             <BuyList />
           </ProtectedRoute>
-        </React.Suspense>
+        </Suspense>
       ),
     },
     {
       path: "/clients",
       element: (
-        <React.Suspense fallback={<div>Carregando...</div>}>
+        <Suspense fallback={<div>Carregando...</div>}>
           <ProtectedRoute>
             <Clients />
           </ProtectedRoute>
-        </React.Suspense>
+        </Suspense>
       ),
     },
     {
       path: "/printPage",
       element: (
-        <React.Suspense fallback={<div>Carregando...</div>}>
+        <Suspense fallback={<div>Carregando...</div>}>
           <ProtectedAdminRoute>
             <PrintPage />
           </ProtectedAdminRoute>
-        </React.Suspense>
+        </Suspense>
       ),
     },
     {
       path: "/401",
       element: (
-        <React.Suspense fallback={<div>Carregando...</div>}>
+        <Suspense fallback={<div>Carregando...</div>}>
           <ProtectedRoute>
             <AccessDenied />
           </ProtectedRoute>
-        </React.Suspense>
+        </Suspense>
       ),
     },
   ],
