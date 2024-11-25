@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Input } from "@/components/ui/input";
@@ -30,15 +31,7 @@ import {
   query,
 } from "firebase/firestore";
 import { firestore } from "@/firebaseConfig";
-
-export type EnderecoDeEntrega = {
-  bairro: string;
-  cep: string;
-  codigoIbge: number;
-  complemento: string;
-  logradouro: string;
-  numero: string;
-};
+import { Client } from "./DropdownGetClients";
 
 export type ProductInPriceList = {
   id: string;
@@ -52,57 +45,39 @@ interface ItensProps {
   precoUnitarioLiquido?: number;
 }
 
-interface ClientInfosProps {
-  user_CPF: string;
-  user_IE: string;
-  user_cep: string;
-  user_complement: string;
-  user_email: string;
-  user_fantasyName: string;
-  user_houseNumber: number;
-  user_ibgeCode: number;
-  user_id: string;
-  user_logradouro: string;
-  user_name: string;
-  user_neighborhood: string;
-  user_phone: string;
-}
-
 const PedidoVendaForm: React.FC = () => {
-  const [clientForm, setClientForm] = useState<ClientInfosProps>();
-
   const orderCreationDate = format(new Date(), "yyyy/MM/dd HH:mm:ss");
 
   const [orderSale, setOrderSale] = useState<OrderSaleTypes>({
-    order_code: 0,
     status_order: 1,
+    order_code: 0,
     created_at: orderCreationDate,
     updated_at: orderCreationDate,
-    cliente: {
-      documento: clientForm?.user_CPF || "",
-      email: clientForm?.user_email || "",
-      inscricaoEstadual: clientForm?.user_IE || "",
-      nomeDoCliente: clientForm?.user_name || "",
-      nomeFantasia: clientForm?.user_fantasyName || "",
-    },
+    cliente: null,
     enderecoDeCobranca: {
-      bairro: clientForm?.user_neighborhood || "",
-      cep: clientForm?.user_cep || "",
-      codigoIbge: Number(clientForm?.user_ibgeCode),
-      complemento: clientForm?.user_complement || "",
-      logradouro: clientForm?.user_logradouro || "",
-      numero: Number(clientForm?.user_houseNumber),
+      bairro: "",
+      cep: "",
+      codigoIbge: 0,
+      complemento: "",
+      logradouro: "",
+      numero: 0,
     },
     enderecoDeEntrega: {
-      bairro: clientForm?.user_neighborhood || "",
-      cep: clientForm?.user_cep || "",
-      codigoIbge: Number(clientForm?.user_ibgeCode),
-      complemento: clientForm?.user_complement || "",
-      logradouro: clientForm?.user_logradouro || "",
-      numero: Number(clientForm?.user_houseNumber),
+      bairro: "",
+      cep: "",
+      codigoIbge: 0,
+      complemento: "",
+      logradouro: "",
+      numero: 0,
     },
     itens: [],
-    meiosDePagamento: [],
+    meiosDePagamento: [
+      {
+        idMeioDePagamento: 0,
+        parcelas: 0,
+        valor: 0,
+      },
+    ],
     numeroPedidoDeVenda: "",
     observacaoDoPedidoDeVenda: "",
     valorDoFrete: 0,
@@ -145,61 +120,17 @@ const PedidoVendaForm: React.FC = () => {
   };
 
   const handlePaymentMethod = (paymentMethod: string) => {
-    let paymentObject: {
-      idMeioDePagamento: number;
-      parcelas: number;
-      valor: number;
-    };
-    if (paymentMethod === "1") {
-      paymentObject = {
-        idMeioDePagamento: 1,
-        parcelas: 1,
-        valor: totalValue,
-      };
-      console.log(paymentObject);
-      orderSale.meiosDePagamento.push({
-        idMeioDePagamento: paymentObject.idMeioDePagamento,
-        parcelas: paymentObject.parcelas,
-        valor: paymentObject.valor,
-      });
-      console.log(orderSale.meiosDePagamento);
-      return paymentObject;
-    } else if (paymentMethod === "2") {
-      paymentObject = {
-        idMeioDePagamento: 2,
-        parcelas: 1,
-        valor: totalValue,
-      };
-      orderSale.meiosDePagamento.push({
-        idMeioDePagamento: paymentObject.idMeioDePagamento,
-        parcelas: paymentObject.parcelas,
-        valor: paymentObject.valor,
-      });
-      return paymentObject;
-    } else if (paymentMethod === "3") {
-      paymentObject = {
-        idMeioDePagamento: 3,
-        parcelas: 1,
-        valor: totalValue,
-      };
-      orderSale.meiosDePagamento.push({
-        idMeioDePagamento: paymentObject.idMeioDePagamento,
-        parcelas: paymentObject.parcelas,
-        valor: paymentObject.valor,
-      });
-      return paymentObject;
+    const selectedId = parseInt(paymentMethod, 10);
+
+    if (!isNaN(selectedId)) {
+      setOrderSale((prevList) => ({
+        ...prevList,
+        meiosDePagamento: [
+          { idMeioDePagamento: selectedId, parcelas: 1, valor: totalValue },
+        ],
+      }));
     } else {
-      paymentObject = {
-        idMeioDePagamento: 4,
-        parcelas: 1,
-        valor: totalValue,
-      };
-      orderSale.meiosDePagamento.push({
-        idMeioDePagamento: paymentObject.idMeioDePagamento,
-        parcelas: paymentObject.parcelas,
-        valor: paymentObject.valor,
-      });
-      return paymentObject;
+      console.error("ID do meio de pagamento inválido !");
     }
   };
 
@@ -250,39 +181,6 @@ const PedidoVendaForm: React.FC = () => {
     }
   };
 
-  const handleUpdateOrderSale = async () => {
-    if (clientForm) {
-      setOrderSale((prev) => ({
-        ...prev,
-        cliente: {
-          documento: clientForm.user_CPF || "",
-          email: clientForm.user_email || "",
-          inscricaoEstadual: clientForm.user_IE || "",
-          nomeDoCliente: clientForm.user_name || "",
-          nomeFantasia: clientForm.user_fantasyName || "",
-        },
-        enderecoDeCobranca: {
-          bairro: clientForm.user_neighborhood || "",
-          cep: clientForm.user_cep || "",
-          codigoIbge: Number(clientForm.user_ibgeCode),
-          complemento: clientForm.user_complement || "",
-          logradouro: clientForm.user_logradouro || "",
-          numero: Number(clientForm.user_houseNumber),
-        },
-        enderecoDeEntrega: {
-          bairro: clientForm.user_neighborhood || "",
-          cep: clientForm.user_cep || "",
-          codigoIbge: Number(clientForm.user_ibgeCode),
-          complemento: clientForm.user_complement || "",
-          logradouro: clientForm.user_logradouro || "",
-          numero: Number(clientForm.user_houseNumber),
-        },
-      }));
-
-      console.log("informações: ", orderSale);
-    }
-  };
-
   const fetchClientes = async () => {
     try {
       const JSONuserCredentials = localStorage.getItem("loggedUser");
@@ -293,16 +191,47 @@ const PedidoVendaForm: React.FC = () => {
       const clientesCollection = doc(firestore, "clients", userCredentials.uid);
       const clientesSnapshot = await getDoc(clientesCollection);
 
-      const data = clientesSnapshot.data() as ClientInfosProps;
+      const data = clientesSnapshot.data() as Client;
 
       if (data) {
-        setClientForm(data);
-
-        await handleUpdateOrderSale();
+        handlePushForm(data);
       }
     } catch (error) {
       console.error("Erro ao buscar clientes:", error);
     }
+  };
+
+  const handlePushForm = (data: Client) => {
+    if (!data) {
+      console.error("Dados inválidos fornecidos ao handlePushForm.");
+      return;
+    }
+
+    const updatedClientData = {
+      documento: data.user_CPF || "",
+      email: data.user_email || "",
+      inscricaoEstadual: data.user_IE || "",
+      nomeDoCliente: data.user_name || "",
+      nomeFantasia: data.user_fantasyName || "",
+    };
+
+    const createAddress = (clientData: Client) => ({
+      bairro: clientData.user_neighborhood || "",
+      cep: String(clientData.user_cep || ""),
+      codigoIbge: clientData.user_ibgeCode || 0,
+      complemento: clientData.user_complement || "",
+      logradouro: clientData.user_logradouro || "",
+      numero: clientData.user_houseNumber || 0,
+    });
+
+    const updatedAddress = createAddress(data);
+
+    setOrderSale((prevOrderSaleTypes) => ({
+      ...prevOrderSaleTypes,
+      cliente: updatedClientData,
+      enderecoDeCobranca: updatedAddress,
+      enderecoDeEntrega: updatedAddress,
+    }));
   };
 
   useEffect(() => {

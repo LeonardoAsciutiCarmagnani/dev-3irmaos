@@ -29,6 +29,7 @@ interface ContextStates {
   countItemsInCart: number;
   listProductsInCart: Product[];
   priceLists: PriceListProps[];
+
   setProducts: () => void;
   setTotalValue: () => void;
   setCountItemsInCart: (count: number) => void;

@@ -266,7 +266,6 @@ export function GetOrdersComponent() {
     { value: 1, label: "Pedido Aberto" },
     { value: 2, label: "Em produção" },
     { value: 3, label: "Pedido pronto" },
-    { value: 4, label: "Pedido faturado" },
     { value: 5, label: "Pedido enviado" },
     { value: 6, label: "Entregue" },
   ];
@@ -400,8 +399,6 @@ export function GetOrdersComponent() {
                                 : order.status_order === 3
                                 ? "bg-blue-200 text-blue-800 hover:bg-blue-300"
                                 : order.status_order === 4
-                                ? "bg-purple-200 text-purple-800 hover:bg-purple-300"
-                                : order.status_order === 5
                                 ? "bg-orange-200 text-orange-800 hover:bg-orange-300"
                                 : order.status_order === 6
                                 ? "bg-green-300 text-green-900 "
@@ -415,8 +412,6 @@ export function GetOrdersComponent() {
                                 ? "Em produção"
                                 : order.status_order === 3
                                 ? "Pedido pronto"
-                                : order.status_order === 4
-                                ? "Pedido faturado"
                                 : order.status_order === 5
                                 ? "Pedido enviado"
                                 : order.status_order === 6 && "Entregue"}
@@ -532,8 +527,6 @@ export function GetOrdersComponent() {
                           ? "bg-yellow-200 text-yellow-800 hover:bg-yellow-300"
                           : order.status_order === 3
                           ? "bg-blue-200 text-blue-800 hover:bg-blue-300"
-                          : order.status_order === 4
-                          ? "bg-purple-200 text-purple-800 hover:bg-purple-300"
                           : order.status_order === 5
                           ? "bg-orange-200 text-orange-800 hover:bg-orange-300"
                           : order.status_order === 6
@@ -565,14 +558,7 @@ export function GetOrdersComponent() {
                           <DialogTitle>Lista de produtos: </DialogTitle>
                         </DialogHeader>
                         <div className=" md:hidden space-y-2 flex flex-col items-center justify-center">
-                          <div className="flex justify-between border-2 rounded-lg p-2">
-                            <span className="font-semibold text-sm items-start">
-                              ID:
-                            </span>
-                            <span className="text-sm text-center ">
-                              {order.id}
-                            </span>
-                          </div>
+                          <div className="flex justify-between border-2 rounded-lg p-2"></div>
                           <div className="flex justify-between border-2 rounded-lg items-center p-1">
                             <span className="text-sm font-semibold">
                               Valor total do pedido:
@@ -711,15 +697,6 @@ export function GetOrdersComponent() {
                           <DialogTitle>Lista de produtos: </DialogTitle>
                         </DialogHeader>
                         <div className=" md:hidden space-y-2 flex flex-col items-center justify-center">
-                          <div className="flex justify-between border-2 rounded-lg p-2">
-                            <span className="font-semibold text-sm items-start">
-                              ID:
-                            </span>
-                            <span className="text-sm text-center ">
-                              {order.id}
-                            </span>
-                          </div>
-                          <div></div>
                           <div className="flex justify-between border-2 rounded-lg items-center p-1">
                             <span className="text-sm font-semibold">
                               Valor total do pedido:
