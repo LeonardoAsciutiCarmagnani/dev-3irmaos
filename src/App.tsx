@@ -4,16 +4,14 @@ import { Toaster } from "./components/ui/toaster";
 
 export default function App() {
   return (
-    <>
-      <div>
-        <Toaster />
-        <RouterProvider
-          router={router}
-          future={{
-            v7_startTransition: true,
-          }}
-        />
-      </div>
-    </>
+    <div>
+      <Toaster />
+      <RouterProvider
+        router={router}
+        future={{
+          v7_startTransition: true,
+        }}
+      />
+    </div>
   );
 }

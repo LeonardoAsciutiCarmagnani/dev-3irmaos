@@ -1,5 +1,5 @@
 import { GetOrdersClientComponent } from "@/_components/GetOrderClient";
 
-export function GetOrdersClient() {
+export default function GetOrdersClient() {
   return <GetOrdersClientComponent />;
 }

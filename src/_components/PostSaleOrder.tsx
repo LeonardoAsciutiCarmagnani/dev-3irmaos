@@ -23,10 +23,13 @@ import { Product } from "@/context/cartContext";
 import { format } from "date-fns";
 import Sidebar from "./Sidebar";
 import { usePostOrderStore } from "@/context/postOrder";
+import { useNavigate } from "react-router-dom";
+import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
+import { firestore } from "@/firebaseConfig";
 
 export type OrderSaleTypes = {
-  order_code?: number;
-  status_order?: number;
+  order_code: number;
+  status_order: number;
   created_at?: string;
   updated_at?: string;
   id?: string;
@@ -78,8 +81,10 @@ interface ProductWithQuantity {
 
 const OrderSaleProps: React.FC = () => {
   const orderCreationDate = format(new Date(), "yyyy/MM/dd  HH:mm:ss");
+  const [orderCode, setOrderCode] = useState(0);
   const [orderSale, setOrderSale] = useState<OrderSaleTypes>({
     status_order: 1,
+    order_code: orderCode,
     created_at: orderCreationDate,
     updated_at: orderCreationDate,
     cliente: null,
@@ -100,11 +105,35 @@ const OrderSaleProps: React.FC = () => {
       numero: 0,
     },
     itens: [],
-    meiosDePagamento: [],
+    meiosDePagamento: [
+      {
+        idMeioDePagamento: 0,
+        parcelas: 0,
+        valor: 0,
+      },
+    ],
     numeroPedidoDeVenda: "",
     observacaoDoPedidoDeVenda: "",
     valorDoFrete: 0,
   });
+
+  const fetchLastOrders = async () => {
+    const collectionRef = collection(firestore, "sales_orders");
+    const q = query(collectionRef, orderBy("order_code", "desc"), limit(1));
+    const queryDocs = await getDocs(q);
+
+    let lastOrderNumber = 0;
+
+    if (!queryDocs.empty) {
+      const lastOrder = queryDocs.docs[0].data();
+      lastOrderNumber = lastOrder.order_code;
+    }
+
+    const newOrderNumber = lastOrderNumber + 1;
+    setOrderCode(newOrderNumber);
+    console.log(orderCode);
+    orderSale.order_code = newOrderNumber;
+  };
 
   const [
     isUseRegisteredAddressForDelivery,
@@ -119,6 +148,7 @@ const OrderSaleProps: React.FC = () => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<string>("");
   const { total } = usePostOrderStore();
+  const navigate = useNavigate();
 
   const handleSelectClient = (data: {
     clientData: ClientData | null;
@@ -241,19 +271,16 @@ const OrderSaleProps: React.FC = () => {
 
     if (!isNaN(selectedId)) {
       // Atualiza o estado de meiosDePagamento
-      setOrderSale((prevState) => {
-        const updatedMeiosDePagamento = [...prevState.meiosDePagamento];
-        updatedMeiosDePagamento.push({
-          idMeioDePagamento: selectedId,
-          parcelas: 1,
-          valor: total,
-        });
-
-        return {
-          ...prevState,
-          meiosDePagamento: updatedMeiosDePagamento,
-        };
-      });
+      setOrderSale((prevOrderSaleTypes) => ({
+        ...prevOrderSaleTypes,
+        meiosDePagamento: [
+          {
+            idMeioDePagamento: selectedId,
+            parcelas: 1,
+            valor: total,
+          },
+        ],
+      }));
     } else {
       console.error("ID do meio de pagamento inválido");
     }
@@ -261,7 +288,7 @@ const OrderSaleProps: React.FC = () => {
 
   const handlePostSaleOrder = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    fetchLastOrders();
     console.log("Produtos sendo enviados: ", orderSale);
 
     // Validação de campos obrigatórios
@@ -293,6 +320,7 @@ const OrderSaleProps: React.FC = () => {
       );
 
       toastSuccess("Pedido de venda criado com sucesso.");
+      navigate("/get-orders");
     } catch (error) {
       console.error("Erro ao enviar pedido:", error);
       toastError("Erro ao criar o pedido.");

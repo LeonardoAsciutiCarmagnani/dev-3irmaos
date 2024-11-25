@@ -13,7 +13,7 @@ interface PrintItem {
   id_seq: number;
 }
 
-export function PrintPage() {
+export default function PrintPage() {
   const location = useLocation();
   const { arrayForPrint }: { arrayForPrint: PrintItem[] } = location.state;
   const { user } = location.state;

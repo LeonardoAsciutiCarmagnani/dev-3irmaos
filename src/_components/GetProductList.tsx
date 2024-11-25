@@ -132,7 +132,7 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
       <div className="mb-4">
         <Input
           type="number"
-          value={quantity}
+          value={"" + quantity}
           onChange={(e) => setQuantity(Number(e.target.value))}
           min={1}
           className="w-full md:w-20"

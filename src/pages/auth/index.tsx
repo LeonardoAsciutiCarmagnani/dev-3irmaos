@@ -1,5 +1,5 @@
 import { Input } from "@/components/ui/input";
-import logoKyoto from "../../assets/logo.png";
+import logoKyoto from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -13,7 +13,7 @@ interface AuthUserProps {
   userPassword: string;
 }
 
-export const Auth = () => {
+export default function Auth() {
   const navigate = useNavigate();
   const {
     register,
@@ -110,4 +110,4 @@ export const Auth = () => {
       </form>
     </div>
   );
-};
+}

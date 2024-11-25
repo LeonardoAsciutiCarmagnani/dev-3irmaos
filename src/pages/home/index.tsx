@@ -1,7 +1,7 @@
 import Header from "@/_components/Header";
 import { FetchProducts } from "../../_components/GetProducts";
 
-export const Home = () => {
+export default function Home() {
   return (
     <div>
       <header>
@@ -12,4 +12,4 @@ export const Home = () => {
       </div>
     </div>
   );
-};
+}

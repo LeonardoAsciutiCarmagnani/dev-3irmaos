@@ -32,6 +32,7 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import ToastNotifications from "@/_components/Toasts";
 import Sidebar from "@/_components/Sidebar";
 import { useNavigate } from "react-router-dom";
+import MaskedInput from "react-text-mask";
 
 interface CreateUserProps {
   userName: string;
@@ -57,22 +58,38 @@ interface CepData {
   uf: string;
 }
 
-export const Register = () => {
+export default function Register() {
   const { priceLists, fetchPriceLists } = useZustandContext();
   const { toastSuccess, toastError } = ToastNotifications();
   const { register, handleSubmit, watch, setValue, getValues, trigger } =
-    useForm<CreateUserProps>();
+    useForm<CreateUserProps>({
+      defaultValues: {
+        userName: "",
+        userEmail: "",
+        userPassword: "",
+        CPF: "",
+        phone: "",
+        IE: "",
+        fantasyName: "",
+        neighborhood: "",
+        cep: "",
+        ibge: "",
+        complement: "",
+        logradouro: "",
+        number: 0,
+      },
+    });
   const [selectState, setSelectState] = useState("");
   const [selectPriceList, setSelectPriceList] = useState({ id: "", name: "" });
   const [isCpf, setIsCpf] = useState(true);
-  const [endereco, setEndereco] = useState<CepData | null>(null);
-  const [cepError, setCepError] = useState<React.ReactNode | null>(null);
-  const [cepSucess, setCepSucess] = useState<React.ReactNode | null>(null);
+  const [endereco, setEndereco] = useState<CepData | "">("");
+  const [cepError, setCepError] = useState<React.ReactNode | "">("");
+  const [cepSucess, setCepSucess] = useState<React.ReactNode | "">("");
   const [cpfCnpjError, setCpfCnpjError] = useState("");
   const [activeItem, setActiveItem] = useState<string | undefined>("item-1");
   const [isSubmitButtonDisabled, setIsSubmitButtonDisabled] = useState(true);
 
-  const cpfOrCnpjValue = watch("CPF");
+  // const cpfOrCnpjValue = watch("CPF");
   const cepValue = watch("cep");
   const navigate = useNavigate();
 
@@ -131,7 +148,7 @@ export const Register = () => {
       if (!enderecoData) {
         setCepError(<CircleXIcon size={30} color="red" />);
         setCepSucess(null);
-        setEndereco(null);
+        setEndereco("");
         setValue("neighborhood", "");
         setValue("logradouro", "");
         setValue("ibge", "");
@@ -139,8 +156,8 @@ export const Register = () => {
         setEndereco(enderecoData);
         setCepSucess(<CheckCircleIcon size={30} color="green" />);
         setCepError(null);
-        setValue("neighborhood", enderecoData.bairro);
-        setValue("logradouro", enderecoData.logradouro);
+        setValue("neighborhood", enderecoData.bairro ?? "");
+        setValue("logradouro", enderecoData.logradouro ?? "");
         setValue("ibge", String(enderecoData.ibge));
       }
     } catch (error) {
@@ -157,7 +174,7 @@ export const Register = () => {
     if (!rawCep || rawCep.length !== 8) {
       setCepSucess(null);
       setCepError("O CEP deve conter 8 dígitos.");
-      setEndereco(null);
+      setEndereco("");
       return;
     }
     try {
@@ -168,9 +185,44 @@ export const Register = () => {
     }
   };
 
-  const determineMask = () => {
-    return isCpf ? "999.999.999-99" : "99.999.999/9999-99";
-  };
+  const determineMask = () =>
+    isCpf
+      ? [
+          /\d/,
+          /\d/,
+          /\d/,
+          ".",
+          /\d/,
+          /\d/,
+          /\d/,
+          ".",
+          /\d/,
+          /\d/,
+          /\d/,
+          "-",
+          /\d/,
+          /\d/,
+        ]
+      : [
+          /\d/,
+          /\d/,
+          ".",
+          /\d/,
+          /\d/,
+          /\d/,
+          ".",
+          /\d/,
+          /\d/,
+          /\d/,
+          "/",
+          /\d/,
+          /\d/,
+          /\d/,
+          /\d/,
+          "-",
+          /\d/,
+          /\d/,
+        ];
 
   const handleCreateUser = async (data: CreateUserProps) => {
     const newUser = { ...data };
@@ -251,7 +303,7 @@ export const Register = () => {
   }, []);
 
   return (
-    <div className="w-screen h-full flex-col items-center place-items-center px-7 bg-gray-50 pt-5">
+    <div className="w-screen h-screen flex-col items-center place-items-center px-7 bg-gray-50 pt-5">
       <div className="mb-6 justify-self-start">
         <Sidebar />
       </div>
@@ -302,8 +354,24 @@ export const Register = () => {
                   <label htmlFor="phone" className="text-gray-600">
                     Telefone:
                   </label>
-                  <InputMask
-                    mask={"(99) 99999-9999"}
+                  <MaskedInput
+                    mask={[
+                      "(",
+                      /\d/,
+                      /\d/,
+                      ")",
+                      " ",
+                      /\d/,
+                      /\d/,
+                      /\d/,
+                      /\d/,
+                      /\d/,
+                      "-",
+                      /\d/,
+                      /\d/,
+                      /\d/,
+                      /\d/,
+                    ]}
                     id="phone"
                     type="tel"
                     placeholder="Informe o telefone"
@@ -313,7 +381,7 @@ export const Register = () => {
                       setValue("phone", e.target.value); // Atualiza o valor
                       trigger("phone"); // Valida e atualiza o estado
                     }}
-                    value={watch("phone")}
+                    value={watch("phone") || ""}
                     required
                   />
                 </div>
@@ -334,26 +402,18 @@ export const Register = () => {
                       </span>
                     </div>
                   </div>
-                  <InputMask
+                  <MaskedInput
                     mask={determineMask()}
-                    maskChar={null}
-                    value={cpfOrCnpjValue}
+                    placeholder={isCpf ? "Digite o CPF" : "Digite o CNPJ"}
+                    className="w-full mt-1"
                     {...register("CPF", {
-                      onBlur: (e) => {
-                        validateCPFOrCNPJ(e.target.value);
-                      },
+                      onBlur: (e) => validateCPFOrCNPJ(e.target.value),
                     })}
-                  >
-                    {(inputProps) => (
-                      <Input
-                        {...inputProps}
-                        id="CPF"
-                        placeholder={isCpf ? "Digite o CPF" : "Digite o CNPJ"}
-                        className="w-full mt-1 "
-                        required
-                      />
-                    )}
-                  </InputMask>
+                    onChange={(e) => setValue("CPF", e.target.value)}
+                    value={watch("CPF") || ""}
+                    required
+                  />
+
                   {cpfCnpjError && (
                     <span className="text-red-600">{cpfCnpjError}</span>
                   )}
@@ -377,7 +437,7 @@ export const Register = () => {
                         setValue("IE", e.target.value);
                         trigger("IE");
                       }}
-                      value={watch("IE")}
+                      value={watch("IE") ?? ""}
                     />
                   </div>
                 )}
@@ -407,11 +467,10 @@ export const Register = () => {
                   <label htmlFor="cep" className="text-gray-600">
                     CEP:
                   </label>
-                  <InputMask
-                    mask={"99999-999"}
+                  <MaskedInput
+                    mask={[/\d/, /\d/, /\d/, /\d/, /\d/, "-", /\d/, /\d/, /\d/]}
                     id="cep"
                     type="text"
-                    alwaysShowMask
                     placeholder="Informe o CEP"
                     className="w-[6rem] text-center rounded-md p-1 mt-1 text-xs"
                     {...register("cep", { onBlur: handleFetchCEP })}
@@ -419,9 +478,16 @@ export const Register = () => {
                       setValue("cep", e.target.value);
                       trigger("cep");
                     }}
-                    value={watch("cep")}
+                    value={watch("cep") || ""}
                     required
                   />
+                  <a
+                    href="https://buscacepinter.correios.com.br/app/endereco/index.php"
+                    target="_blank"
+                    className="text-wrap text-xs relative left-10 pb-[0.1rem] border-b-[0.1rem] text-blue-300 border-outset border-blue-500 cursor-pointer hover:text-blue-700"
+                  >
+                    Ajuda com CEP ?
+                  </a>
                   {cepError && (
                     <span className="text-red-600 px-2 text-sx antialiased">
                       {cepError}
@@ -545,4 +611,4 @@ export const Register = () => {
       </div>
     </div>
   );
-};
+}

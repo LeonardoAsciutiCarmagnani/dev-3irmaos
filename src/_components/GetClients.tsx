@@ -202,7 +202,7 @@ export const Clients = () => {
   };
 
   return (
-    <div className="flex flex-col items-center p-4 bg-gray-50 min-h-screen">
+    <div className="flex flex-col items-center p-4 bg-gray-50 min-h-screen ">
       <div className="w-full mb-4 flex items-center">
         <Sidebar />
         <Input
@@ -265,20 +265,21 @@ export const Clients = () => {
                     </div>
                   </div>
 
-                  <div>
+                  <div className="flex items-center gap-x-4 ml-10">
                     <Button
                       variant="ghost"
                       onClick={() => setSelectedClient(cliente)}
+                      className="p-0"
                     >
                       <Eye size={15} />
                     </Button>
                     {cliente.type_user === "cliente" && (
                       <Button
                         variant="ghost"
-                        className="text-red-500 hover:text-red-700"
+                        className="text-red-500 hover:text-red-700 p-0"
                         onClick={() => setConfirmDelete(cliente)}
                       >
-                        <Trash2 className="w-5 h-5" />
+                        <Trash2 className="w-5 h-5 p-0" />
                       </Button>
                     )}
                   </div>

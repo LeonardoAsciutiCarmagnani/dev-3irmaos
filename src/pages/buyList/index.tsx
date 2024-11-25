@@ -9,7 +9,7 @@ import {
 import { useZustandContext } from "@/context/cartContext";
 import { useEffect } from "react";
 
-export const BuyList = () => {
+export default function BuyList() {
   const { listProductsInCart, totalValue, setTotalValue } = useZustandContext();
 
   console.log(listProductsInCart);
@@ -73,4 +73,4 @@ export const BuyList = () => {
       </div>
     </div>
   );
-};
+}

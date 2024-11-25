@@ -30,6 +30,9 @@ export default function Sidebar() {
     try {
       // Chama o método signOut do Firebase Authentication
       await signOut(auth);
+      const setTypeUser = useUserTypeStore.getState().setTypeUser;
+      setTypeUser(null);
+
       toastSuccess("Logout realizado com sucesso!");
 
       // Limpa o localStorage ou qualquer outro dado de sessão

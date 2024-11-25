@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
-export const AccessDenied = () => {
+export default function AccessDenied() {
   const navigate = useNavigate();
 
   const handleGoBack = () => {
@@ -22,4 +22,4 @@ export const AccessDenied = () => {
       </div>
     </div>
   );
-};
+}

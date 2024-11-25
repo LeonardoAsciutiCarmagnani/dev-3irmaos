@@ -15,9 +15,23 @@ export default defineConfig({
     strictPort: true,
   },
   build: {
-    outDir: "dist", // Adicione esta linha para garantir que a build seja colocada no diretório correto
+    outDir: "dist",
     rollupOptions: {
-      input: "./index.html", // Certifique-se de que o caminho para o arquivo de entrada HTML está correto
+      input: "./index.html",
+      output: {
+        manualChunks: {
+          vendor: ["react", "react-dom"], // Separe bibliotecas comuns em um chunk
+        },
+      },
+    },
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+      output: {
+        comments: false,
+      },
     },
   },
 });

@@ -1,118 +1,152 @@
 import { createBrowserRouter } from "react-router-dom";
-import { Register } from "./pages/register";
-import { Home } from "./pages/home";
-import { Auth } from "./pages/auth";
-import GetPricesLists from "./_components/GetPricesLists";
-import PriceListDetails from "./_components/PriceListDetails";
-import CreatePriceList from "./_components/CreatePriceList";
-import PedidoVendaForm from "./_components/PostSaleOrder";
-import { BuyList } from "./pages/buyList";
-import ProtectedRoute from "./_components/ProtectedRoute";
-import { AccessDenied } from "./_components/401";
-import { Clients } from "./_components/GetClients";
-import { GetOrders } from "./pages/getOrdersADM";
-import { PrintPage } from "./pages/printPage";
-import { GetOrdersClient } from "./pages/getOrdersClient";
+import React from "react";
+
+const Register = React.lazy(() => import("./pages/register"));
+const Home = React.lazy(() => import("./pages/home"));
+const Auth = React.lazy(() => import("./pages/auth"));
+const GetPricesLists = React.lazy(() => import("./_components/GetPricesLists"));
+const PriceListDetails = React.lazy(
+  () => import("./_components/PriceListDetails")
+);
+const CreatePriceList = React.lazy(
+  () => import("./_components/CreatePriceList")
+);
+const PedidoVendaForm = React.lazy(() => import("./_components/PostSaleOrder"));
+const BuyList = React.lazy(() => import("./pages/buyList"));
+const ProtectedRoute = React.lazy(() => import("./_components/ProtectedRoute"));
+const AccessDenied = React.lazy(() => import("./_components/401"));
+const Clients = React.lazy(() => import("./_components/GetClients"));
+const GetOrders = React.lazy(() => import("./pages/getOrdersADM"));
+const PrintPage = React.lazy(() => import("./pages/printPage"));
+const GetOrdersClient = React.lazy(() => import("./pages/getOrdersClient"));
 
 export const router = createBrowserRouter([
   {
     path: "/register",
     element: (
-      <ProtectedRoute>
-        <Register />
-      </ProtectedRoute>
+      <React.Suspense fallback={<div>Carregando...</div>}>
+        <ProtectedRoute>
+          <Register />
+        </ProtectedRoute>
+      </React.Suspense>
     ),
   },
   {
     path: "/login",
-    element: <Auth />,
+    element: (
+      <React.Suspense fallback={<div>Carregando...</div>}>
+        <Auth />
+      </React.Suspense>
+    ),
   },
   {
     path: "/",
     element: (
-      <ProtectedRoute>
-        <Home />
-      </ProtectedRoute>
+      <React.Suspense fallback={<div>Carregando...</div>}>
+        <ProtectedRoute>
+          <Home />
+        </ProtectedRoute>
+      </React.Suspense>
     ),
   },
   {
     path: "/prices-lists",
     element: (
-      <ProtectedRoute>
-        <GetPricesLists />
-      </ProtectedRoute>
+      <React.Suspense fallback={<div>Carregando...</div>}>
+        <ProtectedRoute>
+          <GetPricesLists />
+        </ProtectedRoute>
+      </React.Suspense>
     ),
   },
   {
     path: "/prices-lists/:id",
     element: (
-      <ProtectedRoute>
-        <PriceListDetails />
-      </ProtectedRoute>
+      <React.Suspense fallback={<div>Carregando...</div>}>
+        <ProtectedRoute>
+          <PriceListDetails />
+        </ProtectedRoute>
+      </React.Suspense>
     ),
   },
   {
     path: "/create-prices-list",
     element: (
-      <ProtectedRoute>
-        <CreatePriceList />
-      </ProtectedRoute>
+      <React.Suspense fallback={<div>Carregando...</div>}>
+        <ProtectedRoute>
+          <CreatePriceList />
+        </ProtectedRoute>
+      </React.Suspense>
     ),
   },
   {
     path: "/create-order-sale",
     element: (
-      <ProtectedRoute>
-        <PedidoVendaForm />
-      </ProtectedRoute>
+      <React.Suspense fallback={<div>Carregando...</div>}>
+        <ProtectedRoute>
+          <PedidoVendaForm />
+        </ProtectedRoute>
+      </React.Suspense>
     ),
   },
   {
     path: "/get-orders",
     element: (
-      <ProtectedRoute>
-        <GetOrders />
-      </ProtectedRoute>
+      <React.Suspense fallback={<div>Carregando...</div>}>
+        <ProtectedRoute>
+          <GetOrders />
+        </ProtectedRoute>
+      </React.Suspense>
     ),
   },
   {
     path: "/get-orders-client",
     element: (
-      <ProtectedRoute>
-        <GetOrdersClient />
-      </ProtectedRoute>
+      <React.Suspense fallback={<div>Carregando...</div>}>
+        <ProtectedRoute>
+          <GetOrdersClient />
+        </ProtectedRoute>
+      </React.Suspense>
     ),
   },
   {
     path: "/buyList",
     element: (
-      <ProtectedRoute>
-        <BuyList />
-      </ProtectedRoute>
+      <React.Suspense fallback={<div>Carregando...</div>}>
+        <ProtectedRoute>
+          <BuyList />
+        </ProtectedRoute>
+      </React.Suspense>
     ),
   },
   {
     path: "/clients",
     element: (
-      <ProtectedRoute>
-        <Clients />
-      </ProtectedRoute>
+      <React.Suspense fallback={<div>Carregando...</div>}>
+        <ProtectedRoute>
+          <Clients />
+        </ProtectedRoute>
+      </React.Suspense>
     ),
   },
   {
     path: "/printPage",
     element: (
-      <ProtectedRoute>
-        <PrintPage />
-      </ProtectedRoute>
+      <React.Suspense fallback={<div>Carregando...</div>}>
+        <ProtectedRoute>
+          <PrintPage />
+        </ProtectedRoute>
+      </React.Suspense>
     ),
   },
   {
     path: "/401",
     element: (
-      <ProtectedRoute>
-        <AccessDenied />
-      </ProtectedRoute>
+      <React.Suspense fallback={<div>Carregando...</div>}>
+        <ProtectedRoute>
+          <AccessDenied />
+        </ProtectedRoute>
+      </React.Suspense>
     ),
   },
 ]);

@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import { Plus, Minus, SearchIcon, LoaderPinwheelIcon } from "lucide-react";
 import { useZustandContext } from "@/context/cartContext";
@@ -38,7 +37,7 @@ export const FetchProducts: React.FC = React.memo(() => {
 
   useEffect(() => {
     setProducts();
-  }, []);
+  }, [setProducts]);
 
   useEffect(() => {
     if (products.length > 0) {

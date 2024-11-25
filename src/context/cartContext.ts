@@ -1,8 +1,8 @@
 import { firestore } from "@/firebaseConfig";
 import axios from "axios";
 import { doc, setDoc } from "firebase/firestore";
-
 import { create } from "zustand";
+import { useAuthStore } from "./authStore";
 
 export interface PriceListProps {
   id: string;
@@ -125,16 +125,27 @@ export const useZustandContext = create<ContextStates>((set) => ({
   },
 
   setProducts: async () => {
+    const { user } = useAuthStore.getState();
+    if (!user?.accessToken) {
+      console.error("Token JWT não disponível.");
+      set({ loading: false, error: "Usuário não autenticado." });
+      return;
+    }
     try {
       const response = await axios.get(
-        "https://us-central1-server-kyoto.cloudfunctions.net/api/v1/produtos"
+        "https://us-central1-server-kyoto.cloudfunctions.net/api/v1/produtos",
+        {
+          headers: {
+            Authorization: `Bearer ${user.accessToken}`,
+          },
+        }
       );
       let initialIdSeq = 0;
-      const updateProductsList = response.data.products.produtos.map(
+      const updateProductsList = response.data.products.map(
         (product: Product) => ({
           ...product,
           quantidade: 0,
-          id_seq: (initialIdSeq += 1), // Inicializar quantidade como 0
+          id_seq: (initialIdSeq += 1),
         })
       );
       await useZustandContext
@@ -144,6 +155,7 @@ export const useZustandContext = create<ContextStates>((set) => ({
       set({
         products: updateProductsList,
         loading: false,
+        error: null,
       });
     } catch (error) {
       console.error("Erro ao buscar produtos:", error);

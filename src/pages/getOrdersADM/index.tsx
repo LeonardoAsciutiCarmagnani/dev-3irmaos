@@ -1,5 +1,5 @@
 import { GetOrdersComponent } from "@/_components/GetOrders";
 
-export function GetOrders() {
+export default function GetOrders() {
   return <GetOrdersComponent />;
 }
