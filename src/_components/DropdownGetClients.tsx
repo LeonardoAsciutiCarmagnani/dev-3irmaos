@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { ClientData, EnderecoDeEntrega } from "./PostSaleOrder";
 import InputMask from "react-input-mask";
 
-interface Client {
+export interface Client {
   id_priceList: string;
   type_user: string;
   user_IE?: string;

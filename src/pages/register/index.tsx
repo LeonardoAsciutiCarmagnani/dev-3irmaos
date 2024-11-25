@@ -463,37 +463,51 @@ export default function Register() {
                 Endereço
               </AccordionTrigger>
               <AccordionContent className="space-y-2">
-                <div className="flex items-center space-x-2 ">
-                  <label htmlFor="cep" className="text-gray-600">
-                    CEP:
-                  </label>
-                  <MaskedInput
-                    mask={[/\d/, /\d/, /\d/, /\d/, /\d/, "-", /\d/, /\d/, /\d/]}
-                    id="cep"
-                    type="text"
-                    placeholder="Informe o CEP"
-                    className="w-[6rem] text-center rounded-md p-1 mt-1 text-xs"
-                    {...register("cep", { onBlur: handleFetchCEP })}
-                    onChange={(e) => {
-                      setValue("cep", e.target.value);
-                      trigger("cep");
-                    }}
-                    value={watch("cep") || ""}
-                    required
-                  />
-                  <a
-                    href="https://buscacepinter.correios.com.br/app/endereco/index.php"
-                    target="_blank"
-                    className="text-wrap text-xs relative left-10 pb-[0.1rem] border-b-[0.1rem] text-blue-300 border-outset border-blue-500 cursor-pointer hover:text-blue-700"
-                  >
-                    Ajuda com CEP ?
-                  </a>
-                  {cepError && (
-                    <span className="text-red-600 px-2 text-sx antialiased">
-                      {cepError}
-                    </span>
-                  )}
-                  {cepSucess && <span>{cepSucess}</span>}
+                <div className="flex items-center space-x-2  justify-around">
+                  <div className="flex flex-1 items-center justify-start">
+                    <label htmlFor="cep" className="text-gray-600">
+                      CEP:
+                    </label>
+                    <MaskedInput
+                      mask={[
+                        /\d/,
+                        /\d/,
+                        /\d/,
+                        /\d/,
+                        /\d/,
+                        "-",
+                        /\d/,
+                        /\d/,
+                        /\d/,
+                      ]}
+                      id="cep"
+                      type="text"
+                      placeholder="Informe o CEP"
+                      className="w-[6rem] text-center rounded-md p-1 mt-1 text-xs"
+                      {...register("cep", { onBlur: handleFetchCEP })}
+                      onChange={(e) => {
+                        setValue("cep", e.target.value);
+                        trigger("cep");
+                      }}
+                      value={watch("cep") || ""}
+                      required
+                    />
+                    <a
+                      href="https://buscacepinter.correios.com.br/app/endereco/index.php"
+                      target="_blank"
+                      className="text-wrap text-xs relative left-10 pb-[0.1rem] border-b-[0.1rem] text-blue-300 border-outset border-blue-500 cursor-pointer hover:text-blue-700"
+                    >
+                      Ajuda com CEP ?
+                    </a>
+                  </div>
+                  <div>
+                    {cepError && (
+                      <span className="text-red-600 px-2 text-sx antialiased">
+                        {cepError}
+                      </span>
+                    )}
+                    {cepSucess && <span>{cepSucess}</span>}
+                  </div>
                 </div>
                 <div>
                   <label htmlFor="neighborhood" className="text-gray-600">

@@ -1,5 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import React from "react";
+import ProtectedAdminRoute from "./_components/ProtectedAdminRoute";
 
 const Register = React.lazy(() => import("./pages/register"));
 const Home = React.lazy(() => import("./pages/home"));
@@ -25,9 +26,9 @@ export const router = createBrowserRouter([
     path: "/register",
     element: (
       <React.Suspense fallback={<div>Carregando...</div>}>
-        <ProtectedRoute>
+        <ProtectedAdminRoute>
           <Register />
-        </ProtectedRoute>
+        </ProtectedAdminRoute>
       </React.Suspense>
     ),
   },
@@ -53,9 +54,9 @@ export const router = createBrowserRouter([
     path: "/prices-lists",
     element: (
       <React.Suspense fallback={<div>Carregando...</div>}>
-        <ProtectedRoute>
+        <ProtectedAdminRoute>
           <GetPricesLists />
-        </ProtectedRoute>
+        </ProtectedAdminRoute>
       </React.Suspense>
     ),
   },
@@ -73,9 +74,9 @@ export const router = createBrowserRouter([
     path: "/create-prices-list",
     element: (
       <React.Suspense fallback={<div>Carregando...</div>}>
-        <ProtectedRoute>
+        <ProtectedAdminRoute>
           <CreatePriceList />
-        </ProtectedRoute>
+        </ProtectedAdminRoute>
       </React.Suspense>
     ),
   },
@@ -83,9 +84,9 @@ export const router = createBrowserRouter([
     path: "/create-order-sale",
     element: (
       <React.Suspense fallback={<div>Carregando...</div>}>
-        <ProtectedRoute>
+        <ProtectedAdminRoute>
           <PedidoVendaForm />
-        </ProtectedRoute>
+        </ProtectedAdminRoute>
       </React.Suspense>
     ),
   },
@@ -93,9 +94,9 @@ export const router = createBrowserRouter([
     path: "/get-orders",
     element: (
       <React.Suspense fallback={<div>Carregando...</div>}>
-        <ProtectedRoute>
+        <ProtectedAdminRoute>
           <GetOrders />
-        </ProtectedRoute>
+        </ProtectedAdminRoute>
       </React.Suspense>
     ),
   },
@@ -133,9 +134,9 @@ export const router = createBrowserRouter([
     path: "/printPage",
     element: (
       <React.Suspense fallback={<div>Carregando...</div>}>
-        <ProtectedRoute>
+        <ProtectedAdminRoute>
           <PrintPage />
-        </ProtectedRoute>
+        </ProtectedAdminRoute>
       </React.Suspense>
     ),
   },

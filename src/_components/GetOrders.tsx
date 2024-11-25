@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { firestore } from "@/firebaseConfig";
 import { useEffect, useState } from "react";
@@ -21,11 +22,12 @@ import { Input } from "@/components/ui/input";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import ToastNotifications from "@/_components/Toasts";
-import { format, parse, isWithinInterval } from "date-fns";
+import { format } from "date-fns";
 import Sidebar from "./Sidebar";
 import { DateRange } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { Calendar } from "@/components/ui/calendar";
+import { ptBR } from "date-fns/locale";
 
 interface StatusProps {
   [key: number]: string;
@@ -49,6 +51,8 @@ export function GetOrdersComponent() {
     from: undefined,
     to: undefined,
   });
+
+  /* Alterar o valor da createAt pelo timestamp  */
 
   const { register, handleSubmit } = useForm<IFormInput>();
   const { toastError } = ToastNotifications();
@@ -130,38 +134,51 @@ export function GetOrdersComponent() {
       ? 0
       : Number(data.selectStatus);
 
-    // const normalizedSelectDate = data.selectDate.replace(/-/g, "/");
-
     console.log(range);
 
+    // Desestruturação do `range`
+    const { from, to } = range || {}; // Garantindo que `range` pode estar vazio
+
+    console.log("from", from);
+    console.log("to", to);
+
     const filteredList = orderList.filter((order) => {
+      // Filtro por nome
       const matchesName =
         searchName.length > 1
           ? order.cliente?.nomeDoCliente?.toLowerCase() ===
             searchName.toLowerCase()
           : true;
 
+      // Filtro por status
       const matchesStatus =
         selectStatus > 0 ? order.status_order === selectStatus : true;
 
-      const createdAtDate = order.created_at
-        ? parse(order.created_at.trim(), "yyyy-MM-dd HH:mm:ss", new Date())
-        : null;
+      // Filtro por intervalo de datas
+      const matchesDateRange =
+        from && to
+          ? (() => {
+              if (order.created_at) {
+                // Converte `order.created_at` para um objeto `Date`
+                const orderDate = new Date(order.created_at);
+                // Garante que a comparação será feita apenas pelas datas (removendo o horário)
+                const startDate = new Date(
+                  from.getFullYear(),
+                  from.getMonth(),
+                  from.getDate()
+                );
+                const endDate = new Date(
+                  to.getFullYear(),
+                  to.getMonth(),
+                  to.getDate() + 1 // Inclui o dia final completo no intervalo
+                );
+                return orderDate >= startDate && orderDate < endDate;
+              }
+              return false; // Caso `order.created_at` seja inválido
+            })()
+          : true; // Se `from` ou `to` não estiverem definidos, ignora o filtro de data
 
-      /* const matchesDate =
-        normalizedSelectDate && createdAtDate
-          ? createdAtDate.toISOString().split("T")[0] === normalizedSelectDate
-          : true; */
-
-      const matchesRange =
-        range?.from && range?.to && createdAtDate
-          ? isWithinInterval(createdAtDate, {
-              start: range.from,
-              end: range.to,
-            })
-          : true;
-
-      return matchesName && matchesStatus && matchesRange;
+      return matchesName && matchesStatus && matchesDateRange;
     });
 
     if (filteredList.length > 0) {
@@ -254,6 +271,9 @@ export function GetOrdersComponent() {
     { value: 6, label: "Entregue" },
   ];
 
+  const formattedFrom = range?.from && format(range.from, "dd/MM/yyyy");
+  const formattedTo = range?.to && format(range.to, "dd/MM/yyyy");
+
   useEffect(() => {
     fetchOrders();
   }, []);
@@ -289,12 +309,27 @@ export function GetOrdersComponent() {
             <option value="5">Pedido enviado</option>
             <option value="6">Entregue</option>
           </select>
-          <Calendar
-            mode="range"
-            selected={range}
-            onSelect={setRange}
-            className="size-64 border-2 text-sm"
-          />
+
+          <Popover>
+            <PopoverTrigger asChild>
+              <span className="border p-2 rounded-lg cursor-pointer">
+                Selecione o periodo
+              </span>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="range"
+                selected={range}
+                onSelect={setRange}
+                footer={
+                  formattedFrom && formattedTo
+                    ? `${formattedFrom} há ${formattedTo}`
+                    : "Selecione o periodo"
+                }
+                locale={ptBR}
+              />
+            </PopoverContent>
+          </Popover>
 
           <button
             className="bg-green-500 text-white px-4 py-2 rounded"

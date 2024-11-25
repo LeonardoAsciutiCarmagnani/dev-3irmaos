@@ -20,7 +20,15 @@ import { useNavigate } from "react-router-dom";
 import ToastNotifications from "@/_components/Toasts";
 import { OrderSaleTypes } from "./PostSaleOrder";
 import { format } from "date-fns";
-import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+} from "firebase/firestore";
 import { firestore } from "@/firebaseConfig";
 
 export type EnderecoDeEntrega = {
@@ -44,7 +52,25 @@ interface ItensProps {
   precoUnitarioLiquido?: number;
 }
 
+interface ClientInfosProps {
+  user_CPF: string;
+  user_IE: string;
+  user_cep: string;
+  user_complement: string;
+  user_email: string;
+  user_fantasyName: string;
+  user_houseNumber: number;
+  user_ibgeCode: number;
+  user_id: string;
+  user_logradouro: string;
+  user_name: string;
+  user_neighborhood: string;
+  user_phone: string;
+}
+
 const PedidoVendaForm: React.FC = () => {
+  const [clientForm, setClientForm] = useState<ClientInfosProps>();
+
   const orderCreationDate = format(new Date(), "yyyy/MM/dd HH:mm:ss");
 
   const [orderSale, setOrderSale] = useState<OrderSaleTypes>({
@@ -53,27 +79,27 @@ const PedidoVendaForm: React.FC = () => {
     created_at: orderCreationDate,
     updated_at: orderCreationDate,
     cliente: {
-      documento: "05.709.957/0001-25",
-      email: "",
-      inscricaoEstadual: "",
-      nomeDoCliente: "",
-      nomeFantasia: "",
+      documento: clientForm?.user_CPF || "",
+      email: clientForm?.user_email || "",
+      inscricaoEstadual: clientForm?.user_IE || "",
+      nomeDoCliente: clientForm?.user_name || "",
+      nomeFantasia: clientForm?.user_fantasyName || "",
     },
     enderecoDeCobranca: {
-      bairro: "",
-      cep: "",
-      codigoIbge: 1234567,
-      complemento: "",
-      logradouro: "",
-      numero: 0,
+      bairro: clientForm?.user_neighborhood || "",
+      cep: clientForm?.user_cep || "",
+      codigoIbge: Number(clientForm?.user_ibgeCode),
+      complemento: clientForm?.user_complement || "",
+      logradouro: clientForm?.user_logradouro || "",
+      numero: Number(clientForm?.user_houseNumber),
     },
     enderecoDeEntrega: {
-      bairro: "",
-      cep: "",
-      codigoIbge: 1234567,
-      complemento: "",
-      logradouro: "",
-      numero: 0,
+      bairro: clientForm?.user_neighborhood || "",
+      cep: clientForm?.user_cep || "",
+      codigoIbge: Number(clientForm?.user_ibgeCode),
+      complemento: clientForm?.user_complement || "",
+      logradouro: clientForm?.user_logradouro || "",
+      numero: Number(clientForm?.user_houseNumber),
     },
     itens: [],
     meiosDePagamento: [],
@@ -86,39 +112,37 @@ const PedidoVendaForm: React.FC = () => {
   const { toastSuccess } = ToastNotifications();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchLastOrders = async () => {
-      const collectionRef = collection(firestore, "sales_orders");
-      const q = query(collectionRef, orderBy("order_code", "desc"), limit(1));
-      const queryDocs = await getDocs(q);
+  const fetchLastOrders = async () => {
+    const collectionRef = collection(firestore, "sales_orders");
+    const q = query(collectionRef, orderBy("order_code", "desc"), limit(1));
+    const queryDocs = await getDocs(q);
 
-      let lastOrderNumber = 0;
+    let lastOrderNumber = 0;
 
-      if (!queryDocs.empty) {
-        const lastOrder = queryDocs.docs[0].data();
-        lastOrderNumber = lastOrder.order_code || 0;
+    if (!queryDocs.empty) {
+      const lastOrder = queryDocs.docs[0].data();
+      lastOrderNumber = lastOrder.order_code || 0;
+    }
+
+    const newOrderNumber = lastOrderNumber + 1;
+
+    console.log(newOrderNumber);
+
+    orderSale.order_code = newOrderNumber;
+
+    const includingIdInProduct: ItensProps[] = listProductsInCart.map(
+      (item) => {
+        return {
+          ...item,
+          produtoId: item.id,
+        };
       }
+    );
 
-      const newOrderNumber = lastOrderNumber + 1;
-
-      orderSale.order_code = newOrderNumber;
-
-      const includingIdInProduct: ItensProps[] = listProductsInCart.map(
-        (item) => {
-          return {
-            ...item,
-            produtoId: item.id,
-          };
-        }
-      );
-
-      if (orderSale.itens) {
-        orderSale.itens = includingIdInProduct;
-      }
-    };
-
-    fetchLastOrders();
-  }, []);
+    if (orderSale.itens) {
+      orderSale.itens = includingIdInProduct;
+    }
+  };
 
   const handlePaymentMethod = (paymentMethod: string) => {
     let paymentObject: {
@@ -194,6 +218,7 @@ const PedidoVendaForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    fetchLastOrders();
 
     console.log("informações: ", orderSale);
 
@@ -224,6 +249,65 @@ const PedidoVendaForm: React.FC = () => {
       }
     }
   };
+
+  const handleUpdateOrderSale = async () => {
+    if (clientForm) {
+      setOrderSale((prev) => ({
+        ...prev,
+        cliente: {
+          documento: clientForm.user_CPF || "",
+          email: clientForm.user_email || "",
+          inscricaoEstadual: clientForm.user_IE || "",
+          nomeDoCliente: clientForm.user_name || "",
+          nomeFantasia: clientForm.user_fantasyName || "",
+        },
+        enderecoDeCobranca: {
+          bairro: clientForm.user_neighborhood || "",
+          cep: clientForm.user_cep || "",
+          codigoIbge: Number(clientForm.user_ibgeCode),
+          complemento: clientForm.user_complement || "",
+          logradouro: clientForm.user_logradouro || "",
+          numero: Number(clientForm.user_houseNumber),
+        },
+        enderecoDeEntrega: {
+          bairro: clientForm.user_neighborhood || "",
+          cep: clientForm.user_cep || "",
+          codigoIbge: Number(clientForm.user_ibgeCode),
+          complemento: clientForm.user_complement || "",
+          logradouro: clientForm.user_logradouro || "",
+          numero: Number(clientForm.user_houseNumber),
+        },
+      }));
+
+      console.log("informações: ", orderSale);
+    }
+  };
+
+  const fetchClientes = async () => {
+    try {
+      const JSONuserCredentials = localStorage.getItem("loggedUser");
+
+      const userCredentials =
+        JSONuserCredentials && JSON.parse(JSONuserCredentials);
+
+      const clientesCollection = doc(firestore, "clients", userCredentials.uid);
+      const clientesSnapshot = await getDoc(clientesCollection);
+
+      const data = clientesSnapshot.data() as ClientInfosProps;
+
+      if (data) {
+        setClientForm(data);
+
+        await handleUpdateOrderSale();
+      }
+    } catch (error) {
+      console.error("Erro ao buscar clientes:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchClientes();
+  }, []);
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col space-y-2  w-full">

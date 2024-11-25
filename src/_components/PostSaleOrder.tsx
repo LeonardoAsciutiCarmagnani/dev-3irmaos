@@ -81,10 +81,9 @@ interface ProductWithQuantity {
 
 const OrderSaleProps: React.FC = () => {
   const orderCreationDate = format(new Date(), "yyyy/MM/dd  HH:mm:ss");
-  const [orderCode, setOrderCode] = useState(0);
   const [orderSale, setOrderSale] = useState<OrderSaleTypes>({
     status_order: 1,
-    order_code: orderCode,
+    order_code: 0,
     created_at: orderCreationDate,
     updated_at: orderCreationDate,
     cliente: null,
@@ -126,12 +125,11 @@ const OrderSaleProps: React.FC = () => {
 
     if (!queryDocs.empty) {
       const lastOrder = queryDocs.docs[0].data();
+      console.log(lastOrder.order_code);
       lastOrderNumber = lastOrder.order_code;
     }
 
     const newOrderNumber = lastOrderNumber + 1;
-    setOrderCode(newOrderNumber);
-    console.log(orderCode);
     orderSale.order_code = newOrderNumber;
   };
 
@@ -288,7 +286,7 @@ const OrderSaleProps: React.FC = () => {
 
   const handlePostSaleOrder = async (e: React.FormEvent) => {
     e.preventDefault();
-    fetchLastOrders();
+
     console.log("Produtos sendo enviados: ", orderSale);
 
     // Validação de campos obrigatórios
@@ -309,6 +307,8 @@ const OrderSaleProps: React.FC = () => {
     }
 
     try {
+      await fetchLastOrders();
+
       await axios.post(
         `https://us-central1-server-kyoto.cloudfunctions.net/api/v1/pedido-de-venda/${clientId}`,
         orderSale,
@@ -320,6 +320,7 @@ const OrderSaleProps: React.FC = () => {
       );
 
       toastSuccess("Pedido de venda criado com sucesso.");
+
       navigate("/get-orders");
     } catch (error) {
       console.error("Erro ao enviar pedido:", error);

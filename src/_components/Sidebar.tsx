@@ -205,7 +205,7 @@ export default function Sidebar() {
             </li>
             <li>
               <Link
-                to="/get-orders-client"
+                to={typeUser === "adm" ? "/get-orders" : "/get-orders-client"}
                 className="block text-gray-800 hover:text-white hover:bg-gray-700 rounded-md px-3 py-2 transition-colors"
               >
                 <span className="flex items-center gap-x-4">
