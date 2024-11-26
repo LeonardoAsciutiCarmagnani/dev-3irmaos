@@ -13,13 +13,13 @@ import { getAnalytics } from "firebase/analytics";
 
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBhGrmKMl87ENDG0HUHRwFKouggufm-yyY",
-  authDomain: "server-kyoto.firebaseapp.com",
-  projectId: "server-kyoto",
-  storageBucket: "server-kyoto.appspot.com",
-  messagingSenderId: "1046472904539",
-  appId: "1:1046472904539:web:623b43335c4d7dce0b147e",
-  measurementId: "G-0XNJSQ6N6G",
+  apiKey: "AIzaSyAZmL9j0W_LOVkAA1KOwc80XIOxQWiu740",
+  authDomain: "kyoto-f1764.firebaseapp.com",
+  projectId: "kyoto-f1764",
+  storageBucket: "kyoto-f1764.firebasestorage.app",
+  messagingSenderId: "638846069672",
+  appId: "1:638846069672:web:8225aebc75777eee744b9d",
+  measurementId: "G-W5ZN56VVBG",
 };
 
 // Initialize Firebase

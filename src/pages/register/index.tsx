@@ -33,6 +33,7 @@ import ToastNotifications from "@/_components/Toasts";
 import Sidebar from "@/_components/Sidebar";
 import { useNavigate } from "react-router-dom";
 import MaskedInput from "react-text-mask";
+import { useAuthStore } from "@/context/authStore";
 
 interface CreateUserProps {
   userName: string;
@@ -225,6 +226,7 @@ export default function Register() {
         ];
 
   const handleCreateUser = async (data: CreateUserProps) => {
+    const { setIsCreatingUser } = useAuthStore.getState();
     const newUser = { ...data };
     const cpf = data.CPF.replace(/\D/g, "");
     const cpfExistente = await checkUserExistInFirestore(cpf);
@@ -238,11 +240,17 @@ export default function Register() {
       setCepError("Por favor, preencha um CEP válido.");
       return;
     }
+
     let userCredential = null;
     let userId = null;
 
     try {
+      // Ativar flag para prevenir alterações no estado global/localStorage
+      setIsCreatingUser(true);
+
       const temporaryPassword = Math.random().toString(36).slice(-10);
+
+      // Criar o usuário no Firebase Auth
       userCredential = await createUserWithEmailAndPassword(
         auth,
         newUser.userEmail,
@@ -251,8 +259,10 @@ export default function Register() {
       const user = userCredential.user;
       userId = user.uid;
 
+      // Atualizar o nome de exibição do usuário
       await updateProfile(user, { displayName: data.userName });
 
+      // Registrar o usuário no back-end
       const response = await api.post("/v1/create-user", {
         user_id: userId,
         id_priceList: selectPriceList.id,
@@ -260,7 +270,7 @@ export default function Register() {
         type_user: selectState,
         user_name: data.userName,
         user_email: data.userEmail,
-        user_CPF: data.CPF.replace(/\D/g, ""),
+        user_CPF: cpf,
         user_phone: data.phone,
         user_IE: data.IE || "",
         user_fantasyName: data.fantasyName || "",
@@ -272,10 +282,13 @@ export default function Register() {
         user_houseNumber: data.number,
       });
 
+      // Validar resposta do back-end
       if (response.status !== 200) {
+        // Excluir o usuário no Firebase caso o back-end falhe
         await deleteUser(userCredential.user);
         throw new Error("Falha ao criar o usuário no back-end.");
       } else {
+        // Enviar e-mail para redefinição de senha
         await sendPasswordResetEmail(auth, data.userEmail);
         toastSuccess("Usuário criado com sucesso!");
         navigate("/clients");
@@ -283,8 +296,13 @@ export default function Register() {
     } catch (e) {
       console.error("Erro ao criar o usuário", e);
       if (userCredential?.user) {
+        // Excluir o usuário no Firebase caso ocorra um erro
         await deleteUser(userCredential.user);
       }
+      toastError("Erro ao criar o usuário. Tente novamente.");
+    } finally {
+      // Garantir que a flag seja desativada
+      setIsCreatingUser(false);
     }
   };
 

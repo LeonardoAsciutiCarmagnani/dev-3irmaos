@@ -3,6 +3,7 @@ import {
   onAuthStateChanged,
   signOut,
   signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
 } from "firebase/auth";
 import { auth } from "../firebaseConfig";
 
@@ -17,70 +18,94 @@ interface AuthState {
   setUser: (user: AuthUser | null) => void;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  registerUser: (email: string, password: string) => Promise<void>;
+  isCreatingUser: boolean;
+  setIsCreatingUser: (isCreating: boolean) => void;
 }
 
+const storedUser = localStorage.getItem("loggedUser");
+
 export const useAuthStore = create<AuthState>((set) => ({
-  // Inicializa o usuário com base no localStorage
-  user: JSON.parse(localStorage.getItem("user") || "null"),
+  user: storedUser ? JSON.parse(storedUser) : null,
+  isCreatingUser: false,
+
+  setIsCreatingUser: (isCreating) => {
+    set({ isCreatingUser: isCreating });
+  },
 
   setUser: (user) => {
     if (user) {
-      localStorage.setItem("user", JSON.stringify(user)); // Armazena o usuário completo no localStorage
+      localStorage.setItem("loggedUser", JSON.stringify(user));
     } else {
-      localStorage.removeItem("user");
+      localStorage.removeItem("loggedUser");
     }
     set({ user });
   },
 
   login: async (email, password) => {
-    // Realiza o login com Firebase
     const userCredential = await signInWithEmailAndPassword(
       auth,
       email,
       password
     );
     const firebaseUser = userCredential.user;
-
-    // Obtém o token JWT
     const accessToken = await firebaseUser.getIdToken();
 
-    // Cria o objeto do usuário com token
-    const user = {
+    const user: AuthUser = {
       uid: firebaseUser.uid,
       email: firebaseUser.email,
       accessToken,
     };
 
-    // Atualiza o estado global e localStorage
     set({ user });
-    localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem("loggedUser", JSON.stringify(user));
   },
 
   logout: async () => {
-    // Realiza o logout no Firebase
     await signOut(auth);
-
-    // Remove o estado e limpa o localStorage
     set({ user: null });
-    localStorage.removeItem("user");
+    localStorage.removeItem("loggedUser");
+  },
+
+  registerUser: async (email, password) => {
+    const { setIsCreatingUser } = useAuthStore.getState();
+
+    setIsCreatingUser(true);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      console.log("Usuário criado com sucesso:", userCredential.user);
+    } catch (error) {
+      console.error("Erro ao criar usuário:", error);
+    } finally {
+      setIsCreatingUser(false);
+    }
   },
 }));
 
-// Sincroniza o estado de autenticação ao carregar a aplicação
 onAuthStateChanged(auth, async (firebaseUser) => {
+  const { isCreatingUser, setUser } = useAuthStore.getState();
+
+  console.log("onAuthStateChanged chamado. isCreatingUser:", isCreatingUser);
+
+  if (isCreatingUser) {
+    // Ignora alterações durante o registro
+    return;
+  }
+
   if (firebaseUser) {
-    // Se o usuário estiver autenticado, obtenha o token
     const accessToken = await firebaseUser.getIdToken();
-    const user = {
+    const user: AuthUser = {
       uid: firebaseUser.uid,
       email: firebaseUser.email,
       accessToken,
     };
 
-    // Atualiza o estado global
-    useAuthStore.getState().setUser(user);
+    setUser(user);
   } else {
-    // Se não houver usuário, limpa o estado
-    useAuthStore.getState().setUser(null);
+    setUser(null);
   }
 });
