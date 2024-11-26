@@ -51,6 +51,7 @@ export function GetOrdersComponent() {
     from: undefined,
     to: undefined,
   });
+  const [check, setCheck] = useState(false);
 
   /* Alterar o valor da createAt pelo timestamp  */
 
@@ -287,7 +288,8 @@ export function GetOrdersComponent() {
       });
 
       await Promise.all(updatePromises);
-
+      setCheck(false);
+      setSelectedOrderList([]);
       await fetchOrders();
     } catch (e) {
       console.error("Ocorreu um erro ao atualizar os status dos pedidos !", e);
@@ -311,7 +313,7 @@ export function GetOrdersComponent() {
 
   return (
     <>
-      <div className="flex flex-col text-center  border-2">
+      <div className="flex flex-col text-center">
         <header className="flex  w-full items-center justify-between  p-4 bg-gray-100">
           <Sidebar />
           <div className="flex w-full text-center items-center justify-center">
@@ -497,7 +499,11 @@ export function GetOrdersComponent() {
                 type="checkbox"
                 name=""
                 id=""
-                onChange={() => handleSelectAllOrders()}
+                checked={check}
+                onChange={() => {
+                  setCheck(!check);
+                  handleSelectAllOrders();
+                }}
               />
             </th>
             <th className="border md:px-4 py-2 hidden text-xs md:text-base md:table-cell">

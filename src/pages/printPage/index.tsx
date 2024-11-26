@@ -216,7 +216,7 @@ export default function PrintPage() {
               </div>
             </div>
             {countCategory?.totais && (
-              <div className="border-2 border-black">
+              <div className="border-2 w-80 border-black">
                 {Object.keys(countCategory.totais).map((categoria) =>
                   categoria !== "TOTAL GERAL" ? (
                     <div key={categoria} className="w-80 p-2">
@@ -317,7 +317,7 @@ export default function PrintPage() {
               )}
             </div>
             {countCategory?.totais && (
-              <div className="border-2 border-black">
+              <div className="border-2 w-80 border-black">
                 {Object.keys(countCategory.totais).map((categoria) =>
                   categoria !== "TOTAL GERAL" ? (
                     <div key={categoria} className="w-80 p-2">

@@ -31,6 +31,7 @@ interface ContextStates {
   priceLists: PriceListProps[];
 
   setProducts: () => void;
+  clearListProductsInCart: (list: Product[]) => void;
   setTotalValue: () => void;
   setCountItemsInCart: (count: number) => void;
   handleAddItemInList: (newProduct: Product) => void;
@@ -50,6 +51,14 @@ export const useZustandContext = create<ContextStates>((set) => ({
   products: [],
   priceLists: [],
   totalValue: 0,
+
+  clearListProductsInCart: () =>
+    set(() => {
+      return {
+        listProductsInCart: [],
+        countItemsInCart: 0,
+      };
+    }),
 
   setTotalValue: () =>
     set((state) => {
