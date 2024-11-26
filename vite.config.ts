@@ -20,7 +20,7 @@ export default defineConfig({
       input: "./index.html",
       output: {
         manualChunks: {
-          vendor: ["react", "react-dom"], // Separe bibliotecas comuns em um chunk
+          vendor: ["react", "react-dom"],
         },
       },
     },
