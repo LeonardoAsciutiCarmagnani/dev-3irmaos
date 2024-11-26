@@ -10,6 +10,7 @@ interface ProductProps {
   nome: string;
   preco: number;
   imagem: string;
+  categoria: string;
 }
 
 interface PriceListProps {
@@ -117,7 +118,7 @@ const PriceListDetails = () => {
                 {Array.isArray(priceList?.products) ? (
                   priceList.products.map((product) => (
                     <tr key={product.id} className="border-b">
-                      <td className="p-3 text-gray-800 font-medium">
+                      <td className="p-3 text-gray-800 text-sm">
                         {product.nome}
                       </td>
                       <td className="p-3 text-gray-900">

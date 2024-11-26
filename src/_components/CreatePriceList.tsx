@@ -119,7 +119,7 @@ const PostPricesList = () => {
             </label>
             <input
               type="number"
-              value={product.preco}
+              value={"" + product.preco}
               onChange={(e) => handleProductValueChange(e, index)}
               className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
             />

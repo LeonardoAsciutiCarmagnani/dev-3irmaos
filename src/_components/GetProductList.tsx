@@ -121,7 +121,7 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
           <SelectContent>
             {products.map((product) => (
               <SelectItem key={product.id} value={product.id}>
-                {product.nome}
+                {product.nome + " - " + product.preco.toLocaleString("pt-BR")}
               </SelectItem>
             ))}
           </SelectContent>

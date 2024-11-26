@@ -54,7 +54,9 @@ const Clients = ({ onSelectClient }: ClientsProps) => {
           return { user_id: doc.id, ...data };
         });
         console.log(clientesList);
-        setClientes(clientesList);
+        setClientes(
+          clientesList.filter((client) => client.type_user === "cliente")
+        );
       } catch (error) {
         console.error("Erro ao buscar clientes:", error);
       }

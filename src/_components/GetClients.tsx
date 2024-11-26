@@ -234,57 +234,72 @@ export const Clients = () => {
             <p className="text-gray-500">Nenhum cliente encontrado.</p>
           ) : (
             <ul className="w-full space-y-4">
-              {filteredClientes.map((cliente) => (
-                <li
-                  key={cliente.user_id}
-                  className="flex items-center justify-between bg-white shadow rounded-lg p-4"
-                >
-                  <div className="flex items-center space-x-4">
-                    <User className="w-8 h-8 text-amber-500" />
-                    <div>
-                      <p className="text-gray-800 font-semibold">
-                        {cliente.user_name}
-                      </p>
-                      <div className="flex space-x-2">
-                        <Badge
-                          variant={`${
-                            cliente.type_user == "adm"
-                              ? "destructive"
-                              : "default"
-                          }`}
-                        >
-                          {cliente.type_user.toUpperCase()}
-                        </Badge>
-                        {cliente.type_user !== "adm" && (
-                          <Badge className="bg-amber-500">
-                            {cliente.priceListName.toUpperCase() ||
-                              "lista padrão".toUpperCase()}
+              {filteredClientes
+                .sort((a, b) => {
+                  // Primeiro, ordena por `type_user` (adm primeiro)
+                  if (a.type_user === "adm" && b.type_user !== "adm") return -1;
+                  if (a.type_user !== "adm" && b.type_user === "adm") return 1;
+
+                  // Depois, ordena por `user_name` em ordem alfabética
+                  return a.user_name.localeCompare(b.user_name);
+                })
+                .map((cliente) => (
+                  <li
+                    key={cliente.user_id}
+                    className="flex items-center justify-between bg-white shadow rounded-lg p-4"
+                  >
+                    <div className="flex items-center space-x-4">
+                      <User
+                        className={`w-8 h-8 ${
+                          cliente.type_user === "adm"
+                            ? "text-red-500"
+                            : "text-amber-500"
+                        }`}
+                      />
+                      <div>
+                        <p className="text-gray-800 font-semibold">
+                          {cliente.user_name}
+                        </p>
+                        <div className="flex space-x-2">
+                          <Badge
+                            variant={`${
+                              cliente.type_user == "adm"
+                                ? "destructive"
+                                : "default"
+                            }`}
+                          >
+                            {cliente.type_user.toUpperCase()}
                           </Badge>
-                        )}
+                          {cliente.type_user !== "adm" && (
+                            <Badge className="bg-amber-500">
+                              {cliente.priceListName.toUpperCase() ||
+                                "lista padrão".toUpperCase()}
+                            </Badge>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="flex items-center gap-x-4 ml-10">
-                    <Button
-                      variant="ghost"
-                      onClick={() => setSelectedClient(cliente)}
-                      className="p-0"
-                    >
-                      <Eye size={15} />
-                    </Button>
-                    {cliente.type_user === "cliente" && (
+                    <div className="flex items-center gap-x-4 ml-10">
                       <Button
                         variant="ghost"
-                        className="text-red-500 hover:text-red-700 p-0"
-                        onClick={() => setConfirmDelete(cliente)}
+                        onClick={() => setSelectedClient(cliente)}
+                        className="p-0"
                       >
-                        <Trash2 className="w-5 h-5 p-0" />
+                        <Eye size={15} />
                       </Button>
-                    )}
-                  </div>
-                </li>
-              ))}
+                      {cliente.type_user === "cliente" && (
+                        <Button
+                          variant="ghost"
+                          className="text-red-500 hover:text-red-700 p-0"
+                          onClick={() => setConfirmDelete(cliente)}
+                        >
+                          <Trash2 className="w-5 h-5 p-0" />
+                        </Button>
+                      )}
+                    </div>
+                  </li>
+                ))}
             </ul>
           )}
         </>

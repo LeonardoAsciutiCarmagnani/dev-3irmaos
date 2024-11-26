@@ -329,8 +329,8 @@ const OrderSaleProps: React.FC = () => {
   };
 
   return (
-    <div className="p-2 max-w-3xl mx-auto">
-      <div className="mb-5">
+    <div className="p-2 max-w-3xl min-h-screen">
+      <div className="mb-5 w-full">
         <Sidebar />
       </div>
       <Card>
@@ -463,7 +463,7 @@ const OrderSaleProps: React.FC = () => {
                       <SelectItem value="3">Devolução</SelectItem>
                       <SelectItem value="4">Cartão de crédito</SelectItem>
                       <SelectItem value="5">Cartão de débito</SelectItem>
-                      <SelectItem value="6">Crediário</SelectItem>
+                      <SelectItem value="6">Boleto</SelectItem>
                       <SelectItem value="7">Cartão Voucher</SelectItem>
                       <SelectItem value="8">PIX</SelectItem>
                     </SelectContent>

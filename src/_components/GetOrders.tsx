@@ -55,7 +55,7 @@ export function GetOrdersComponent() {
   /* Alterar o valor da createAt pelo timestamp  */
 
   const { register, handleSubmit } = useForm<IFormInput>();
-  const { toastError } = ToastNotifications();
+  const { toastError, toastSuccess } = ToastNotifications();
   const navigate = useNavigate();
 
   const fetchOrders = async () => {
@@ -257,6 +257,7 @@ export function GetOrdersComponent() {
       });
 
       await Promise.all(updatePromises);
+      toastSuccess("Alteração em lote realizada com sucesso!");
     } catch (e) {
       console.error("Ocorreu um erro ao atualizar os status dos pedidos !", e);
     }
