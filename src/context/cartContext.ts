@@ -169,7 +169,7 @@ export const useZustandContext = create<ContextStates>((set) => ({
 
   handleAddItemInList: (newProduct) =>
     set((state) => {
-      const { id, nome, preco, imagem } = newProduct;
+      const { id, nome, preco, imagem, categoria } = newProduct;
 
       const existingProductIndex = state.listProductsInCart.findIndex(
         (product) => product.id === id
@@ -188,6 +188,7 @@ export const useZustandContext = create<ContextStates>((set) => ({
           id,
           nome,
           preco,
+          categoria,
           quantidade: 1,
           imagem,
         });

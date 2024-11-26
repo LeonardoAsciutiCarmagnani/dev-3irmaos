@@ -41,6 +41,7 @@ export type OrderSaleTypes = {
     produtoId?: string;
     nome?: string;
     preco?: number;
+    categoria?: string;
     quantidade: number;
     precoUnitarioBruto?: number;
     precoUnitarioLiquido?: number;
