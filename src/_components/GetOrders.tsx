@@ -150,18 +150,14 @@ export function GetOrdersComponent() {
             searchName.toLowerCase()
           : true;
 
-      // Filtro por status
       const matchesStatus =
         selectStatus > 0 ? order.status_order === selectStatus : true;
 
-      // Filtro por intervalo de datas
       const matchesDateRange =
         from && to
           ? (() => {
               if (order.created_at) {
-                // Converte `order.created_at` para um objeto `Date`
                 const orderDate = new Date(order.created_at);
-                // Garante que a comparação será feita apenas pelas datas (removendo o horário)
                 const startDate = new Date(
                   from.getFullYear(),
                   from.getMonth(),
@@ -170,11 +166,11 @@ export function GetOrdersComponent() {
                 const endDate = new Date(
                   to.getFullYear(),
                   to.getMonth(),
-                  to.getDate() + 1 // Inclui o dia final completo no intervalo
+                  to.getDate() + 1
                 );
                 return orderDate >= startDate && orderDate < endDate;
               }
-              return false; // Caso `order.created_at` seja inválido
+              return false;
             })()
           : true; // Se `from` ou `to` não estiverem definidos, ignora o filtro de data
 
@@ -188,20 +184,23 @@ export function GetOrdersComponent() {
     }
   };
 
-  const handlePrintItens = (pedido: OrderSaleTypes) => {
+  const handlePrintItens = (pedido: OrderSaleTypes, type: string) => {
+    console.log("type: ", type);
+
     let arrayForPrint: {
       produtoId?: string;
       nome?: string;
       preco?: number;
+      categoria?: string;
       quantidade: number;
       precoUnitarioBruto?: number;
       precoUnitarioLiquido?: number;
     }[] = [];
 
-    arrayForPrint = pedido.itens.map((item, index) => ({
-      ...item,
-      id_seq: index + 1,
-    }));
+    arrayForPrint = pedido.itens.map((item, index) => {
+      console.log(item.categoria);
+      return { ...item, id_seq: index + 1 };
+    });
 
     const user = pedido.cliente &&
       pedido.created_at && {
@@ -210,9 +209,7 @@ export function GetOrdersComponent() {
         date: pedido?.created_at,
       };
 
-    console.log(pedido.cliente?.nomeDoCliente);
-
-    navigate("/printPage", { state: { arrayForPrint, user } });
+    navigate("/printPage", { state: { arrayForPrint, user, type } });
   };
 
   const handleSelectOrder = (orderSelected: OrderSaleTypes) => {
@@ -559,7 +556,6 @@ export function GetOrdersComponent() {
                           <DialogTitle>Lista de produtos: </DialogTitle>
                         </DialogHeader>
                         <div className=" md:hidden space-y-2 flex flex-col items-center justify-center">
-                          <div className="flex justify-between border-2 rounded-lg p-2"></div>
                           <div className="flex justify-between border-2 rounded-lg items-center p-1">
                             <span className="text-sm font-semibold">
                               Valor total do pedido:
@@ -571,12 +567,39 @@ export function GetOrdersComponent() {
                               })}
                             </span>
                           </div>
-                          <Button
-                            onClick={() => handlePrintItens(order)}
-                            className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
-                          >
-                            Imprimir
-                          </Button>
+
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded">
+                                Imprimir
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent>
+                              <div className="flex flex-col">
+                                <span>Escolha o tipo de impressão:</span>
+                                <div className="flex gap-2">
+                                  <Button
+                                    onClick={() => {
+                                      const type = "A4";
+                                      handlePrintItens(order, type);
+                                    }}
+                                    className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                                  >
+                                    Imprimir A4
+                                  </Button>
+                                  <Button
+                                    onClick={() => {
+                                      const type = "termica";
+                                      handlePrintItens(order, type);
+                                    }}
+                                    className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                                  >
+                                    Imprimir Térmica
+                                  </Button>
+                                </div>
+                              </div>
+                            </PopoverContent>
+                          </Popover>
                         </div>
                         <div className=" rounded-lg text-sm space-y-2 p-2 md:text-base">
                           {order.itens.map((product) => (
@@ -605,14 +628,38 @@ export function GetOrdersComponent() {
                     })}
                   </td>
                   <td className="border px-4 py-2 hidden md:table-cell">
-                    <div>
-                      <Button
-                        onClick={() => handlePrintItens(order)}
-                        className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded "
-                      >
-                        Imprimir
-                      </Button>
-                    </div>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded">
+                          Imprimir
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent>
+                        <div className="flex flex-col">
+                          <span>Escolha o tipo de impressão:</span>
+                          <div className="flex gap-2">
+                            <Button
+                              onClick={() => {
+                                const type = "A4";
+                                handlePrintItens(order, type);
+                              }}
+                              className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                            >
+                              Imprimir A4
+                            </Button>
+                            <Button
+                              onClick={() => {
+                                const type = "termica";
+                                handlePrintItens(order, type);
+                              }}
+                              className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                            >
+                              Imprimir Térmica
+                            </Button>
+                          </div>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                   </td>
                 </tr>
               ))}
@@ -709,12 +756,38 @@ export function GetOrdersComponent() {
                               })}
                             </span>
                           </div>
-                          <Button
-                            onClick={() => handlePrintItens(order)}
-                            className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
-                          >
-                            Imprimir
-                          </Button>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded">
+                                Imprimir
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent>
+                              <div className="flex flex-col">
+                                <span>Escolha o tipo de impressão:</span>
+                                <div className="flex gap-2">
+                                  <Button
+                                    onClick={() => {
+                                      const type = "A4";
+                                      handlePrintItens(order, type);
+                                    }}
+                                    className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                                  >
+                                    Imprimir A4
+                                  </Button>
+                                  <Button
+                                    onClick={() => {
+                                      const type = "termica";
+                                      handlePrintItens(order, type);
+                                    }}
+                                    className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                                  >
+                                    Imprimir Térmica
+                                  </Button>
+                                </div>
+                              </div>
+                            </PopoverContent>
+                          </Popover>
                         </div>
                         <div className=" rounded-lg text-sm space-y-2 p-2 md:text-base">
                           {order.itens.map((product) => (
@@ -744,12 +817,38 @@ export function GetOrdersComponent() {
                   </td>
                   <td className="border px-4 py-2 hidden md:table-cell">
                     <div>
-                      <Button
-                        onClick={() => handlePrintItens(order)}
-                        className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded "
-                      >
-                        Imprimir
-                      </Button>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded">
+                            Imprimir
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent>
+                          <div className="flex flex-col">
+                            <span>Escolha o tipo de impressão:</span>
+                            <div className="flex gap-2">
+                              <Button
+                                onClick={() => {
+                                  const type = "A4";
+                                  handlePrintItens(order, type);
+                                }}
+                                className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                              >
+                                Imprimir A4
+                              </Button>
+                              <Button
+                                onClick={() => {
+                                  const type = "termica";
+                                  handlePrintItens(order, type);
+                                }}
+                                className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                              >
+                                Imprimir Térmica
+                              </Button>
+                            </div>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
                     </div>
                   </td>
                 </tr>

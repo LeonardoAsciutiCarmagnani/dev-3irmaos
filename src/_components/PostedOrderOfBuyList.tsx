@@ -41,6 +41,7 @@ export type ProductInPriceList = {
 
 interface ItensProps {
   quantidade: number;
+  categoria?: string;
   preco: number;
   precoUnitarioLiquido?: number;
 }
@@ -105,17 +106,18 @@ const PedidoVendaForm: React.FC = () => {
 
     orderSale.order_code = newOrderNumber;
 
-    const includingIdInProduct: ItensProps[] = listProductsInCart.map(
+    const includingProductsInItens: ItensProps[] = listProductsInCart.map(
       (item) => {
         return {
           ...item,
           produtoId: item.id,
+          categoria: item.categoria,
         };
       }
     );
 
     if (orderSale.itens) {
-      orderSale.itens = includingIdInProduct;
+      orderSale.itens = includingProductsInItens;
     }
   };
 

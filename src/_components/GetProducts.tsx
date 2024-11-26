@@ -62,6 +62,8 @@ export const FetchProducts: React.FC = React.memo(() => {
     }
   }, [searchTerm, products]);
 
+  console.log(products);
+
   return (
     <div className="p-4 bg-gray-50 h-screen overflow-y-auto mt-[6rem]">
       <div className="mb-4 flex items-center border rounded-lg">
