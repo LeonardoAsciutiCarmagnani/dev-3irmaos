@@ -394,7 +394,7 @@ const PedidoVendaForm: React.FC = () => {
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="1">Dinheiro</SelectItem>
-          <SelectItem value="2">Cheque</SelectItem>
+          <SelectItem value="2">Boleto</SelectItem>
           <SelectItem value="3">Devolução</SelectItem>
           <SelectItem value="4">Cartão de crédito</SelectItem>
           <SelectItem value="5">Cartão de débito</SelectItem>

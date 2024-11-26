@@ -77,6 +77,7 @@ export function GetOrdersComponent() {
           queryList.sort((a, b) => (a.order_code ?? 0) - (b.order_code ?? 0));
         });
         setOrderList(queryList);
+        setFilteredOrders(queryList);
       }
     } catch (e) {
       console.log(e);
@@ -89,7 +90,6 @@ export function GetOrdersComponent() {
     newStatus: number
   ) => {
     try {
-      console.log(newStatus);
       const orderUpdateDate = format(new Date(), "yyyy/MM/dd HH:mm:ss");
       const orderRef = doc(firestore, "sales_orders", orderId);
 
@@ -197,6 +197,8 @@ export function GetOrdersComponent() {
       precoUnitarioLiquido?: number;
     }[] = [];
 
+    const orderNumber = pedido.order_code;
+
     arrayForPrint = pedido.itens.map((item, index) => {
       console.log(item.categoria);
       return { ...item, id_seq: index + 1 };
@@ -204,12 +206,44 @@ export function GetOrdersComponent() {
 
     const user = pedido.cliente &&
       pedido.created_at && {
+        IdClient: pedido.IdClient,
+        document: pedido.cliente?.documento,
         userName: pedido.cliente?.nomeDoCliente,
         userEmail: pedido.cliente?.email,
+        userIE: pedido.cliente.inscricaoEstadual,
         date: pedido?.created_at,
       };
 
-    navigate("/printPage", { state: { arrayForPrint, user, type } });
+    navigate("/printPage", {
+      state: { arrayForPrint, user, type, orderNumber },
+    });
+  };
+
+  const handleSelectAllOrders = () => {
+    const allSelected =
+      filteredOrders.length > 0
+        ? filteredOrders.every((order) =>
+            selectedOrderList.some(
+              (selectedOrder) => selectedOrder.id === order.id
+            )
+          )
+        : orderList.every((order) =>
+            selectedOrderList.some(
+              (selectedOrder) => selectedOrder.id === order.id
+            )
+          );
+
+    if (allSelected) {
+      // Remove todos os pedidos da lista
+      setSelectedOrderList([]);
+    } else {
+      // Adiciona todos os pedidos à lista
+      if (filteredOrders.length > 0) {
+        setSelectedOrderList(filteredOrders);
+      } else {
+        setSelectedOrderList(orderList);
+      }
+    }
   };
 
   const handleSelectOrder = (orderSelected: OrderSaleTypes) => {
@@ -229,8 +263,6 @@ export function GetOrdersComponent() {
   };
 
   const handleBatchChange: SubmitHandler<IFormInput> = async (data) => {
-    console.log(data.selectData);
-
     try {
       const updateList = selectedOrderList.map((order) => {
         const newValueStatus = Number(data.selectData);
@@ -244,6 +276,7 @@ export function GetOrdersComponent() {
       setSelectedOrderList(updateList);
 
       setOrderList(updateList);
+      setFilteredOrders(updateList);
 
       const collectionRef = collection(firestore, "sales_orders");
 
@@ -254,6 +287,8 @@ export function GetOrdersComponent() {
       });
 
       await Promise.all(updatePromises);
+
+      await fetchOrders();
     } catch (e) {
       console.error("Ocorreu um erro ao atualizar os status dos pedidos !", e);
     }
@@ -355,15 +390,15 @@ export function GetOrdersComponent() {
                 <select
                   className="border-2 px-4 py-2 rounded"
                   {...register("selectData")}
+                  disabled={selectedOrderList.length === 0}
                 >
                   <option value="1">Pedido Aberto</option>
                   <option value="2">Em produção</option>
                   <option value="3">Pedido pronto</option>
-                  <option value="4">Pedido faturado</option>
                   <option value="5">Pedido enviado</option>
                   <option value="6">Entregue</option>
                 </select>
-                <div className="space-y-2">
+                <div className="space-y-2 overflow-y-scroll h-56">
                   {selectedOrderList.length > 0 ? (
                     <>
                       {selectedOrderList.map((order, index) => (
@@ -428,7 +463,9 @@ export function GetOrdersComponent() {
                 <DialogFooter>
                   <Popover>
                     <PopoverTrigger asChild>
-                      <Button>Atualizar Status</Button>
+                      <Button disabled={selectedOrderList.length === 0}>
+                        Atualizar Status
+                      </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-80">
                       <div className="flex flex-col">
@@ -455,7 +492,14 @@ export function GetOrdersComponent() {
       <table className="w-full border-collapse text-center border-gray-200">
         <thead className="bg-gray-100">
           <tr>
-            <th className="border md:px-4 py-2 text-xs md:text-base"></th>
+            <th className="border md:px-4 py-2 text-xs md:text-base">
+              <input
+                type="checkbox"
+                name=""
+                id=""
+                onChange={() => handleSelectAllOrders()}
+              />
+            </th>
             <th className="border md:px-4 py-2 hidden text-xs md:text-base md:table-cell">
               Número do pedido
             </th>
