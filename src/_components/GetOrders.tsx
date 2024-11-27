@@ -542,7 +542,11 @@ export function GetOrdersComponent() {
                       type="checkbox"
                       name=""
                       id=""
-                      onChange={() => handleSelectOrder(order)}
+                      checked={check}
+                      onChange={() => {
+                        setCheck(!check);
+                        handleSelectOrder(order);
+                      }}
                     />
                   </td>
                   <td className="border px-4 py-2 hidden md:table-cell text-sm md:text-base">
@@ -729,7 +733,11 @@ export function GetOrdersComponent() {
                       type="checkbox"
                       name=""
                       id=""
-                      onChange={() => handleSelectOrder(order)}
+                      checked={check}
+                      onChange={() => {
+                        setCheck(!check);
+                        handleSelectOrder(order);
+                      }}
                     />
                   </td>
                   <td className="border px-4 py-2 hidden md:table-cell text-sm md:text-base">

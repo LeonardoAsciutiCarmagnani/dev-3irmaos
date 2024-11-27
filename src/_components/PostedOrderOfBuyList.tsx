@@ -241,6 +241,8 @@ const PedidoVendaForm: React.FC = () => {
 
   useEffect(() => {
     fetchClientes();
+    console.log("Lista de produtos: ", listProductsInCart);
+    console.log("OrderSale: ", orderSale);
   }, []);
 
   return (
