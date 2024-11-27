@@ -28,6 +28,7 @@ import { DateRange } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { Calendar } from "@/components/ui/calendar";
 import { ptBR } from "date-fns/locale";
+import { Trash } from "lucide-react";
 
 interface StatusProps {
   [key: number]: string;
@@ -245,6 +246,11 @@ export function GetOrdersComponent() {
         setSelectedOrderList(orderList);
       }
     }
+  };
+
+  const handleClearSelectList = () => {
+    setSelectedOrderList([]);
+    setCheck(false);
   };
 
   const handleSelectOrder = (orderSelected: OrderSaleTypes) => {
@@ -489,6 +495,10 @@ export function GetOrdersComponent() {
               </form>
             </DialogContent>
           </Dialog>
+          <Button variant={"outline"} onClick={handleClearSelectList}>
+            <Trash />
+            {selectedOrderList.length}
+          </Button>
         </form>
       </div>
       <table className="w-full border-collapse text-center border-gray-200">
@@ -542,9 +552,7 @@ export function GetOrdersComponent() {
                       type="checkbox"
                       name=""
                       id=""
-                      checked={check}
                       onChange={() => {
-                        setCheck(!check);
                         handleSelectOrder(order);
                       }}
                     />
@@ -733,9 +741,7 @@ export function GetOrdersComponent() {
                       type="checkbox"
                       name=""
                       id=""
-                      checked={check}
                       onChange={() => {
-                        setCheck(!check);
                         handleSelectOrder(order);
                       }}
                     />

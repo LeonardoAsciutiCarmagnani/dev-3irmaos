@@ -73,6 +73,7 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
       const newProduct = { product, quantity };
       const updatedProducts = [...selectedProducts, newProduct];
       onProductSelect(updatedProducts);
+      console.log("UpdatedProducts: ", updatedProducts);
 
       const total = updatedProducts.reduce(
         (total, item) => total + item.product.preco * item.quantity,

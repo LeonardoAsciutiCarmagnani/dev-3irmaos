@@ -210,7 +210,7 @@ export function GetOrdersClientComponent() {
                   <td className="border px-4 py-2 text-sm md:text-base">
                     <Dialog>
                       <DialogTrigger>
-                        <span className="bg-blue-500 text-white px-2  text-xs md:text-base py-1 rounded hover:bg-blue-700">
+                        <span className="bg-amber-500 text-white px-2  text-xs md:text-base py-1 rounded hover:bg-amber-600">
                           Ver
                         </span>
                       </DialogTrigger>
@@ -340,7 +340,7 @@ export function GetOrdersClientComponent() {
                   <td className="border px-4 py-2 text-sm md:text-base">
                     <Dialog>
                       <DialogTrigger>
-                        <span className="bg-blue-500 text-white px-2  text-xs md:text-base py-1 rounded hover:bg-blue-700">
+                        <span className="bg-amber-500 text-white px-2  text-xs md:text-base py-1 rounded hover:bg-amber-600">
                           Ver
                         </span>
                       </DialogTrigger>

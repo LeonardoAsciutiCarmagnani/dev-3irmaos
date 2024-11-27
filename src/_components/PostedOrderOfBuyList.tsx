@@ -49,6 +49,8 @@ interface ItensProps {
 const PedidoVendaForm: React.FC = () => {
   const orderCreationDate = format(new Date(), "yyyy/MM/dd HH:mm:ss");
 
+  const [loading, setLoading] = useState(false);
+
   const [orderSale, setOrderSale] = useState<OrderSaleTypes>({
     status_order: 1,
     order_code: 0,
@@ -86,7 +88,7 @@ const PedidoVendaForm: React.FC = () => {
 
   const { totalValue, listProductsInCart, clearListProductsInCart } =
     useZustandContext();
-  const { toastSuccess } = ToastNotifications();
+  const { toastSuccess, toastError } = ToastNotifications();
   const navigate = useNavigate();
 
   const fetchLastOrders = async () => {
@@ -111,6 +113,9 @@ const PedidoVendaForm: React.FC = () => {
           ...item,
           produtoId: item.id,
           categoria: item.categoria,
+          preco: item.preco,
+          precoUnitarioBruto: item.preco,
+          precoUnitarioLiquido: item.preco,
         };
       }
     );
@@ -171,6 +176,7 @@ const PedidoVendaForm: React.FC = () => {
       );
       console.log("Pedido enviado com sucesso:", response.data);
       toastSuccess("Pedido criado com sucesso !");
+      setLoading(false);
       setTimeout(() => {
         clearListProductsInCart(listProductsInCart);
         navigate("/");
@@ -182,6 +188,10 @@ const PedidoVendaForm: React.FC = () => {
       } else {
         console.error("Erro desconhecido:", error);
       }
+      toastError("Ocorreu um erro ao enviar seu pedido !");
+      setTimeout(() => {
+        navigate("/");
+      }, 1000);
     }
   };
 
@@ -409,7 +419,9 @@ const PedidoVendaForm: React.FC = () => {
         </SelectContent>
       </Select>
 
-      <Button type="submit">Finalizar pedido</Button>
+      <Button type="submit" disabled={loading === true}>
+        {loading === true ? "Enviando pedido" : "Finalizar pedido"}
+      </Button>
     </form>
   );
 };

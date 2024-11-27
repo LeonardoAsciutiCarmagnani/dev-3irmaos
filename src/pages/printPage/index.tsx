@@ -1,4 +1,5 @@
-import { useLocation } from "react-router-dom";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import logo from "../../assets/logo.png";
@@ -33,7 +34,7 @@ export default function PrintPage() {
     totais: { "TOTAL GERAL": 0 }, // Inicializado com total geral 0
   });
 
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   let hasPrinted = false;
 
   const imprimir = () => {
@@ -49,10 +50,10 @@ export default function PrintPage() {
     const originalContent = document.body.innerHTML;
 
     document.body.innerHTML = printContent;
-    // window.print();
+    window.print();
     document.body.innerHTML = originalContent;
-    // navigate("/get-orders"); // Navegue de volta para a página inicial após imprimir
-    // window.location.reload();
+    navigate("/get-orders"); // Navegue de volta para a página inicial após imprimir
+    window.location.reload();
   };
 
   const handleCountCategory = () => {
@@ -130,15 +131,55 @@ export default function PrintPage() {
                 <img
                   src={logo}
                   alt="Logo Kyoto"
-                  className="rounded-full size-36"
+                  className="rounded-full size-28"
                 />
               </div>
               <div className="flex flex-col  rounded-lg p-3 items-start justify-start">
-                <span className="font-bold text-lg">PASTEIS KYOTO</span>
-                <span className="">C. M. L. MATIAS</span>
-                <span className="">CNPJ: 28.068.016/0001-55</span>
-                <span className="">RUA FREI MONT'ALVERNE Nº216 - SP</span>
+                <span className="font-bold ">PASTEIS KYOTO</span>
+                <span className="text-sm">C. M. L. MATIAS</span>
+                <span className="text-sm">CNPJ: 28.068.016/0001-55</span>
+                <span className="text-sm">
+                  RUA FREI MONT'ALVERNE Nº216 - SP
+                </span>
                 <span>CEP: 03.505-030</span>
+              </div>
+              <div className="flex flex-col p-3 text-start justify-start text-sm ">
+                <div>
+                  <div className="gap-2">
+                    <span className="font-bold">Nome / Razão Social:</span>{" "}
+                    <span>{user.userName}</span>
+                  </div>
+                  <div className="gap-2">
+                    <span className="font-bold">CNPJ / CPF:</span>{" "}
+                    <span>
+                      {user.document ? (
+                        <>{user.document}</>
+                      ) : (
+                        <> não informado !</>
+                      )}
+                    </span>
+                  </div>
+                  <div className="gap-2">
+                    <span className="font-bold">Responsável:</span>{" "}
+                    <span>{user.userName}</span>
+                  </div>
+                  <div className="gap-2">
+                    <span className="font-bold">Telefone:</span>{" "}
+                    <span>{userPhone}</span>
+                  </div>
+                </div>
+                <div className="flex flex-col">
+                  <div className="gap-2">
+                    <span className="font-bold">IE:</span>{" "}
+                    <span>
+                      {user.userIE ? <>{user.userIE}</> : <> não informado</>}
+                    </span>
+                  </div>
+                  <div className="gap-2">
+                    <span className="font-bold">Email:</span>{" "}
+                    <span>{user.userEmail}</span>
+                  </div>
+                </div>
               </div>
             </div>
             <div className="flex flex-col items-start">
@@ -148,44 +189,6 @@ export default function PrintPage() {
               <div className="gap-2">
                 <span className="font-bold text-lg">Data do pedido:</span>{" "}
                 <span>{formalizedDate}</span>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 w-[700px]  p-3 text-start justify-start border-t-2 border-b-2 border-black">
-              <div>
-                <div className="gap-2">
-                  <span className="font-bold">Nome / Razão Social:</span>{" "}
-                  <span>{user.userName}</span>
-                </div>
-                <div className="gap-2">
-                  <span className="font-bold">CNPJ / CPF:</span>{" "}
-                  <span>
-                    {user.document ? (
-                      <>{user.document}</>
-                    ) : (
-                      <> não informado !</>
-                    )}
-                  </span>
-                </div>
-                <div className="gap-2">
-                  <span className="font-bold">Responsável:</span>{" "}
-                  <span>{user.userName}</span>
-                </div>
-                <div className="gap-2">
-                  <span className="font-bold">Telefone:</span>{" "}
-                  <span>{userPhone}</span>
-                </div>
-              </div>
-              <div className="flex flex-col">
-                <div className="gap-2">
-                  <span className="font-bold">IE:</span>{" "}
-                  <span>
-                    {user.userIE ? <>{user.userIE}</> : <> não informado</>}
-                  </span>
-                </div>
-                <div className="gap-2">
-                  <span className="font-bold">Email:</span>{" "}
-                  <span>{user.userEmail}</span>
-                </div>
               </div>
             </div>
 
@@ -215,7 +218,7 @@ export default function PrintPage() {
                 )}
               </div>
             </div>
-            {countCategory?.totais && (
+            {/*  {countCategory?.totais && (
               <div className="border-2 w-80 border-black">
                 {Object.keys(countCategory.totais).map((categoria) =>
                   categoria !== "TOTAL GERAL" ? (
@@ -230,14 +233,14 @@ export default function PrintPage() {
                   {countCategory.totais["TOTAL GERAL"]}
                 </div>
               </div>
-            )}
+            )} */}
           </div>
         </>
       ) : (
         <div id="printableArea">
-          <div className="flex flex-col space-y-3 items-center justify-center p-8 ">
-            <img src={logo} alt="Logo Kyoto" className="rounded-full size-36" />
-            <div className="flex flex-col  rounded-lg p-3 items-center flex-1 text-center justify-center">
+          <div className="flex flex-col space-y-1 items-center justify-center p-8 ">
+            <img src={logo} alt="Logo Kyoto" className="rounded-full size-28" />
+            <div className="flex flex-col text-sm rounded-lg p-3 items-center flex-1 text-center justify-center">
               <span className="font-bold text-base">C. M. L. MATIAS</span>
               <span className="font-bold text-base">
                 CNPJ: 28.068.016/0001-55
@@ -256,13 +259,13 @@ export default function PrintPage() {
               </div>
             </div>
             <div className="grid grid-cols-2 w-96  p-3 text-start justify-start border-t-2 border-b-2 border-black">
-              <div>
-                <div className="gap-2">
-                  <span className="font-bold">Nome / Razão Social:</span>{" "}
+              <div className="text-sm">
+                <div className="flex flex-col">
+                  <span className="font-bold">Nome / Razão Social:</span>
                   <span>{user.userName}</span>
                 </div>
-                <div className="gap-2">
-                  <span className="font-bold">CNPJ / CPF:</span>{" "}
+                <div className="flex flex-col">
+                  <span className="font-bold">CNPJ / CPF:</span>
                   <span>
                     {user.document ? (
                       <>{user.document}</>
@@ -271,16 +274,16 @@ export default function PrintPage() {
                     )}
                   </span>
                 </div>
-                <div className="gap-2 flex flex-col">
-                  <span className="font-bold">Responsável:</span>{" "}
+                <div className="flex flex-col">
+                  <span className="font-bold">Responsável:</span>
                   <span>{user.userName}</span>
                 </div>
-                <div className="gap-2 flex flex-col">
+              </div>
+              <div className="flex flex-col text-sm">
+                <div className="gap-2 ">
                   <span className="font-bold">Telefone:</span>{" "}
                   <span>{userPhone}</span>
                 </div>
-              </div>
-              <div className="flex flex-col">
                 <div className="gap-2">
                   <span className="font-bold">IE:</span>{" "}
                   <span>
@@ -316,7 +319,7 @@ export default function PrintPage() {
                 )
               )}
             </div>
-            {countCategory?.totais && (
+            {/*  {countCategory?.totais && (
               <div className="border-2 w-80 border-black">
                 {Object.keys(countCategory.totais).map((categoria) =>
                   categoria !== "TOTAL GERAL" ? (
@@ -331,7 +334,7 @@ export default function PrintPage() {
                   {countCategory.totais["TOTAL GERAL"]}
                 </div>
               </div>
-            )}
+            )} */}
           </div>
         </div>
       )}
