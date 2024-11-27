@@ -160,7 +160,7 @@ const PedidoVendaForm: React.FC = () => {
     const userId = getUserId && JSON.parse(getUserId);
     try {
       const response = await axios.post(
-        `https://us-central1-server-kyoto.cloudfunctions.net/api/v1/pedido-de-venda/${userId.uid}`,
+        `https://us-central1-kyoto-f1764.cloudfunctions.net/api/v1/pedido-de-venda/${userId.uid}`,
         orderSale,
         {
           headers: {

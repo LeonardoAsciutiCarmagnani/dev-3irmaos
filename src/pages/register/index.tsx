@@ -510,13 +510,6 @@ export default function Register() {
                       value={watch("cep") || ""}
                       required
                     />
-                    <a
-                      href="https://buscacepinter.correios.com.br/app/endereco/index.php"
-                      target="_blank"
-                      className="text-wrap text-xs relative left-10 pb-[0.1rem] border-b-[0.1rem] text-blue-300 border-outset border-blue-500 cursor-pointer hover:text-blue-700"
-                    >
-                      Ajuda com CEP ?
-                    </a>
                   </div>
                   <div>
                     {cepError && (

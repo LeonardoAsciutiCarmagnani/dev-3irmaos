@@ -29,7 +29,7 @@ export const GetSalesOrders = () => {
   const handleGetSalesOrders = async () => {
     try {
       const response = await axios.get(
-        "https://us-central1-server-kyoto.cloudfunctions.net/api/v1/pedido-de-venda",
+        "https://us-central1-kyoto-f1764.cloudfunctions.net/api/v1/pedido-de-venda",
         {
           headers: { "Content-Type": "application/json" },
         }

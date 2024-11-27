@@ -69,7 +69,7 @@ export const useZustandContext = create<ContextStates>((set) => ({
   fetchPriceLists: async () => {
     try {
       const response = await axios.get(
-        "https://us-central1-server-kyoto.cloudfunctions.net/api/v1/prices-lists"
+        "https://us-central1-kyoto-f1764.cloudfunctions.net/api/v1/prices-lists"
       );
 
       console.log(response.data.pricesLists);
@@ -134,7 +134,7 @@ export const useZustandContext = create<ContextStates>((set) => ({
     }
     try {
       const response = await axios.get(
-        "https://us-central1-server-kyoto.cloudfunctions.net/api/v1/produtos",
+        "https://us-central1-kyoto-f1764.cloudfunctions.net/api/v1/produtos",
         {
           headers: {
             Authorization: `Bearer ${user.accessToken}`,

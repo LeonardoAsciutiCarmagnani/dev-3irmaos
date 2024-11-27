@@ -114,7 +114,7 @@ export const Clients = () => {
     console.log("Deletando o id:", confirmDelete.user_id);
     try {
       const response = await axios.delete(
-        `https://us-central1-server-kyoto.cloudfunctions.net/api/v1/clients/${confirmDelete.user_id}`
+        `https://us-central1-kyoto-f1764.cloudfunctions.net/api/v1/clients/${confirmDelete.user_id}`
       );
 
       if (response.status === 200) {

@@ -68,7 +68,7 @@ const PostPricesList = () => {
         products: defaultProducts,
       };
       await axios.post(
-        "https://us-central1-server-kyoto.cloudfunctions.net/api/v1/create-prices-list",
+        "https://us-central1-kyoto-f1764.cloudfunctions.net/api/v1/create-prices-list",
         newPriceList,
         {
           headers: {

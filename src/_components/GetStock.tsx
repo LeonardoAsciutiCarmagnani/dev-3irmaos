@@ -16,7 +16,7 @@ const FetchStock = () => {
   const fetchStock = async () => {
     try {
       const response = await axios.get(
-        "https://us-central1-server-kyoto.cloudfunctions.net/api/v1/estoque"
+        "https://us-central1-kyoto-f1764.cloudfunctions.net/api/v1/estoque"
       );
       console.log(response.data);
       setStock(response.data.stock || null);

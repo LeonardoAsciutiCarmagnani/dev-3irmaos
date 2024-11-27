@@ -20,7 +20,7 @@ const PriceListsOverview = () => {
     console.log(id);
     try {
       await axios.delete(
-        `https://us-central1-server-kyoto.cloudfunctions.net/api/v1/prices-lists/${id}`
+        `https://us-central1-kyoto-f1764.cloudfunctions.net/api/v1/prices-lists/${id}`
       );
 
       filterPricesList(id);

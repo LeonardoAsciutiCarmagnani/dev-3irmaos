@@ -18,8 +18,8 @@ const firebaseConfig = {
   projectId: "kyoto-f1764",
   storageBucket: "kyoto-f1764.firebasestorage.app",
   messagingSenderId: "638846069672",
-  appId: "1:638846069672:web:8225aebc75777eee744b9d",
-  measurementId: "G-W5ZN56VVBG",
+  appId: "1:638846069672:web:66c61dd5c369cf9f744b9d",
+  measurementId: "G-3DH0QEL7Q3",
 };
 
 // Initialize Firebase

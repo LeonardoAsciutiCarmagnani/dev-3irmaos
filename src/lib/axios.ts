@@ -1,5 +1,4 @@
 import axios from "axios";
-
 export const api = axios.create({
-  baseURL: "https://us-central1-server-kyoto.cloudfunctions.net/api",
+  baseURL: "https://us-central1-kyoto-f1764.cloudfunctions.net/api",
 });

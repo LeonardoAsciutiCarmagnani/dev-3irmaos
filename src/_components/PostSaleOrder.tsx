@@ -311,7 +311,7 @@ const OrderSaleProps: React.FC = () => {
       await fetchLastOrders();
 
       await axios.post(
-        `https://us-central1-server-kyoto.cloudfunctions.net/api/v1/pedido-de-venda/${clientId}`,
+        `https://us-central1-kyoto-f1764.cloudfunctions.net/api/v1/pedido-de-venda/${clientId}`,
         orderSale,
         {
           headers: {

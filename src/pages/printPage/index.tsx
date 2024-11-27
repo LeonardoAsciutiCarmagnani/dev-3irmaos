@@ -1,8 +1,7 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import logo from "../../assets/logo.png";
-
 interface PrintItem {
   produtoId: string;
   nome?: string;
@@ -25,7 +24,7 @@ export default function PrintPage() {
   const { user, type } = location.state;
   const [countCategory, setCountCategory] = useState<CategoryProps>();
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   let hasPrinted = false;
 
   const imprimir = () => {
@@ -41,23 +40,24 @@ export default function PrintPage() {
     const originalContent = document.body.innerHTML;
 
     document.body.innerHTML = printContent;
-    window.print();
+    // window.print();
     document.body.innerHTML = originalContent;
-    navigate("/get-orders"); // Navegue de volta para a página inicial após imprimir
-    window.location.reload();
+    // navigate("/get-orders"); // Navegue de volta para a página inicial após imprimir
+    // window.location.reload();
   };
 
   const handleCountCategory = () => {
-    const categoryCounts = arrayForPrint.reduce((acc, item) => {
-      const categoria = item.categoria;
-      if (item.categoria) {
-        acc[categoria] = (acc[categoria] || 0) + 1;
-      }
-      console.log(acc);
-      return acc;
-    }, {});
-    console.log(categoryCounts);
-    console.log(arrayForPrint);
+    const categoryCounts = arrayForPrint.reduce<Record<string, number>>(
+      (acc, item) => {
+        const categoria = item.categoria;
+        if (categoria) {
+          acc[categoria] = (acc[categoria] || 0) + 1 * item.quantidade;
+        }
+        console.log(acc);
+        return acc;
+      },
+      {}
+    );
 
     setCountCategory({
       Tradicionais: categoryCounts.TRADICIONAIS,
@@ -82,8 +82,8 @@ export default function PrintPage() {
     >
       {type === "A4" ? (
         <>
-          <div className="flex flex-col space-y-3 items-center justify-center  w-screen">
-            <div className="flex w-full   justify-center">
+          <div className="flex flex-col space-y-3 items-start justify-start w-screen">
+            <div className="flex w-full  items-center justify-start">
               <div>
                 {" "}
                 <img
@@ -92,19 +92,18 @@ export default function PrintPage() {
                   className="rounded-full size-36"
                 />
               </div>
-              <div className="flex flex-col  rounded-lg p-3 items-end flex-1 text-center justify-center">
-                <span className="font-bold text-lg">C. M. L. MATIAS</span>
-                <span className="font-bold text-lg">
-                  CNPJ: 28.068.016/0001-55
-                </span>
-                <span className="font-bold text-lg">
+              <div className="flex flex-col  rounded-lg p-3 items-start justify-start">
+                <span className="font-bold text-lg">PASTEIS KYOTO</span>
+                <span className="">C. M. L. MATIAS</span>
+                <span className="">CNPJ: 28.068.016/0001-55</span>
+                <span className="">
                   RUA FREI MONT'ALVERNE Nº216 - SP CEP: 03.505-030
                 </span>
               </div>
             </div>
-            <div className="flex flex-col w-96 rounded-lg p-3  flex-1 text-center justify-center">
+            <div className="flex flex-col w-96 rounded-lg p-3  flex-1 text-start justify-start">
               <div className="gap-2">
-                <span className="font-bold">Cliente:</span>
+                <span className="font-bold">Cliente:</span>{" "}
                 <span>{user.userName}</span>
               </div>
               <div className="gap-2">
@@ -118,24 +117,31 @@ export default function PrintPage() {
             </div>
 
             <div className="border-2 w-[700px] border-black rounded-lg p-3">
-              {arrayForPrint
-                .sort((a, b) => (a.id_seq ?? 0) - (b.id_seq ?? 0))
-                .map((item) => (
-                  <div
-                    key={item.id_seq}
-                    className="grid grid-cols-3  gap-2 w-full justify-around text-center  "
-                  >
-                    <div>
-                      <span className="font-semibold">{item.nome}</span>
-                    </div>
-                    <div>
-                      <span>quantidade: {item.quantidade}</span>
-                    </div>
-                    <div>
-                      <span>Categoria: {item.categoria}</span>
-                    </div>
-                  </div>
-                ))}
+              <table className="w-full items-center text-center">
+                <thead>
+                  <th>PRODUTO</th>
+                  <th>QUANTIDADE</th>
+                  <th>CATEGORIA</th>
+                </thead>
+                {/* className="grid grid-cols-3  gap-2 w-full justify-around text-center  " */}
+                <tbody className="items-center w-full ">
+                  {arrayForPrint
+                    .sort((a, b) => (a.id_seq ?? 0) - (b.id_seq ?? 0))
+                    .map((item) => (
+                      <tr>
+                        <td>
+                          <span>{item.nome}</span>
+                        </td>
+                        <td>
+                          <span>{item.quantidade}</span>
+                        </td>
+                        <td>
+                          <span>{item.categoria}</span>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
             </div>
             <div className="flex flex-col">
               <span className="font-bold">
@@ -151,27 +157,43 @@ export default function PrintPage() {
         <>
           <div className="flex flex-col space-y-3 items-center justify-center p-8 ">
             <img src={logo} alt="Logo Kyoto" className="rounded-full size-36" />
-            {/*  <div className="flex flex-col w-96 border-2 border-black rounded-lg p-3 ">
+            <div className="flex flex-col  rounded-lg p-3 items-center flex-1 text-center justify-center">
+              <span className="font-bold text-base">C. M. L. MATIAS</span>
+              <span className="font-bold text-base">
+                CNPJ: 28.068.016/0001-55
+              </span>
+              <span className="font-bold text-sm">
+                RUA FREI MONT'ALVERNE Nº216 - SP CEP: 03.505-030
+              </span>
+            </div>
+            <div className="flex flex-col w-96 border-2 border-black rounded-lg p-3 ">
               <span>Cliente: {user.userName}</span>
               <span>email: {user.userEmail}</span>
               <span>Data do pedido: {formalizedDate}</span>
-            </div> */}
+            </div>
 
-            {/*  {arrayForPrint
-              .sort((a, b) => (a.id_seq ?? 0) - (b.id_seq ?? 0))
-              .map((item) => (
-                <div
-                  key={item.id_seq}
-                  className="flex flex-col w-96 border-2 border-black rounded-lg p-3"
-                >
-                  <div>
-                    <span className="font-semibold">{item.nome}</span>
+            <div className="flex flex-col w-96 border-2 border-black rounded-lg p-3">
+              {arrayForPrint
+                .sort((a, b) => (a.id_seq ?? 0) - (b.id_seq ?? 0))
+                .map((item) => (
+                  <div key={item.id_seq} className="flex gap-2">
+                    <div>
+                      <span className="font-semibold">{item.nome}:</span>
+                    </div>
+                    <div>
+                      <span>{item.quantidade}</span>
+                    </div>
                   </div>
-                  <div>
-                    <span>quantidade: {item.quantidade}</span>
-                  </div>
-                </div>
-              ))} */}
+                ))}
+            </div>
+            <div className="flex flex-col">
+              <span className="font-bold">
+                Total Tradicionais: {countCategory?.Tradicionais}
+              </span>
+              <span className="font-bold">
+                Total Especiais: {countCategory?.Especiais}
+              </span>
+            </div>
           </div>
         </>
       )}

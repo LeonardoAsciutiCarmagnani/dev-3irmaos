@@ -51,7 +51,7 @@ export default function Auth() {
       <img
         src={logoKyoto}
         alt="Logo da empresa Pasteis Kyoto"
-        className="w-20 h-20 mb-8"
+        className="w-20 h-20 mb-8 rounded-full"
       />
       <form
         onSubmit={handleSubmit(handleUserLogin)}
