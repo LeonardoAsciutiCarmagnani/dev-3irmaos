@@ -84,7 +84,8 @@ const PedidoVendaForm: React.FC = () => {
     valorDoFrete: 0,
   });
 
-  const { totalValue, listProductsInCart } = useZustandContext();
+  const { totalValue, listProductsInCart, clearListProductsInCart } =
+    useZustandContext();
   const { toastSuccess } = ToastNotifications();
   const navigate = useNavigate();
 
@@ -155,9 +156,10 @@ const PedidoVendaForm: React.FC = () => {
 
     console.log("informações: ", orderSale);
 
-    const getUserId = localStorage.getItem("user");
+    const getUserId = localStorage.getItem("loggedUser");
 
     const userId = getUserId && JSON.parse(getUserId);
+    console.log(userId);
     try {
       const response = await axios.post(
         `https://us-central1-kyoto-f1764.cloudfunctions.net/api/v1/pedido-de-venda/${userId.uid}`,
@@ -171,6 +173,7 @@ const PedidoVendaForm: React.FC = () => {
       console.log("Pedido enviado com sucesso:", response.data);
       toastSuccess("Pedido criado com sucesso !");
       setTimeout(() => {
+        clearListProductsInCart(listProductsInCart);
         navigate("/");
       }, 2000);
     } catch (error: unknown) {
@@ -238,6 +241,8 @@ const PedidoVendaForm: React.FC = () => {
 
   useEffect(() => {
     fetchClientes();
+    console.log("Lista de produtos: ", listProductsInCart);
+    console.log("OrderSale: ", orderSale);
   }, []);
 
   return (
@@ -394,7 +399,7 @@ const PedidoVendaForm: React.FC = () => {
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="1">Dinheiro</SelectItem>
-          <SelectItem value="2">Cheque</SelectItem>
+          <SelectItem value="2">Boleto</SelectItem>
           <SelectItem value="3">Devolução</SelectItem>
           <SelectItem value="4">Cartão de crédito</SelectItem>
           <SelectItem value="5">Cartão de débito</SelectItem>

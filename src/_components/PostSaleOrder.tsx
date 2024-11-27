@@ -28,6 +28,7 @@ import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
 import { firestore } from "@/firebaseConfig";
 
 export type OrderSaleTypes = {
+  IdClient?: string;
   order_code: number;
   status_order: number;
   created_at?: string;

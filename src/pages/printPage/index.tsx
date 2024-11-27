@@ -2,6 +2,9 @@ import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import logo from "../../assets/logo.png";
+import { doc, getDoc } from "firebase/firestore";
+import { firestore } from "@/firebaseConfig";
+
 interface PrintItem {
   produtoId: string;
   nome?: string;
@@ -13,16 +16,22 @@ interface PrintItem {
   id_seq: number;
 }
 
-interface CategoryProps {
-  Tradicionais: number;
-  Especiais: number;
-}
-
 export default function PrintPage() {
   const location = useLocation();
   const { arrayForPrint }: { arrayForPrint: PrintItem[] } = location.state;
-  const { user, type } = location.state;
-  const [countCategory, setCountCategory] = useState<CategoryProps>();
+  const { user, type, orderNumber } = location.state;
+  const [userPhone, setUserPhone] = useState("");
+
+  const [countCategory, setCountCategory] = useState<{
+    categoryData: Record<
+      string,
+      { itens: { nome: string; quantidade: number }[]; total: number }
+    >;
+    totais: Record<string, number>;
+  }>({
+    categoryData: {}, // Objeto vazio para categorias
+    totais: { "TOTAL GERAL": 0 }, // Inicializado com total geral 0
+  });
 
   // const navigate = useNavigate();
   let hasPrinted = false;
@@ -47,27 +56,59 @@ export default function PrintPage() {
   };
 
   const handleCountCategory = () => {
-    const categoryCounts = arrayForPrint.reduce<Record<string, number>>(
-      (acc, item) => {
-        const categoria = item.categoria;
-        if (categoria) {
-          acc[categoria] = (acc[categoria] || 0) + 1 * item.quantidade;
-        }
-        console.log(acc);
+    const categoryData = arrayForPrint.reduce<{
+      [key: string]: {
+        itens: { nome: string; quantidade: number }[];
+        total: number;
+      };
+    }>((acc, item) => {
+      const {
+        categoria = "Sem Categoria",
+        nome = "Item Desconhecido",
+        quantidade,
+      } = item;
+
+      if (!acc[categoria]) {
+        acc[categoria] = { itens: [], total: 0 };
+      }
+
+      acc[categoria].itens.push({ nome, quantidade });
+      acc[categoria].total += quantidade;
+
+      return acc;
+    }, {});
+
+    // Ajusta a tipagem para incluir chaves dinâmicas
+    const totais = Object.keys(categoryData).reduce<Record<string, number>>(
+      (acc, categoria) => {
+        acc[categoria] = categoryData[categoria].total;
+
+        // Inicializa ou soma o total geral
+        acc["TOTAL GERAL"] =
+          (acc["TOTAL GERAL"] || 0) + categoryData[categoria].total;
+
         return acc;
       },
-      {}
+      {} // Inicializa o objeto vazio
     );
 
-    setCountCategory({
-      Tradicionais: categoryCounts.TRADICIONAIS,
-      Especiais: categoryCounts.ESPECIAIS,
-    });
+    setCountCategory({ categoryData, totais });
+  };
+
+  const handleGetPhoneUser = async () => {
+    const docRef = doc(firestore, "clients", user.IdClient);
+    const phone = await getDoc(docRef);
+    const data = phone.data();
+
+    if (data) {
+      setUserPhone(data.user_phone);
+    }
+    console.log(userPhone);
   };
 
   useEffect(() => {
     handleCountCategory();
-
+    handleGetPhoneUser();
     setTimeout(() => {
       imprimir();
     }, 2000);
@@ -76,13 +117,13 @@ export default function PrintPage() {
   const formalizedDate = format(user.date, "dd/MM/yyyy 'ás' HH:mm:ss");
 
   return (
-    <div
-      id="printableArea"
-      className="flex flex-col space-y-3 items-center justify-center p-8 w-full "
-    >
+    <>
       {type === "A4" ? (
         <>
-          <div className="flex flex-col space-y-3 items-start justify-start w-screen">
+          <div
+            id="printableArea"
+            className="flex flex-col space-y-3 items-start justify-start w-screen h-screen"
+          >
             <div className="flex w-full  items-center justify-start">
               <div>
                 {" "}
@@ -96,65 +137,104 @@ export default function PrintPage() {
                 <span className="font-bold text-lg">PASTEIS KYOTO</span>
                 <span className="">C. M. L. MATIAS</span>
                 <span className="">CNPJ: 28.068.016/0001-55</span>
-                <span className="">
-                  RUA FREI MONT'ALVERNE Nº216 - SP CEP: 03.505-030
-                </span>
+                <span className="">RUA FREI MONT'ALVERNE Nº216 - SP</span>
+                <span>CEP: 03.505-030</span>
               </div>
             </div>
-            <div className="flex flex-col w-96 rounded-lg p-3  flex-1 text-start justify-start">
+            <div className="flex flex-col items-start">
+              <span className="font-bold text-lg">
+                PEDIDO Nº: {orderNumber}
+              </span>
               <div className="gap-2">
-                <span className="font-bold">Cliente:</span>{" "}
-                <span>{user.userName}</span>
-              </div>
-              <div className="gap-2">
-                <span className="font-bold">email:</span>{" "}
-                <span>{user.userEmail}</span>
-              </div>
-              <div className="gap-2">
-                <span className="font-bold">Data do pedido:</span>{" "}
+                <span className="font-bold text-lg">Data do pedido:</span>{" "}
                 <span>{formalizedDate}</span>
               </div>
             </div>
+            <div className="grid grid-cols-2 w-[700px]  p-3 text-start justify-start border-t-2 border-b-2 border-black">
+              <div>
+                <div className="gap-2">
+                  <span className="font-bold">Nome / Razão Social:</span>{" "}
+                  <span>{user.userName}</span>
+                </div>
+                <div className="gap-2">
+                  <span className="font-bold">CNPJ / CPF:</span>{" "}
+                  <span>
+                    {user.document ? (
+                      <>{user.document}</>
+                    ) : (
+                      <> não informado !</>
+                    )}
+                  </span>
+                </div>
+                <div className="gap-2">
+                  <span className="font-bold">Responsável:</span>{" "}
+                  <span>{user.userName}</span>
+                </div>
+                <div className="gap-2">
+                  <span className="font-bold">Telefone:</span>{" "}
+                  <span>{userPhone}</span>
+                </div>
+              </div>
+              <div className="flex flex-col">
+                <div className="gap-2">
+                  <span className="font-bold">IE:</span>{" "}
+                  <span>
+                    {user.userIE ? <>{user.userIE}</> : <> não informado</>}
+                  </span>
+                </div>
+                <div className="gap-2">
+                  <span className="font-bold">Email:</span>{" "}
+                  <span>{user.userEmail}</span>
+                </div>
+              </div>
+            </div>
 
-            <div className="border-2 w-[700px] border-black rounded-lg p-3">
-              <table className="w-full items-center text-center">
-                <thead>
-                  <th>PRODUTO</th>
-                  <th>QUANTIDADE</th>
-                  <th>CATEGORIA</th>
-                </thead>
-                {/* className="grid grid-cols-3  gap-2 w-full justify-around text-center  " */}
-                <tbody className="items-center w-full ">
-                  {arrayForPrint
-                    .sort((a, b) => (a.id_seq ?? 0) - (b.id_seq ?? 0))
-                    .map((item) => (
-                      <tr>
-                        <td>
-                          <span>{item.nome}</span>
-                        </td>
-                        <td>
-                          <span>{item.quantidade}</span>
-                        </td>
-                        <td>
-                          <span>{item.categoria}</span>
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
             <div className="flex flex-col">
-              <span className="font-bold">
-                Total Tradicionais: {countCategory?.Tradicionais}
-              </span>
-              <span className="font-bold">
-                Total Especiais: {countCategory?.Especiais}
-              </span>
+              <span className="text-lg font-bold">ITENS DO PEDIDO</span>
             </div>
+
+            <div className="flex flex-col border-t-2 w-[700px] border-black  py-3">
+              <div className="items-start w-full mb-1">
+                {Object.entries(countCategory.categoryData || {}).map(
+                  ([categoria, data]) => (
+                    <div key={categoria} className="flex flex-col mb-4">
+                      <div className="border-b-2 border-black flex justify-between w-full mb-4">
+                        <span className="font-semibold text-lg">
+                          {categoria}
+                        </span>
+                        <span className="font-semibold ">Quantidade</span>
+                      </div>
+                      {data.itens.map((item, index) => (
+                        <div key={index} className="flex justify-between">
+                          <span>{item.nome}</span>
+                          <span>{item.quantidade}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+            {countCategory?.totais && (
+              <div className="border-2 w-80 border-black">
+                {Object.keys(countCategory.totais).map((categoria) =>
+                  categoria !== "TOTAL GERAL" ? (
+                    <div key={categoria} className="w-80 p-2">
+                      <span className="font-semibold">TOTAL {categoria}</span>:{" "}
+                      {countCategory.totais[categoria]}
+                    </div>
+                  ) : null
+                )}
+                <div className="w-80 p-2">
+                  <span className="font-semibold">TOTAL GERAL:</span>{" "}
+                  {countCategory.totais["TOTAL GERAL"]}
+                </div>
+              </div>
+            )}
           </div>
         </>
       ) : (
-        <>
+        <div id="printableArea">
           <div className="flex flex-col space-y-3 items-center justify-center p-8 ">
             <img src={logo} alt="Logo Kyoto" className="rounded-full size-36" />
             <div className="flex flex-col  rounded-lg p-3 items-center flex-1 text-center justify-center">
@@ -166,37 +246,95 @@ export default function PrintPage() {
                 RUA FREI MONT'ALVERNE Nº216 - SP CEP: 03.505-030
               </span>
             </div>
-            <div className="flex flex-col w-96 border-2 border-black rounded-lg p-3 ">
-              <span>Cliente: {user.userName}</span>
-              <span>email: {user.userEmail}</span>
-              <span>Data do pedido: {formalizedDate}</span>
+            <div className="flex flex-col items-start">
+              <span className="font-bold text-lg">
+                PEDIDO Nº: {orderNumber}
+              </span>
+              <div className="gap-2">
+                <span className="font-bold text-lg">Data do pedido:</span>{" "}
+                <span>{formalizedDate}</span>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 w-96  p-3 text-start justify-start border-t-2 border-b-2 border-black">
+              <div>
+                <div className="gap-2">
+                  <span className="font-bold">Nome / Razão Social:</span>{" "}
+                  <span>{user.userName}</span>
+                </div>
+                <div className="gap-2">
+                  <span className="font-bold">CNPJ / CPF:</span>{" "}
+                  <span>
+                    {user.document ? (
+                      <>{user.document}</>
+                    ) : (
+                      <> não informado !</>
+                    )}
+                  </span>
+                </div>
+                <div className="gap-2 flex flex-col">
+                  <span className="font-bold">Responsável:</span>{" "}
+                  <span>{user.userName}</span>
+                </div>
+                <div className="gap-2 flex flex-col">
+                  <span className="font-bold">Telefone:</span>{" "}
+                  <span>{userPhone}</span>
+                </div>
+              </div>
+              <div className="flex flex-col">
+                <div className="gap-2">
+                  <span className="font-bold">IE:</span>{" "}
+                  <span>
+                    {user.userIE ? <>{user.userIE}</> : <> não informado</>}
+                  </span>
+                </div>
+                <div className="gap-2">
+                  <span className="font-bold">Email:</span>{" "}
+                  <span>{user.userEmail}</span>
+                </div>
+              </div>
             </div>
 
-            <div className="flex flex-col w-96 border-2 border-black rounded-lg p-3">
-              {arrayForPrint
-                .sort((a, b) => (a.id_seq ?? 0) - (b.id_seq ?? 0))
-                .map((item) => (
-                  <div key={item.id_seq} className="flex gap-2">
-                    <div>
-                      <span className="font-semibold">{item.nome}:</span>
-                    </div>
-                    <div>
-                      <span>{item.quantidade}</span>
-                    </div>
-                  </div>
-                ))}
-            </div>
             <div className="flex flex-col">
-              <span className="font-bold">
-                Total Tradicionais: {countCategory?.Tradicionais}
-              </span>
-              <span className="font-bold">
-                Total Especiais: {countCategory?.Especiais}
-              </span>
+              <span className="text-lg font-bold">ITENS DO PEDIDO</span>
             </div>
+
+            <div className="flex flex-col w-96 border-t-2 border-b-2 border-black  p-3">
+              {Object.entries(countCategory.categoryData || {}).map(
+                ([categoria, data]) => (
+                  <div key={categoria} className="flex flex-col mb-4">
+                    <div className="border-b-2 border-black flex justify-between w-full mb-4">
+                      <span className="font-semibold text-lg">{categoria}</span>
+                      <span className="font-semibold ">Quantidade</span>
+                    </div>
+                    {data.itens.map((item, index) => (
+                      <div key={index} className="flex justify-between">
+                        <span>{item.nome}</span>
+                        <span>{item.quantidade}</span>
+                      </div>
+                    ))}
+                  </div>
+                )
+              )}
+            </div>
+            {countCategory?.totais && (
+              <div className="border-2 w-80 border-black">
+                {Object.keys(countCategory.totais).map((categoria) =>
+                  categoria !== "TOTAL GERAL" ? (
+                    <div key={categoria} className="w-80 p-2">
+                      <span className="font-semibold">TOTAL {categoria}</span>:{" "}
+                      {countCategory.totais[categoria]}
+                    </div>
+                  ) : null
+                )}
+                <div className="w-80 p-2">
+                  <span className="font-semibold">TOTAL GERAL:</span>{" "}
+                  {countCategory.totais["TOTAL GERAL"]}
+                </div>
+              </div>
+            )}
           </div>
-        </>
+        </div>
       )}
-    </div>
+    </>
   );
 }
