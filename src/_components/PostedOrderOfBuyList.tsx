@@ -419,7 +419,12 @@ const PedidoVendaForm: React.FC = () => {
         </SelectContent>
       </Select>
 
-      <Button type="submit" disabled={loading === true}>
+      <Button
+        type="submit"
+        disabled={loading === true}
+        className={`${loading === true ? "opacity-60" : ""}`}
+        onClick={() => setLoading(true)}
+      >
         {loading === true ? "Enviando pedido" : "Finalizar pedido"}
       </Button>
     </form>

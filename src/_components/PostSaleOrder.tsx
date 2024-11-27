@@ -242,6 +242,7 @@ const OrderSaleProps: React.FC = () => {
         preco: product.preco,
         precoUnitarioBruto: product.preco,
         precoUnitarioLiquido: product.preco,
+        categoria: product.categoria,
       }));
 
       return {
