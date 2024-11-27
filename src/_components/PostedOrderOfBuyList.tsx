@@ -105,8 +105,6 @@ const PedidoVendaForm: React.FC = () => {
 
     console.log(newOrderNumber);
 
-    orderSale.order_code = newOrderNumber;
-
     const includingProductsInItens: ItensProps[] = listProductsInCart.map(
       (item) => {
         return {
@@ -117,9 +115,11 @@ const PedidoVendaForm: React.FC = () => {
       }
     );
 
-    if (orderSale.itens) {
-      orderSale.itens = includingProductsInItens;
-    }
+    setOrderSale((prev) => ({
+      ...prev,
+      order_code: newOrderNumber,
+      itens: includingProductsInItens,
+    }));
   };
 
   const handlePaymentMethod = (paymentMethod: string) => {
@@ -152,7 +152,6 @@ const PedidoVendaForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    fetchLastOrders();
 
     console.log("informações: ", orderSale);
 
@@ -241,6 +240,7 @@ const PedidoVendaForm: React.FC = () => {
 
   useEffect(() => {
     fetchClientes();
+    fetchLastOrders();
     console.log("Lista de produtos: ", listProductsInCart);
     console.log("OrderSale: ", orderSale);
   }, []);

@@ -35,7 +35,7 @@ export default function BuyList() {
         <h1>Lista de produtos selecionados:</h1>
         <div className="flex flex-col space-y-2  p-8 w-full mr-2">
           <Carousel>
-            <CarouselContent className="border-2 mx-1 gap-3">
+            <CarouselContent className=" mx-1 gap-3">
               {listProductsInCart.map((item) => {
                 return (
                   <CarouselItem

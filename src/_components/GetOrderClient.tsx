@@ -33,7 +33,8 @@ export function GetOrdersClientComponent() {
 
   const fetchOrders = async () => {
     try {
-      const getUserCredentials = localStorage.getItem("user");
+      const getUserCredentials = localStorage.getItem("loggedUser");
+      console.log(getUserCredentials);
       let userCredentials: { uid: string } | null = null;
       if (getUserCredentials) {
         userCredentials = JSON.parse(getUserCredentials);
