@@ -14,7 +14,7 @@ interface ProductProps {
 }
 
 interface PriceListProps {
-  name: string;
+  name?: string;
   products: ProductProps[];
 }
 
