@@ -56,7 +56,7 @@ export function GetOrdersComponent() {
   /* Alterar o valor da createAt pelo timestamp  */
 
   const { register, handleSubmit } = useForm<IFormInput>();
-  const { toastError, toastSuccess } = ToastNotifications();
+  const { toastError } = ToastNotifications();
   const navigate = useNavigate();
 
   const fetchOrders = async () => {

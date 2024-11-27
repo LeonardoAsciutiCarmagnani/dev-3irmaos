@@ -92,7 +92,6 @@ onAuthStateChanged(auth, async (firebaseUser) => {
   console.log("onAuthStateChanged chamado. isCreatingUser:", isCreatingUser);
 
   if (isCreatingUser) {
-    // Ignora alterações durante o registro
     return;
   }
 

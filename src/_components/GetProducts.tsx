@@ -34,6 +34,14 @@ export const FetchProducts: React.FC = React.memo(() => {
   const [categories, setCategories] = useState<Set<string>>(new Set());
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(products);
+  const categoryOrder = [
+    "tradicionais",
+    "diferenciados",
+    "mini especial",
+    "especiais",
+    "doce",
+    "outros",
+  ];
 
   useEffect(() => {
     setProducts();
@@ -46,7 +54,15 @@ export const FetchProducts: React.FC = React.memo(() => {
           .map((product) => product.categoria)
           .filter((categoria): categoria is string => categoria !== undefined)
       );
-      setCategories(categoriesSet);
+
+      // Ordenar categorias com base em `categoryOrder`
+      const sortedCategories = Array.from(categoriesSet).sort(
+        (a, b) =>
+          categoryOrder.indexOf(a.toLowerCase()) -
+          categoryOrder.indexOf(b.toLowerCase())
+      );
+
+      setCategories(new Set(sortedCategories));
     }
   }, [products]);
 

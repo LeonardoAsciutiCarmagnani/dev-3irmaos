@@ -140,11 +140,11 @@ export default function Register() {
     try {
       setCepError("");
       const response = await axios.post(
-        "https://us-central1-server-kyoto.cloudfunctions.net/api/v1/CEP",
+        "https://us-central1-kyoto-f1764.cloudfunctions.net/api/v1/CEP",
         { cep }
       );
 
-      const enderecoData = response.data.endereco;
+      const enderecoData = response.data;
 
       if (!enderecoData) {
         setCepError(<CircleXIcon size={30} color="red" />);
@@ -161,6 +161,8 @@ export default function Register() {
         setValue("logradouro", enderecoData.logradouro ?? "");
         setValue("ibge", String(enderecoData.ibge));
       }
+
+      console.log("Endereço:", enderecoData);
     } catch (error) {
       console.error("Erro ao buscar o endereço:", error);
       setCepError("Erro ao buscar o endereço. Tente novamente.");
@@ -229,6 +231,8 @@ export default function Register() {
     const { setIsCreatingUser } = useAuthStore.getState();
     const newUser = { ...data };
     const cpf = data.CPF.replace(/\D/g, "");
+    const InscricaoEstadual = data.IE.replace(/\D/g, "");
+
     const cpfExistente = await checkUserExistInFirestore(cpf);
 
     if (cpfExistente) {
@@ -272,7 +276,7 @@ export default function Register() {
         user_email: data.userEmail,
         user_CPF: cpf,
         user_phone: data.phone,
-        user_IE: data.IE || "",
+        user_IE: InscricaoEstadual || "",
         user_fantasyName: data.fantasyName || "",
         user_neighborhood: data.neighborhood,
         user_cep: data.cep,

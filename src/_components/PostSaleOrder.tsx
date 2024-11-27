@@ -301,7 +301,7 @@ const OrderSaleProps: React.FC = () => {
       return;
     }
 
-    const user = localStorage.getItem("user");
+    const user = localStorage.getItem("loggedUser");
     const clientId = user ? JSON.parse(user).uid : null;
     if (!clientId) {
       toastError("Usuário não encontrado.");
