@@ -53,6 +53,7 @@ export function GetOrdersComponent() {
     to: undefined,
   });
   const [check, setCheck] = useState(false);
+  const [isCleared, setIsCleared] = useState(false);
 
   /* Alterar o valor da createAt pelo timestamp  */
 
@@ -250,7 +251,8 @@ export function GetOrdersComponent() {
 
   const handleClearSelectList = () => {
     setSelectedOrderList([]);
-    setCheck(false);
+    setIsCleared(true); // Sinaliza que os checkboxes devem ser desmarcados
+    setTimeout(() => setIsCleared(false), 0); // Reseta o estado após a atualização
   };
 
   const handleSelectOrder = (orderSelected: OrderSaleTypes) => {
@@ -552,6 +554,7 @@ export function GetOrdersComponent() {
                       type="checkbox"
                       name=""
                       id=""
+                      checked={selectedOrderList.includes(order) && !isCleared}
                       onChange={() => {
                         handleSelectOrder(order);
                       }}
@@ -741,6 +744,7 @@ export function GetOrdersComponent() {
                       type="checkbox"
                       name=""
                       id=""
+                      checked={selectedOrderList.includes(order) && !isCleared}
                       onChange={() => {
                         handleSelectOrder(order);
                       }}
