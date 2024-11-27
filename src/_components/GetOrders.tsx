@@ -179,6 +179,8 @@ export function GetOrdersComponent() {
     });
 
     if (filteredList.length > 0) {
+      setSelectedOrderList([]);
+      setCheck(false);
       setFilteredOrders(filteredList);
     } else {
       toastError("Nenhum pedido encontrado!");
@@ -542,9 +544,7 @@ export function GetOrdersComponent() {
                       type="checkbox"
                       name=""
                       id=""
-                      checked={check}
                       onChange={() => {
-                        setCheck(!check);
                         handleSelectOrder(order);
                       }}
                     />
@@ -733,9 +733,7 @@ export function GetOrdersComponent() {
                       type="checkbox"
                       name=""
                       id=""
-                      checked={check}
                       onChange={() => {
-                        setCheck(!check);
                         handleSelectOrder(order);
                       }}
                     />
