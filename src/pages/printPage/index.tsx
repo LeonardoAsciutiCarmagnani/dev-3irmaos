@@ -110,6 +110,7 @@ export default function PrintPage() {
   useEffect(() => {
     handleCountCategory();
     handleGetPhoneUser();
+    console.log(countCategory);
     setTimeout(() => {
       imprimir();
     }, 2000);

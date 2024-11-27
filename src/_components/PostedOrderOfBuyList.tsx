@@ -157,6 +157,8 @@ const PedidoVendaForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("click");
+    setLoading(true);
 
     console.log("informações: ", orderSale);
 
@@ -423,7 +425,6 @@ const PedidoVendaForm: React.FC = () => {
         type="submit"
         disabled={loading === true}
         className={`${loading === true ? "opacity-60" : ""}`}
-        onClick={() => setLoading(true)}
       >
         {loading === true ? "Enviando pedido" : "Finalizar pedido"}
       </Button>
