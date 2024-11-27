@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Plus, Minus, SearchIcon, LoaderPinwheelIcon } from "lucide-react";
 import { useZustandContext } from "@/context/cartContext";
+import LazyLoad from "react-lazyload";
 
 interface Product {
   id: string;
@@ -78,6 +79,13 @@ export const FetchProducts: React.FC = React.memo(() => {
     }
   }, [searchTerm, products]);
 
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchTerm(e.target.value);
+    },
+    []
+  );
+
   console.log(products);
 
   return (
@@ -91,7 +99,7 @@ export const FetchProducts: React.FC = React.memo(() => {
           placeholder="Pesquisar por nome do produto..."
           className="w-full p-2 pl-3 focus:outline-none"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={handleSearchChange}
         />
       </div>
       {loading && <LoadingSkeleton />}
@@ -153,92 +161,97 @@ const LoadingSkeleton: React.FC = () => (
   </div>
 );
 
-const ProductCard: React.FC<ProductCardProps> = ({
-  product,
-  handleAddItemInList,
-  handleRemoveItemFromCart,
-}) => {
-  const [isLoading, setIsLoading] = useState(true);
+const ProductCard: React.FC<ProductCardProps> = React.memo(
+  ({ product, handleAddItemInList, handleRemoveItemFromCart }) => {
+    const [isLoading, setIsLoading] = useState(true);
 
-  const handleImageLoad = () => {
-    setIsLoading(false);
-  };
+    const handleImageLoad = () => {
+      setIsLoading(false);
+    };
 
-  return (
-    <div className="flex flex-col w-[165px] sm:w-[180px] p-4 bg-white rounded-lg shadow-md border border-gray-200 hover:shadow-lg transition-shadow duration-300">
-      {/* Imagem do Produto */}
-      <div className="relative mb-3 group">
-        {/* Exibe o spinner apenas se a imagem existir e estiver carregando */}
-        {product.imagem && isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-50 rounded-lg">
-            <LoaderPinwheelIcon className="w-8 h-8 text-yellow-500 animate-spin duration-1000" />{" "}
-            {/* Animação do Spinner */}
-          </div>
-        )}
+    return (
+      <div className="flex flex-col w-[165px] sm:w-[180px] p-4 bg-white rounded-lg shadow-md border border-gray-200 hover:shadow-lg transition-shadow duration-300">
+        {/* Imagem do Produto */}
+        <div className="relative mb-3 group">
+          {/* Exibe o spinner apenas se a imagem existir e estiver carregando */}
+          {product.imagem && isLoading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-50 rounded-lg">
+              <LoaderPinwheelIcon className="w-8 h-8 text-yellow-500 animate-spin duration-1000" />{" "}
+              {/* Animação do Spinner */}
+            </div>
+          )}
 
-        {product.imagem ? (
-          <img
-            src={product.imagem}
-            alt={product.nome}
-            onLoad={handleImageLoad}
-            className="w-full h-28 sm:h-32 object-cover rounded-lg group-hover:brightness-90 transition duration-100"
-          />
-        ) : (
-          <div className="w-full h-28 sm:h-32 bg-gray-100 rounded-lg flex items-center justify-center text-sm text-gray-500">
-            Sem imagem
-          </div>
-        )}
+          {product.imagem ? (
+            <LazyLoad height={200} offset={100} once>
+              <img
+                src={product.imagem + "?width=200"} // Usando a imagem original
+                alt={product.nome}
+                onLoad={handleImageLoad}
+                className="w-full h-28 sm:h-32 object-cover rounded-lg group-hover:brightness-90 transition duration-100"
+                loading="lazy"
+              />
+            </LazyLoad>
+          ) : (
+            <div className="w-full h-28 sm:h-32 bg-gray-100 rounded-lg flex items-center justify-center text-sm text-gray-500">
+              Sem imagem
+            </div>
+          )}
 
-        {product.categoria && (
-          <span
-            className={`absolute top-2 left-2 px-3 py-1 text-xs font-bold text-white rounded-lg ${
-              product.categoria === "ESPECIAIS" ? "bg-yellow-500" : "bg-red-500"
-            }`}
+          {/* Categoria do Produto */}
+          {product.categoria && (
+            <span
+              className={`absolute top-2 left-2 px-3 py-1 text-xs font-bold text-white rounded-lg ${
+                product.categoria === "ESPECIAIS"
+                  ? "bg-yellow-500"
+                  : "bg-red-500"
+              }`}
+            >
+              {product.categoria}
+            </span>
+          )}
+          {!product.ativo && (
+            <span className="absolute bottom-2 left-[1.2rem] px-2 py-1 text-xs font-bold text-white bg-red-600 rounded-md">
+              Indisponível
+            </span>
+          )}
+        </div>
+
+        {/* Informações do Produto */}
+        <div className="flex flex-col flex-1">
+          <h3 className="text-sm font-semibold text-gray-900 truncate mb-1">
+            {product.nome}
+          </h3>
+          <p className="text-lg font-bold text-green-600 mb-2">
+            {product.preco.toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            })}
+          </p>
+        </div>
+
+        {/* Controle de Quantidade */}
+        <div className="flex items-center justify-between gap-2 mt-3">
+          <button
+            onClick={() => handleRemoveItemFromCart(product.id)}
+            className="flex items-center justify-center w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-600 shadow-sm transition-transform hover:scale-105"
           >
-            {product.categoria}
+            <Minus className="w-4 h-4" />
+          </button>
+          <span className="text-sm font-medium text-gray-800">
+            {product.quantidade}
           </span>
-        )}
-        {!product.ativo && (
-          <span className="absolute bottom-2 left-[1.2rem] px-2 py-1 text-xs font-bold text-white bg-red-600 rounded-md">
-            Indisponível
-          </span>
-        )}
+          <button
+            onClick={() => handleAddItemInList(product)}
+            className="flex items-center justify-center w-8 h-8 bg-yellow-500 hover:bg-yellow-600 rounded-full text-white shadow-sm transition-transform hover:scale-105"
+          >
+            <Plus className="w-4 h-4" />
+          </button>
+        </div>
       </div>
+    );
+  }
+);
 
-      {/* Informações do Produto */}
-      <div className="flex flex-col flex-1">
-        <h3 className="text-sm font-semibold text-gray-900 truncate mb-1">
-          {product.nome}
-        </h3>
-        <p className="text-lg font-bold text-green-600 mb-2">
-          {product.preco.toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-          })}
-        </p>
-      </div>
-
-      {/* Controle de Quantidade */}
-      <div className="flex items-center justify-between gap-2 mt-3">
-        <button
-          onClick={() => handleRemoveItemFromCart(product.id)}
-          className="flex items-center justify-center w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-600 shadow-sm transition-transform hover:scale-105"
-        >
-          <Minus className="w-4 h-4" />
-        </button>
-        <span className="text-sm font-medium text-gray-800">
-          {product.quantidade}
-        </span>
-        <button
-          onClick={() => handleAddItemInList(product)}
-          className="flex items-center justify-center w-8 h-8 bg-yellow-500 hover:bg-yellow-600 rounded-full text-white shadow-sm transition-transform hover:scale-105"
-        >
-          <Plus className="w-4 h-4" />
-        </button>
-      </div>
-    </div>
-  );
-};
 const ProductCategory: React.FC<ProductCategoryProps> = ({
   categoria,
   products,

@@ -100,17 +100,18 @@ const PriceListDetails = () => {
         </p>
       ) : priceList ? (
         <div className="bg-white shadow rounded-lg p-4 w-full max-w-md">
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 text-center">
-            {priceList.name}
-          </h2>
+          <input
+            className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 text-center"
+            value={priceList.name}
+          ></input>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-sm sm:text-base">
               <thead>
-                <tr className="bg-yellow-200 text-gray-700 rounded-md">
-                  <th className="p-3 text-left font-semibold">Produto</th>
-                  <th className="p-3 text-left font-semibold">Valor Atual</th>
-                  <th className="p-3 text-left font-bold text-nowrap">
-                    Novo Valor
+                <tr className="bg-amber-500 text-gray-700 text-xs text-center rounded-xl">
+                  <th className="p-2 text-center font-semibold ">Produto</th>
+                  <th className="p-2 text-center font-semibold ">Categoria</th>
+                  <th className="p-2 text-center font-bold text-nowrap">
+                    Valor
                   </th>
                 </tr>
               </thead>
@@ -118,15 +119,13 @@ const PriceListDetails = () => {
                 {Array.isArray(priceList?.products) ? (
                   priceList.products.map((product) => (
                     <tr key={product.id} className="border-b">
-                      <td className="p-3 text-gray-800 text-sm">
+                      <td className="p-3 text-gray-800 text-xs">
                         {product.nome}
                       </td>
-                      <td className="p-3 text-gray-900">
-                        {product.preco.toLocaleString("pt-BR", {
-                          style: "currency",
-                          currency: "BRL",
-                        })}
+                      <td className="p-3 text-gray-800  font-semibold text-xs">
+                        {product.categoria}
                       </td>
+
                       <td className="p-3 text-center">
                         <Input
                           type="number"
@@ -137,7 +136,7 @@ const PriceListDetails = () => {
                               parseFloat(e.target.value) || 0
                             )
                           }
-                          className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+                          className="text-center w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
                         />
                       </td>
                     </tr>

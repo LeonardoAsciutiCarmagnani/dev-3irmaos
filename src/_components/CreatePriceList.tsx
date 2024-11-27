@@ -9,6 +9,8 @@ interface ProductProps {
   id: string;
   nome: string;
   preco: number;
+  imagem?: string;
+  categoria?: string;
 }
 
 interface PriceListProps {
@@ -111,9 +113,14 @@ const PostPricesList = () => {
         {defaultProducts.map((product, index) => (
           <div
             key={product.id}
-            className="mb-4 p-4 bg-white rounded-lg shadow-sm border"
+            className="mb-4 p-4 bg-white rounded-lg shadow-sm border "
           >
-            <p className="text-gray-700 font-medium mb-2">{product.nome}</p>
+            <div className="flex items-center justify-between text-gray-800 mb-4 gap-x-4 ">
+              <p className="text-gray-700 font-sm">{product.nome}</p>
+              <div className="rounded-full p-1 w-fit text-xs font-semibold uppercase text-amber-500">
+                {product.categoria}
+              </div>
+            </div>
             <label className="block text-gray-700 font-medium mb-2">
               Valor
             </label>
