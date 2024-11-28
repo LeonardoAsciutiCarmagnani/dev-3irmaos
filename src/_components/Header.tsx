@@ -69,16 +69,27 @@ const Header: React.FC = () => {
                   return (
                     <div
                       key={item.id}
-                      className="flex flex-col items-center p-4 text-center border border-gray-300 rounded-lg shadow-lg space-y-3 bg-white"
+                      className="flex flex-col items-center w-60 p-4 text-center border border-gray-300 rounded-lg shadow-lg space-y-3 bg-white"
                     >
-                      <img
-                        src={item.imagem}
-                        alt="Imagem referente ao produto selecionado"
-                        className="w-36 h-36 object-cover rounded-md border border-gray-200"
-                      />
+                      {item.imagem ? (
+                        <img
+                          src={item.imagem}
+                          alt="Imagem referente ao produto selecionado"
+                          className="w-36 h-36 object-cover rounded-md border border-gray-200"
+                        />
+                      ) : (
+                        <div className="w-full h-28 sm:h-32 bg-gray-100 rounded-lg flex items-center justify-center text-sm text-gray-500">
+                          Sem imagem
+                        </div>
+                      )}
                       <div>
-                        <h3 className="text-lg font-semibold text-gray-800">
+                        <h3 className="text-lg font-semibold text-gray-800 ">
                           {item.nome}
+                        </h3>
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-800">
+                          {item.categoria}
                         </h3>
                       </div>
                       <div className="text-gray-600">

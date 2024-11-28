@@ -617,11 +617,11 @@ export function GetOrdersComponent() {
                         aria-describedby={undefined}
                       >
                         <DialogHeader>
-                          <DialogTitle>Lista de produtos: </DialogTitle>
+                          <DialogTitle>Detalhes</DialogTitle>
                         </DialogHeader>
                         <div className=" md:hidden space-y-2 flex flex-col items-center justify-center">
-                          <div className="flex justify-between border-2 rounded-lg items-center p-1">
-                            <span className="text-sm font-semibold">
+                          <div className="flex gap-1 justify-between rounded-lg items-center p-1">
+                            <span className="text-base font-semibold">
                               Valor total do pedido:
                             </span>
                             <span>
@@ -665,13 +665,24 @@ export function GetOrdersComponent() {
                             </PopoverContent>
                           </Popover>
                         </div>
+                        <div className="text-lg font-semibold text-center">
+                          Lista de produtos:
+                        </div>
                         <div className=" rounded-lg text-sm space-y-2 p-2 md:text-base">
                           {order.itens.map((product) => (
                             <div
                               key={product.produtoId}
                               className="flex flex-col border-2 space-y-2 p-2 rounded-lg items-center"
                             >
-                              <span>{product.nome}</span>
+                              <div>
+                                <span className="font-semibold">
+                                  {product.nome}
+                                </span>{" "}
+                                -{" "}
+                                <span className="font-semibold">
+                                  {product.categoria}
+                                </span>
+                              </div>
                               <span>Quantidade: {product.quantidade}</span>
                               <span>
                                 {product.preco?.toLocaleString("pt-BR", {
@@ -809,11 +820,11 @@ export function GetOrdersComponent() {
                         aria-describedby={undefined}
                       >
                         <DialogHeader>
-                          <DialogTitle>Lista de produtos: </DialogTitle>
+                          <DialogTitle>Detalhes</DialogTitle>
                         </DialogHeader>
                         <div className=" md:hidden space-y-2 flex flex-col items-center justify-center">
-                          <div className="flex justify-between border-2 rounded-lg items-center p-1">
-                            <span className="text-sm font-semibold">
+                          <div className="flex gap-1 justify-between rounded-lg items-center p-1">
+                            <span className="text-base font-semibold">
                               Valor total do pedido:
                             </span>
                             <span>
@@ -856,13 +867,24 @@ export function GetOrdersComponent() {
                             </PopoverContent>
                           </Popover>
                         </div>
+                        <div className="text-lg font-semibold text-center">
+                          Lista de produtos:
+                        </div>
                         <div className=" rounded-lg text-sm space-y-2 p-2 md:text-base">
                           {order.itens.map((product) => (
                             <div
                               key={product.produtoId}
                               className="flex flex-col border-2 space-y-2 p-2 rounded-lg items-center"
                             >
-                              <span>{product.nome}</span>
+                              <div>
+                                <span className="font-semibold">
+                                  {product.nome}
+                                </span>{" "}
+                                -{" "}
+                                <span className="font-semibold">
+                                  {product.categoria}
+                                </span>
+                              </div>
                               <span>Quantidade: {product.quantidade}</span>
                               <span>
                                 {product.preco?.toLocaleString("pt-BR", {

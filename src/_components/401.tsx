@@ -5,7 +5,7 @@ export default function AccessDenied() {
   const navigate = useNavigate();
 
   const handleGoBack = () => {
-    navigate(-1);
+    navigate("/");
   };
 
   return (

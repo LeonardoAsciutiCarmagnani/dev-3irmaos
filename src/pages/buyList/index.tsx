@@ -35,32 +35,45 @@ export default function BuyList() {
         <h1>Lista de produtos selecionados:</h1>
         <div className="flex flex-col space-y-2  p-8 w-full mr-2">
           <Carousel>
-            <CarouselContent className=" mx-1 gap-3">
+            <CarouselContent className=" mx-1 gap-3 h-64">
               {listProductsInCart.map((item) => {
                 return (
                   <CarouselItem
                     key={item.id}
-                    className="basis-full flex flex-col p-2 text-center items-center border-2 rounded-lg space-y-1 border-black "
+                    className="basis-full flex flex-col p-2 text-center items-center border-2 rounded-lg space-y-1 border-black space-y-3"
                   >
-                    <img
-                      src={item.imagem}
-                      className="size-48 border-2"
-                      alt="Imagem"
-                    />
+                    {item.imagem ? (
+                      <img
+                        src={item.imagem}
+                        className="size-48 rounded-lg"
+                        alt="Imagem"
+                      />
+                    ) : (
+                      <div className="w-60 size-48  bg-gray-100 rounded-lg flex items-center justify-center text-sm text-gray-500">
+                        Sem imagem
+                      </div>
+                    )}
                     <div>
-                      <span>{item.nome}</span>
-                    </div>
-                    <div>
-                      <span>quantidade: {item.quantidade}</span>
-                    </div>
-                    <div>
-                      <span>
-                        Valor unitario:{" "}
-                        {item.preco.toLocaleString("pt-BR", {
-                          style: "currency",
-                          currency: "BRL",
-                        })}
-                      </span>
+                      <span className="text-sm font-semibold">{item.nome}</span>
+                      <div>
+                        <span className="text-sm font-semibold">
+                          {item.categoria}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-sm">
+                          quantidade: {item.quantidade}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-sm">
+                          Valor unitario:{" "}
+                          {item.preco.toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
+                          })}
+                        </span>
+                      </div>
                     </div>
                   </CarouselItem>
                 );

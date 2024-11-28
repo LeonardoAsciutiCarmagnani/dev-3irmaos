@@ -10,10 +10,18 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { SubmitHandler, useForm } from "react-hook-form";
 import ToastNotifications from "./Toasts";
 import { format } from "date-fns";
 import Sidebar from "./Sidebar";
+import { DateRange } from "react-day-picker";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { ptBR } from "date-fns/locale";
 
 interface StatusProps {
   [key: number]: string;
@@ -28,6 +36,10 @@ interface IFormInput {
 export function GetOrdersClientComponent() {
   const [orderList, setOrderList] = useState<OrderSaleTypes[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<OrderSaleTypes[]>([]);
+  const [range, setRange] = useState<DateRange | undefined>({
+    from: undefined,
+    to: undefined,
+  });
   const { register, handleSubmit } = useForm<IFormInput>();
   const { toastError } = ToastNotifications();
 
@@ -64,17 +76,45 @@ export function GetOrdersClientComponent() {
       console.error("Ocorreu um erro ao buscar os pedidos !", e);
     }
   };
-
   const handleSearchOrders: SubmitHandler<IFormInput> = (data) => {
-    const selectedStatus = Number(data.selectStatus);
-    const formalizedDate = data.selectDate.replace(/-/g, "/");
-    console.log(formalizedDate);
+    const selectStatus = isNaN(Number(data.selectStatus))
+      ? 0
+      : Number(data.selectStatus);
+
+    console.log(range);
+
+    // Desestruturação do `range`
+    const { from, to } = range || {}; // Garantindo que `range` pode estar vazio
+
+    console.log("from", from);
+    console.log("to", to);
 
     const filteredList = orderList.filter((order) => {
       const matchesStatus =
-        selectedStatus > 0 ? order.status_order === selectedStatus : true;
+        selectStatus > 0 ? order.status_order === selectStatus : true;
 
-      return matchesStatus;
+      const matchesDateRange =
+        from && to
+          ? (() => {
+              if (order.created_at) {
+                const orderDate = new Date(order.created_at);
+                const startDate = new Date(
+                  from.getFullYear(),
+                  from.getMonth(),
+                  from.getDate()
+                );
+                const endDate = new Date(
+                  to.getFullYear(),
+                  to.getMonth(),
+                  to.getDate() + 1
+                );
+                return orderDate >= startDate && orderDate < endDate;
+              }
+              return false;
+            })()
+          : true; // Se `from` ou `to` não estiverem definidos, ignora o filtro de data
+
+      return matchesStatus && matchesDateRange;
     });
 
     if (filteredList.length > 0) {
@@ -84,13 +124,16 @@ export function GetOrdersClientComponent() {
     }
   };
 
+  const formattedFrom = range?.from && format(range.from, "dd/MM/yyyy");
+  const formattedTo = range?.to && format(range.to, "dd/MM/yyyy");
+
   useEffect(() => {
     fetchOrders();
   }, []);
 
   return (
     <div className="flex flex-col w-screen h-screen">
-      <div className="flex flex-col text-center border-2">
+      <div className="flex flex-col text-center ">
         <header className="flex  w-full items-center justify-between  p-4 bg-gray-100">
           <Sidebar />
           <div className="flex w-full text-center items-center justify-center">
@@ -99,7 +142,7 @@ export function GetOrdersClientComponent() {
         </header>
         <form
           onSubmit={handleSubmit(handleSearchOrders)}
-          className="flex flex-wrap items-center gap-4 p-4 bg-gray-50"
+          className="flex flex-wrap items-center gap-4 p-4 ml-2 bg-gray-50"
         >
           <select
             className="border px-4 py-2 rounded"
@@ -113,13 +156,28 @@ export function GetOrdersClientComponent() {
             <option value="5">Pedido enviado</option>
             <option value="6">Entregue</option>
           </select>
-          <input
-            type="date"
-            className="border px-4 py-2 rounded"
-            {...register("selectDate")}
-          />
+          <Popover>
+            <PopoverTrigger asChild>
+              <span className="border p-2 rounded-lg cursor-pointer hover:bg-gray-200">
+                Selecione o periodo
+              </span>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="range"
+                selected={range}
+                onSelect={setRange}
+                footer={
+                  formattedFrom && formattedTo
+                    ? `${formattedFrom} há ${formattedTo}`
+                    : "Selecione o periodo"
+                }
+                locale={ptBR}
+              />
+            </PopoverContent>
+          </Popover>
           <button
-            className="bg-green-500 text-white px-4 py-2 rounded"
+            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700"
             type="submit"
           >
             Filtrar
@@ -127,9 +185,8 @@ export function GetOrdersClientComponent() {
         </form>
       </div>
       <table className="w-full border-collapse text-center border-gray-200">
-        <thead className="bg-gray-100">
+        <thead className="bg-gray-100 ">
           <tr>
-            <th className="border md:px-4 py-2 text-sm md:text-base"></th>
             <th className="border md:px-4 py-2 hidden text-sm md:text-base md:table-cell">
               Número do pedido
             </th>
@@ -160,9 +217,6 @@ export function GetOrdersClientComponent() {
                       : "hover:bg-gray-50"
                   }
                 >
-                  <td className="border px-4 py-2 text-sm md:text-base ">
-                    <input type="checkbox" name="" id="" />
-                  </td>
                   <td className="border px-4 py-2 hidden md:table-cell text-sm md:text-base">
                     {order.order_code}
                   </td>
@@ -269,13 +323,6 @@ export function GetOrdersClientComponent() {
                       currency: "BRL",
                     })}
                   </td>
-                  <td className="border px-4 py-2 hidden md:table-cell">
-                    <div>
-                      <Button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-700">
-                        Imprimir
-                      </Button>
-                    </div>
-                  </td>
                 </tr>
               ))}
             </>
@@ -290,9 +337,6 @@ export function GetOrdersClientComponent() {
                       : "hover:bg-gray-50"
                   }
                 >
-                  <td className="border px-4 py-2 text-sm md:text-base ">
-                    <input type="checkbox" name="" id="" />
-                  </td>
                   <td className="border px-4 py-2 hidden md:table-cell text-sm md:text-base">
                     {order.order_code}
                   </td>
@@ -372,9 +416,6 @@ export function GetOrdersClientComponent() {
                               })}
                             </span>
                           </div>
-                          <Button className="bg-blue-500 text-white px-2 py-1 rounded">
-                            Imprimir
-                          </Button>
                         </div>
                         <div className=" rounded-lg text-sm space-y-2 p-2 md:text-base">
                           {order.itens.map((product) => (
