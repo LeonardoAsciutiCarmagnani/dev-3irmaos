@@ -222,16 +222,7 @@ export function GetOrdersClientComponent() {
                           <DialogTitle>Lista de produtos: </DialogTitle>
                         </DialogHeader>
                         <div className=" md:hidden space-y-2 flex flex-col items-center justify-center">
-                          <div className="flex justify-between border-2 rounded-lg p-2">
-                            <span className="font-semibold text-sm items-start">
-                              ID:
-                            </span>
-                            <span className="text-sm text-center ">
-                              {order.id}
-                            </span>
-                          </div>
-                          <div></div>
-                          <div className="flex justify-between border-2 rounded-lg items-center p-1">
+                          <div className="flex justify-between rounded-lg items-center p-1">
                             <span className="text-sm font-semibold">
                               Valor total do pedido:
                             </span>
@@ -268,13 +259,6 @@ export function GetOrdersClientComponent() {
                       style: "currency",
                       currency: "BRL",
                     })}
-                  </td>
-                  <td className="border px-4 py-2 hidden md:table-cell">
-                    <div>
-                      <Button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-700">
-                        Imprimir
-                      </Button>
-                    </div>
                   </td>
                 </tr>
               ))}
@@ -372,9 +356,6 @@ export function GetOrdersClientComponent() {
                               })}
                             </span>
                           </div>
-                          <Button className="bg-blue-500 text-white px-2 py-1 rounded">
-                            Imprimir
-                          </Button>
                         </div>
                         <div className=" rounded-lg text-sm space-y-2 p-2 md:text-base">
                           {order.itens.map((product) => (

@@ -178,11 +178,11 @@ const PedidoVendaForm: React.FC = () => {
       );
       console.log("Pedido enviado com sucesso:", response.data);
       toastSuccess("Pedido criado com sucesso !");
-      setLoading(false);
       setTimeout(() => {
         clearListProductsInCart(listProductsInCart);
         navigate("/");
-      }, 2000);
+      }, 1000);
+      setLoading(false);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         console.log("Dados enviados na requisição que deu erro: ", orderSale);
