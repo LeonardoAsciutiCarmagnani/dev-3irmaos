@@ -79,6 +79,7 @@ export function GetOrdersComponent() {
 
           queryList.sort((a, b) => (a.order_code ?? 0) - (b.order_code ?? 0));
         });
+        console.log(queryList);
         setOrderList(queryList);
         setFilteredOrders(queryList);
       }
@@ -149,8 +150,8 @@ export function GetOrdersComponent() {
       // Filtro por nome
       const matchesName =
         searchName.length > 1
-          ? order.cliente?.nomeDoCliente?.toLowerCase() ===
-            searchName.toLowerCase()
+          ? searchName.toLowerCase() ===
+            order.cliente?.nomeDoCliente?.toLowerCase()
           : true;
 
       const matchesStatus =
@@ -251,6 +252,7 @@ export function GetOrdersComponent() {
 
   const handleClearSelectList = () => {
     setSelectedOrderList([]);
+    setCheck(false);
     setIsCleared(true); // Sinaliza que os checkboxes devem ser desmarcados
     setTimeout(() => setIsCleared(false), 0); // Reseta o estado após a atualização
   };
@@ -373,7 +375,7 @@ export function GetOrdersComponent() {
           </Popover>
 
           <button
-            className="bg-green-500 text-white px-4 py-2 rounded"
+            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700"
             type="submit"
           >
             Filtrar

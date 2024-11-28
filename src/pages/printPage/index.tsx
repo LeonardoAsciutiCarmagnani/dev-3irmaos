@@ -198,20 +198,26 @@ export default function PrintPage() {
             </div>
 
             <div className="flex flex-col border-t-2 w-[700px] border-black  py-3">
-              <div className="items-start w-full mb-1">
+              <div className="items-start w-full  mb-1 grid grid-cols-2 gap-2">
                 {Object.entries(countCategory.categoryData || {}).map(
                   ([categoria, data]) => (
-                    <div key={categoria} className="flex flex-col mb-4">
+                    /* flex flex-col */
+                    <div
+                      key={categoria}
+                      className="flex flex-col border-r-2 border-black mb-4 "
+                    >
                       <div className="border-b-2 border-black flex justify-between w-full mb-4">
                         <span className="font-semibold text-lg">
                           {categoria}
                         </span>
-                        <span className="font-semibold ">Quantidade</span>
+                        <span className="font-semibold mr-1">Quantidade</span>
                       </div>
                       {data.itens.map((item, index) => (
-                        <div key={index} className="flex justify-between">
+                        <div key={index} className="flex  justify-between">
                           <span>{item.nome}</span>
-                          <span>{item.quantidade}</span>
+                          <span className="w-20 text-center ">
+                            {item.quantidade}
+                          </span>
                         </div>
                       ))}
                     </div>

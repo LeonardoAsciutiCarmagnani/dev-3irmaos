@@ -22,13 +22,13 @@ import ToastNotifications from "@/_components/Toasts";
 import { OrderSaleTypes } from "./PostSaleOrder";
 import { format } from "date-fns";
 import {
-  collection,
+  // collection,
   doc,
   getDoc,
-  getDocs,
+  /*   getDocs,
   limit,
   orderBy,
-  query,
+  query, */
 } from "firebase/firestore";
 import { firestore } from "@/firebaseConfig";
 import { Client } from "./DropdownGetClients";
@@ -92,7 +92,7 @@ const PedidoVendaForm: React.FC = () => {
   const navigate = useNavigate();
 
   const fetchLastOrders = async () => {
-    const collectionRef = collection(firestore, "sales_orders");
+    /* const collectionRef = collection(firestore, "sales_orders");
     const q = query(collectionRef, orderBy("order_code", "desc"), limit(1));
     const queryDocs = await getDocs(q);
 
@@ -104,8 +104,8 @@ const PedidoVendaForm: React.FC = () => {
     }
 
     const newOrderNumber = lastOrderNumber + 1;
-
-    console.log(newOrderNumber);
+ */
+    // console.log(newOrderNumber);
 
     const includingProductsInItens: ItensProps[] = listProductsInCart.map(
       (item) => {
@@ -122,7 +122,7 @@ const PedidoVendaForm: React.FC = () => {
 
     setOrderSale((prev) => ({
       ...prev,
-      order_code: newOrderNumber,
+      // order_code: newOrderNumber,
       itens: includingProductsInItens,
     }));
   };

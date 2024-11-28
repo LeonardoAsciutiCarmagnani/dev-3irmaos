@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import PedidoVendaForm from "@/_components/PostedOrderOfBuyList";
 import {
   Carousel,
@@ -40,7 +41,7 @@ export default function BuyList() {
                 return (
                   <CarouselItem
                     key={item.id}
-                    className="basis-full flex flex-col p-2 text-center items-center border-2 rounded-lg space-y-1 border-black space-y-3"
+                    className="basis-full flex flex-col p-2 text-center items-center border-2 rounded-lg border-black space-y-3"
                   >
                     {item.imagem ? (
                       <img
