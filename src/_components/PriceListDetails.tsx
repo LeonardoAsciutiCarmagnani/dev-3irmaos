@@ -100,10 +100,9 @@ const PriceListDetails = () => {
         </p>
       ) : priceList ? (
         <div className="bg-white shadow rounded-lg p-4 w-full max-w-md">
-          <input
-            className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 text-center"
-            value={priceList.name}
-          ></input>
+          <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 text-center">
+            {priceList.name}
+          </h3>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-sm sm:text-base">
               <thead>

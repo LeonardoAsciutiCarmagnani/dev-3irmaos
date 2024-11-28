@@ -34,7 +34,7 @@ interface ClientsProps {
   onSelectClient: (data: {
     clientData: ClientData | null;
     enderecoDeEntrega: EnderecoDeEntrega | null;
-    priceListId: string | null;
+    priceListId: string;
   }) => void;
 }
 
@@ -89,14 +89,20 @@ const Clients = ({ onSelectClient }: ClientsProps) => {
       setSelectedClient(client);
       onSelectClient({
         enderecoDeEntrega,
-        priceListId: client.id_priceList,
+        priceListId: client.id_priceList || "",
         clientData,
       });
+      console.log(
+        "Lista de preço do cliente selecionado:",
+        client.id_priceList,
+        "length:",
+        client.id_priceList.length
+      );
     } else {
       setSelectedClient(null);
       onSelectClient({
         enderecoDeEntrega: null,
-        priceListId: null,
+        priceListId: "",
         clientData: null,
       });
     }

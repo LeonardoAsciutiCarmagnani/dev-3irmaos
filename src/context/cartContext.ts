@@ -1,6 +1,4 @@
-import { firestore } from "@/firebaseConfig";
 import axios from "axios";
-import { doc, setDoc } from "firebase/firestore";
 import { create } from "zustand";
 import { useAuthStore } from "./authStore";
 
@@ -36,7 +34,6 @@ interface ContextStates {
   setCountItemsInCart: (count: number) => void;
   handleAddItemInList: (newProduct: Product) => void;
   handleRemoveItemFromCart: (productId: string) => void;
-  updateDefaultFirebasePriceList: (fetchedProducts: Product[]) => Promise<void>;
   setPricesList: (list: PriceListProps) => void;
   filterPricesList: (id: string) => void;
   fetchPriceLists: () => void;
@@ -114,26 +111,6 @@ export const useZustandContext = create<ContextStates>((set) => ({
       priceLists: state.priceLists.filter((list) => list.id !== id),
     })),
 
-  updateDefaultFirebasePriceList: async (fetchedProducts) => {
-    try {
-      const priceListData = fetchedProducts.map((product) => ({
-        id: product.id,
-        preco: product.preco,
-        nome: product.nome,
-        imagem: product.imagem,
-      }));
-
-      await setDoc(doc(firestore, "default_prices-list", "DEFAULT"), {
-        products: priceListData,
-        updatedAt: new Date(),
-      });
-
-      console.log("Lista de preço padrão atualizada com sucesso");
-    } catch (error) {
-      console.error("Erro ao atualizar lista de preço padrão", error);
-    }
-  },
-
   setProducts: async () => {
     const { user } = useAuthStore.getState();
     if (!user?.accessToken) {
@@ -158,10 +135,6 @@ export const useZustandContext = create<ContextStates>((set) => ({
           id_seq: (initialIdSeq += 1),
         })
       );
-      await useZustandContext
-        .getState()
-        .updateDefaultFirebasePriceList(updateProductsList);
-
       set({
         products: updateProductsList,
         loading: false,

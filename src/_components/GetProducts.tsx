@@ -184,7 +184,7 @@ const ProductCard: React.FC<ProductCardProps> = React.memo(
           {product.imagem ? (
             <LazyLoad height={200} offset={100} once>
               <img
-                src={product.imagem + "?width=200"} // Usando a imagem original
+                src={product.imagem}
                 alt={product.nome}
                 onLoad={handleImageLoad}
                 className="w-full h-28 sm:h-32 object-cover rounded-lg group-hover:brightness-90 transition duration-100"
