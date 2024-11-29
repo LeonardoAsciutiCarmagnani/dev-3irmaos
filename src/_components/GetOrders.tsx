@@ -77,7 +77,11 @@ export function GetOrdersComponent() {
 
           queryList.push({ ...data, total });
 
-          queryList.sort((a, b) => (a.order_code ?? 0) - (b.order_code ?? 0));
+          queryList.sort((a, b) => {
+            if (!a.created_at || !b.created_at) return 0;
+
+            return b.created_at.localeCompare(a.created_at);
+          });
         });
         console.log(queryList);
         setOrderList(queryList);
