@@ -24,9 +24,8 @@ import { format } from "date-fns";
 import Sidebar from "./Sidebar";
 import { usePostOrderStore } from "@/context/postOrder";
 import { useNavigate } from "react-router-dom";
-import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
-import { firestore } from "@/firebaseConfig";
 import DialogSubmit from "./DialogSubmitOrder";
+import apiBaseUrl from "@/lib/apiConfig";
 
 export type OrderSaleTypes = {
   IdClient?: string;
@@ -118,23 +117,6 @@ const OrderSaleProps: React.FC = () => {
     observacaoDoPedidoDeVenda: "",
     valorDoFrete: 0,
   });
-
-  const fetchLastOrders = async () => {
-    const collectionRef = collection(firestore, "sales_orders");
-    const q = query(collectionRef, orderBy("order_code", "desc"), limit(1));
-    const queryDocs = await getDocs(q);
-
-    let lastOrderNumber = 0;
-
-    if (!queryDocs.empty) {
-      const lastOrder = queryDocs.docs[0].data();
-      console.log(lastOrder.order_code);
-      lastOrderNumber = lastOrder.order_code;
-    }
-
-    const newOrderNumber = lastOrderNumber + 1;
-    orderSale.order_code = newOrderNumber;
-  };
 
   const [
     isUseRegisteredAddressForDelivery,
@@ -313,17 +295,11 @@ const OrderSaleProps: React.FC = () => {
     }
 
     try {
-      await fetchLastOrders();
-
-      await axios.post(
-        `https://us-central1-kyoto-f1764.cloudfunctions.net/api/v1/pedido-de-venda/${clientId}`,
-        orderSale,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      await axios.post(`${apiBaseUrl}/pedido-de-venda/${clientId}`, orderSale, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       setIsSubmitting(false);
       toastSuccess("Pedido de venda criado com sucesso.");
 

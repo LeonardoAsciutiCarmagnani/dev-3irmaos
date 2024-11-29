@@ -192,27 +192,37 @@ export default function Sidebar() {
           </div>
 
           <ul className="space-y-4">
-            <li>
-              <Link
-                to="/"
-                className="block text-gray-800 hover:text-white hover:bg-gray-700 rounded-md px-3 py-2 transition-colors"
-              >
-                <span className="flex items-center gap-x-4">
-                  <HomeIcon className="text-amber-500" size={24} />
-                  Home
-                </span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to={typeUser === "adm" ? "/get-orders" : "/get-orders-client"}
-                className="block text-gray-800 hover:text-white hover:bg-gray-700 rounded-md px-3 py-2 transition-colors"
-              >
-                <span className="flex items-center gap-x-4">
-                  <PackageIcon className="text-amber-500" size={24} /> Pedidos
-                </span>
-              </Link>
-            </li>
+            {typeUser !== "fábrica" && (
+              <>
+                <li>
+                  <Link
+                    to="/"
+                    className="block text-gray-800 hover:text-white hover:bg-gray-700 rounded-md px-3 py-2 transition-colors"
+                  >
+                    <span className="flex items-center gap-x-4">
+                      <HomeIcon className="text-amber-500" size={24} />
+                      Home
+                    </span>
+                  </Link>
+                </li>
+
+                <li>
+                  <Link
+                    to={
+                      typeUser === "cliente"
+                        ? "/get-orders-client"
+                        : "/get-orders"
+                    }
+                    className="block text-gray-800 hover:text-white hover:bg-gray-700 rounded-md px-3 py-2 transition-colors"
+                  >
+                    <span className="flex items-center gap-x-4">
+                      <PackageIcon className="text-amber-500" size={24} />{" "}
+                      Pedidos
+                    </span>
+                  </Link>
+                </li>
+              </>
+            )}
             {typeUser === "adm" && (
               <>
                 <li>

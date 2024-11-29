@@ -2,6 +2,8 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Plus, Minus, SearchIcon, LoaderPinwheelIcon } from "lucide-react";
 import { useZustandContext } from "@/context/cartContext";
 import LazyLoad from "react-lazyload";
+import useUserTypeStore from "@/context/typeUserStore";
+import { useNavigate } from "react-router-dom";
 
 interface Product {
   id: string;
@@ -43,8 +45,13 @@ export const FetchProducts: React.FC = React.memo(() => {
     "doce",
     "outros",
   ];
+  const { typeUser } = useUserTypeStore();
+  const navigate = useNavigate();
 
   useEffect(() => {
+    if (typeUser === "fabrica") {
+      navigate("/get-orders");
+    }
     setProducts();
   }, [setProducts]);
 

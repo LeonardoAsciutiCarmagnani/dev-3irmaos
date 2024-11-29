@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import apiBaseUrl from "@/lib/apiConfig";
 
 interface Evento {
   chaveDocumentoFiscal: string | null;
@@ -28,12 +29,9 @@ export const GetSalesOrders = () => {
 
   const handleGetSalesOrders = async () => {
     try {
-      const response = await axios.get(
-        "https://us-central1-kyoto-f1764.cloudfunctions.net/api/v1/pedido-de-venda",
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      const response = await axios.get(`${apiBaseUrl}/pedido-de-venda`, {
+        headers: { "Content-Type": "application/json" },
+      });
       console.log("Full order: ", response.data);
 
       setOrders(response.data.order || []);

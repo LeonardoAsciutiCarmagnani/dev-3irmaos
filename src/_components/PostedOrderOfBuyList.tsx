@@ -33,6 +33,7 @@ import {
 import { firestore } from "@/firebaseConfig";
 import { Client } from "./DropdownGetClients";
 import DialogSubmit from "./DialogSubmitOrder";
+import apiBaseUrl from "@/lib/apiConfig";
 
 export type ProductInPriceList = {
   id: string;
@@ -168,7 +169,7 @@ const PedidoVendaForm: React.FC = () => {
     console.log(userId);
     try {
       const response = await axios.post(
-        `https://us-central1-kyoto-f1764.cloudfunctions.net/api/v1/pedido-de-venda/${userId.uid}`,
+        `${apiBaseUrl}/pedido-de-venda/${userId.uid}`,
         orderSale,
         {
           headers: {

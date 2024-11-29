@@ -1,7 +1,7 @@
 import axios from "axios";
 import { create } from "zustand";
 import { useAuthStore } from "./authStore";
-
+import apiBaseUrl from "@/lib/apiConfig";
 export interface PriceListProps {
   id: string;
   name: string;
@@ -74,9 +74,7 @@ export const useZustandContext = create<ContextStates>((set) => ({
 
   fetchPriceLists: async () => {
     try {
-      const response = await axios.get(
-        "https://us-central1-kyoto-f1764.cloudfunctions.net/api/v1/prices-lists"
-      );
+      const response = await axios.get(`${apiBaseUrl}/prices-lists`);
 
       console.log(response.data.pricesLists);
 
@@ -119,14 +117,11 @@ export const useZustandContext = create<ContextStates>((set) => ({
       return;
     }
     try {
-      const response = await axios.get(
-        "https://us-central1-kyoto-f1764.cloudfunctions.net/api/v1/produtos",
-        {
-          headers: {
-            Authorization: `Bearer ${user.accessToken}`,
-          },
-        }
-      );
+      const response = await axios.get(`${apiBaseUrl}/produtos`, {
+        headers: {
+          Authorization: `Bearer ${user.accessToken}`,
+        },
+      });
       let initialIdSeq = 0;
       const updateProductsList = response.data.products.map(
         (product: Product) => ({

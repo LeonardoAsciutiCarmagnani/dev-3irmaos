@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import ToastNotifications from "./Toasts";
 import { Input } from "@/components/ui/input";
+import apiBaseUrl from "@/lib/apiConfig";
 
 interface ProductProps {
   id: string;
@@ -35,7 +36,7 @@ const PriceListDetails = () => {
     setLoading(true);
     try {
       const response = await axios.get<ApiResponse>(
-        `https://us-central1-kyoto-f1764.cloudfunctions.net/api/v1/prices-lists/${id}`
+        `${apiBaseUrl}/prices-lists/${id}`
       );
       setPriceList(response.data.priceList);
     } catch (error) {
@@ -73,7 +74,7 @@ const PriceListDetails = () => {
     setSaving(true);
     try {
       await axios.put(
-        `https://us-central1-kyoto-f1764.cloudfunctions.net/api/v1/prices-lists/${id}`,
+        `${process.env.REACT_APP_API_BASE_URL}/prices-lists/${id}`,
         { products: priceList?.products }
       );
       toastSuccess("Alterações salvas com sucesso!.");

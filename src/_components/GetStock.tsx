@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import apiBaseUrl from "@/lib/apiConfig";
 
 interface Stock {
   pontoDeSincronizacao: number;
@@ -15,9 +16,7 @@ const FetchStock = () => {
 
   const fetchStock = async () => {
     try {
-      const response = await axios.get(
-        "https://us-central1-kyoto-f1764.cloudfunctions.net/api/v1/estoque"
-      );
+      const response = await axios.get(`${apiBaseUrl}/estoque`);
       console.log(response.data);
       setStock(response.data.stock || null);
       setLoading(false);

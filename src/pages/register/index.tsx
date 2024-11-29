@@ -16,7 +16,6 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { auth, firestore } from "../../firebaseConfig";
-import { api } from "@/lib/axios";
 import {
   Select,
   SelectContent,
@@ -34,6 +33,7 @@ import Sidebar from "@/_components/Sidebar";
 import { useNavigate } from "react-router-dom";
 import MaskedInput from "react-text-mask";
 import { useAuthStore } from "@/context/authStore";
+import apiBaseUrl from "@/lib/apiConfig";
 
 interface CreateUserProps {
   userName: string;
@@ -139,10 +139,7 @@ export default function Register() {
   const fetchCEP = async (cep: string) => {
     try {
       setCepError("");
-      const response = await axios.post(
-        "https://us-central1-kyoto-f1764.cloudfunctions.net/api/v1/CEP",
-        { cep }
-      );
+      const response = await axios.post(`${apiBaseUrl}/CEP`, { cep });
 
       const enderecoData = response.data;
 
@@ -267,7 +264,7 @@ export default function Register() {
       await updateProfile(user, { displayName: data.userName });
 
       // Registrar o usuário no back-end
-      const response = await api.post("/v1/create-user", {
+      const response = await axios.post(`${apiBaseUrl}/create-user`, {
         user_id: userId,
         id_priceList: selectPriceList.id,
         priceListName: selectPriceList.name,
@@ -418,7 +415,7 @@ export default function Register() {
                         className="flex items-center gap-x-1 cursor-pointer"
                       >
                         <ArrowRightLeftIcon className="h-4 w-4" color="black" />
-                        <span className="text-[0.8rem] text-blue-600 font-bold">
+                        <span className="text-[0.8rem] text-amber-600 font-bold">
                           {isCpf ? "CNPJ" : "CPF"}
                         </span>
                       </span>
@@ -601,8 +598,9 @@ export default function Register() {
                 <SelectValue placeholder="Permissões de usuário" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="adm">Administrador</SelectItem>
                 <SelectItem value="cliente">Cliente</SelectItem>
+                <SelectItem value="fábrica">Fábrica</SelectItem>
+                <SelectItem value="adm">Administrador</SelectItem>
               </SelectContent>
             </Select>
 
@@ -632,7 +630,7 @@ export default function Register() {
           <Button
             type="submit"
             disabled={isSubmitButtonDisabled}
-            className="w-full bg-blue-600 text-white hover:bg-blue-700 mt-4"
+            className="w-full bg-amber-500 text-white hover:bg-amber-600 mt-4"
           >
             Cadastrar
           </Button>

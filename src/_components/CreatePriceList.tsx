@@ -4,7 +4,7 @@ import axios from "axios";
 import { collection, doc, getDoc } from "firebase/firestore";
 import { firestore as db } from "../firebaseConfig";
 import ToastNotifications from "./Toasts";
-
+import apiBaseUrl from "@/lib/apiConfig";
 interface ProductProps {
   id: string;
   nome: string;
@@ -69,15 +69,11 @@ const PostPricesList = () => {
         name: priceListName,
         products: defaultProducts,
       };
-      await axios.post(
-        "https://us-central1-kyoto-f1764.cloudfunctions.net/api/v1/create-prices-list",
-        newPriceList,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      await axios.post(`${apiBaseUrl}/v1/create-prices-list`, newPriceList, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       toastSuccess("Lista de preços criada com sucesso!");
       navigate("/prices-lists");
     } catch (error) {

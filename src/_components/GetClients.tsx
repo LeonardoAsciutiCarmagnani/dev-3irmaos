@@ -39,6 +39,7 @@ import {
 } from "@/components/ui/select";
 import { useZustandContext } from "@/context/cartContext";
 import { Link } from "react-router-dom";
+import apiBaseUrl from "@/lib/apiConfig";
 
 interface ClientInFirestore {
   id_priceList: string;
@@ -114,7 +115,7 @@ export const Clients = () => {
     console.log("Deletando o id:", confirmDelete.user_id);
     try {
       const response = await axios.delete(
-        `https://us-central1-kyoto-f1764.cloudfunctions.net/api/v1/clients/${confirmDelete.user_id}`
+        `${apiBaseUrl}/clients/${confirmDelete.user_id}`
       );
 
       if (response.status === 200) {
@@ -240,6 +241,11 @@ export const Clients = () => {
                   if (a.type_user === "adm" && b.type_user !== "adm") return -1;
                   if (a.type_user !== "adm" && b.type_user === "adm") return 1;
 
+                  if (a.type_user === "fábrica" && b.type_user !== "fábrica")
+                    return -1;
+                  if (a.type_user !== "fábrica" && b.type_user === "fábrica")
+                    return 1;
+
                   // Depois, ordena por `user_name` em ordem alfabética
                   return a.user_name.localeCompare(b.user_name);
                 })
@@ -253,6 +259,8 @@ export const Clients = () => {
                         className={`w-8 h-8 ${
                           cliente.type_user === "adm"
                             ? "text-red-500"
+                            : cliente.type_user === "fábrica"
+                            ? "text-blue-500"
                             : "text-amber-500"
                         }`}
                       />
@@ -263,14 +271,16 @@ export const Clients = () => {
                         <div className="flex space-x-2">
                           <Badge
                             variant={`${
-                              cliente.type_user == "adm"
+                              cliente.type_user === "adm"
                                 ? "destructive"
+                                : cliente.type_user === "fábrica"
+                                ? "fabrica"
                                 : "default"
                             }`}
                           >
                             {cliente.type_user.toUpperCase()}
                           </Badge>
-                          {cliente.type_user !== "adm" && (
+                          {cliente.type_user === "cliente" && (
                             <Badge className="bg-amber-500">
                               {cliente.priceListName.toUpperCase() ||
                                 "lista padrão".toUpperCase()}
@@ -288,7 +298,7 @@ export const Clients = () => {
                       >
                         <Eye size={15} />
                       </Button>
-                      {cliente.type_user === "cliente" && (
+                      {cliente.type_user !== "adm" && (
                         <Button
                           variant="ghost"
                           className="text-red-500 hover:text-red-700 p-0"
@@ -334,7 +344,7 @@ export const Clients = () => {
             <strong>Lista de preços:</strong>
             <div className="flex gap-x-2">
               {selectedClient?.priceListName || "Não atribuída"}
-              {selectedClient?.type_user !== "adm" && (
+              {selectedClient?.type_user === "cliente" && (
                 <SquarePenIcon
                   color="#3b82f6"
                   size={20}
@@ -343,7 +353,7 @@ export const Clients = () => {
               )}
             </div>
           </div>
-          {isUpdatePriceList && selectedClient?.type_user !== "adm" && (
+          {isUpdatePriceList && selectedClient?.type_user === "cliente" && (
             <div className="flex gap-x-4">
               <Select
                 onValueChange={(value) => {

@@ -6,6 +6,7 @@ import DialogExclusion from "./DialogExclusion";
 import { PriceListProps, useZustandContext } from "@/context/cartContext";
 import ToastNotifications from "./Toasts";
 import Sidebar from "./Sidebar";
+import apiBaseUrl from "@/lib/apiConfig";
 
 const PriceListsOverview = () => {
   const { priceLists, loading, fetchPriceLists, filterPricesList } =
@@ -19,9 +20,7 @@ const PriceListsOverview = () => {
   const deletePriceList = async (id: string) => {
     console.log(id);
     try {
-      await axios.delete(
-        `https://us-central1-kyoto-f1764.cloudfunctions.net/api/v1/prices-lists/${id}`
-      );
+      await axios.delete(`${apiBaseUrl}/prices-lists/${id}`);
 
       filterPricesList(id);
       setIsDialogOpen(false);

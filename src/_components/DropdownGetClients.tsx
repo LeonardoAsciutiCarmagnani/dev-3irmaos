@@ -169,6 +169,7 @@ const Clients = ({ onSelectClient }: ClientsProps) => {
                   CEP
                 </label>
                 <InputMask
+                  readOnly
                   mask={"99999-999"}
                   defaultValue={selectedClient.user_cep.toString()}
                   className="p-2 border border-gray-300 rounded-md w-full text-sm"
@@ -186,6 +187,7 @@ const Clients = ({ onSelectClient }: ClientsProps) => {
                     className="p-2 border border-gray-300 rounded-md w-full text-sm"
                   />
                   <input
+                    readOnly
                     defaultValue={selectedClient.user_neighborhood || ""}
                     className="p-2 border border-gray-300 rounded-md w-full text-sm"
                   />
