@@ -32,6 +32,7 @@ import {
 } from "firebase/firestore";
 import { firestore } from "@/firebaseConfig";
 import { Client } from "./DropdownGetClients";
+import DialogSubmit from "./DialogSubmitOrder";
 
 export type ProductInPriceList = {
   id: string;
@@ -48,8 +49,7 @@ interface ItensProps {
 
 const PedidoVendaForm: React.FC = () => {
   const orderCreationDate = format(new Date(), "yyyy/MM/dd HH:mm:ss");
-
-  const [loading, setLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [orderSale, setOrderSale] = useState<OrderSaleTypes>({
     status_order: 1,
@@ -157,8 +157,8 @@ const PedidoVendaForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("click");
-    setLoading(true);
+
+    setIsSubmitting(true);
 
     console.log("informações: ", orderSale);
 
@@ -182,7 +182,7 @@ const PedidoVendaForm: React.FC = () => {
         clearListProductsInCart(listProductsInCart);
         navigate("/");
       }, 1000);
-      setLoading(false);
+      setIsSubmitting(false);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         console.log("Dados enviados na requisição que deu erro: ", orderSale);
@@ -258,177 +258,180 @@ const PedidoVendaForm: React.FC = () => {
   }, []);
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col space-y-2  w-full">
-      <Accordion type="multiple">
-        <AccordionItem value="item-1" className="w-full">
-          <AccordionTrigger>
-            <h2>Cliente</h2>
-          </AccordionTrigger>
-          <AccordionContent className="space-y-2">
-            <Input
-              type="text"
-              name="cliente.documento"
-              value={orderSale.cliente?.documento}
-              onChange={handleChange}
-              placeholder="Documento"
-            />
-            <Input
-              type="email"
-              name="cliente.email"
-              value={orderSale.cliente?.email}
-              onChange={handleChange}
-              placeholder="Email"
-            />
-            <Input
-              type="text"
-              name="cliente.inscricaoEstadual"
-              value={orderSale.cliente?.inscricaoEstadual}
-              onChange={handleChange}
-              placeholder="Inscrição Estadual"
-            />
-            <Input
-              type="text"
-              name="cliente.nomeDoCliente"
-              value={orderSale.cliente?.nomeDoCliente}
-              onChange={handleChange}
-              placeholder="Nome do Cliente"
-            />
-            <Input
-              type="text"
-              name="cliente.nomeFantasia"
-              value={orderSale.cliente?.nomeFantasia}
-              onChange={handleChange}
-              placeholder="Nome Fantasia"
-            />
-          </AccordionContent>
-        </AccordionItem>
+    <div>
+      <form onSubmit={handleSubmit} className="flex flex-col space-y-2  w-full">
+        <Accordion type="multiple">
+          <AccordionItem value="item-1" className="w-full">
+            <AccordionTrigger>
+              <h2>Cliente</h2>
+            </AccordionTrigger>
+            <AccordionContent className="space-y-2">
+              <Input
+                type="text"
+                name="cliente.documento"
+                value={orderSale.cliente?.documento}
+                onChange={handleChange}
+                placeholder="Documento"
+              />
+              <Input
+                type="email"
+                name="cliente.email"
+                value={orderSale.cliente?.email}
+                onChange={handleChange}
+                placeholder="Email"
+              />
+              <Input
+                type="text"
+                name="cliente.inscricaoEstadual"
+                value={orderSale.cliente?.inscricaoEstadual}
+                onChange={handleChange}
+                placeholder="Inscrição Estadual"
+              />
+              <Input
+                type="text"
+                name="cliente.nomeDoCliente"
+                value={orderSale.cliente?.nomeDoCliente}
+                onChange={handleChange}
+                placeholder="Nome do Cliente"
+              />
+              <Input
+                type="text"
+                name="cliente.nomeFantasia"
+                value={orderSale.cliente?.nomeFantasia}
+                onChange={handleChange}
+                placeholder="Nome Fantasia"
+              />
+            </AccordionContent>
+          </AccordionItem>
 
-        <AccordionItem value="item-2" className="w-full">
-          <AccordionTrigger>
-            <h2>Endereço de Cobrança</h2>
-          </AccordionTrigger>
-          <AccordionContent className="space-y-2">
-            <Input
-              type="text"
-              name="enderecoDeCobranca.bairro"
-              value={orderSale.enderecoDeCobranca?.bairro}
-              onChange={handleChange}
-              placeholder="Bairro"
-            />
-            <Input
-              type="text"
-              name="enderecoDeCobranca.cep"
-              value={orderSale.enderecoDeCobranca?.cep}
-              onChange={handleChange}
-              placeholder="CEP"
-            />
-            <Input
-              type="text"
-              name="enderecoDeCobranca.codigoIbge"
-              value={orderSale.enderecoDeCobranca?.codigoIbge}
-              onChange={handleChange}
-              max={7}
-              placeholder="Código IBGE"
-            />
-            <Input
-              type="text"
-              name="enderecoDeCobranca.complemento"
-              value={orderSale.enderecoDeCobranca?.complemento}
-              onChange={handleChange}
-              placeholder="Complemento"
-            />
-            <Input
-              type="text"
-              name="enderecoDeCobranca.logradouro"
-              value={orderSale.enderecoDeCobranca?.logradouro}
-              onChange={handleChange}
-              placeholder="Logradouro"
-            />
-            <Input
-              type="text"
-              name="enderecoDeCobranca.numero"
-              value={orderSale.enderecoDeCobranca?.numero}
-              onChange={handleChange}
-              placeholder="Número"
-            />
-          </AccordionContent>
-        </AccordionItem>
+          <AccordionItem value="item-2" className="w-full">
+            <AccordionTrigger>
+              <h2>Endereço de Cobrança</h2>
+            </AccordionTrigger>
+            <AccordionContent className="space-y-2">
+              <Input
+                type="text"
+                name="enderecoDeCobranca.bairro"
+                value={orderSale.enderecoDeCobranca?.bairro}
+                onChange={handleChange}
+                placeholder="Bairro"
+              />
+              <Input
+                type="text"
+                name="enderecoDeCobranca.cep"
+                value={orderSale.enderecoDeCobranca?.cep}
+                onChange={handleChange}
+                placeholder="CEP"
+              />
+              <Input
+                type="text"
+                name="enderecoDeCobranca.codigoIbge"
+                value={orderSale.enderecoDeCobranca?.codigoIbge}
+                onChange={handleChange}
+                max={7}
+                placeholder="Código IBGE"
+              />
+              <Input
+                type="text"
+                name="enderecoDeCobranca.complemento"
+                value={orderSale.enderecoDeCobranca?.complemento}
+                onChange={handleChange}
+                placeholder="Complemento"
+              />
+              <Input
+                type="text"
+                name="enderecoDeCobranca.logradouro"
+                value={orderSale.enderecoDeCobranca?.logradouro}
+                onChange={handleChange}
+                placeholder="Logradouro"
+              />
+              <Input
+                type="text"
+                name="enderecoDeCobranca.numero"
+                value={orderSale.enderecoDeCobranca?.numero}
+                onChange={handleChange}
+                placeholder="Número"
+              />
+            </AccordionContent>
+          </AccordionItem>
 
-        <AccordionItem value="item-3" className="w-full">
-          <AccordionTrigger>
-            <h2>Endereço de Entrega</h2>
-          </AccordionTrigger>
-          <AccordionContent className="space-y-2">
-            <Input
-              type="text"
-              name="enderecoDeEntrega.bairro"
-              value={orderSale.enderecoDeEntrega.bairro}
-              onChange={handleChange}
-              placeholder="Bairro"
-            />
-            <Input
-              type="text"
-              name="enderecoDeEntrega.cep"
-              value={orderSale.enderecoDeEntrega.cep}
-              onChange={handleChange}
-              placeholder="CEP"
-            />
-            <Input
-              type="text"
-              name="enderecoDeEntrega.codigoIbge"
-              value={orderSale.enderecoDeEntrega.codigoIbge}
-              onChange={handleChange}
-              placeholder="Código IBGE"
-            />
-            <Input
-              type="text"
-              name="enderecoDeEntrega.complemento"
-              value={orderSale.enderecoDeEntrega.complemento}
-              onChange={handleChange}
-              placeholder="Complemento"
-            />
-            <Input
-              type="text"
-              name="enderecoDeEntrega.logradouro"
-              value={orderSale.enderecoDeEntrega.logradouro}
-              onChange={handleChange}
-              placeholder="Logradouro"
-            />
-            <Input
-              type="text"
-              name="enderecoDeEntrega.numero"
-              value={orderSale.enderecoDeEntrega.numero}
-              onChange={handleChange}
-              placeholder="Número"
-            />
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
+          <AccordionItem value="item-3" className="w-full">
+            <AccordionTrigger>
+              <h2>Endereço de Entrega</h2>
+            </AccordionTrigger>
+            <AccordionContent className="space-y-2">
+              <Input
+                type="text"
+                name="enderecoDeEntrega.bairro"
+                value={orderSale.enderecoDeEntrega.bairro}
+                onChange={handleChange}
+                placeholder="Bairro"
+              />
+              <Input
+                type="text"
+                name="enderecoDeEntrega.cep"
+                value={orderSale.enderecoDeEntrega.cep}
+                onChange={handleChange}
+                placeholder="CEP"
+              />
+              <Input
+                type="text"
+                name="enderecoDeEntrega.codigoIbge"
+                value={orderSale.enderecoDeEntrega.codigoIbge}
+                onChange={handleChange}
+                placeholder="Código IBGE"
+              />
+              <Input
+                type="text"
+                name="enderecoDeEntrega.complemento"
+                value={orderSale.enderecoDeEntrega.complemento}
+                onChange={handleChange}
+                placeholder="Complemento"
+              />
+              <Input
+                type="text"
+                name="enderecoDeEntrega.logradouro"
+                value={orderSale.enderecoDeEntrega.logradouro}
+                onChange={handleChange}
+                placeholder="Logradouro"
+              />
+              <Input
+                type="text"
+                name="enderecoDeEntrega.numero"
+                value={orderSale.enderecoDeEntrega.numero}
+                onChange={handleChange}
+                placeholder="Número"
+              />
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
 
-      <Select required onValueChange={(value) => handlePaymentMethod(value)}>
-        <SelectTrigger className="w-full">
-          <SelectValue placeholder="Método de pagamento:" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="1">Dinheiro</SelectItem>
-          <SelectItem value="2">Boleto</SelectItem>
-          <SelectItem value="3">Devolução</SelectItem>
-          <SelectItem value="4">Cartão de crédito</SelectItem>
-          <SelectItem value="5">Cartão de débito</SelectItem>
-          <SelectItem value="6">Crediário</SelectItem>
-          <SelectItem value="7">Cartão Voucher</SelectItem>
-          <SelectItem value="8">PIX</SelectItem>
-        </SelectContent>
-      </Select>
+        <Select required onValueChange={(value) => handlePaymentMethod(value)}>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Método de pagamento:" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="1">Dinheiro</SelectItem>
+            <SelectItem value="2">Boleto</SelectItem>
+            <SelectItem value="3">Devolução</SelectItem>
+            <SelectItem value="4">Cartão de crédito</SelectItem>
+            <SelectItem value="5">Cartão de débito</SelectItem>
+            <SelectItem value="6">Crediário</SelectItem>
+            <SelectItem value="7">Cartão Voucher</SelectItem>
+            <SelectItem value="8">PIX</SelectItem>
+          </SelectContent>
+        </Select>
 
-      <Button
-        type="submit"
-        disabled={loading === true}
-        className={`${loading === true ? "opacity-60" : ""}`}
-      >
-        {loading === true ? "Enviando pedido" : "Finalizar pedido"}
-      </Button>
-    </form>
+        <Button
+          type="submit"
+          disabled={isSubmitting === true}
+          className={`${isSubmitting === true ? "opacity-60" : ""}`}
+        >
+          {isSubmitting === true ? "Enviando pedido" : "Finalizar pedido"}
+        </Button>
+      </form>
+      <DialogSubmit isSubmitting={isSubmitting} />
+    </div>
   );
 };
 

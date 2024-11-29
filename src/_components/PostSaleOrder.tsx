@@ -26,6 +26,7 @@ import { usePostOrderStore } from "@/context/postOrder";
 import { useNavigate } from "react-router-dom";
 import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
 import { firestore } from "@/firebaseConfig";
+import DialogSubmit from "./DialogSubmitOrder";
 
 export type OrderSaleTypes = {
   IdClient?: string;
@@ -147,7 +148,9 @@ const OrderSaleProps: React.FC = () => {
   >([]);
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { total } = usePostOrderStore();
+
   const navigate = useNavigate();
 
   const handleSelectClient = (data: {
@@ -289,7 +292,7 @@ const OrderSaleProps: React.FC = () => {
 
   const handlePostSaleOrder = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    setIsSubmitting(true);
     console.log("Produtos sendo enviados: ", orderSale);
 
     // Validação de campos obrigatórios
@@ -321,11 +324,12 @@ const OrderSaleProps: React.FC = () => {
           },
         }
       );
-
+      setIsSubmitting(false);
       toastSuccess("Pedido de venda criado com sucesso.");
 
       navigate("/get-orders");
     } catch (error) {
+      setIsSubmitting(false);
       console.error("Erro ao enviar pedido:", error);
       toastError("Erro ao criar o pedido.");
     }
@@ -487,6 +491,7 @@ const OrderSaleProps: React.FC = () => {
           </CardFooter>
         </Card>
       </div>
+      <DialogSubmit isSubmitting={isSubmitting} />
     </div>
   );
 };

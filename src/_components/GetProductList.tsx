@@ -136,7 +136,7 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
       <div className="ml-2 flex items-center gap-x-2 px-2 justify-around md:justify-normal">
         <h2>Lista de preços:</h2>
         <h3 className="font-semibold text-amber-500 text-md text-nowrap">
-          {priceListName.toUpperCase()}
+          {priceListName?.toUpperCase()}
         </h3>
       </div>
       <div className="mb-4 relative">
@@ -145,7 +145,7 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
             {selectedProductId
               ? products.find((product) => product.id === selectedProductId)
                   ?.nome
-              : "Selecione um Produto"}
+              : "Produtos"}
           </SelectTrigger>
           <SelectContent>
             {/* Campo de pesquisa no dropdown */}

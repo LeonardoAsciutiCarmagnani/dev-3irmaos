@@ -24,12 +24,24 @@ const PriceListsOverview = () => {
       );
 
       filterPricesList(id);
-
       setIsDialogOpen(false);
-      toastSuccess("Lista de preços excluida com sucesso.");
-    } catch (error) {
-      console.error("Erro ao excluir lista de preços:", error);
-      toastError("Erro ao excluir lista de preços.");
+      toastSuccess("Lista de preços excluída com sucesso.");
+    } catch (error: unknown) {
+      setIsDialogOpen(false);
+
+      if (axios.isAxiosError(error)) {
+        if (error.response && error.response.data) {
+          const backendError: string = error.response.data;
+          console.error("Erro do backend:", backendError);
+          toastError(backendError);
+        } else {
+          console.error("Erro sem resposta do servidor:", error.message);
+          toastError("Erro desconhecido ao excluir lista de preços.");
+        }
+      } else {
+        console.error("Erro desconhecido ao excluir lista de preços:", error);
+        toastError("Erro desconhecido ao excluir lista de preços.");
+      }
     }
   };
 
