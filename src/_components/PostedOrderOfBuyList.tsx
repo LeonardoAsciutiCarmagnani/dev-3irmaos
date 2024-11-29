@@ -93,21 +93,6 @@ const PedidoVendaForm: React.FC = () => {
   const navigate = useNavigate();
 
   const fetchLastOrders = async () => {
-    /* const collectionRef = collection(firestore, "sales_orders");
-    const q = query(collectionRef, orderBy("order_code", "desc"), limit(1));
-    const queryDocs = await getDocs(q);
-
-    let lastOrderNumber = 0;
-
-    if (!queryDocs.empty) {
-      const lastOrder = queryDocs.docs[0].data();
-      lastOrderNumber = lastOrder.order_code || 0;
-    }
-
-    const newOrderNumber = lastOrderNumber + 1;
- */
-    // console.log(newOrderNumber);
-
     const includingProductsInItens: ItensProps[] = listProductsInCart.map(
       (item) => {
         return {
@@ -123,7 +108,6 @@ const PedidoVendaForm: React.FC = () => {
 
     setOrderSale((prev) => ({
       ...prev,
-      // order_code: newOrderNumber,
       itens: includingProductsInItens,
     }));
   };

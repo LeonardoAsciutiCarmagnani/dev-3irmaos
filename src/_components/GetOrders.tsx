@@ -623,7 +623,7 @@ export function GetOrdersComponent() {
                         className="overflow-y-scroll h-96"
                         aria-describedby={undefined}
                       >
-                        <DialogHeader>
+                        <DialogHeader className="items-center">
                           <DialogTitle>Detalhes</DialogTitle>
                         </DialogHeader>
                         <div className=" md:hidden space-y-2 flex flex-col items-center justify-center">
@@ -826,7 +826,7 @@ export function GetOrdersComponent() {
                         className="overflow-y-scroll h-96"
                         aria-describedby={undefined}
                       >
-                        <DialogHeader>
+                        <DialogHeader className="items-center">
                           <DialogTitle>Detalhes</DialogTitle>
                         </DialogHeader>
                         <div className=" md:hidden space-y-2 flex flex-col items-center justify-center">

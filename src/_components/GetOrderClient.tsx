@@ -22,6 +22,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ptBR } from "date-fns/locale";
+import { useNavigate } from "react-router-dom";
+import { useZustandContext } from "@/context/cartContext";
 
 interface StatusProps {
   [key: number]: string;
@@ -42,11 +44,12 @@ export function GetOrdersClientComponent() {
   });
   const { register, handleSubmit } = useForm<IFormInput>();
   const { toastError } = ToastNotifications();
+  const navigate = useNavigate();
+  const { isMobile } = useZustandContext();
 
   const fetchOrders = async () => {
     try {
       const getUserCredentials = localStorage.getItem("loggedUser");
-      console.log(getUserCredentials);
       let userCredentials: { uid: string } | null = null;
       if (getUserCredentials) {
         userCredentials = JSON.parse(getUserCredentials);
@@ -68,7 +71,11 @@ export function GetOrdersClientComponent() {
 
           queryList.push({ ...data, total });
 
-          queryList.sort((a, b) => (a.order_code ?? 0) - (b.order_code ?? 0));
+          queryList.sort((a, b) => {
+            const numA = Number(a.order_code.toString().match(/\d+/)?.[0]);
+            const numB = Number(b.order_code.toString().match(/\d+/)?.[0]);
+            return numB - numA;
+          });
         });
         setOrderList(queryList);
       }
@@ -124,66 +131,101 @@ export function GetOrdersClientComponent() {
     }
   };
 
+  const handlePrintItensClient = (pedido: OrderSaleTypes, type: string) => {
+    console.log("type: ", type);
+
+    let arrayForPrint: {
+      produtoId?: string;
+      nome?: string;
+      preco?: number;
+      categoria?: string;
+      quantidade: number;
+      precoUnitarioBruto?: number;
+      precoUnitarioLiquido?: number;
+    }[] = [];
+
+    const orderNumber = pedido.order_code;
+
+    arrayForPrint = pedido.itens.map((item, index) => {
+      console.log(item.categoria);
+      return { ...item, id_seq: index + 1 };
+    });
+
+    const user = pedido.cliente &&
+      pedido.created_at && {
+        IdClient: pedido.IdClient,
+        document: pedido.cliente?.documento,
+        userName: pedido.cliente?.nomeDoCliente,
+        userEmail: pedido.cliente?.email,
+        userIE: pedido.cliente.inscricaoEstadual,
+        date: pedido?.created_at,
+      };
+
+    navigate("/printPageClient", {
+      state: { arrayForPrint, user, type, orderNumber },
+    });
+  };
+
   const formattedFrom = range?.from && format(range.from, "dd/MM/yyyy");
   const formattedTo = range?.to && format(range.to, "dd/MM/yyyy");
+  const typeEquipment = /Mobi|Android/i.test(navigator.userAgent);
 
   useEffect(() => {
     fetchOrders();
+    console.log("typeEquipment: ", typeEquipment);
   }, []);
 
   return (
-    <div className="flex flex-col w-screen h-screen">
-      <div className="flex flex-col text-center ">
-        <header className="flex  w-full items-center justify-between  p-4 bg-gray-100">
-          <Sidebar />
-          <div className="flex w-full text-center items-center justify-center">
-            <h1 className="text-xl font-bold">Lista de Pedidos</h1>
-          </div>
-        </header>
-        <form
-          onSubmit={handleSubmit(handleSearchOrders)}
-          className="flex flex-wrap items-center gap-4 p-4 ml-2 bg-gray-50"
+    <div className="flex flex-col text-center">
+      <header className="flex  w-full items-center justify-between  p-4 bg-gray-100">
+        <Sidebar />
+        <div className="flex w-full text-center items-center justify-center">
+          <h1 className="text-xl font-bold">Lista de Pedidos</h1>
+        </div>
+      </header>
+      <form
+        onSubmit={handleSubmit(handleSearchOrders)}
+        className="flex flex-wrap items-center gap-4 p-4 ml-2 bg-gray-50"
+      >
+        <select
+          className="border px-4 py-2 rounded"
+          {...register("selectStatus")}
         >
-          <select
-            className="border px-4 py-2 rounded"
-            {...register("selectStatus")}
-          >
-            <option value="0">Todos os status</option>
-            <option value="1">Pedido Aberto</option>
-            <option value="2">Em produção</option>
-            <option value="3">Pedido pronto</option>
-            <option value="4">Pedido faturado</option>
-            <option value="5">Pedido enviado</option>
-            <option value="6">Entregue</option>
-          </select>
-          <Popover>
-            <PopoverTrigger asChild>
-              <span className="border p-2 rounded-lg cursor-pointer hover:bg-gray-200">
-                Selecione o periodo
-              </span>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="range"
-                selected={range}
-                onSelect={setRange}
-                footer={
-                  formattedFrom && formattedTo
-                    ? `${formattedFrom} há ${formattedTo}`
-                    : "Selecione o periodo"
-                }
-                locale={ptBR}
-              />
-            </PopoverContent>
-          </Popover>
-          <button
-            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700"
-            type="submit"
-          >
-            Filtrar
-          </button>
-        </form>
-      </div>
+          <option value="0">Todos os status</option>
+          <option value="1">Pedido Aberto</option>
+          <option value="2">Em produção</option>
+          <option value="3">Pedido pronto</option>
+          <option value="4">Pedido faturado</option>
+          <option value="5">Pedido enviado</option>
+          <option value="6">Entregue</option>
+        </select>
+        <Popover>
+          <PopoverTrigger asChild>
+            <span className="border p-2 rounded-lg cursor-pointer hover:bg-gray-200">
+              Selecione o periodo
+            </span>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="range"
+              selected={range}
+              onSelect={setRange}
+              footer={
+                formattedFrom && formattedTo
+                  ? `${formattedFrom} há ${formattedTo}`
+                  : "Selecione o periodo"
+              }
+              locale={ptBR}
+            />
+          </PopoverContent>
+        </Popover>
+        <button
+          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700"
+          type="submit"
+        >
+          Filtrar
+        </button>
+      </form>
       <table className="w-full border-collapse text-center border-gray-200">
         <thead className="bg-gray-100 ">
           <tr>
@@ -202,6 +244,9 @@ export function GetOrdersClientComponent() {
             </th>
             <th className="border md:px-4 py-2 text-sm md:text-base hidden md:table-cell">
               Valor
+            </th>
+            <th className="border md:px-4 py-2 text-sm md:text-base hidden md:table-cell">
+              Imprimir
             </th>
           </tr>
         </thead>
@@ -230,9 +275,8 @@ export function GetOrdersClientComponent() {
                     {order.cliente?.nomeDoCliente}
                   </td>
                   <td className="border px-4 py-2 ">
-                    <Button
-                      disabled={(order.status_order ?? 0) >= 6}
-                      className={`px-2 py-1 rounded text-xs md:text-base  ${
+                    <div
+                      className={` opacity-100   rounded text-xs text-nowrap p-2 md:text-base  ${
                         order.status_order === 1
                           ? "bg-green-100 text-green-700 hover:bg-green-200"
                           : order.status_order === 2
@@ -254,12 +298,10 @@ export function GetOrdersClientComponent() {
                         ? "Em produção"
                         : order.status_order === 3
                         ? "Pedido pronto"
-                        : order.status_order === 4
-                        ? "Pedido faturado"
                         : order.status_order === 5
                         ? "Pedido enviado"
                         : order.status_order === 6 && "Entregue"}
-                    </Button>
+                    </div>
                   </td>
                   <td className="border px-4 py-2 text-sm md:text-base">
                     <Dialog>
@@ -272,12 +314,12 @@ export function GetOrdersClientComponent() {
                         className="overflow-y-scroll h-96"
                         aria-describedby={undefined}
                       >
-                        <DialogHeader>
-                          <DialogTitle>Lista de produtos: </DialogTitle>
+                        <DialogHeader className="items-center">
+                          <DialogTitle>Detalhes</DialogTitle>
                         </DialogHeader>
                         <div className=" md:hidden space-y-2 flex flex-col items-center justify-center">
                           <div className="flex justify-between rounded-lg items-center p-1">
-                            <span className="text-sm font-semibold">
+                            <span className="text-md font-semibold">
                               Valor total do pedido:
                             </span>
                             <span>
@@ -287,6 +329,57 @@ export function GetOrdersClientComponent() {
                               })}
                             </span>
                           </div>
+                          {isMobile === true ? (
+                            <>
+                              <Button className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded">
+                                Download
+                              </Button>
+                            </>
+                          ) : (
+                            <>
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <Button
+                                    onClick={() => {
+                                      const type = "A4";
+                                      handlePrintItensClient(order, type);
+                                    }}
+                                    className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                                  >
+                                    Imprimir
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent>
+                                  <div className="flex flex-col">
+                                    <span>Escolha o tipo de impressão:</span>
+                                    <div className="flex gap-2">
+                                      <Button
+                                        onClick={() => {
+                                          const type = "A4";
+                                          handlePrintItensClient(order, type);
+                                        }}
+                                        className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                                      >
+                                        Imprimir A4
+                                      </Button>
+                                      <Button
+                                        onClick={() => {
+                                          const type = "termica";
+                                          handlePrintItensClient(order, type);
+                                        }}
+                                        className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                                      >
+                                        Imprimir Térmica
+                                      </Button>
+                                    </div>
+                                  </div>
+                                </PopoverContent>
+                              </Popover>
+                            </>
+                          )}
+                        </div>
+                        <div className="text-lg font-semibold text-center">
+                          Lista de produtos:
                         </div>
                         <div className=" rounded-lg text-sm space-y-2 p-2 md:text-base">
                           {order.itens.map((product) => (
@@ -294,7 +387,15 @@ export function GetOrdersClientComponent() {
                               key={product.produtoId}
                               className="flex flex-col border-2 space-y-2 p-2 rounded-lg items-center"
                             >
-                              <span>{product.nome}</span>
+                              <div>
+                                <span className="font-semibold">
+                                  {product.nome}
+                                </span>{" "}
+                                -{" "}
+                                <span className="font-semibold">
+                                  {product.categoria}
+                                </span>
+                              </div>
                               <span>Quantidade: {product.quantidade}</span>
                               <span>
                                 {product.preco?.toLocaleString("pt-BR", {
@@ -313,6 +414,50 @@ export function GetOrdersClientComponent() {
                       style: "currency",
                       currency: "BRL",
                     })}
+                  </td>
+                  <td className="border px-4 py-2 hidden md:table-cell">
+                    {isMobile === true ? (
+                      <>
+                        <Button className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded">
+                          Download
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded">
+                              Imprimir
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent>
+                            <div className="flex flex-col">
+                              <span>Escolha o tipo de impressão:</span>
+                              <div className="flex gap-2">
+                                <Button
+                                  onClick={() => {
+                                    const type = "A4";
+                                    handlePrintItensClient(order, type);
+                                  }}
+                                  className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                                >
+                                  Imprimir A4
+                                </Button>
+                                <Button
+                                  onClick={() => {
+                                    const type = "termica";
+                                    handlePrintItensClient(order, type);
+                                  }}
+                                  className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                                >
+                                  Imprimir Térmica
+                                </Button>
+                              </div>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      </>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -341,9 +486,8 @@ export function GetOrdersClientComponent() {
                     {order.cliente?.nomeDoCliente}
                   </td>
                   <td className="border px-4 py-2 ">
-                    <Button
-                      disabled={(order.status_order ?? 0) >= 6}
-                      className={`px-2 opacity-60 py-1 rounded text-xs md:text-base  ${
+                    <div
+                      className={`opacity-100 rounded text-xs text-nowrap p-2 md:text-base  ${
                         order.status_order === 1
                           ? "bg-green-100 text-green-700 hover:bg-green-200"
                           : order.status_order === 2
@@ -365,12 +509,10 @@ export function GetOrdersClientComponent() {
                         ? "Em produção"
                         : order.status_order === 3
                         ? "Pedido pronto"
-                        : order.status_order === 4
-                        ? "Pedido faturado"
                         : order.status_order === 5
                         ? "Pedido enviado"
                         : order.status_order === 6 && "Entregue"}
-                    </Button>
+                    </div>
                   </td>
                   <td className="border px-4 py-2 text-sm md:text-base">
                     <Dialog>
@@ -383,21 +525,12 @@ export function GetOrdersClientComponent() {
                         className="overflow-y-scroll h-96"
                         aria-describedby={undefined}
                       >
-                        <DialogHeader>
-                          <DialogTitle>Lista de produtos: </DialogTitle>
+                        <DialogHeader className="items-center">
+                          <DialogTitle>Detalhes </DialogTitle>
                         </DialogHeader>
                         <div className=" md:hidden space-y-2 flex flex-col items-center justify-center">
-                          <div className="flex justify-between border-2 rounded-lg p-2">
-                            <span className="font-semibold text-sm items-start">
-                              ID:
-                            </span>
-                            <span className="text-sm text-center ">
-                              {order.id}
-                            </span>
-                          </div>
-                          <div></div>
-                          <div className="flex justify-between border-2 rounded-lg items-center p-1">
-                            <span className="text-sm font-semibold">
+                          <div className="flex gap-1 justify-between  items-center p-1">
+                            <span className="text-md font-semibold">
                               Valor total do pedido:
                             </span>
                             <span>
@@ -407,6 +540,47 @@ export function GetOrdersClientComponent() {
                               })}
                             </span>
                           </div>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                onClick={() => {
+                                  const type = "A4";
+                                  handlePrintItensClient(order, type);
+                                }}
+                                className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                              >
+                                Imprimir
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent>
+                              <div className="flex flex-col">
+                                <span>Escolha o tipo de impressão:</span>
+                                <div className="flex gap-2">
+                                  <Button
+                                    onClick={() => {
+                                      const type = "A4";
+                                      handlePrintItensClient(order, type);
+                                    }}
+                                    className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                                  >
+                                    Imprimir A4
+                                  </Button>
+                                  <Button
+                                    onClick={() => {
+                                      const type = "termica";
+                                      handlePrintItensClient(order, type);
+                                    }}
+                                    className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                                  >
+                                    Imprimir Térmica
+                                  </Button>
+                                </div>
+                              </div>
+                            </PopoverContent>
+                          </Popover>
+                        </div>
+                        <div className="text-lg font-semibold text-center">
+                          Lista de produtos:
                         </div>
                         <div className=" rounded-lg text-sm space-y-2 p-2 md:text-base">
                           {order.itens.map((product) => (
@@ -414,7 +588,15 @@ export function GetOrdersClientComponent() {
                               key={product.produtoId}
                               className="flex flex-col border-2 space-y-2 p-2 rounded-lg items-center"
                             >
-                              <span>{product.nome}</span>
+                              <div>
+                                <span className="font-semibold">
+                                  {product.nome}
+                                </span>{" "}
+                                -{" "}
+                                <span className="font-semibold">
+                                  {product.categoria}
+                                </span>
+                              </div>
                               <span>Quantidade: {product.quantidade}</span>
                               <span>
                                 {product.preco?.toLocaleString("pt-BR", {
@@ -433,6 +615,50 @@ export function GetOrdersClientComponent() {
                       style: "currency",
                       currency: "BRL",
                     })}
+                  </td>
+                  <td className="border px-4 py-2 hidden md:table-cell">
+                    {isMobile === true ? (
+                      <>
+                        <Button className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded">
+                          Download
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded">
+                              Imprimir
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent>
+                            <div className="flex flex-col">
+                              <span>Escolha o tipo de impressão:</span>
+                              <div className="flex gap-2">
+                                <Button
+                                  onClick={() => {
+                                    const type = "A4";
+                                    handlePrintItensClient(order, type);
+                                  }}
+                                  className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                                >
+                                  Imprimir A4
+                                </Button>
+                                <Button
+                                  onClick={() => {
+                                    const type = "termica";
+                                    handlePrintItensClient(order, type);
+                                  }}
+                                  className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                                >
+                                  Imprimir Térmica
+                                </Button>
+                              </div>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      </>
+                    )}
                   </td>
                 </tr>
               ))}
