@@ -78,9 +78,10 @@ export function GetOrdersComponent() {
           queryList.push({ ...data, total });
 
           queryList.sort((a, b) => {
-            if (!a.created_at || !b.created_at) return 0;
-
-            return b.created_at.localeCompare(a.created_at);
+            const numA = Number(a.order_code.toString().match(/\d+/)?.[0]);
+            console.log("Match ", numA);
+            const numB = Number(b.order_code.toString().match(/\d+/)?.[0]);
+            return numB - numA;
           });
         });
         console.log(queryList);
