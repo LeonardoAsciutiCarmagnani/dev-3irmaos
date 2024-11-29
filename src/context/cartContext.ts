@@ -27,7 +27,8 @@ interface ContextStates {
   countItemsInCart: number;
   listProductsInCart: Product[];
   priceLists: PriceListProps[];
-
+  isMobile: boolean;
+  setIsMobile: (type: boolean) => void;
   setProducts: () => void;
   clearListProductsInCart: (list: Product[]) => void;
   setTotalValue: () => void;
@@ -48,6 +49,9 @@ export const useZustandContext = create<ContextStates>((set) => ({
   products: [],
   priceLists: [],
   totalValue: 0,
+  isMobile: false,
+
+  setIsMobile: () => set({ isMobile: true }),
 
   clearListProductsInCart: () =>
     set(() => {
