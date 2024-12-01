@@ -1,5 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  updateDoc,
+} from "firebase/firestore";
 import { firestore } from "@/firebaseConfig";
 import { useEffect, useState } from "react";
 import { OrderSaleTypes } from "./PostSaleOrder";
@@ -29,6 +35,7 @@ import "react-day-picker/dist/style.css";
 import { Calendar } from "@/components/ui/calendar";
 import { ptBR } from "date-fns/locale";
 import { Trash } from "lucide-react";
+import useUserStore from "@/context/UserStore";
 
 interface StatusProps {
   [key: number]: string;
@@ -54,6 +61,8 @@ export function GetOrdersComponent() {
   });
   const [check, setCheck] = useState(false);
   const [isCleared, setIsCleared] = useState(false);
+
+  const { typeUser, setTypeUser } = useUserStore();
 
   /* Alterar o valor da createAt pelo timestamp  */
 
@@ -310,6 +319,39 @@ export function GetOrdersComponent() {
     }
   };
 
+  const fetchTypeUser = async (): Promise<string | null> => {
+    const getUserCredentials = localStorage.getItem("loggedUser");
+    const userCredentials =
+      getUserCredentials && JSON.parse(getUserCredentials);
+
+    const id = userCredentials.uid;
+
+    if (!id) {
+      console.error("ID não encontrado no localStorage.");
+      return null;
+    }
+
+    try {
+      const clientDoc = doc(firestore, "clients", id);
+      const docSnap = await getDoc(clientDoc);
+      console.log("Tipo do usuário encontrado.");
+
+      if (docSnap.exists()) {
+        const typeUser = docSnap.data()?.type_user || null;
+
+        setTypeUser(typeUser);
+
+        return typeUser;
+      } else {
+        console.error("Usuário não encontrado.");
+        return null;
+      }
+    } catch (error) {
+      console.error("Erro ao buscar user_name no Firestore:", error);
+      return null;
+    }
+  };
+
   const selectOptions = [
     { value: 1, label: "Pedido Aberto" },
     { value: 2, label: "Em produção" },
@@ -318,12 +360,16 @@ export function GetOrdersComponent() {
     { value: 6, label: "Entregue" },
   ];
 
-  const formattedFrom = range?.from && format(range.from, "dd/MM/yyyy");
-  const formattedTo = range?.to && format(range.to, "dd/MM/yyyy");
+  const formattedFrom = range?.from
+    ? format(range.from, "dd/MM/yyyy")
+    : "--/--/----";
+  const formattedTo = range?.to ? format(range.to, "dd/MM/yyyy") : "--/--/----";
 
   useEffect(() => {
     fetchOrders();
-  }, []);
+    fetchTypeUser();
+    console.log("Type User: ", typeUser);
+  }, [typeUser]);
 
   return (
     <>
@@ -359,9 +405,15 @@ export function GetOrdersComponent() {
 
           <Popover>
             <PopoverTrigger asChild>
-              <span className="border p-2 rounded-lg cursor-pointer">
-                Selecione o periodo
-              </span>
+              <div className="w-[200px] border p-2 rounded-lg cursor-pointer hover:bg-gray-200">
+                {formattedTo !== "--/--/----" ? (
+                  <span className="text-sm">
+                    {formattedFrom} || {formattedTo}
+                  </span>
+                ) : (
+                  <span>Selecione o periodo</span>
+                )}
+              </div>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
               <Calendar
@@ -369,9 +421,9 @@ export function GetOrdersComponent() {
                 selected={range}
                 onSelect={setRange}
                 footer={
-                  formattedFrom && formattedTo
-                    ? `${formattedFrom} há ${formattedTo}`
-                    : "Selecione o periodo"
+                  formattedFrom &&
+                  formattedTo &&
+                  `${formattedFrom} a ${formattedTo}`
                 }
                 locale={ptBR}
               />
@@ -537,7 +589,11 @@ export function GetOrdersComponent() {
             <th className="border md:px-4 py-2 text-xs md:text-base">
               Detalhes
             </th>
-            <th className="border md:px-4 py-2 hidden md:table-cell">Valor</th>
+            {typeUser !== "fábrica" && (
+              <th className={`border md:px-4 py-2 hidden md:table-cell`}>
+                Valor
+              </th>
+            )}
             <th className="border md:px-4 py-2 hidden md:table-cell">
               Imprimir
             </th>
@@ -626,17 +682,19 @@ export function GetOrdersComponent() {
                           <DialogTitle>Detalhes</DialogTitle>
                         </DialogHeader>
                         <div className=" md:hidden space-y-2 flex flex-col items-center justify-center">
-                          <div className="flex gap-1 justify-between rounded-lg items-center p-1">
-                            <span className="text-base font-semibold">
-                              Valor total do pedido:
-                            </span>
-                            <span>
-                              {order.total?.toLocaleString("pt-BR", {
-                                style: "currency",
-                                currency: "BRL",
-                              })}
-                            </span>
-                          </div>
+                          {typeUser !== "fábrica" && (
+                            <div className="flex gap-1 justify-between rounded-lg items-center p-1">
+                              <span className="text-base font-semibold">
+                                Valor total do pedido:
+                              </span>
+                              <span>
+                                {order.total?.toLocaleString("pt-BR", {
+                                  style: "currency",
+                                  currency: "BRL",
+                                })}
+                              </span>
+                            </div>
+                          )}
 
                           <Popover>
                             <PopoverTrigger asChild>
@@ -690,24 +748,28 @@ export function GetOrdersComponent() {
                                 </span>
                               </div>
                               <span>Quantidade: {product.quantidade}</span>
-                              <span>
-                                {product.preco?.toLocaleString("pt-BR", {
-                                  style: "currency",
-                                  currency: "BRL",
-                                })}
-                              </span>
+                              {typeUser !== "fábrica" && (
+                                <span>
+                                  {product.preco?.toLocaleString("pt-BR", {
+                                    style: "currency",
+                                    currency: "BRL",
+                                  })}
+                                </span>
+                              )}
                             </div>
                           ))}
                         </div>
                       </DialogContent>
                     </Dialog>
                   </td>
-                  <td className="border px-4 py-2 hidden md:table-cell">
-                    {order.total?.toLocaleString("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    })}
-                  </td>
+                  {typeUser !== "fábrica" && (
+                    <td className="border px-4 py-2 hidden md:table-cell">
+                      {order.total?.toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      })}
+                    </td>
+                  )}
                   <td className="border px-4 py-2 hidden md:table-cell">
                     <Popover>
                       <PopoverTrigger asChild>
@@ -829,17 +891,19 @@ export function GetOrdersComponent() {
                           <DialogTitle>Detalhes</DialogTitle>
                         </DialogHeader>
                         <div className=" md:hidden space-y-2 flex flex-col items-center justify-center">
-                          <div className="flex gap-1 justify-between rounded-lg items-center p-1">
-                            <span className="text-base font-semibold">
-                              Valor total do pedido:
-                            </span>
-                            <span>
-                              {order.total?.toLocaleString("pt-BR", {
-                                style: "currency",
-                                currency: "BRL",
-                              })}
-                            </span>
-                          </div>
+                          {typeUser !== "fábrica" && (
+                            <div className="flex gap-1 justify-between rounded-lg items-center p-1">
+                              <span className="text-base font-semibold">
+                                Valor total do pedido:
+                              </span>
+                              <span>
+                                {order.total?.toLocaleString("pt-BR", {
+                                  style: "currency",
+                                  currency: "BRL",
+                                })}
+                              </span>
+                            </div>
+                          )}
                           <Popover>
                             <PopoverTrigger asChild>
                               <Button className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded">
@@ -892,24 +956,28 @@ export function GetOrdersComponent() {
                                 </span>
                               </div>
                               <span>Quantidade: {product.quantidade}</span>
-                              <span>
-                                {product.preco?.toLocaleString("pt-BR", {
-                                  style: "currency",
-                                  currency: "BRL",
-                                })}
-                              </span>
+                              {typeUser !== "fábrica" && (
+                                <span>
+                                  {product.preco?.toLocaleString("pt-BR", {
+                                    style: "currency",
+                                    currency: "BRL",
+                                  })}
+                                </span>
+                              )}
                             </div>
                           ))}
                         </div>
                       </DialogContent>
                     </Dialog>
                   </td>
-                  <td className="border px-4 py-2 hidden md:table-cell">
-                    {order.total?.toLocaleString("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    })}
-                  </td>
+                  {typeUser !== "fábrica" && (
+                    <td className="border px-4 py-2 hidden md:table-cell">
+                      {order.total?.toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      })}
+                    </td>
+                  )}
                   <td className="border px-4 py-2 hidden md:table-cell">
                     <div>
                       <Popover>

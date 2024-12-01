@@ -112,7 +112,7 @@ export const FetchProducts: React.FC = React.memo(() => {
 
         return typeUser;
       } else {
-        console.error("Documento não encontrado.");
+        console.error("Usuário não encontrado.");
         return null;
       }
     } catch (error) {

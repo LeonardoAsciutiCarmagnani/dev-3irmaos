@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { firestore } from "@/firebaseConfig";
 import { useEffect, useState } from "react";
@@ -540,22 +541,16 @@ export function GetOrdersClientComponent() {
                               })}
                             </span>
                           </div>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <Button
-                                onClick={() => {
-                                  const type = "A4";
-                                  handlePrintItensClient(order, type);
-                                }}
-                                className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
-                              >
-                                Imprimir
+                          {isMobile === true ? (
+                            <>
+                              <Button className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded">
+                                Download
                               </Button>
-                            </PopoverTrigger>
-                            <PopoverContent>
-                              <div className="flex flex-col">
-                                <span>Escolha o tipo de impressão:</span>
-                                <div className="flex gap-2">
+                            </>
+                          ) : (
+                            <>
+                              <Popover>
+                                <PopoverTrigger asChild>
                                   <Button
                                     onClick={() => {
                                       const type = "A4";
@@ -563,21 +558,37 @@ export function GetOrdersClientComponent() {
                                     }}
                                     className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
                                   >
-                                    Imprimir A4
+                                    Imprimir
                                   </Button>
-                                  <Button
-                                    onClick={() => {
-                                      const type = "termica";
-                                      handlePrintItensClient(order, type);
-                                    }}
-                                    className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
-                                  >
-                                    Imprimir Térmica
-                                  </Button>
-                                </div>
-                              </div>
-                            </PopoverContent>
-                          </Popover>
+                                </PopoverTrigger>
+                                <PopoverContent>
+                                  <div className="flex flex-col">
+                                    <span>Escolha o tipo de impressão:</span>
+                                    <div className="flex gap-2">
+                                      <Button
+                                        onClick={() => {
+                                          const type = "A4";
+                                          handlePrintItensClient(order, type);
+                                        }}
+                                        className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                                      >
+                                        Imprimir A4
+                                      </Button>
+                                      <Button
+                                        onClick={() => {
+                                          const type = "termica";
+                                          handlePrintItensClient(order, type);
+                                        }}
+                                        className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                                      >
+                                        Imprimir Térmica
+                                      </Button>
+                                    </div>
+                                  </div>
+                                </PopoverContent>
+                              </Popover>
+                            </>
+                          )}
                         </div>
                         <div className="text-lg font-semibold text-center">
                           Lista de produtos:
