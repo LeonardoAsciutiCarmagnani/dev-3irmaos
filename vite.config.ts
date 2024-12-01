@@ -16,11 +16,14 @@ export default defineConfig({
   },
   build: {
     outDir: "dist",
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       input: "./index.html",
       output: {
         manualChunks: {
           vendor: ["react", "react-dom"],
+          html2canvas: ["html2canvas"],
+          jspdf: ["jspdf"],
         },
       },
     },

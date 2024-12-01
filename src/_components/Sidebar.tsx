@@ -13,16 +13,15 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { signOut } from "firebase/auth";
-import { auth, firestore } from "@/firebaseConfig";
+import { auth } from "@/firebaseConfig";
 import ToastNotifications from "./Toasts";
-import { doc, getDoc } from "firebase/firestore";
-import useUserTypeStore from "@/context/typeUserStore";
+import useUserTypeStore from "@/context/UserStore";
+import useUserStore from "@/context/UserStore";
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const [email, setEmail] = useState<string | null>(null);
-  const [username, setUserName] = useState<string | null>(null);
-  const { typeUser } = useUserTypeStore();
+  const { typeUser, username } = useUserStore();
 
   const { toastSuccess } = ToastNotifications();
 
@@ -44,103 +43,12 @@ export default function Sidebar() {
     }
   };
 
-  const getUidFromLocalStorage = (): string | null => {
-    const userJSON = localStorage.getItem("loggedUser");
-    if (userJSON) {
-      try {
-        const user = JSON.parse(userJSON);
-        return user?.uid || null;
-      } catch (e) {
-        console.error("Erro ao parsear o objeto user do localStorage", e);
-        return null;
-      }
-    }
-    return null;
-  };
-
-  const fetchUserName = async (): Promise<string | null> => {
-    const id = getUidFromLocalStorage();
-
-    if (!id) {
-      console.error("ID não encontrado no localStorage.");
-      return null;
-    }
-
-    try {
-      const clientDoc = doc(firestore, "clients", id);
-      const docSnap = await getDoc(clientDoc);
-      console.log("Requisição feita");
-
-      if (docSnap.exists()) {
-        const userName = docSnap.data()?.user_name;
-        localStorage.setItem("userName", userName);
-
-        return userName || null;
-      } else {
-        console.error("Documento não encontrado.");
-        return null;
-      }
-    } catch (error) {
-      console.error("Erro ao buscar user_name no Firestore:", error);
-      return null;
-    }
-  };
-
-  const fetchTypeUser = async (): Promise<string | null> => {
-    const id = getUidFromLocalStorage();
-
-    if (!id) {
-      console.error("ID não encontrado no localStorage.");
-      return null;
-    }
-
-    try {
-      const clientDoc = doc(firestore, "clients", id);
-      const docSnap = await getDoc(clientDoc);
-      console.log("Fetched type user");
-
-      if (docSnap.exists()) {
-        const typeUser = docSnap.data()?.type_user || null;
-
-        const setTypeUser = useUserTypeStore.getState().setTypeUser;
-        setTypeUser(typeUser);
-
-        return typeUser;
-      } else {
-        console.error("Documento não encontrado.");
-        return null;
-      }
-    } catch (error) {
-      console.error("Erro ao buscar user_name no Firestore:", error);
-      return null;
-    }
-  };
-
-  const fetchData = async () => {
-    const localStorageName = localStorage.getItem("userName");
-
-    if (!localStorageName) {
-      console.log("Buscando dados...");
-      const name = await fetchUserName();
-      if (name) {
-        localStorage.setItem("userName", name);
-        setUserName(name);
-      }
-    } else {
-      setUserName(localStorageName);
-    }
-  };
-
   useEffect(() => {
-    if (!typeUser) {
-      fetchTypeUser();
-    }
     const userJSON = localStorage.getItem("loggedUser");
     if (userJSON) {
       const user = JSON.parse(userJSON);
       setEmail(user.email);
     }
-    fetchData();
   }, []);
 
   return (
@@ -193,36 +101,31 @@ export default function Sidebar() {
 
           <ul className="space-y-4">
             {typeUser !== "fábrica" && (
-              <>
-                <li>
-                  <Link
-                    to="/"
-                    className="block text-gray-800 hover:text-white hover:bg-gray-700 rounded-md px-3 py-2 transition-colors"
-                  >
-                    <span className="flex items-center gap-x-4">
-                      <HomeIcon className="text-amber-500" size={24} />
-                      Home
-                    </span>
-                  </Link>
-                </li>
-
-                <li>
-                  <Link
-                    to={
-                      typeUser === "cliente"
-                        ? "/get-orders-client"
-                        : "/get-orders"
-                    }
-                    className="block text-gray-800 hover:text-white hover:bg-gray-700 rounded-md px-3 py-2 transition-colors"
-                  >
-                    <span className="flex items-center gap-x-4">
-                      <PackageIcon className="text-amber-500" size={24} />{" "}
-                      Pedidos
-                    </span>
-                  </Link>
-                </li>
-              </>
+              <li>
+                <Link
+                  to="/"
+                  className="block text-gray-800 hover:text-white hover:bg-gray-700 rounded-md px-3 py-2 transition-colors"
+                >
+                  <span className="flex items-center gap-x-4">
+                    <HomeIcon className="text-amber-500" size={24} />
+                    Home
+                  </span>
+                </Link>
+              </li>
             )}
+
+            <li>
+              <Link
+                to={
+                  typeUser === "cliente" ? "/get-orders-client" : "/get-orders"
+                }
+                className="block text-gray-800 hover:text-white hover:bg-gray-700 rounded-md px-3 py-2 transition-colors"
+              >
+                <span className="flex items-center gap-x-4">
+                  <PackageIcon className="text-amber-500" size={24} /> Pedidos
+                </span>
+              </Link>
+            </li>
             {typeUser === "adm" && (
               <>
                 <li>

@@ -79,7 +79,6 @@ export function GetOrdersComponent() {
 
           queryList.sort((a, b) => {
             const numA = Number(a.order_code.toString().match(/\d+/)?.[0]);
-            console.log("Match ", numA);
             const numB = Number(b.order_code.toString().match(/\d+/)?.[0]);
             return numB - numA;
           });

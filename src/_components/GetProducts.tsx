@@ -2,8 +2,10 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Plus, Minus, SearchIcon, LoaderPinwheelIcon } from "lucide-react";
 import { useZustandContext } from "@/context/cartContext";
 import LazyLoad from "react-lazyload";
-import useUserTypeStore from "@/context/typeUserStore";
+import useUserTypeStore from "@/context/UserStore";
 import { useNavigate } from "react-router-dom";
+import { doc, getDoc } from "firebase/firestore";
+import { firestore } from "@/firebaseConfig";
 
 interface Product {
   id: string;
@@ -45,15 +47,104 @@ export const FetchProducts: React.FC = React.memo(() => {
     "doce",
     "outros",
   ];
-  const { typeUser } = useUserTypeStore();
+  const { typeUser, setUserName, setTypeUser } = useUserTypeStore();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (typeUser === "fabrica") {
-      navigate("/get-orders");
+  const getUidFromLocalStorage = (): string | null => {
+    const userJSON = localStorage.getItem("loggedUser");
+    if (userJSON) {
+      try {
+        const user = JSON.parse(userJSON);
+        return user?.uid || null;
+      } catch (e) {
+        console.error("Erro ao parsear o objeto user do localStorage", e);
+        return null;
+      }
     }
-    setProducts();
-  }, [setProducts]);
+    return null;
+  };
+
+  const fetchUserName = async (): Promise<string | null> => {
+    const id = getUidFromLocalStorage();
+
+    if (!id) {
+      console.error("ID não encontrado no localStorage.");
+      return null;
+    }
+
+    try {
+      const clientDoc = doc(firestore, "clients", id);
+      const docSnap = await getDoc(clientDoc);
+      console.log("Requisição feita");
+
+      if (docSnap.exists()) {
+        const userName = docSnap.data()?.user_name;
+        localStorage.setItem("userName", userName);
+
+        return userName || null;
+      } else {
+        console.error("Documento não encontrado.");
+        return null;
+      }
+    } catch (error) {
+      console.error("Erro ao buscar user_name no Firestore:", error);
+      return null;
+    }
+  };
+
+  const fetchTypeUser = async (): Promise<string | null> => {
+    const id = getUidFromLocalStorage();
+
+    if (!id) {
+      console.error("ID não encontrado no localStorage.");
+      return null;
+    }
+
+    try {
+      const clientDoc = doc(firestore, "clients", id);
+      const docSnap = await getDoc(clientDoc);
+      console.log("Tipo do usuário encontrado.");
+
+      if (docSnap.exists()) {
+        const typeUser = docSnap.data()?.type_user || null;
+
+        setTypeUser(typeUser);
+
+        return typeUser;
+      } else {
+        console.error("Documento não encontrado.");
+        return null;
+      }
+    } catch (error) {
+      console.error("Erro ao buscar user_name no Firestore:", error);
+      return null;
+    }
+  };
+
+  const fetchUsername = async () => {
+    const localStorageName = localStorage.getItem("userName");
+
+    if (!localStorageName) {
+      console.log("Buscando username...");
+      const name = await fetchUserName();
+      if (name) {
+        localStorage.setItem("userName", name);
+        setUserName(name);
+      }
+    } else {
+      setUserName(localStorageName);
+    }
+  };
+
+  useEffect(() => {
+    if (typeUser === "fábrica") {
+      navigate("/get-orders");
+    } else {
+      setProducts();
+    }
+    fetchTypeUser();
+    fetchUsername();
+  }, [setProducts, navigate, typeUser]);
 
   useEffect(() => {
     if (products.length > 0) {
@@ -92,8 +183,6 @@ export const FetchProducts: React.FC = React.memo(() => {
     },
     []
   );
-
-  console.log(products);
 
   return (
     <div className="p-4 bg-gray-50 h-screen overflow-y-auto mt-[6rem]">

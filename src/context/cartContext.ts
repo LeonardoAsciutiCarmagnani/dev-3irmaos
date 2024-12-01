@@ -121,6 +121,7 @@ export const useZustandContext = create<ContextStates>((set) => ({
       return;
     }
     try {
+      console.log("Requisitando produtos ao back-end...");
       const response = await axios.get(`${apiBaseUrl}/produtos`, {
         headers: {
           Authorization: `Bearer ${user.accessToken}`,
@@ -139,6 +140,7 @@ export const useZustandContext = create<ContextStates>((set) => ({
         loading: false,
         error: null,
       });
+      console.log(updateProductsList);
     } catch (error) {
       console.error("Erro ao buscar produtos:", error);
       set({ loading: true, error: "Erro ao buscar produtos" });

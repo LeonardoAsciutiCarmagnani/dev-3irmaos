@@ -6,6 +6,7 @@ import {
   createUserWithEmailAndPassword,
 } from "firebase/auth";
 import { auth } from "../firebaseConfig";
+import useUserStore from "./UserStore";
 
 interface AuthUser {
   uid: string;
@@ -64,6 +65,8 @@ export const useAuthStore = create<AuthState>((set) => ({
   logout: async () => {
     await signOut(auth);
     set({ user: null });
+    const { setTypeUser } = useUserStore.getState();
+    setTypeUser(null);
     localStorage.removeItem("loggedUser");
   },
 
