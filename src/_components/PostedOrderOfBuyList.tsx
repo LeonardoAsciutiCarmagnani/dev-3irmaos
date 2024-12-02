@@ -166,7 +166,7 @@ const PedidoVendaForm: React.FC = () => {
       setTimeout(() => {
         clearListProductsInCart(listProductsInCart);
         navigate("/");
-      }, 1000);
+      }, 500);
       setIsSubmitting(false);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {

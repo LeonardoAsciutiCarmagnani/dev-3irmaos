@@ -21,7 +21,7 @@ import useUserStore from "@/context/UserStore";
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const [email, setEmail] = useState<string | null>(null);
-  const { typeUser, username } = useUserStore();
+  const { typeUser, username, setUserName } = useUserStore();
 
   const { toastSuccess } = ToastNotifications();
 
@@ -45,9 +45,11 @@ export default function Sidebar() {
 
   useEffect(() => {
     const userJSON = localStorage.getItem("loggedUser");
+    const getUserName = localStorage.getItem("userName");
     if (userJSON) {
       const user = JSON.parse(userJSON);
       setEmail(user.email);
+      setUserName(getUserName);
     }
   }, []);
 

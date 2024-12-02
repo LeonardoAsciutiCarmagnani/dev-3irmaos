@@ -7,6 +7,8 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebaseConfig";
 import { useAuthStore } from "@/context/authStore";
 import ToastNotifications from "@/_components/Toasts";
+import useUserStore from "@/context/UserStore";
+import { useEffect } from "react";
 
 interface AuthUserProps {
   userLogin: string;
@@ -22,6 +24,7 @@ export default function Auth() {
   } = useForm<AuthUserProps>();
   const { setUser } = useAuthStore();
   const { toastSuccess, toastError } = ToastNotifications();
+  const { typeUser, fetchTypeUser } = useUserStore();
 
   const handleUserLogin = async (data: AuthUserProps) => {
     try {
@@ -38,13 +41,25 @@ export default function Auth() {
       };
       setUser(userCredentials);
       localStorage.setItem("loggedUser", JSON.stringify(userCredentials));
-      navigate("/");
+      fetchTypeUser();
+      if (typeUser === "fábrica") {
+        navigate("/get-orders");
+      } else {
+        setTimeout(() => {
+          navigate("/");
+        }, 1000);
+      }
+
       toastSuccess("Login realizado com sucesso!");
     } catch (error) {
       console.error("Erro de autenticação:", error);
       toastError("Login ou senha incorretos.");
     }
   };
+
+  useEffect(() => {
+    console.log("typeUser -> ", typeUser);
+  }, [typeUser]);
 
   return (
     <div className="w-screen h-screen flex flex-col justify-center items-center bg-gradient-to-br from-gray-100 to-gray-200">

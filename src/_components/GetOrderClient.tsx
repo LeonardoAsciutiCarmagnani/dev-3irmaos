@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { firestore } from "@/firebaseConfig";
 import { useEffect, useState } from "react";
@@ -163,13 +162,13 @@ export function GetOrdersClientComponent() {
     });
   };
 
-  const formattedFrom = range?.from && format(range.from, "dd/MM/yyyy");
-  const formattedTo = range?.to && format(range.to, "dd/MM/yyyy");
-  const typeEquipment = /Mobi|Android/i.test(navigator.userAgent);
+  const formattedFrom = range?.from
+    ? format(range.from, "dd/MM/yyyy")
+    : "--/--/----";
+  const formattedTo = range?.to ? format(range.to, "dd/MM/yyyy") : "--/--/----";
 
   useEffect(() => {
     fetchOrders();
-    console.log("typeEquipment: ", typeEquipment);
   }, []);
 
   return (
@@ -198,9 +197,15 @@ export function GetOrdersClientComponent() {
         </select>
         <Popover>
           <PopoverTrigger asChild>
-            <span className="border p-2 rounded-lg cursor-pointer hover:bg-gray-200">
-              Selecione o periodo
-            </span>
+            <div className="w-[200px] border p-2 rounded-lg cursor-pointer hover:bg-gray-200">
+              {formattedTo !== "--/--/----" ? (
+                <span className="text-sm">
+                  {formattedFrom} || {formattedTo}
+                </span>
+              ) : (
+                <span>Selecione o periodo</span>
+              )}
+            </div>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
             <Calendar
@@ -208,9 +213,9 @@ export function GetOrdersClientComponent() {
               selected={range}
               onSelect={setRange}
               footer={
-                formattedFrom && formattedTo
-                  ? `${formattedFrom} há ${formattedTo}`
-                  : "Selecione o periodo"
+                formattedFrom &&
+                formattedTo &&
+                `${formattedFrom} a ${formattedTo}`
               }
               locale={ptBR}
             />
