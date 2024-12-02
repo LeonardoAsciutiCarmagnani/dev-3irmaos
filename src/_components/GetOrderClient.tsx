@@ -24,7 +24,6 @@ import {
 } from "@/components/ui/popover";
 import { ptBR } from "date-fns/locale";
 import { useNavigate } from "react-router-dom";
-import { useZustandContext } from "@/context/cartContext";
 
 interface StatusProps {
   [key: number]: string;
@@ -46,7 +45,6 @@ export function GetOrdersClientComponent() {
   const { register, handleSubmit } = useForm<IFormInput>();
   const { toastError } = ToastNotifications();
   const navigate = useNavigate();
-  const { isMobile } = useZustandContext();
 
   const fetchOrders = async () => {
     try {
@@ -132,9 +130,7 @@ export function GetOrdersClientComponent() {
     }
   };
 
-  const handlePrintItensClient = (pedido: OrderSaleTypes, type: string) => {
-    console.log("type: ", type);
-
+  const handlePrintItensClient = (pedido: OrderSaleTypes) => {
     let arrayForPrint: {
       produtoId?: string;
       nome?: string;
@@ -163,7 +159,7 @@ export function GetOrdersClientComponent() {
       };
 
     navigate("/printPageClient", {
-      state: { arrayForPrint, user, type, orderNumber },
+      state: { arrayForPrint, user, orderNumber },
     });
   };
 
@@ -330,54 +326,14 @@ export function GetOrdersClientComponent() {
                               })}
                             </span>
                           </div>
-                          {isMobile === true ? (
-                            <>
-                              <Button className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded">
-                                Download
-                              </Button>
-                            </>
-                          ) : (
-                            <>
-                              <Popover>
-                                <PopoverTrigger asChild>
-                                  <Button
-                                    onClick={() => {
-                                      const type = "A4";
-                                      handlePrintItensClient(order, type);
-                                    }}
-                                    className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
-                                  >
-                                    Imprimir
-                                  </Button>
-                                </PopoverTrigger>
-                                <PopoverContent>
-                                  <div className="flex flex-col">
-                                    <span>Escolha o tipo de impressão:</span>
-                                    <div className="flex gap-2">
-                                      <Button
-                                        onClick={() => {
-                                          const type = "A4";
-                                          handlePrintItensClient(order, type);
-                                        }}
-                                        className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
-                                      >
-                                        Imprimir A4
-                                      </Button>
-                                      <Button
-                                        onClick={() => {
-                                          const type = "termica";
-                                          handlePrintItensClient(order, type);
-                                        }}
-                                        className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
-                                      >
-                                        Imprimir Térmica
-                                      </Button>
-                                    </div>
-                                  </div>
-                                </PopoverContent>
-                              </Popover>
-                            </>
-                          )}
+                          <Button
+                            onClick={() => {
+                              handlePrintItensClient(order);
+                            }}
+                            className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                          >
+                            Imprimir
+                          </Button>
                         </div>
                         <div className="text-lg font-semibold text-center">
                           Lista de produtos:
@@ -417,48 +373,16 @@ export function GetOrdersClientComponent() {
                     })}
                   </td>
                   <td className="border px-4 py-2 hidden md:table-cell">
-                    {isMobile === true ? (
-                      <>
-                        <Button className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded">
-                          Download
-                        </Button>
-                      </>
-                    ) : (
-                      <>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded">
-                              Imprimir
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent>
-                            <div className="flex flex-col">
-                              <span>Escolha o tipo de impressão:</span>
-                              <div className="flex gap-2">
-                                <Button
-                                  onClick={() => {
-                                    const type = "A4";
-                                    handlePrintItensClient(order, type);
-                                  }}
-                                  className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
-                                >
-                                  Imprimir A4
-                                </Button>
-                                <Button
-                                  onClick={() => {
-                                    const type = "termica";
-                                    handlePrintItensClient(order, type);
-                                  }}
-                                  className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
-                                >
-                                  Imprimir Térmica
-                                </Button>
-                              </div>
-                            </div>
-                          </PopoverContent>
-                        </Popover>
-                      </>
-                    )}
+                    <>
+                      <Button
+                        onClick={() => {
+                          handlePrintItensClient(order);
+                        }}
+                        className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                      >
+                        Imprimir
+                      </Button>
+                    </>
                   </td>
                 </tr>
               ))}
@@ -541,54 +465,14 @@ export function GetOrdersClientComponent() {
                               })}
                             </span>
                           </div>
-                          {isMobile === true ? (
-                            <>
-                              <Button className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded">
-                                Download
-                              </Button>
-                            </>
-                          ) : (
-                            <>
-                              <Popover>
-                                <PopoverTrigger asChild>
-                                  <Button
-                                    onClick={() => {
-                                      const type = "A4";
-                                      handlePrintItensClient(order, type);
-                                    }}
-                                    className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
-                                  >
-                                    Imprimir
-                                  </Button>
-                                </PopoverTrigger>
-                                <PopoverContent>
-                                  <div className="flex flex-col">
-                                    <span>Escolha o tipo de impressão:</span>
-                                    <div className="flex gap-2">
-                                      <Button
-                                        onClick={() => {
-                                          const type = "A4";
-                                          handlePrintItensClient(order, type);
-                                        }}
-                                        className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
-                                      >
-                                        Imprimir A4
-                                      </Button>
-                                      <Button
-                                        onClick={() => {
-                                          const type = "termica";
-                                          handlePrintItensClient(order, type);
-                                        }}
-                                        className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
-                                      >
-                                        Imprimir Térmica
-                                      </Button>
-                                    </div>
-                                  </div>
-                                </PopoverContent>
-                              </Popover>
-                            </>
-                          )}
+                          <Button
+                            onClick={() => {
+                              handlePrintItensClient(order);
+                            }}
+                            className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                          >
+                            Imprimir
+                          </Button>
                         </div>
                         <div className="text-lg font-semibold text-center">
                           Lista de produtos:
@@ -628,48 +512,14 @@ export function GetOrdersClientComponent() {
                     })}
                   </td>
                   <td className="border px-4 py-2 hidden md:table-cell">
-                    {isMobile === true ? (
-                      <>
-                        <Button className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded">
-                          Download
-                        </Button>
-                      </>
-                    ) : (
-                      <>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded">
-                              Imprimir
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent>
-                            <div className="flex flex-col">
-                              <span>Escolha o tipo de impressão:</span>
-                              <div className="flex gap-2">
-                                <Button
-                                  onClick={() => {
-                                    const type = "A4";
-                                    handlePrintItensClient(order, type);
-                                  }}
-                                  className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
-                                >
-                                  Imprimir A4
-                                </Button>
-                                <Button
-                                  onClick={() => {
-                                    const type = "termica";
-                                    handlePrintItensClient(order, type);
-                                  }}
-                                  className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
-                                >
-                                  Imprimir Térmica
-                                </Button>
-                              </div>
-                            </div>
-                          </PopoverContent>
-                        </Popover>
-                      </>
-                    )}
+                    <Button
+                      onClick={() => {
+                        handlePrintItensClient(order);
+                      }}
+                      className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                    >
+                      Imprimir
+                    </Button>
                   </td>
                 </tr>
               ))}
