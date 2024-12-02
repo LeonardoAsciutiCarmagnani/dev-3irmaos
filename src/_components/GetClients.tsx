@@ -1,19 +1,14 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState } from "react";
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  doc,
-  updateDoc,
-} from "firebase/firestore";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
 import {
   User,
   Trash2,
   Eye,
   KeyRoundIcon,
-  CheckCircleIcon,
-  SquarePenIcon,
   PlusIcon,
+  PencilIcon,
+  CheckIcon,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -56,6 +51,8 @@ interface ClientInFirestore {
   user_email: string;
   user_neighborhood: string;
   user_phone: string;
+  user_houseNumber: number;
+  user_CPF: string;
 }
 
 export const Clients = () => {
@@ -72,12 +69,53 @@ export const Clients = () => {
   const [confirmDelete, setConfirmDelete] = useState<ClientInFirestore | null>(
     null
   );
-  const [resetPasswordError, setResetPasswordError] = useState("");
-  const [resetPasswordSucess, setPasswordSucess] = useState<React.ReactNode>();
+
   const db = getFirestore();
   const { priceLists, fetchPriceLists } = useZustandContext();
   const [selectPriceList, setSelectPriceList] = useState({ id: "", name: "" });
   const [isUpdatePriceList, setIsUpdatePriceList] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+
+  const initialClient: ClientInFirestore = selectedClient
+    ? {
+        id_priceList: selectedClient?.id_priceList || "",
+        priceListName: selectedClient?.priceListName || "",
+        type_user: selectedClient?.type_user || "",
+        user_IE: selectedClient?.user_IE || 0,
+        user_cep: selectedClient?.user_cep || 0,
+        user_complement: selectedClient?.user_complement || "",
+        user_fantasyName: selectedClient?.user_fantasyName || "",
+        user_name: selectedClient?.user_name || "",
+        user_email: selectedClient?.user_email || "",
+        user_phone: selectedClient?.user_phone || "",
+        user_CPF: selectedClient?.user_CPF || "",
+        user_ibgeCode: selectedClient?.user_ibgeCode || 0,
+        user_logradouro: selectedClient?.user_logradouro || "",
+        user_neighborhood: selectedClient?.user_neighborhood || "",
+        user_houseNumber: selectedClient?.user_houseNumber || 0,
+        user_id: selectedClient?.user_id || "",
+      }
+    : {
+        id_priceList: "",
+        priceListName: "",
+        type_user: "",
+        user_IE: 0,
+        user_cep: 0,
+        user_complement: "",
+        user_fantasyName: "",
+        user_name: "",
+        user_email: "",
+        user_phone: "",
+        user_CPF: "",
+        user_ibgeCode: 0,
+        user_logradouro: "",
+        user_neighborhood: "",
+        user_houseNumber: 0,
+        user_id: "",
+      };
+
+  const [editedClient, setEditedClient] =
+    useState<ClientInFirestore>(initialClient);
 
   useEffect(() => {
     fetchPriceLists();
@@ -146,59 +184,70 @@ export const Clients = () => {
     }
   };
 
+  const handleUpdateClient = async (
+    client_id: string,
+    updatedData: ClientInFirestore
+  ) => {
+    event?.preventDefault();
+    console.log("Fazendo update no cliente, ID: ", client_id);
+    console.log("Novos dados: ", updatedData);
+    // try {
+    //   const response = await axios.put(`${apiBaseUrl}/clients/${client_id}`, {
+    //     updatedData,
+    //   });
+
+    //   if (response.status === 200) {
+    //     console.log(response.data);
+    //     toastSuccess("Cadastro do cliente alterado com sucesso!.");
+    //   } else {
+    //     console.error("Erro inesperado:", response.data.message);
+    //     setError(response.data.message || "Erro ao alterar cliente.");
+    //     toastError("Erro ao alterar cliente.");
+    //   }
+    // } catch (error) {
+    //   if (axios.isAxiosError(error)) {
+    //     console.error("Erro na solicitação:", error.response?.data.message);
+    //     toastError(error.response?.data.message || "Erro ao excluir cliente.");
+    //     setError("Erro ao comunicar com o servidor.");
+    //   } else {
+    //     console.error("Erro desconhecido:", error);
+    //     setError("Erro inesperado. Por favor, tente novamente.");
+    //   }
+    // }
+  };
+
   const handleResetPassword = async () => {
     if (selectedClient) {
       await sendPasswordResetEmail(auth, selectedClient.user_email);
       console.log(selectedClient.user_email);
-      setPasswordSucess(<CheckCircleIcon size={30} />);
+      toastSuccess(
+        `Um e-mail de redefinição de senha foi enviado para ${selectedClient.user_email}.`
+      );
     } else {
-      setResetPasswordError("Ocorreu um erro.");
-      setPasswordSucess(null);
       toastError("Ocorreu um erro ao redefinir senha.");
     }
   };
 
+  const handleInputChange = (
+    key: keyof ClientInFirestore,
+    value: string | number
+  ) => {
+    setEditedClient((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
   const closeDialog = () => {
-    setResetPasswordError("");
-    setPasswordSucess(null);
     setSelectedClient(null);
     setIsUpdatePriceList(false);
+    setIsEditMode(false);
   };
 
   const handleUpdatePriceList = async () => {
     if (!selectedClient) {
       toastError("Selecione um cliente.");
       return;
-    }
-
-    const priceListIdToSave =
-      selectPriceList.id === "default" ? "" : selectPriceList.id;
-
-    try {
-      const clientRef = doc(db, "clients", selectedClient.user_id);
-      await updateDoc(clientRef, {
-        id_priceList: priceListIdToSave,
-        priceListName: selectPriceList.name,
-      });
-
-      const updatedClientes = clientes.map((client) =>
-        client.user_id === selectedClient.user_id
-          ? {
-              ...client,
-              id_priceList: priceListIdToSave,
-              priceListName: selectPriceList.name,
-            }
-          : client
-      );
-      setClientes(updatedClientes);
-      setFilteredClientes(updatedClientes);
-      closeDialog();
-      toastSuccess("Lista de preços atualizada com sucesso!");
-      setIsUpdatePriceList(false);
-    } catch (error) {
-      closeDialog();
-      console.error("Erro ao atualizar a lista de preços:", error);
-      toastError("Erro ao atualizar a lista de preços.");
     }
   };
 
@@ -281,7 +330,7 @@ export const Clients = () => {
                             {cliente.type_user.toUpperCase()}
                           </Badge>
                           {cliente.type_user === "cliente" && (
-                            <Badge className="bg-amber-500">
+                            <Badge className="bg-amber-500 text-nowrap">
                               {cliente.priceListName.toUpperCase() ||
                                 "lista padrão".toUpperCase()}
                             </Badge>
@@ -290,7 +339,7 @@ export const Clients = () => {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-x-4 ml-10">
+                    <div className="flex items-center gap-x-4">
                       <Button
                         variant="ghost"
                         onClick={() => setSelectedClient(cliente)}
@@ -317,94 +366,296 @@ export const Clients = () => {
 
       {/* Modal de Detalhes */}
       <Dialog open={!!selectedClient} onOpenChange={closeDialog}>
-        <DialogContent>
+        <DialogContent className="p-6 bg-gradient-to-r from-gray-100 via-white to-gray-100 rounded-lg shadow-xl max-w-3xl mx-auto">
           <DialogHeader>
-            <DialogTitle>Detalhes do Cliente</DialogTitle>
+            <DialogTitle className="flex justify-between items-center">
+              Detalhes do Cliente
+              {!isEditMode ? (
+                <Button onClick={() => setIsEditMode(true)}>
+                  <PencilIcon size={18} />
+                  Editar
+                </Button>
+              ) : null}
+            </DialogTitle>
           </DialogHeader>
-
-          <p>
-            <strong>Nome:</strong> {selectedClient?.user_name}
-          </p>
-          <p>
-            <strong>Email:</strong> {selectedClient?.user_email}
-          </p>
-          <p>
-            <strong>Telefone:</strong> {selectedClient?.user_phone}
-          </p>
-          <p>
-            <strong>CEP:</strong> {selectedClient?.user_cep}
-          </p>
-          <p>
-            <strong>Bairro:</strong> {selectedClient?.user_neighborhood}
-          </p>
-          <p>
-            <strong>Rua:</strong> {selectedClient?.user_logradouro}
-          </p>
-          <div>
-            <strong>Lista de preços:</strong>
-            <div className="flex gap-x-2">
-              {selectedClient?.priceListName || "Não atribuída"}
-              {selectedClient?.type_user === "cliente" && (
-                <SquarePenIcon
-                  color="#3b82f6"
-                  size={20}
-                  onClick={() => setIsUpdatePriceList(true)}
-                />
-              )}
-            </div>
-          </div>
-          {isUpdatePriceList && selectedClient?.type_user === "cliente" && (
-            <div className="flex gap-x-4">
-              <Select
-                onValueChange={(value) => {
-                  if (value === "default") {
-                    setSelectPriceList({ id: "", name: "Lista padrão" });
-                  } else {
-                    const selected = priceLists.find(
-                      (item) => item.id === value
-                    );
-                    if (selected) {
-                      setSelectPriceList(selected);
-                    }
+          {isEditMode ? (
+            <form className="space-y-4">
+              <h2 className="font-semibold text-md text-amber-500">
+                Informações
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <Input
+                  type="text"
+                  placeholder="Nome do cliente"
+                  value={editedClient.user_name || ""}
+                  onChange={(e) =>
+                    handleInputChange("user_name", e.target.value)
                   }
-                }}
-              >
-                <SelectTrigger className="w-[200px]">
-                  <SelectValue placeholder="Lista de preços" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="default">Lista padrão</SelectItem>
-                  {priceLists.map((item) => (
-                    <SelectItem key={item.id} value={item.id}>
-                      {item.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Button onClick={handleUpdatePriceList}>
-                <CheckCircleIcon className="size-8" />
-              </Button>
-            </div>
+                />
+
+                <Input
+                  type="email"
+                  placeholder="E-mail do cliente"
+                  value={editedClient.user_email || ""}
+                  onChange={(e) =>
+                    handleInputChange("user_email", e.target.value)
+                  }
+                />
+                <Input
+                  type="number"
+                  placeholder="Telefone do cliente"
+                  value={editedClient.user_phone || ""}
+                  onChange={(e) =>
+                    handleInputChange("user_phone", e.target.value)
+                  }
+                />
+                <Input
+                  type="text"
+                  placeholder="CPF/CNPJ do cliente"
+                  value={editedClient.user_CPF || ""}
+                  onChange={(e) =>
+                    handleInputChange("user_CPF", e.target.value)
+                  }
+                />
+                <Input
+                  type="number"
+                  placeholder="Inscrição Estadual do cliente"
+                  value={editedClient.user_IE || ""}
+                  onChange={(e) => handleInputChange("user_IE", e.target.value)}
+                />
+                <Input
+                  type="text"
+                  placeholder="Nome fantasia do cliente"
+                  value={editedClient.user_fantasyName || ""}
+                  onChange={(e) =>
+                    handleInputChange("user_fantasyName", e.target.value)
+                  }
+                />
+              </div>
+              <div>
+                <h1 className="font-semibold text-md text-amber-500">
+                  Endereço
+                </h1>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-[16px]">
+                  <Input
+                    type="text"
+                    placeholder="CEP"
+                    value={editedClient.user_cep || ""}
+                    onChange={(e) =>
+                      handleInputChange("user_cep", e.target.value)
+                    }
+                  />
+                  <Input
+                    type="text"
+                    placeholder="Logradouro"
+                    value={editedClient.user_logradouro || ""}
+                    onChange={(e) =>
+                      handleInputChange("user_logradouro", e.target.value)
+                    }
+                  />
+                  <Input
+                    type="text"
+                    placeholder="Bairro"
+                    value={editedClient.user_neighborhood || ""}
+                    onChange={(e) =>
+                      handleInputChange("user_neighborhood", e.target.value)
+                    }
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Número"
+                    value={editedClient.user_houseNumber || ""}
+                    onChange={(e) =>
+                      handleInputChange("user_houseNumber", e.target.value)
+                    }
+                  />
+                  <Input
+                    type="text"
+                    placeholder="Complemento"
+                    value={editedClient.user_complement || ""}
+                    onChange={(e) =>
+                      handleInputChange("user_complement", e.target.value)
+                    }
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Código IBGE"
+                    value={editedClient.user_ibgeCode || ""}
+                    onChange={(e) =>
+                      handleInputChange("user_ibgeCode", e.target.value)
+                    }
+                  />
+                </div>
+              </div>
+              <DialogFooter className="flex flex-row justify-end gap-x-3 items-center">
+                <Button
+                  variant="destructive"
+                  onClick={() => {
+                    setIsEditMode(false);
+                    if (selectedClient) {
+                      setEditedClient({ ...selectedClient });
+                    }
+                  }}
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  onClick={() => {
+                    if (selectedClient) {
+                      handleUpdateClient(selectedClient.user_id, editedClient);
+                    }
+                  }}
+                  className="bg-green-400"
+                >
+                  Salvar Alterações
+                </Button>
+              </DialogFooter>
+            </form>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4 flex flex-col p-1.5">
+                  <h1 className="text-amber-500 w-fit border-b-[0.2rem] border-dashed border-amber-500 font-semibold">
+                    Informações
+                  </h1>
+                  <p className="text-sm text-gray-600">
+                    <strong className="text-gray-800">Nome:</strong>{" "}
+                    {selectedClient?.user_name}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <strong className="text-gray-800">Email:</strong>{" "}
+                    {selectedClient?.user_email}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <strong className="text-gray-800">Telefone:</strong>{" "}
+                    {selectedClient?.user_phone}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <strong className="text-gray-800">CPF:</strong>{" "}
+                    {selectedClient?.user_CPF}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <strong className="text-gray-800">
+                      Inscrição Estadual:
+                    </strong>{" "}
+                    {selectedClient?.user_IE || "Não informado"}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <strong className="text-gray-800">Nome Fantasia:</strong>{" "}
+                    {selectedClient?.user_fantasyName || "Não informado"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <h1 className="font-semibold text-md text-amber-500 w-fit border-b-[0.2rem] border-dashed border-amber-500">
+                    Endereço
+                  </h1>
+                </div>
+                <p className="text-sm text-gray-600">
+                  <strong className="text-gray-800">CEP:</strong>{" "}
+                  {selectedClient?.user_cep}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <strong className="text-gray-800">Bairro:</strong>{" "}
+                  {selectedClient?.user_neighborhood}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <strong className="text-gray-800">Rua:</strong>{" "}
+                  {selectedClient?.user_logradouro}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <strong className="text-gray-800">Número:</strong>{" "}
+                  {selectedClient?.user_houseNumber}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <strong className="text-gray-800">Complemento:</strong>{" "}
+                  {selectedClient?.user_complement || "Não informado"}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <strong className="text-gray-800">Código IBGE:</strong>{" "}
+                  {selectedClient?.user_ibgeCode}
+                </p>
+              </div>
+
+              <div className="mt-4">
+                <strong className="text-amber-500 w-fit border-b-[0.2rem] border-dashed border-amber-500">
+                  Lista de preços:
+                </strong>
+                <div className="flex gap-x-4 pt-2 items-center">
+                  <span className="px-2 py-1 text-xs rounded-full bg-amber-400 text-white w-fit text-nowrap">
+                    {selectedClient?.priceListName || "Lista padrão"}
+                  </span>
+                  {selectedClient?.type_user === "cliente" && (
+                    <span className="p-1.5 rounded-lg bg-amber-400">
+                      <PencilIcon
+                        className="text-white"
+                        size={20}
+                        onClick={() => setIsUpdatePriceList(true)}
+                      />
+                    </span>
+                  )}
+                </div>
+              </div>
+            </>
           )}
-          <div className="flex items-center gap-x-2">
-            <button
-              className="flex items-center px-4 py-2 bg-gray-100 rounded-md hover:bg-gray-200"
-              onClick={handleResetPassword}
-            >
-              <KeyRoundIcon className="w-5 h-5 mr-2" />
-              <span>Redefinir Senha</span>
-            </button>
-            {resetPasswordError && (
-              <p className="text-red-500 mt-2">{resetPasswordError}</p>
-            )}
-            {resetPasswordSucess && (
-              <p className="text-green-500 mt-2">{resetPasswordSucess}</p>
-            )}
-          </div>
+          {!isEditMode ? (
+            <>
+              {isUpdatePriceList && selectedClient?.type_user === "cliente" && (
+                <div className="flex gap-x-4">
+                  <Select
+                    onValueChange={(value) => {
+                      if (value === "default") {
+                        setSelectPriceList({
+                          id: "",
+                          name: "Lista padrão",
+                        });
+                      } else {
+                        const selected = priceLists.find(
+                          (item) => item.id === value
+                        );
+                        if (selected) {
+                          setSelectPriceList(selected);
+                        }
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="w-[200px]">
+                      <SelectValue placeholder="Lista de preços" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="default">Lista padrão</SelectItem>
+                      {priceLists.map((item) => (
+                        <SelectItem key={item.id} value={item.id}>
+                          {item.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    onClick={handleUpdatePriceList}
+                    className="bg-green-400"
+                  >
+                    <CheckIcon size={30} className="text-gray-100" />
+                  </Button>
+                </div>
+              )}
+            </>
+          ) : null}
+          {!isEditMode ? (
+            <div className="flex items-center gap-x-2 justify-start">
+              <button
+                className="flex items-center px-4 py-2 bg-gray-100 rounded-md hover:bg-gray-200 border-2 border-amber-500 "
+                onClick={handleResetPassword}
+              >
+                <KeyRoundIcon className="w-5 h-5 mr-2 text-amber-500" />
+                <span>Redefinir Senha</span>
+              </button>
+            </div>
+          ) : null}
           <DialogFooter>
-            <Button onClick={closeDialog} variant="ghost">
-              Fechar
-            </Button>
+            {!isEditMode ? <Button onClick={closeDialog}>Fechar</Button> : null}
           </DialogFooter>
         </DialogContent>
       </Dialog>
