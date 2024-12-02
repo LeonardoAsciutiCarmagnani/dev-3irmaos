@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useCallback, useEffect, useState } from "react";
 import { Plus, Minus, SearchIcon, LoaderPinwheelIcon } from "lucide-react";
 import { useZustandContext } from "@/context/cartContext";
@@ -48,6 +49,7 @@ export const FetchProducts: React.FC = React.memo(() => {
     "outros",
   ];
   const { typeUser, setUserName, setTypeUser } = useUserTypeStore();
+  const { clearListProductsInCart } = useZustandContext();
   const navigate = useNavigate();
 
   const getUidFromLocalStorage = (): string | null => {
@@ -142,6 +144,7 @@ export const FetchProducts: React.FC = React.memo(() => {
     } else {
       setProducts();
     }
+    clearListProductsInCart([]);
     fetchTypeUser();
     fetchUsername();
   }, [setProducts, navigate, typeUser]);

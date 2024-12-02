@@ -257,6 +257,7 @@ const PedidoVendaForm: React.FC = () => {
                 value={orderSale.cliente?.documento}
                 onChange={handleChange}
                 placeholder="Documento"
+                disabled
               />
               <Input
                 type="email"
@@ -264,6 +265,7 @@ const PedidoVendaForm: React.FC = () => {
                 value={orderSale.cliente?.email}
                 onChange={handleChange}
                 placeholder="Email"
+                disabled
               />
               <Input
                 type="text"
@@ -271,6 +273,7 @@ const PedidoVendaForm: React.FC = () => {
                 value={orderSale.cliente?.inscricaoEstadual}
                 onChange={handleChange}
                 placeholder="Inscrição Estadual"
+                disabled
               />
               <Input
                 type="text"
@@ -278,6 +281,7 @@ const PedidoVendaForm: React.FC = () => {
                 value={orderSale.cliente?.nomeDoCliente}
                 onChange={handleChange}
                 placeholder="Nome do Cliente"
+                disabled
               />
               <Input
                 type="text"
@@ -285,6 +289,7 @@ const PedidoVendaForm: React.FC = () => {
                 value={orderSale.cliente?.nomeFantasia}
                 onChange={handleChange}
                 placeholder="Nome Fantasia"
+                disabled
               />
             </AccordionContent>
           </AccordionItem>
@@ -397,11 +402,11 @@ const PedidoVendaForm: React.FC = () => {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="1">Dinheiro</SelectItem>
-            <SelectItem value="2">Boleto</SelectItem>
+            <SelectItem value="2">Cheque</SelectItem>
             <SelectItem value="3">Devolução</SelectItem>
             <SelectItem value="4">Cartão de crédito</SelectItem>
             <SelectItem value="5">Cartão de débito</SelectItem>
-            <SelectItem value="6">Crediário</SelectItem>
+            <SelectItem value="6">Boleto</SelectItem>
             <SelectItem value="7">Cartão Voucher</SelectItem>
             <SelectItem value="8">PIX</SelectItem>
           </SelectContent>
