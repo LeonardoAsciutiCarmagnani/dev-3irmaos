@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { useEffect, useState } from "react";
