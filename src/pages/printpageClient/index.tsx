@@ -50,12 +50,12 @@ export default function PrintPageClient() {
       return;
     }
 
-    html2canvas(printContentElement, { scale: 3 }).then((canvas) => {
+    html2canvas(printContentElement, { scale: 2, x: -50 }).then((canvas) => {
       const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "cm", "a4");
+      const pdf = new jsPDF("p", "mm", "a4");
 
       const pdfWidth = pdf.internal.pageSize.getWidth();
-      const zoomFactor = 2.6; // Fator de zoom (150% do tamanho original)
+      const zoomFactor = 2.4; // Fator de zoom (150% do tamanho original)
 
       const newWidth = pdfWidth * zoomFactor;
       const newHeight = (canvas.height * newWidth) / canvas.width;
@@ -232,9 +232,9 @@ export default function PrintPageClient() {
                   /* flex flex-col */
                   <div
                     key={categoria}
-                    className="flex flex-col border-r-2 border-black mb-4 "
+                    className="flex flex-col border-l-2 border-r-2 border-black mb-4 "
                   >
-                    <div className="border-b-2 border-black grid grid-cols-4  gap-2 items-center text-center w-full mb-4">
+                    <div className="border-b-2 border-black grid grid-cols-4 p-2 gap-2 items-center text-center w-full mb-4">
                       <span className="font-semibold text-lg col-span-2">
                         {categoria}
                       </span>
@@ -244,7 +244,7 @@ export default function PrintPageClient() {
                     {data.itens.map((item, index) => (
                       <div
                         key={index}
-                        className="grid grid-cols-4 justify-between"
+                        className="grid grid-cols-4 justify-between p-1"
                       >
                         <span className="col-span-2  text-sm">{item.nome}</span>
                         <span className="w-20 text-center text-sm">
@@ -259,13 +259,15 @@ export default function PrintPageClient() {
                 )
               )}
             </div>
-            <span className="border-t-2 border-black">
-              Valor total do pedido:{" "}
-              {totalValue.toLocaleString("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-              })}
-            </span>
+            <div className="border-t-2 border-black">
+              <span className="font-semibold">Valor total do pedido: </span>
+              <span>
+                {totalValue.toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                })}
+              </span>
+            </div>
           </div>
           {/*  {countCategory?.totais && (
               <div className="border-2 w-80 border-black">
