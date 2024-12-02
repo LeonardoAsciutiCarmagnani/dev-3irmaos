@@ -31,7 +31,10 @@ export default function PrintPageClient() {
   const [countCategory, setCountCategory] = useState<{
     categoryData: Record<
       string,
-      { itens: { nome: string; quantidade: number }[]; total: number }
+      {
+        itens: { nome: string; quantidade: number; preco: number }[];
+        total: number;
+      }
     >;
     totais: Record<string, number>;
   }>({
@@ -74,7 +77,7 @@ export default function PrintPageClient() {
   const handleCountCategory = () => {
     const categoryData = arrayForPrint.reduce<{
       [key: string]: {
-        itens: { nome: string; quantidade: number }[];
+        itens: { nome: string; quantidade: number; preco: number }[];
         total: number;
       };
     }>((acc, item) => {
@@ -82,13 +85,14 @@ export default function PrintPageClient() {
         categoria = "Sem Categoria",
         nome = "Item Desconhecido",
         quantidade,
+        preco = 0,
       } = item;
 
       if (!acc[categoria]) {
         acc[categoria] = { itens: [], total: 0 };
       }
 
-      acc[categoria].itens.push({ nome, quantidade });
+      acc[categoria].itens.push({ nome, quantidade, preco });
       acc[categoria].total += quantidade;
 
       return acc;
@@ -230,15 +234,24 @@ export default function PrintPageClient() {
                     key={categoria}
                     className="flex flex-col border-r-2 border-black mb-4 "
                   >
-                    <div className="border-b-2 border-black flex justify-between w-full mb-4">
-                      <span className="font-semibold text-lg">{categoria}</span>
-                      <span className="font-semibold mr-1">Quantidade</span>
+                    <div className="border-b-2 border-black grid grid-cols-4  gap-2 items-center text-center w-full mb-4">
+                      <span className="font-semibold text-lg col-span-2">
+                        {categoria}
+                      </span>
+                      <span className="font-semibold mr-1">Qtd</span>
+                      <span className="font-semibold mr-1">Valor Un</span>
                     </div>
                     {data.itens.map((item, index) => (
-                      <div key={index} className="flex  justify-between">
-                        <span>{item.nome}</span>
-                        <span className="w-20 text-center ">
+                      <div
+                        key={index}
+                        className="grid grid-cols-4 justify-between"
+                      >
+                        <span className="col-span-2  text-sm">{item.nome}</span>
+                        <span className="w-20 text-center text-sm">
                           {item.quantidade}
+                        </span>
+                        <span className="text-center">
+                          R$ {item.preco.toFixed(2)}
                         </span>
                       </div>
                     ))}
