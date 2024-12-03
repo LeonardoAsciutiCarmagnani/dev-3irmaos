@@ -85,8 +85,7 @@ export default function PrintPageClient() {
     // Inicialize o reduce corretamente
     const setTotal = arrayForPrint.reduce((acc, item) => {
       if (item.preco && item.quantidade) {
-        console.log((acc += item.preco * item.quantidade));
-        return acc;
+        return (acc += item.preco * item.quantidade);
       }
       return acc;
     }, 0);
