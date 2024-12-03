@@ -131,10 +131,10 @@ export default function PrintPageClient() {
     handleGetPhoneUser();
     handleTotalValue();
 
-    setTimeout(() => {
+    if (totalValue > 0) {
       imprimir();
-    }, 2000);
-  }, []);
+    }
+  }, [totalValue]);
 
   return (
     <>
