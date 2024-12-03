@@ -121,7 +121,7 @@ export default function PrintPage() {
   return (
     <>
       {type === "A4" ? (
-        <div>
+        <>
           <div
             id="printableArea"
             className="flex flex-col space-y-3 items-start justify-start w-screen "
@@ -240,10 +240,7 @@ export default function PrintPage() {
               </div>
             )} */}
           </div>
-          <Link to="/get-orders" className="border-2 rounded-lg p-2">
-            Voltar
-          </Link>
-        </div>
+        </>
       ) : (
         <div id="printableArea">
           <div className="flex flex-col space-y-1 items-center justify-center p-8 ">
@@ -346,6 +343,9 @@ export default function PrintPage() {
           </div>
         </div>
       )}
+      <Link to="/get-orders" className="border-2 rounded-lg p-2">
+        Voltar
+      </Link>
     </>
   );
 }

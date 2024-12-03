@@ -1,5 +1,3 @@
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { firestore } from "@/firebaseConfig";
@@ -7,7 +5,6 @@ import { doc, getDoc } from "firebase/firestore";
 
 import logo from "../../assets/logo.png";
 import { format } from "date-fns";
-import { Button } from "@/components/ui/button";
 
 interface PrintItem {
   produtoId: string;
@@ -108,56 +105,61 @@ export default function PrintPageClient() {
     }
     console.log(userPhone);
   };
+  let hasPrinted = false;
 
-  const imprimir = async () => {
-    const element = document.getElementById("printableArea");
-    if (!element) return;
+  const imprimir = () => {
+    if (hasPrinted) return; // Prevenindo loop infinito
+    hasPrinted = true;
 
-    const canvas = await html2canvas(element);
-    const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF("p", "mm", "a4");
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+    const printContentElement = document.getElementById("printableArea");
+    if (!printContentElement) {
+      console.error("Elemento printableArea não encontrado");
+      return;
+    }
+    const printContent = printContentElement.innerHTML;
+    const originalContent = document.body.innerHTML;
 
-    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-    pdf.save(`Pedido_${orderNumber}.pdf`);
+    document.body.innerHTML = printContent;
+    window.print();
+    document.body.innerHTML = originalContent;
   };
+
+  const formalizedDate = format(user.date, "dd/MM/yyyy 'ás' HH:mm:ss");
 
   useEffect(() => {
     handleCountCategory();
-    handleTotalValue();
     handleGetPhoneUser();
-    imprimir();
-  }, []);
+    handleTotalValue();
 
-  const formalizedDate = format(user.date, "dd/MM/yyyy 'ás' HH:mm:ss");
+    setTimeout(() => {
+      imprimir();
+    }, 2000);
+  }, []);
 
   return (
     <>
       <>
         <div
           id="printableArea"
-          className="flex flex-col space-y-3 items-center justify-center  "
+          className="flex flex-col space-y-3 items-start justify-start w-screen "
         >
-          <div className="flex    items-start justify-start">
-            <div className="flex">
+          <div className="flex w-full  items-center justify-start">
+            <div>
               {" "}
               <img
                 src={logo}
                 alt="Logo Kyoto"
                 className="rounded-full size-28"
               />
-              <div className="flex flex-col  rounded-lg p-3 items-start justify-start">
-                <span className="font-bold ">PASTEIS KYOTO</span>
-                <span className="text-sm">C. M. L. MATIAS</span>
-                <span className="text-sm">CNPJ: 28.068.016/0001-55</span>
-                <span className="text-sm">
-                  RUA FREI MONT'ALVERNE Nº216 - SP
-                </span>
-                <span>CEP: 03.505-030</span>
-              </div>
             </div>
-            <div className="flex flex-col py-3 text-start justify-start text-sm ">
+            <div className="flex flex-col  rounded-lg p-3 items-start justify-start">
+              <span className="font-bold ">PASTEIS KYOTO</span>
+              <span className="text-sm">C. M. L. MATIAS</span>
+              <span className="text-sm">CNPJ: 28.068.016/0001-55</span>
+              <span className="text-sm">RUA FREI MONT'ALVERNE Nº216 - SP</span>
+              <span>CEP: 03.505-030</span>
+            </div>
+            <div className="flex flex-col p-3 text-start justify-start text-sm ">
               <div>
                 <div className="gap-2">
                   <span className="font-bold">Nome / Razão Social:</span>{" "}
@@ -197,7 +199,7 @@ export default function PrintPageClient() {
             </div>
           </div>
           <div className="flex flex-col items-start">
-            <span className="font-bold text-lg">PEDIDO Nº: {orderNumber}</span>
+            <span className="font-bold text-lg">PEDIDO Nº {orderNumber}</span>
             <div className="gap-2">
               <span className="font-bold text-lg">Data do pedido:</span>{" "}
               <span>{formalizedDate}</span>
@@ -215,41 +217,36 @@ export default function PrintPageClient() {
                   /* flex flex-col */
                   <div
                     key={categoria}
-                    className="flex flex-col border-l-2 border-r-2 border-black mb-4 "
+                    className="flex flex-col border-r-2 border-black mb-4 "
                   >
-                    <div className="border-b-2 border-black grid grid-cols-4 p-2 gap-2 items-center text-center w-full mb-4">
+                    <div className="border-b-2 border-black grid grid-cols-4 mb-4">
                       <span className="font-semibold text-lg col-span-2">
                         {categoria}
                       </span>
-                      <span className="font-semibold mr-1">Qtd</span>
-                      <span className="font-semibold mr-1">Valor Un</span>
+                      <span className="font-semibold text-center ">Qtd</span>
+                      <span className="font-semibold text-center">
+                        Valor Un
+                      </span>
                     </div>
                     {data.itens.map((item, index) => (
                       <div
                         key={index}
-                        className="grid grid-cols-4 justify-between p-1"
+                        className="grid grid-cols-4  justify-between"
                       >
-                        <span className="col-span-2  text-sm">{item.nome}</span>
-                        <span className="w-20 text-center text-sm">
+                        <span className="text-sm text-start col-span-2">
+                          {item.nome}
+                        </span>
+                        <span className=" text-center col-span-1">
                           {item.quantidade}
                         </span>
-                        <span className="text-center">
-                          R$ {item.preco.toFixed(2)}
+                        <span className="text-center col-span-1">
+                          {item.preco}
                         </span>
                       </div>
                     ))}
                   </div>
                 )
               )}
-            </div>
-            <div className="border-t-2 border-black">
-              <span className="font-semibold">Valor total do pedido: </span>
-              <span>
-                {totalValue.toLocaleString("pt-BR", {
-                  style: "currency",
-                  currency: "BRL",
-                })}
-              </span>
             </div>
           </div>
           {/*  {countCategory?.totais && (
@@ -269,11 +266,10 @@ export default function PrintPageClient() {
               </div>
             )} */}
         </div>
-
-        <Link to={"/get-orders-client"}>
-          <Button variant={"outline"}>Voltar</Button>
-        </Link>
       </>
+      <Link to="/get-orders-client" className="border-2 rounded-lg p-2">
+        Voltar
+      </Link>
     </>
   );
 }
