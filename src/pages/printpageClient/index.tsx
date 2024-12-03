@@ -25,6 +25,7 @@ export default function PrintPageClient() {
   const { user, orderNumber } = location.state;
   const [userPhone, setUserPhone] = useState("");
   const [totalValue, setTotalValue] = useState(0);
+  const [visibilityButton, setVisibilityButton] = useState(true);
 
   const [countCategory, setCountCategory] = useState<{
     categoryData: Record<
@@ -107,6 +108,7 @@ export default function PrintPageClient() {
   let hasPrinted = false;
 
   const imprimir = () => {
+    setVisibilityButton(false);
     if (hasPrinted) return; // Prevenindo loop infinito
     hasPrinted = true;
 
@@ -126,6 +128,7 @@ export default function PrintPageClient() {
   const formalizedDate = format(user.date, "dd/MM/yyyy 'ás' HH:mm:ss");
 
   useEffect(() => {
+    setVisibilityButton(true);
     handleCountCategory();
     handleTotalValue();
     handleGetPhoneUser();
@@ -272,9 +275,22 @@ export default function PrintPageClient() {
             )} */}
         </div>
       </>
-      <Link to="/get-orders-client" className="border-2 rounded-lg p-2">
-        Voltar
-      </Link>
+      {visibilityButton === true ? (
+        <>
+          <Link to="/get-orders-client" className="border-2 rounded-lg p-2">
+            Voltar
+          </Link>
+        </>
+      ) : (
+        <>
+          <Link
+            to="/get-orders-client"
+            className="border-2 rounded-lg p-2 hidden"
+          >
+            Voltar
+          </Link>
+        </>
+      )}
     </>
   );
 }

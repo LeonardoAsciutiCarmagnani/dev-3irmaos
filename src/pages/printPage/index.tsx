@@ -22,6 +22,7 @@ export default function PrintPage() {
   const { arrayForPrint }: { arrayForPrint: PrintItem[] } = location.state;
   const { user, type, orderNumber } = location.state;
   const [userPhone, setUserPhone] = useState("");
+  const [visibilityButton, setVisibilityButton] = useState(true);
 
   const [countCategory, setCountCategory] = useState<{
     categoryData: Record<
@@ -38,6 +39,7 @@ export default function PrintPage() {
   let hasPrinted = false;
 
   const imprimir = () => {
+    setVisibilityButton(false);
     if (hasPrinted) return; // Prevenindo loop infinito
     hasPrinted = true;
 
@@ -108,6 +110,7 @@ export default function PrintPage() {
   };
 
   useEffect(() => {
+    setVisibilityButton(true);
     handleCountCategory();
     handleGetPhoneUser();
     console.log(countCategory);
@@ -343,9 +346,22 @@ export default function PrintPage() {
           </div>
         </div>
       )}
-      <Link to="/get-orders" className="border-2 rounded-lg p-2">
-        Voltar
-      </Link>
+      {visibilityButton === true ? (
+        <>
+          <Link to="/get-orders-client" className="border-2 rounded-lg p-2">
+            Voltar
+          </Link>
+        </>
+      ) : (
+        <>
+          <Link
+            to="/get-orders-client"
+            className="border-2 rounded-lg p-2 hidden"
+          >
+            Voltar
+          </Link>
+        </>
+      )}
     </>
   );
 }
