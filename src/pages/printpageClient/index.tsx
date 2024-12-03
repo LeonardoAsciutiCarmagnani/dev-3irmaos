@@ -1,12 +1,13 @@
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { firestore } from "@/firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 
 import logo from "../../assets/logo.png";
 import { format } from "date-fns";
+import { Button } from "@/components/ui/button";
 
 interface PrintItem {
   produtoId: string;
@@ -41,52 +42,6 @@ export default function PrintPageClient() {
     categoryData: {}, // Objeto vazio para categorias
     totais: { "TOTAL GERAL": 0 }, // Inicializado com total geral 0
   });
-
-  const imprimir = () => {
-    const printContentElement = document.getElementById("printableArea");
-    if (!printContentElement) {
-      console.error("Elemento printableArea não encontrado");
-      return;
-    }
-
-    html2canvas(printContentElement, { scale: 2 }).then((canvas) => {
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "mm", "a4");
-
-      const pdfWidth = pdf.internal.pageSize.getWidth(); // Largura A4 em mm
-      const pdfHeight = pdf.internal.pageSize.getHeight(); // Altura A4 em mm
-
-      const canvasWidth = canvas.width - pdfWidth;
-      alert(`canvasWidth: ${canvasWidth}`);
-      const canvasHeight = canvas.height;
-
-      // Calculando o fator de escala para que a imagem ocupe toda a largura da página
-      const scaleFactor = pdfWidth / canvasWidth;
-      const scaledCanvasHeight = canvasHeight * scaleFactor;
-
-      // Adicionando a imagem ao PDF com a largura completa e altura ajustada
-      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth * 1, scaledCanvasHeight);
-
-      // Verifica se a altura ajustada ultrapassa a altura da página
-      let yOffset = scaledCanvasHeight;
-      while (yOffset > pdfHeight) {
-        yOffset -= pdfHeight;
-        pdf.addPage();
-        pdf.addImage(
-          imgData,
-          "PNG",
-          0,
-          -yOffset * scaleFactor, // Ajusta o deslocamento vertical para as páginas subsequentes
-          pdfWidth,
-          scaledCanvasHeight
-        );
-      }
-
-      // Salvando o PDF
-      pdf.save(`Pedido-${orderNumber}.pdf`);
-      // navigate("/get-orders-client");
-    });
-  };
 
   const handleCountCategory = () => {
     const categoryData = arrayForPrint.reduce<{
@@ -154,13 +109,25 @@ export default function PrintPageClient() {
     console.log(userPhone);
   };
 
+  const imprimir = async () => {
+    const element = document.getElementById("printableArea");
+    if (!element) return;
+
+    const canvas = await html2canvas(element);
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF("p", "mm", "a4");
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+    pdf.save(`Pedido_${orderNumber}.pdf`);
+  };
+
   useEffect(() => {
     handleCountCategory();
     handleTotalValue();
     handleGetPhoneUser();
-    setTimeout(() => {
-      imprimir();
-    }, 2000);
+    imprimir();
   }, []);
 
   const formalizedDate = format(user.date, "dd/MM/yyyy 'ás' HH:mm:ss");
@@ -302,6 +269,10 @@ export default function PrintPageClient() {
               </div>
             )} */}
         </div>
+
+        <Link to={"/get-orders-client"}>
+          <Button variant={"outline"}>Voltar</Button>
+        </Link>
       </>
     </>
   );

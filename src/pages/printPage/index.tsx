@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import logo from "../../assets/logo.png";
@@ -34,7 +34,7 @@ export default function PrintPage() {
     totais: { "TOTAL GERAL": 0 }, // Inicializado com total geral 0
   });
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   let hasPrinted = false;
 
   const imprimir = () => {
@@ -52,8 +52,8 @@ export default function PrintPage() {
     document.body.innerHTML = printContent;
     window.print();
     document.body.innerHTML = originalContent;
-    navigate("/get-orders"); // Navegue de volta para a página inicial após imprimir
-    window.location.reload();
+    // navigate("/get-orders"); // Navegue de volta para a página inicial após imprimir
+    // window.location.reload();
   };
 
   const handleCountCategory = () => {
@@ -121,10 +121,10 @@ export default function PrintPage() {
   return (
     <>
       {type === "A4" ? (
-        <>
+        <div>
           <div
             id="printableArea"
-            className="flex flex-col space-y-3 items-start justify-start w-screen h-screen"
+            className="flex flex-col space-y-3 items-start justify-start w-screen "
           >
             <div className="flex w-full  items-center justify-start">
               <div>
@@ -184,9 +184,7 @@ export default function PrintPage() {
               </div>
             </div>
             <div className="flex flex-col items-start">
-              <span className="font-bold text-lg">
-                PEDIDO Nº: {orderNumber}
-              </span>
+              <span className="font-bold text-lg">PEDIDO Nº {orderNumber}</span>
               <div className="gap-2">
                 <span className="font-bold text-lg">Data do pedido:</span>{" "}
                 <span>{formalizedDate}</span>
@@ -242,7 +240,10 @@ export default function PrintPage() {
               </div>
             )} */}
           </div>
-        </>
+          <Link to="/get-orders" className="border-2 rounded-lg p-2">
+            Voltar
+          </Link>
+        </div>
       ) : (
         <div id="printableArea">
           <div className="flex flex-col space-y-1 items-center justify-center p-8 ">
