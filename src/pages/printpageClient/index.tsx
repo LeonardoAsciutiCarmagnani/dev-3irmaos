@@ -1,8 +1,7 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { firestore } from "@/firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 
@@ -22,7 +21,7 @@ interface PrintItem {
 
 export default function PrintPageClient() {
   const location = useLocation();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   // const { setIsMobile, isMobile } = useZustandContext();
   const { arrayForPrint }: { arrayForPrint: PrintItem[] } = location.state;
   const { user, orderNumber } = location.state;
@@ -44,34 +43,48 @@ export default function PrintPageClient() {
   });
 
   const imprimir = () => {
-    setTimeout(() => {}, 2000);
     const printContentElement = document.getElementById("printableArea");
     if (!printContentElement) {
       console.error("Elemento printableArea não encontrado");
       return;
     }
 
-    html2canvas(printContentElement, { scale: 2, x: -50 }).then((canvas) => {
+    html2canvas(printContentElement, { scale: 2 }).then((canvas) => {
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF("p", "mm", "a4");
 
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const zoomFactor = 2.4; // Fator de zoom (150% do tamanho original)
+      const pdfWidth = pdf.internal.pageSize.getWidth(); // Largura A4 em mm
+      const pdfHeight = pdf.internal.pageSize.getHeight(); // Altura A4 em mm
 
-      const newWidth = pdfWidth * zoomFactor;
-      const newHeight = (canvas.height * newWidth) / canvas.width;
+      const canvasWidth = canvas.width - pdfWidth;
+      alert(`canvasWidth: ${canvasWidth}`);
+      const canvasHeight = canvas.height;
 
-      let yOffset = 0;
-      const pageHeight = pdf.internal.pageSize.getHeight();
+      // Calculando o fator de escala para que a imagem ocupe toda a largura da página
+      const scaleFactor = pdfWidth / canvasWidth;
+      const scaledCanvasHeight = canvasHeight * scaleFactor;
 
-      while (yOffset < newHeight) {
-        pdf.addImage(imgData, "PNG", 0, -yOffset, newWidth, newHeight);
-        yOffset += pageHeight;
-        if (yOffset < newHeight) pdf.addPage();
+      // Adicionando a imagem ao PDF com a largura completa e altura ajustada
+      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth * 1, scaledCanvasHeight);
+
+      // Verifica se a altura ajustada ultrapassa a altura da página
+      let yOffset = scaledCanvasHeight;
+      while (yOffset > pdfHeight) {
+        yOffset -= pdfHeight;
+        pdf.addPage();
+        pdf.addImage(
+          imgData,
+          "PNG",
+          0,
+          -yOffset * scaleFactor, // Ajusta o deslocamento vertical para as páginas subsequentes
+          pdfWidth,
+          scaledCanvasHeight
+        );
       }
 
+      // Salvando o PDF
       pdf.save(`Pedido-${orderNumber}.pdf`);
-      navigate("/get-orders-client");
+      // navigate("/get-orders-client");
     });
   };
 
@@ -157,25 +170,27 @@ export default function PrintPageClient() {
       <>
         <div
           id="printableArea"
-          className="flex flex-col space-y-3 items-start justify-start w-screen h-screen"
+          className="flex flex-col space-y-3 items-center justify-center  "
         >
-          <div className="flex w-full  items-center justify-start">
-            <div>
+          <div className="flex    items-start justify-start">
+            <div className="flex">
               {" "}
               <img
                 src={logo}
                 alt="Logo Kyoto"
                 className="rounded-full size-28"
               />
+              <div className="flex flex-col  rounded-lg p-3 items-start justify-start">
+                <span className="font-bold ">PASTEIS KYOTO</span>
+                <span className="text-sm">C. M. L. MATIAS</span>
+                <span className="text-sm">CNPJ: 28.068.016/0001-55</span>
+                <span className="text-sm">
+                  RUA FREI MONT'ALVERNE Nº216 - SP
+                </span>
+                <span>CEP: 03.505-030</span>
+              </div>
             </div>
-            <div className="flex flex-col  rounded-lg p-3 items-start justify-start">
-              <span className="font-bold ">PASTEIS KYOTO</span>
-              <span className="text-sm">C. M. L. MATIAS</span>
-              <span className="text-sm">CNPJ: 28.068.016/0001-55</span>
-              <span className="text-sm">RUA FREI MONT'ALVERNE Nº216 - SP</span>
-              <span>CEP: 03.505-030</span>
-            </div>
-            <div className="flex flex-col p-3 text-start justify-start text-sm ">
+            <div className="flex flex-col py-3 text-start justify-start text-sm ">
               <div>
                 <div className="gap-2">
                   <span className="font-bold">Nome / Razão Social:</span>{" "}
