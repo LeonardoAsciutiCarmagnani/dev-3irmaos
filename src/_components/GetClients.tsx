@@ -1,6 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState } from "react";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
 import {
   User,
   Trash2,
@@ -35,6 +40,7 @@ import {
 import { useZustandContext } from "@/context/cartContext";
 import { Link } from "react-router-dom";
 import apiBaseUrl from "@/lib/apiConfig";
+import MaskedInput from "react-text-mask";
 
 interface ClientInFirestore {
   id_priceList: string;
@@ -78,22 +84,22 @@ export const Clients = () => {
 
   const initialClient: ClientInFirestore = selectedClient
     ? {
-        id_priceList: selectedClient?.id_priceList || "",
-        priceListName: selectedClient?.priceListName || "",
-        type_user: selectedClient?.type_user || "",
-        user_IE: selectedClient?.user_IE || 0,
-        user_cep: selectedClient?.user_cep || 0,
-        user_complement: selectedClient?.user_complement || "",
-        user_fantasyName: selectedClient?.user_fantasyName || "",
-        user_name: selectedClient?.user_name || "",
-        user_email: selectedClient?.user_email || "",
-        user_phone: selectedClient?.user_phone || "",
-        user_CPF: selectedClient?.user_CPF || "",
-        user_ibgeCode: selectedClient?.user_ibgeCode || 0,
-        user_logradouro: selectedClient?.user_logradouro || "",
-        user_neighborhood: selectedClient?.user_neighborhood || "",
-        user_houseNumber: selectedClient?.user_houseNumber || 0,
-        user_id: selectedClient?.user_id || "",
+        id_priceList: selectedClient?.id_priceList,
+        priceListName: selectedClient?.priceListName,
+        type_user: selectedClient?.type_user,
+        user_IE: selectedClient?.user_IE,
+        user_cep: selectedClient?.user_cep,
+        user_complement: selectedClient?.user_complement,
+        user_fantasyName: selectedClient?.user_fantasyName,
+        user_name: selectedClient?.user_name,
+        user_email: selectedClient?.user_email,
+        user_phone: selectedClient?.user_phone,
+        user_CPF: selectedClient?.user_CPF,
+        user_ibgeCode: selectedClient?.user_ibgeCode,
+        user_logradouro: selectedClient?.user_logradouro,
+        user_neighborhood: selectedClient?.user_neighborhood,
+        user_houseNumber: selectedClient?.user_houseNumber,
+        user_id: selectedClient?.user_id,
       }
     : {
         id_priceList: "",
@@ -117,27 +123,52 @@ export const Clients = () => {
   const [editedClient, setEditedClient] =
     useState<ClientInFirestore>(initialClient);
 
+  const fetchClientes = async () => {
+    try {
+      const clientesCollection = collection(db, "clients");
+      const clientesSnapshot = await getDocs(clientesCollection);
+      const clientesList = clientesSnapshot.docs.map((doc) => {
+        const data = doc.data() as Omit<ClientInFirestore, "user_id">;
+        return { user_id: doc.id, ...data };
+      });
+      setClientes(clientesList);
+      setFilteredClientes(clientesList);
+    } catch (error) {
+      console.error("Erro ao buscar clientes:", error);
+      setError("Erro ao buscar clientes");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    fetchPriceLists();
-    const fetchClientes = async () => {
-      try {
-        const clientesCollection = collection(db, "clients");
-        const clientesSnapshot = await getDocs(clientesCollection);
-        const clientesList = clientesSnapshot.docs.map((doc) => {
-          const data = doc.data() as Omit<ClientInFirestore, "user_id">;
-          return { user_id: doc.id, ...data };
-        });
-        setClientes(clientesList);
-        setFilteredClientes(clientesList);
-      } catch (error) {
-        console.error("Erro ao buscar clientes:", error);
-        setError("Erro ao buscar clientes");
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchClientes();
+    fetchPriceLists();
   }, [db]);
+
+  useEffect(() => {
+    if (selectedClient) {
+      const newClient: ClientInFirestore = {
+        id_priceList: selectedClient.id_priceList || "",
+        priceListName: selectedClient.priceListName || "",
+        type_user: selectedClient.type_user || "",
+        user_IE: selectedClient.user_IE || 0,
+        user_cep: selectedClient.user_cep || 0,
+        user_complement: selectedClient.user_complement || "",
+        user_fantasyName: selectedClient.user_fantasyName || "",
+        user_name: selectedClient.user_name || "",
+        user_email: selectedClient.user_email || "",
+        user_phone: selectedClient.user_phone || "",
+        user_CPF: selectedClient.user_CPF || "",
+        user_ibgeCode: selectedClient.user_ibgeCode || 0,
+        user_logradouro: selectedClient.user_logradouro || "",
+        user_neighborhood: selectedClient.user_neighborhood || "",
+        user_houseNumber: selectedClient.user_houseNumber || 0,
+        user_id: selectedClient.user_id || "",
+      };
+      setEditedClient(newClient);
+    }
+  }, [selectedClient]);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -146,6 +177,48 @@ export const Clients = () => {
         cliente.user_name.toLowerCase().includes(query.toLowerCase())
       )
     );
+  };
+
+  const fetchCEP = async (cep: string) => {
+    try {
+      const response = await axios.post(`${apiBaseUrl}/CEP`, { cep });
+
+      const enderecoData = response.data;
+
+      if (!enderecoData) {
+        toastError("Erro ao buscar endereço, tente novamente");
+      } else {
+        toastSuccess("Endereço encontrado com sucesso!");
+        setEditedClient((prev) => ({
+          ...prev,
+          user_ibgeCode: enderecoData.ibge,
+          user_logradouro: enderecoData.logradouro,
+          user_neighborhood: enderecoData.bairro,
+          user_houseNumber: 0,
+        }));
+      }
+
+      console.log("Endereço:", enderecoData);
+    } catch (error) {
+      console.error("Erro ao buscar o endereço:", error);
+      toastError("Erro desconhecido ao buscar o endereço, tente novamente");
+    }
+  };
+
+  const handleFetchCEP = async (cep: string) => {
+    console.log("Valor do cep:" + cep);
+    const rawCep = cep.replace(/[^\d]/g, "");
+    console.log("RawCep:", rawCep);
+    if (!rawCep || rawCep.length !== 8) {
+      toastError("O CEP deve conter 8 dígitos.");
+      return;
+    }
+    try {
+      await fetchCEP(cep);
+    } catch (error) {
+      console.error("Erro ao buscar o endereço:", error);
+      toastError("Erro ao buscar o endereço.");
+    }
   };
 
   const handleDelete = async () => {
@@ -191,29 +264,33 @@ export const Clients = () => {
     event?.preventDefault();
     console.log("Fazendo update no cliente, ID: ", client_id);
     console.log("Novos dados: ", updatedData);
-    // try {
-    //   const response = await axios.put(`${apiBaseUrl}/clients/${client_id}`, {
-    //     updatedData,
-    //   });
+    try {
+      const response = await axios.put(`${apiBaseUrl}/clients/${client_id}`, {
+        ...updatedData,
+      });
 
-    //   if (response.status === 200) {
-    //     console.log(response.data);
-    //     toastSuccess("Cadastro do cliente alterado com sucesso!.");
-    //   } else {
-    //     console.error("Erro inesperado:", response.data.message);
-    //     setError(response.data.message || "Erro ao alterar cliente.");
-    //     toastError("Erro ao alterar cliente.");
-    //   }
-    // } catch (error) {
-    //   if (axios.isAxiosError(error)) {
-    //     console.error("Erro na solicitação:", error.response?.data.message);
-    //     toastError(error.response?.data.message || "Erro ao excluir cliente.");
-    //     setError("Erro ao comunicar com o servidor.");
-    //   } else {
-    //     console.error("Erro desconhecido:", error);
-    //     setError("Erro inesperado. Por favor, tente novamente.");
-    //   }
-    // }
+      if (response.status === 200) {
+        console.log(response.data);
+        toastSuccess("Cadastro do cliente atualizado com sucesso!.");
+        closeDialog();
+        fetchClientes();
+      } else {
+        console.error("Erro inesperado:", response.data.message);
+        setError(response.data.message || "Erro ao alterar cliente.");
+        toastError("Erro ao atualizar cliente.");
+        closeDialog();
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Erro na solicitação:", error.response?.data.message);
+        toastError(error.response?.data.message || "Erro ao excluir cliente.");
+        setError("Erro ao comunicar com o servidor.");
+        closeDialog();
+      } else {
+        console.error("Erro desconhecido:", error);
+        setError("Erro inesperado. Por favor, tente novamente.");
+      }
+    }
   };
 
   const handleResetPassword = async () => {
@@ -248,6 +325,42 @@ export const Clients = () => {
     if (!selectedClient) {
       toastError("Selecione um cliente.");
       return;
+    }
+
+    const priceListIdToSave =
+      selectPriceList.id === "default" ? "" : selectPriceList.id;
+
+    try {
+      const clientRef = doc(db, "clients", selectedClient.user_id);
+      await updateDoc(clientRef, {
+        id_priceList: priceListIdToSave,
+        priceListName: selectPriceList.name,
+      });
+
+      const updatedClientes = clientes.map((client) =>
+        client.user_id === selectedClient.user_id
+          ? {
+              ...client,
+              id_priceList: priceListIdToSave,
+              priceListName: selectPriceList.name,
+            }
+          : client
+      );
+      setClientes(updatedClientes);
+      setFilteredClientes(updatedClientes);
+      closeDialog();
+      toastSuccess("Lista de preços atualizada com sucesso!");
+      setIsUpdatePriceList(false);
+    } catch (error) {
+      closeDialog();
+      console.error("Erro ao atualizar a lista de preços:", error);
+      toastError("Erro ao atualizar a lista de preços.");
+    }
+  };
+
+  const handleSubmit = () => {
+    if (selectedClient) {
+      handleUpdateClient(selectedClient.user_id, editedClient);
     }
   };
 
@@ -379,7 +492,7 @@ export const Clients = () => {
             </DialogTitle>
           </DialogHeader>
           {isEditMode ? (
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleSubmit}>
               <h2 className="font-semibold text-md text-amber-500">
                 Informações
               </h2>
@@ -391,6 +504,7 @@ export const Clients = () => {
                   onChange={(e) =>
                     handleInputChange("user_name", e.target.value)
                   }
+                  required
                 />
 
                 <Input
@@ -400,24 +514,79 @@ export const Clients = () => {
                   onChange={(e) =>
                     handleInputChange("user_email", e.target.value)
                   }
+                  required
                 />
-                <Input
-                  type="number"
+                <MaskedInput
+                  mask={[
+                    "(",
+                    /\d/,
+                    /\d/,
+                    ")",
+                    " ",
+                    /\d/,
+                    /\d/,
+                    /\d/,
+                    /\d/,
+                    /\d/,
+                    "-",
+                    /\d/,
+                    /\d/,
+                    /\d/,
+                    /\d/,
+                  ]}
+                  type="tel"
+                  required
                   placeholder="Telefone do cliente"
-                  value={editedClient.user_phone || ""}
+                  value={editedClient.user_phone}
+                  className="p-1.5 rounded-sm bg-gray-50 text-sm"
                   onChange={(e) =>
                     handleInputChange("user_phone", e.target.value)
                   }
                 />
-                <Input
+                <MaskedInput
+                  mask={[
+                    /\d/,
+                    /\d/,
+                    /\d/,
+                    ".",
+                    /\d/,
+                    /\d/,
+                    /\d/,
+                    ".",
+                    /\d/,
+                    /\d/,
+                    /\d/,
+                    "-",
+                    /\d/,
+                    /\d/,
+                  ]}
                   type="text"
                   placeholder="CPF/CNPJ do cliente"
                   value={editedClient.user_CPF || ""}
                   onChange={(e) =>
                     handleInputChange("user_CPF", e.target.value)
                   }
+                  className="p-1.5 rounded-sm bg-gray-50 text-sm"
+                  required
                 />
-                <Input
+                <MaskedInput
+                  mask={[
+                    /\d/,
+                    /\d/,
+                    /\d/,
+                    ".",
+                    /\d/,
+                    /\d/,
+                    /\d/,
+                    ".",
+                    /\d/,
+                    /\d/,
+                    /\d/,
+                    ".",
+                    /\d/,
+                    /\d/,
+                    /\d/,
+                  ]}
                   type="number"
                   placeholder="Inscrição Estadual do cliente"
                   value={editedClient.user_IE || ""}
@@ -437,13 +606,16 @@ export const Clients = () => {
                   Endereço
                 </h1>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-[16px]">
-                  <Input
+                  <MaskedInput
+                    mask={[/\d/, /\d/, /\d/, /\d/, /\d/, "-", /\d/, /\d/, /\d/]}
                     type="text"
+                    className="text-sm p-1.5 rounded-sm bg-gray-50"
                     placeholder="CEP"
                     value={editedClient.user_cep || ""}
                     onChange={(e) =>
                       handleInputChange("user_cep", e.target.value)
                     }
+                    onBlur={(e) => handleFetchCEP(e.target.value)}
                   />
                   <Input
                     type="text"
@@ -452,6 +624,8 @@ export const Clients = () => {
                     onChange={(e) =>
                       handleInputChange("user_logradouro", e.target.value)
                     }
+                    readOnly
+                    required
                   />
                   <Input
                     type="text"
@@ -460,6 +634,8 @@ export const Clients = () => {
                     onChange={(e) =>
                       handleInputChange("user_neighborhood", e.target.value)
                     }
+                    readOnly
+                    required
                   />
                   <Input
                     type="number"
@@ -468,6 +644,7 @@ export const Clients = () => {
                     onChange={(e) =>
                       handleInputChange("user_houseNumber", e.target.value)
                     }
+                    required
                   />
                   <Input
                     type="text"
@@ -484,6 +661,8 @@ export const Clients = () => {
                     onChange={(e) =>
                       handleInputChange("user_ibgeCode", e.target.value)
                     }
+                    readOnly
+                    required
                   />
                 </div>
               </div>
@@ -492,6 +671,7 @@ export const Clients = () => {
                   variant="destructive"
                   onClick={() => {
                     setIsEditMode(false);
+                    setSelectedClient(null);
                     if (selectedClient) {
                       setEditedClient({ ...selectedClient });
                     }
@@ -500,11 +680,8 @@ export const Clients = () => {
                   Cancelar
                 </Button>
                 <Button
-                  onClick={() => {
-                    if (selectedClient) {
-                      handleUpdateClient(selectedClient.user_id, editedClient);
-                    }
-                  }}
+                  type="submit"
+                  onClick={() => {}}
                   className="bg-green-400"
                 >
                   Salvar Alterações
@@ -588,9 +765,9 @@ export const Clients = () => {
                     {selectedClient?.priceListName || "Lista padrão"}
                   </span>
                   {selectedClient?.type_user === "cliente" && (
-                    <span className="p-1.5 rounded-lg bg-amber-400">
+                    <span className="p-1.5 rounded-full bg-amber-200">
                       <PencilIcon
-                        className="text-white"
+                        className="text-amber-500"
                         size={20}
                         onClick={() => setIsUpdatePriceList(true)}
                       />
