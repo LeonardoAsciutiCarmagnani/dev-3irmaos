@@ -356,7 +356,7 @@ export default function PrintPage() {
         <>
           <Link
             to="/get-orders-client"
-            className="border-2 rounded-lg p-2 hidden"
+            className="border-2 rounded-lg p-2 invisible"
           >
             Voltar
           </Link>
