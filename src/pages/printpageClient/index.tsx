@@ -248,6 +248,13 @@ export default function PrintPageClient() {
                 )
               )}
             </div>
+            <span className="border-t-2 border-black text-end font-semibold">
+              Valor total:{" "}
+              {totalValue.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              })}
+            </span>
           </div>
           {/*  {countCategory?.totais && (
               <div className="border-2 w-80 border-black">
