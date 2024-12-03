@@ -88,10 +88,10 @@ export default function PrintPageClient() {
         console.log((acc += item.preco * item.quantidade));
         return acc;
       }
-      return acc; // Retorna o acumulador mesmo se a condição não for atendida
-    }, 0); // Valor inicial do acumulador
+      return acc;
+    }, 0);
 
-    setTotalValue(setTotal); // Atribua o valor total
+    setTotalValue(setTotal);
     console.log("valor total: ", totalValue);
   };
 
@@ -128,13 +128,12 @@ export default function PrintPageClient() {
 
   useEffect(() => {
     handleCountCategory();
-    handleGetPhoneUser();
     handleTotalValue();
-
-    if (totalValue > 0) {
+    handleGetPhoneUser();
+    setTimeout(() => {
       imprimir();
-    }
-  }, [totalValue]);
+    }, 2000);
+  }, []);
 
   return (
     <>
