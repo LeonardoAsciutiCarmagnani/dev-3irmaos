@@ -108,7 +108,6 @@ export default function PrintPageClient() {
   let hasPrinted = false;
 
   const imprimir = () => {
-    setVisibilityButton(false);
     if (hasPrinted) return; // Prevenindo loop infinito
     hasPrinted = true;
 
@@ -123,12 +122,14 @@ export default function PrintPageClient() {
     document.body.innerHTML = printContent;
     window.print();
     document.body.innerHTML = originalContent;
+
+    setVisibilityButton(true);
   };
 
   const formalizedDate = format(user.date, "dd/MM/yyyy 'ás' HH:mm:ss");
 
   useEffect(() => {
-    setVisibilityButton(true);
+    setVisibilityButton(false);
     handleCountCategory();
     handleTotalValue();
     handleGetPhoneUser();
@@ -275,18 +276,18 @@ export default function PrintPageClient() {
             )} */}
         </div>
       </>
-      {visibilityButton === true ? (
-        <>
-          <Link to="/get-orders-client" className="border-2 rounded-lg p-2">
-            Voltar
-          </Link>
-        </>
-      ) : (
+      {visibilityButton === false ? (
         <>
           <Link
             to="/get-orders-client"
             className="border-2 rounded-lg p-2 invisible"
           >
+            Voltar
+          </Link>
+        </>
+      ) : (
+        <>
+          <Link to="/get-orders-client" className="border-2 rounded-lg p-2">
             Voltar
           </Link>
         </>
