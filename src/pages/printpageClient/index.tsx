@@ -122,14 +122,14 @@ export default function PrintPageClient() {
     document.body.innerHTML = printContent;
     window.print();
     document.body.innerHTML = originalContent;
-
-    setVisibilityButton(true);
+    setTimeout(() => {
+      setVisibilityButton(true);
+    }, 1000);
   };
 
   const formalizedDate = format(user.date, "dd/MM/yyyy 'ás' HH:mm:ss");
 
   useEffect(() => {
-    setVisibilityButton(false);
     handleCountCategory();
     handleTotalValue();
     handleGetPhoneUser();
@@ -276,16 +276,7 @@ export default function PrintPageClient() {
             )} */}
         </div>
       </>
-      {visibilityButton === false ? (
-        <>
-          <Link
-            to="/get-orders-client"
-            className="border-2 rounded-lg p-2 invisible"
-          >
-            Voltar
-          </Link>
-        </>
-      ) : (
+      {visibilityButton === true && (
         <>
           <Link to="/get-orders-client" className="border-2 rounded-lg p-2">
             Voltar

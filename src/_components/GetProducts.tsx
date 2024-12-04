@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Plus, Minus, SearchIcon, LoaderPinwheelIcon } from "lucide-react";
 import { useZustandContext } from "@/context/cartContext";
 import LazyLoad from "react-lazyload";
-import useUserTypeStore from "@/context/UserStore";
+import useUserStore from "@/context/UserStore";
 import { useNavigate } from "react-router-dom";
 
 interface Product {
@@ -43,10 +43,10 @@ export const FetchProducts: React.FC = React.memo(() => {
     "diferenciados",
     "mini especial",
     "especiais",
-    "doce",
+    "doces",
     "outros",
   ];
-  const { typeUser, fetchTypeUser, fetchSaveUsername } = useUserTypeStore();
+  const { typeUser, fetchTypeUser, fetchSaveUsername } = useUserStore();
   const { clearListProductsInCart } = useZustandContext();
   const navigate = useNavigate();
 
@@ -70,11 +70,16 @@ export const FetchProducts: React.FC = React.memo(() => {
       );
 
       // Ordenar categorias com base em `categoryOrder`
-      const sortedCategories = Array.from(categoriesSet).sort(
-        (a, b) =>
-          categoryOrder.indexOf(a.toLowerCase()) -
-          categoryOrder.indexOf(b.toLowerCase())
-      );
+      const sortedCategories = Array.from(categoriesSet).sort((a, b) => {
+        const indexA = categoryOrder.indexOf(a.toLowerCase());
+        const indexB = categoryOrder.indexOf(b.toLowerCase());
+
+        // Se a categoria não está em `categoryOrder`, o índice será -1
+        if (indexA === -1 && indexB === -1) return 0; // Ambas são novas categorias
+        if (indexA === -1) return 1; // `a` é nova, vai para o final
+        if (indexB === -1) return -1; // `b` é nova, vai para o final
+        return indexA - indexB; // Ordenar com base no índice
+      });
 
       setCategories(new Set(sortedCategories));
     }
