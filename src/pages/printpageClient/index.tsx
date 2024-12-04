@@ -25,7 +25,7 @@ export default function PrintPageClient() {
   const { user, orderNumber } = location.state;
   const [userPhone, setUserPhone] = useState("");
   const [totalValue, setTotalValue] = useState(0);
-  const [visibilityButton, setVisibilityButton] = useState(true);
+  const [visibilityButton, setVisibilityButton] = useState(false);
 
   const [countCategory, setCountCategory] = useState<{
     categoryData: Record<

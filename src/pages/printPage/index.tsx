@@ -348,16 +348,13 @@ export default function PrintPage() {
       )}
       {visibilityButton === true ? (
         <>
-          <Link to="/get-orders-client" className="border-2 rounded-lg p-2">
+          <Link to="/get-orders" className="border-2 rounded-lg p-2">
             Voltar
           </Link>
         </>
       ) : (
         <>
-          <Link
-            to="/get-orders-client"
-            className="border-2 rounded-lg p-2 invisible"
-          >
+          <Link to="/get-orders" className="border-2 rounded-lg p-2 invisible">
             Voltar
           </Link>
         </>
