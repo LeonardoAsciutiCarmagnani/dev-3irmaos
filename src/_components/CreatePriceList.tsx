@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -69,7 +70,7 @@ const PostPricesList = () => {
         name: priceListName,
         products: defaultProducts,
       };
-      await axios.post(`${apiBaseUrl}/v1/create-prices-list`, newPriceList, {
+      await axios.post(`${apiBaseUrl}/create-prices-list`, newPriceList, {
         headers: {
           "Content-Type": "application/json",
         },
