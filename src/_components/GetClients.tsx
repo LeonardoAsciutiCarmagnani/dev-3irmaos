@@ -41,6 +41,7 @@ import { useZustandContext } from "@/context/cartContext";
 import { Link } from "react-router-dom";
 import apiBaseUrl from "@/lib/apiConfig";
 import MaskedInput from "react-text-mask";
+import useUserStore from "@/context/UserStore";
 
 interface ClientInFirestore {
   id_priceList: string;
@@ -81,6 +82,7 @@ export const Clients = () => {
   const [selectPriceList, setSelectPriceList] = useState({ id: "", name: "" });
   const [isUpdatePriceList, setIsUpdatePriceList] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+  const { fetchTypeUser, fetchSaveUsername } = useUserStore();
 
   const initialClient: ClientInFirestore = selectedClient
     ? {
@@ -144,6 +146,8 @@ export const Clients = () => {
   useEffect(() => {
     fetchClientes();
     fetchPriceLists();
+    fetchTypeUser();
+    fetchSaveUsername();
   }, [db]);
 
   useEffect(() => {
@@ -201,7 +205,7 @@ export const Clients = () => {
       console.log("Endereço:", enderecoData);
     } catch (error) {
       console.error("Erro ao buscar o endereço:", error);
-      toastError("Erro desconhecido ao buscar o endereço, tente novamente");
+      toastError("Por favor, insira um CEP válido e tente novamente.");
     }
   };
 
@@ -271,7 +275,9 @@ export const Clients = () => {
 
       if (response.status === 200) {
         console.log(response.data);
-        toastSuccess("Cadastro do cliente atualizado com sucesso!.");
+        toastSuccess(
+          `Cliente ${selectedClient?.user_name} atualizado com sucesso.`
+        );
         closeDialog();
         fetchClientes();
       } else {
@@ -414,9 +420,9 @@ export const Clients = () => {
                 .map((cliente) => (
                   <li
                     key={cliente.user_id}
-                    className="flex items-center justify-between bg-white shadow rounded-lg p-4"
+                    className="flex items-center justify-between bg-white shadow rounded-lg p-4 pl-2"
                   >
-                    <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-2">
                       <User
                         className={`w-8 h-8 ${
                           cliente.type_user === "adm"
@@ -439,11 +445,12 @@ export const Clients = () => {
                                 ? "fabrica"
                                 : "default"
                             }`}
+                            className="text-xs"
                           >
                             {cliente.type_user.toUpperCase()}
                           </Badge>
                           {cliente.type_user === "cliente" && (
-                            <Badge className="bg-amber-500 text-nowrap">
+                            <Badge className="bg-amber-500 text-nowrap text-[0.7rem] w-fit">
                               {cliente.priceListName.toUpperCase() ||
                                 "lista padrão".toUpperCase()}
                             </Badge>
@@ -452,7 +459,7 @@ export const Clients = () => {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-x-4">
+                    <div className="flex flex-col items-center">
                       <Button
                         variant="ghost"
                         onClick={() => setSelectedClient(cliente)}
@@ -479,15 +486,27 @@ export const Clients = () => {
 
       {/* Modal de Detalhes */}
       <Dialog open={!!selectedClient} onOpenChange={closeDialog}>
-        <DialogContent className="p-6 bg-gradient-to-r from-gray-100 via-white to-gray-100 rounded-lg shadow-xl max-w-3xl mx-auto">
+        <DialogContent className="p-3 bg-gradient-to-r from-gray-100 via-white to-gray-100 rounded-lg shadow-xl max-w-3xl mx-auto h-fit">
           <DialogHeader>
             <DialogTitle className="flex justify-between items-center">
               Detalhes do Cliente
               {!isEditMode ? (
-                <Button onClick={() => setIsEditMode(true)}>
-                  <PencilIcon size={18} />
-                  Editar
-                </Button>
+                <div className="flex space-x-2 items-center justify-end">
+                  <Button
+                    onClick={() => setIsEditMode(true)}
+                    className="bg-blue-500 hover:bg-blue-400"
+                  >
+                    <PencilIcon size={18} />
+                    Editar
+                  </Button>
+                  <Button
+                    onClick={closeDialog}
+                    variant={"destructive"}
+                    className="w-fit justify-end"
+                  >
+                    Fechar
+                  </Button>
+                </div>
               ) : null}
             </DialogTitle>
           </DialogHeader>
@@ -591,6 +610,7 @@ export const Clients = () => {
                   placeholder="Inscrição Estadual do cliente"
                   value={editedClient.user_IE || ""}
                   onChange={(e) => handleInputChange("user_IE", e.target.value)}
+                  className="p-1.5 rounded-sm bg-gray-50 text-sm"
                 />
                 <Input
                   type="text"
@@ -671,7 +691,6 @@ export const Clients = () => {
                   variant="destructive"
                   onClick={() => {
                     setIsEditMode(false);
-                    setSelectedClient(null);
                     if (selectedClient) {
                       setEditedClient({ ...selectedClient });
                     }
@@ -682,7 +701,7 @@ export const Clients = () => {
                 <Button
                   type="submit"
                   onClick={() => {}}
-                  className="bg-green-400"
+                  className="bg-green-500 hover:bg-green-400"
                 >
                   Salvar Alterações
                 </Button>
@@ -690,8 +709,8 @@ export const Clients = () => {
             </form>
           ) : (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4 flex flex-col p-1.5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-fit">
+                <div className=" flex flex-col p-1.5 h-fit">
                   <h1 className="text-amber-500 w-fit border-b-[0.2rem] border-dashed border-amber-500 font-semibold">
                     Informações
                   </h1>
@@ -724,7 +743,7 @@ export const Clients = () => {
                 </div>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-1 h-fit">
                 <div>
                   <h1 className="font-semibold text-md text-amber-500 w-fit border-b-[0.2rem] border-dashed border-amber-500">
                     Endereço
@@ -756,20 +775,20 @@ export const Clients = () => {
                 </p>
               </div>
 
-              <div className="mt-4">
-                <strong className="text-amber-500 w-fit border-b-[0.2rem] border-dashed border-amber-500">
+              <div className=" flex items-center gap-x-3 h-fit">
+                <strong className="text-amber-500 w-fit border-b-[0.2rem] border-dashed border-amber-500 text-nowrap">
                   Lista de preços:
                 </strong>
-                <div className="flex gap-x-4 pt-2 items-center">
-                  <span className="px-2 py-1 text-xs rounded-full bg-amber-400 text-white w-fit text-nowrap">
+                <div className="flex gap-x-1 pt-2 items-center">
+                  <span className="px-2 py-1 text-xs rounded-full bg-amber-400 text-black font-semibold w-fit text-nowrap">
                     {selectedClient?.priceListName || "Lista padrão"}
                   </span>
                   {selectedClient?.type_user === "cliente" && (
-                    <span className="p-1.5 rounded-full bg-amber-200">
+                    <span className="p-1 rounded-full border-[0.13rem] border-blue-500 relative bottom-[0.9rem] right-[0.3rem]">
                       <PencilIcon
-                        className="text-amber-500"
-                        size={20}
-                        onClick={() => setIsUpdatePriceList(true)}
+                        className="text-blue-400 "
+                        size={14}
+                        onClick={() => setIsUpdatePriceList(!isUpdatePriceList)}
                       />
                     </span>
                   )}
@@ -780,7 +799,7 @@ export const Clients = () => {
           {!isEditMode ? (
             <>
               {isUpdatePriceList && selectedClient?.type_user === "cliente" && (
-                <div className="flex gap-x-4">
+                <div className="flex gap-x-4 ">
                   <Select
                     onValueChange={(value) => {
                       if (value === "default") {
@@ -827,13 +846,12 @@ export const Clients = () => {
                 onClick={handleResetPassword}
               >
                 <KeyRoundIcon className="w-5 h-5 mr-2 text-amber-500" />
-                <span>Redefinir Senha</span>
+                <span className="text-xs">Redefinir Senha</span>
               </button>
             </div>
           ) : null}
-          <DialogFooter>
-            {!isEditMode ? <Button onClick={closeDialog}>Fechar</Button> : null}
-          </DialogFooter>
+
+          <DialogFooter></DialogFooter>
         </DialogContent>
       </Dialog>
 
