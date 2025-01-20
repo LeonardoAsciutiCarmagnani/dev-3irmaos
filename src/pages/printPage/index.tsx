@@ -545,7 +545,7 @@ export default function PrintPage() {
           </div>
 
           <div className="flex border-t-2 w-[700px] border-black  ">
-            <div className="flex  w-full justify-between border-b-2 border-black ">
+            <div className="flex  w-full justify-between border-b-2 border-black px-4">
               {Object.entries(groupedByEsteira).map(([esteira, itens]) => (
                 <div
                   key={esteira}
@@ -614,10 +614,106 @@ export default function PrintPage() {
         </div>
       ) : (
         <div id="printableArea">
-          <div className="flex flex-col space-y-3 items-center p-8">
+          <div className="flex flex-col space-y-1 items-center justify-center p-8 ">
             <img src={logo} alt="Logo Kyoto" className="rounded-full size-28" />
-            <span className="font-bold text-base">PASTEIS KYOTO</span>
-            {/* Adicionar conteúdo para outro tipo de impressão */}
+            <div className="flex flex-col text-sm rounded-lg p-3 items-center flex-1 text-center justify-center">
+              <span className="font-bold text-base">C. M. L. MATIAS</span>
+              <span className="font-bold text-base">
+                CNPJ: 28.068.016/0001-55
+              </span>
+              <span className="font-bold text-sm">
+                RUA FREI MONT'ALVERNE Nº216 - SP CEP: 03.505-030
+              </span>
+            </div>
+            <div className="flex flex-col items-start">
+              <span className="font-bold text-lg">
+                PEDIDO Nº: {orderNumber}
+              </span>
+              <div className="gap-2">
+                <span className="font-bold text-lg">Data do pedido:</span>{" "}
+                <span>{formalizedDate}</span>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 w-96  p-3 text-start justify-start border-t-2 border-b-2 border-black">
+              <div className="text-sm">
+                <div className="flex flex-col">
+                  <span className="font-bold">Nome / Razão Social:</span>
+                  <span>{user.userName}</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-bold">CNPJ / CPF:</span>
+                  <span>
+                    {user.document ? (
+                      <>{user.document}</>
+                    ) : (
+                      <> não informado !</>
+                    )}
+                  </span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-bold">Responsável:</span>
+                  <span>{user.userName}</span>
+                </div>
+              </div>
+              <div className="flex flex-col text-sm">
+                <div className="gap-2 ">
+                  <span className="font-bold">Telefone:</span>{" "}
+                  <span>{userPhone}</span>
+                </div>
+                <div className="gap-2">
+                  <span className="font-bold">IE:</span>{" "}
+                  <span>
+                    {user.userIE ? <>{user.userIE}</> : <> não informado</>}
+                  </span>
+                </div>
+                <div className="gap-2">
+                  <span className="font-bold">Email:</span>{" "}
+                  <span>{user.userEmail}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col">
+              <span className="text-lg font-bold">ITENS DO PEDIDO</span>
+            </div>
+            <div className="flex  flex-col w-[450px] justify-between  border-black px-4">
+              {Object.entries(groupedByEsteira).map(([esteira, itens]) => (
+                <div
+                  key={esteira}
+                  className="flex w-full flex-col border p-4 border-black"
+                >
+                  <div className="border-b border-black pb-2 mb-2">
+                    <span className="font-bold text-lg">Esteira {esteira}</span>
+                  </div>
+                  {itens.map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex justify-between border-b py-1"
+                    >
+                      <span>{item.nome || "Item Desconhecido"}</span>
+                      <span>{item.quantidade}</span>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+
+            {/*  {countCategory?.totais && (
+              <div className="border-2 w-80 border-black">
+                {Object.keys(countCategory.totais).map((categoria) =>
+                  categoria !== "TOTAL GERAL" ? (
+                    <div key={categoria} className="w-80 p-2">
+                      <span className="font-semibold">TOTAL {categoria}</span>:{" "}
+                      {countCategory.totais[categoria]}
+                    </div>
+                  ) : null
+                )}
+                <div className="w-80 p-2">
+                  <span className="font-semibold">TOTAL GERAL:</span>{" "}
+                  {countCategory.totais["TOTAL GERAL"]}
+                </div>
+              </div>
+            )} */}
           </div>
         </div>
       )}
