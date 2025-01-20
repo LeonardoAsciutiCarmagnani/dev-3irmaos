@@ -146,7 +146,7 @@ export function GetOrdersComponent() {
   };
 
   const handleSearchOrders: SubmitHandler<IFormInput> = (data) => {
-    const searchName = data.inputText.trim();
+    const searchArgument = data.inputText.trim().toLowerCase();
     const selectStatus = isNaN(Number(data.selectStatus))
       ? 0
       : Number(data.selectStatus);
@@ -162,9 +162,9 @@ export function GetOrdersComponent() {
     const filteredList = orderList.filter((order) => {
       // Filtro por nome
       const matchesName =
-        searchName.length > 1
-          ? searchName.toLowerCase() ===
-            order.cliente?.nomeDoCliente?.toLowerCase()
+        searchArgument.length >= 1
+          ? searchArgument.toLowerCase().includes(searchArgument) ===
+            order.cliente?.nomeDoCliente?.toLowerCase().includes(searchArgument)
           : true;
 
       const matchesStatus =
@@ -201,8 +201,133 @@ export function GetOrdersComponent() {
     }
   };
 
+  // Definir o tipo Esteira
+  type Esteira = {
+    1: Array<
+      | "Carne"
+      | "Carne c/ Ovo"
+      | "Brasileirinho"
+      | "Carne c/ Queijo"
+      | "Carne com queijo"
+      | "Caipira"
+      | "Frango"
+      | "Frango c/ catupiry"
+      | "Frango catupiry"
+      | "Caipira"
+      | "Frango c/ Queijo"
+      | "Frango puro"
+      | "Milho catupiry"
+      | "Milho c/ Catupiry"
+      | "4 Queijos"
+      | "Costela c/ Queijo"
+      | "Costela"
+      | "Camarão"
+      | "Cupim c/ Catupiry"
+      | "Cupim"
+      | "Carne louca"
+      | "Mini Especial de Carne"
+      | "Mini Especial De Carne"
+      | "Mini Especial de Palmito"
+      | "Mini Especial de Frango"
+      | "Especial de Carne"
+      | "Especial de Frango"
+    >;
+    2: Array<
+      | "Queijo"
+      | "Pizza"
+      | "Bauru"
+      | "Calabresa c/ Queijo"
+      | "Calabresa c/ Catupiry"
+      | "Carne seca"
+      | "Carne Seca c/ Queijo"
+      | "Calabresa c/ Catupiry"
+      | "Calabresa com queijo"
+      | "Baião de dois"
+      | "Palmito"
+      | "Palmito c/ Queijo"
+      | "Escarola c/ Queijo"
+      | "Bacalhau"
+      | "Portuguesa"
+      | "Baiano"
+      | "Chocolate"
+      | "Chocolate Harald"
+      | "Doce de Leite"
+      | "Laka"
+      | "Suflair"
+      | "Escarola com queijo"
+      | "Rúcula com tomate"
+      | "Brócolis"
+      | "Doce de leite"
+    >;
+  };
+
+  // Objeto que representa os valores permitidos para cada categoria
+  const EsteiraValues: Esteira = {
+    1: [
+      "Carne",
+      "Carne c/ Ovo",
+      "Brasileirinho",
+      "Carne c/ Queijo",
+      "Carne com queijo",
+      "Frango c/ catupiry",
+      "Frango catupiry",
+      "Caipira",
+      "Frango",
+      "Frango c/ Queijo",
+      "Frango puro",
+      "Milho catupiry",
+      "Milho c/ Catupiry",
+      "4 Queijos",
+      "Costela c/ Queijo",
+      "Costela",
+      "Camarão",
+      "Cupim c/ Catupiry",
+      "Cupim",
+      "Carne louca",
+      "Mini Especial de Carne",
+      "Mini Especial De Carne",
+      "Mini Especial de Palmito",
+      "Mini Especial de Frango",
+      "Especial de Carne",
+      "Especial de Frango",
+    ],
+    2: [
+      "Queijo",
+      "Pizza",
+      "Bauru",
+      "Calabresa c/ Queijo",
+      "Calabresa c/ Catupiry",
+      "Carne seca",
+      "Carne Seca c/ Queijo",
+      "Calabresa c/ Catupiry",
+      "Calabresa com queijo",
+      "Baião de dois",
+      "Palmito",
+      "Palmito c/ Queijo",
+      "Escarola c/ Queijo",
+      "Escarola com queijo",
+      "Rúcula com tomate",
+      "Brócolis",
+      "Bacalhau",
+      "Portuguesa",
+      "Baiano",
+      "Chocolate",
+      "Chocolate Harald",
+      "Doce de Leite",
+      "Doce de leite",
+      "Laka",
+      "Suflair",
+    ],
+  };
+
+  // Função atualizada
   const handlePrintItens = (pedido: OrderSaleTypes, type: string) => {
-    console.log("type: ", type);
+    const normalizeName = (name: string) => name.trim().toLowerCase(); // Normaliza o nome para comparação
+
+    const EsteiraValuesNormalized = {
+      1: EsteiraValues[1].map(normalizeName),
+      2: EsteiraValues[2].map(normalizeName),
+    };
 
     let arrayForPrint: {
       produtoId?: string;
@@ -210,15 +335,50 @@ export function GetOrdersComponent() {
       preco?: number;
       categoria?: string;
       quantidade: number;
+      esteira?: number;
       precoUnitarioBruto?: number;
       precoUnitarioLiquido?: number;
+      id_seq?: number;
     }[] = [];
 
     const orderNumber = pedido.order_code;
 
+    // Validação dos itens usando EsteiraValues normalizado
     arrayForPrint = pedido.itens.map((item, index) => {
-      console.log(item.categoria);
-      return { ...item, id_seq: index + 1 };
+      if (item.nome) {
+        const normalizedItemName = normalizeName(item.nome);
+
+        if (EsteiraValuesNormalized[1].includes(normalizedItemName)) {
+          return {
+            produtoId: item.produtoId,
+            nome: item.nome,
+            preco: item.preco,
+            categoria: item.categoria,
+            quantidade: item.quantidade,
+            esteira: 1, // Categoria 1
+            precoUnitarioBruto: item.precoUnitarioBruto,
+            precoUnitarioLiquido: item.precoUnitarioLiquido,
+            id_seq: index + 1,
+          };
+        }
+
+        if (EsteiraValuesNormalized[2].includes(normalizedItemName)) {
+          return {
+            produtoId: item.produtoId,
+            nome: item.nome,
+            preco: item.preco,
+            categoria: item.categoria,
+            quantidade: item.quantidade,
+            esteira: 2, // Categoria 2
+            precoUnitarioBruto: item.precoUnitarioBruto,
+            precoUnitarioLiquido: item.precoUnitarioLiquido,
+            id_seq: index + 1,
+          };
+        }
+      }
+
+      // Retorna o item original caso não pertença a nenhuma esteira
+      return item;
     });
 
     const user = pedido.cliente &&
@@ -386,7 +546,7 @@ export function GetOrdersComponent() {
         >
           <Input
             type="text"
-            placeholder="Buscar por cliente ou número do pedido"
+            placeholder="Nome do cliente"
             {...register("inputText")}
             className="border px-4 py-2 rounded w-full text-sm md:w-1/3 placeholder:text-sm"
           />

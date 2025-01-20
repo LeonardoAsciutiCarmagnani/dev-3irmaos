@@ -128,6 +128,10 @@ export const useZustandContext = create<ContextStates>((set) => ({
         },
       });
       let initialIdSeq = 0;
+      /* quando estiver consultando os produtos na base da Multipoint, altere para  
+      'response.data.products.produtos'
+      valor original 'response.data.products'
+      */
       const updateProductsList = response.data.products.map(
         (product: Product) => ({
           ...product,
