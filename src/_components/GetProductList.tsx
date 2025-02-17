@@ -3,15 +3,6 @@ import { firestore } from "@/firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableCell,
-  TableHead,
-  TableFooter,
-} from "@/components/ui/table";
 import { ChevronDownIcon, LucideTrash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Product } from "@/context/cartContext";
@@ -231,65 +222,63 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
       </div>
 
       {/* Tabela de Produtos Selecionados */}
-      <div className="border rounded-lg overflow-hidden">
-        <Table className="w-full">
-          <TableHeader className="bg-gray-50">
-            <TableRow>
-              <TableHead className="w-[45%] py-3 text-xs font-semibold text-gray-600">
-                Produto
-              </TableHead>
-              <TableHead className="text-center py-3 text-xs font-semibold text-gray-600">
-                Valor Unitário
-              </TableHead>
-              <TableHead className="text-center py-3 text-xs font-semibold text-gray-600">
-                Qtd
-              </TableHead>
-              <TableHead className="text-center py-3 text-xs font-semibold text-gray-600">
-                Ações
-              </TableHead>
-            </TableRow>
-          </TableHeader>
+      <div className="border rounded-lg overflow-hidden flex flex-col max-h-[10.8rem]">
+        {/* Header Fixo */}
+        <div className="grid grid-cols-12 bg-gray-50 sticky top-0 p-2 border-b">
+          <div className="col-span-6 text-xs font-semibold text-gray-600">
+            Produto
+          </div>
+          <div className="col-span-2 text-center text-xs font-semibold text-gray-600">
+            Valor Unitário
+          </div>
+          <div className="col-span-2 text-center text-xs font-semibold text-gray-600">
+            Qtd
+          </div>
+          <div className="col-span-2 text-center text-xs font-semibold text-gray-600">
+            Ações
+          </div>
+        </div>
 
-          <TableBody className="divide-y">
-            {selectedProducts.map((item) => (
-              <TableRow key={item.product.id} className="hover:bg-gray-50/50">
-                <TableCell className="py-3 text-sm font-medium text-gray-900">
-                  {item.product.nome}
-                </TableCell>
-                <TableCell className="py-3 text-center text-sm text-gray-600">
-                  {item.product.preco.toLocaleString("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  })}
-                </TableCell>
-                <TableCell className="py-3 text-center text-sm text-gray-600">
-                  {item.quantity}
-                </TableCell>
-                <TableCell className="py-3 text-center">
-                  <Button
-                    variant="ghost"
-                    onClick={() => onRemoveProduct(item.product.id)}
-                    className="text-red-600 hover:bg-red-100/50 hover:text-red-700"
-                    size="sm"
-                  >
-                    <LucideTrash2 size={16} />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
+        {/* Body com Scroll */}
+        <div className="flex-1 overflow-y-auto">
+          {selectedProducts.map((item) => (
+            <div
+              key={item.product.id}
+              className="grid grid-cols-12 items-center hover:bg-gray-50/50 p-2 border-b"
+            >
+              <div className="col-span-6 text-sm font-medium text-gray-900 truncate">
+                {item.product.nome}
+              </div>
+              <div className="col-span-2 text-center text-sm text-gray-600">
+                {item.product.preco.toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                })}
+              </div>
+              <div className="col-span-2 text-center text-sm text-gray-600">
+                {item.quantity}
+              </div>
+              <div className="col-span-2 text-center">
+                <Button
+                  variant="ghost"
+                  onClick={() => onRemoveProduct(item.product.id)}
+                  className="text-red-600 hover:bg-red-100/50 hover:text-red-700"
+                  size="sm"
+                >
+                  <LucideTrash2 size={16} />
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
 
-          <TableFooter className="bg-gray-50">
-            <TableRow>
-              <TableCell colSpan={3} className="py-3 text-right font-semibold">
-                Total:
-              </TableCell>
-              <TableCell className="py-3 text-center font-semibold text-blue-600">
-                {totalFormatted}
-              </TableCell>
-            </TableRow>
-          </TableFooter>
-        </Table>
+        {/* Footer Fixo */}
+        <div className="grid grid-cols-12 bg-gray-50 sticky bottom-0 p-2 border-t">
+          <div className="col-span-10 text-right font-semibold">Total:</div>
+          <div className="col-span-2 text-center font-semibold text-blue-600">
+            {totalFormatted}
+          </div>
+        </div>
       </div>
     </div>
   );
