@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2017", // Alvo do ECMAScript
+    "module": "commonjs", // Módulo que será usado
+    "outDir": "./dist", // Diretório de saída para os arquivos compilados
+    "rootDir": "./src", // Diretório raiz dos arquivos TypeScript
+    "strict": true, // Ativa verificações de tipo estritas
+    "esModuleInterop": true, // Permite a importação de módulos ES
+    "skipLibCheck": true, // Ignora verificação de tipos em arquivos de definição
+    "forceConsistentCasingInFileNames": true, // Garante que a capitalização dos nomes de arquivos seja consistente
+    "types": ["node"],
+    "resolveJsonModule": true
+  },
+  "include": [
+    "src/**/*.ts", // Inclui todos os arquivos TypeScript na pasta src
+    "src/firebaseConfig.ts"
+  ],
+  "exclude": [
+    "node_modules", // Exclui a pasta node_modules
+    "**/*.spec.ts" // Exclui arquivos de teste
+  ]
+}
