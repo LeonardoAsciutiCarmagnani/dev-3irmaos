@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { firestore } from "@/firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 
-import logo from "../../assets/logo.png";
+import logo from "../../assets/logo.jpeg";
 import { format } from "date-fns";
 
 interface PrintItem {

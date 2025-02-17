@@ -7,7 +7,7 @@ export default function Home() {
       <header>
         <Header />
       </header>
-      <div>
+      <div className="mt-[6.5rem]">
         <FetchProducts />
       </div>
     </div>

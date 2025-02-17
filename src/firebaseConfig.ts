@@ -1,4 +1,3 @@
-// Import the functions you need from the SDKs
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import {
@@ -13,13 +12,13 @@ import { getAnalytics } from "firebase/analytics";
 
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyAZmL9j0W_LOVkAA1KOwc80XIOxQWiu740",
-  authDomain: "kyoto-f1764.firebaseapp.com",
-  projectId: "kyoto-f1764",
-  storageBucket: "kyoto-f1764.firebasestorage.app",
-  messagingSenderId: "638846069672",
-  appId: "1:638846069672:web:66c61dd5c369cf9f744b9d",
-  measurementId: "G-3DH0QEL7Q3",
+  apiKey: "AIzaSyDyjujL6BGlNM6RtKUS2KAWuxSBqFcX3M4",
+  authDomain: "exata-3b42b.firebaseapp.com",
+  projectId: "exata-3b42b",
+  storageBucket: "exata-3b42b.firebasestorage.app",
+  messagingSenderId: "595519347118",
+  appId: "1:595519347118:web:2aaa1012441d2a48d6903f",
+  measurementId: "G-1Z6ZX46SFY",
 };
 
 // Initialize Firebase

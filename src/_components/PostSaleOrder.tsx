@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Clients from "./DropdownGetClients";
@@ -82,7 +76,7 @@ interface ProductWithQuantity {
 }
 
 const OrderSaleProps: React.FC = () => {
-  const orderCreationDate = format(new Date(), "yyyy/MM/dd  HH:mm:ss");
+  const orderCreationDate = format(new Date(), "yyyy/MM/dd - HH:mm:ss");
   const [orderSale, setOrderSale] = useState<OrderSaleTypes>({
     status_order: 1,
     order_code: 0,
@@ -132,6 +126,7 @@ const OrderSaleProps: React.FC = () => {
     useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { total } = usePostOrderStore();
+  const [vendedorName, setVendedorName] = useState<string>("");
 
   const navigate = useNavigate();
 
@@ -193,6 +188,12 @@ const OrderSaleProps: React.FC = () => {
   };
 
   useEffect(() => {
+    const vendedor = localStorage.getItem("userName");
+
+    if (vendedor) {
+      setVendedorName(vendedor);
+    }
+
     if (isUseRegisteredAddressForDelivery && clienteSelecionado) {
       setOrderSale((prevOrderSaleTypes) => ({
         ...prevOrderSaleTypes,
@@ -312,84 +313,149 @@ const OrderSaleProps: React.FC = () => {
   };
 
   return (
-    <div className="p-2 w-full min-h-screen flex flex-col items-start">
-      <div className="mb-5 ">
+    <div className="flex h-screen overflow-hidden bg-gray-100 pb-[1rem]">
+      {/* Sidebar */}
+      <div className="flex-shrink-0">
         <Sidebar />
       </div>
-      <div className="w-full justify-center flex">
-        <Card className="md:w-2/6 w-full">
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold">Novo pedido</CardTitle>
+
+      {/* Container central */}
+      <div className="flex-1 p-4 flex flex-col pt-[3rem]">
+        <div className="flex-1 bg-white p-4 rounded shadow-xl overflow-auto">
+          {/* Cabeçalho */}
+          <CardHeader className="mb-2">
+            <CardTitle className="text-xl font-bold">Nova cotação</CardTitle>
           </CardHeader>
 
-          <CardContent>
-            <form className="space-y-6">
-              <fieldset className="border border-gray-200 rounded-lg p-4">
-                <legend className="text-lg font-semibold text-gray-700">
-                  Cliente
-                </legend>
-                <Clients onSelectClient={handleSelectClient} />
-              </fieldset>
+          <form onSubmit={handlePostSaleOrder} className="space-y-2">
+            {/* Informações do pedido */}
 
-              {/* Seção Endereço de Entrega */}
-              <fieldset className="border border-gray-200 rounded-lg p-4">
-                <legend className="text-lg font-semibold text-gray-700">
-                  Endereço de Entrega
-                </legend>
-
-                <div className="grid grid-cols-1 gap-4 mt-4">
+            <div className="border border-gray-300 rounded-lg p-2 flex justify-evenly gap-x-4">
+              <div className="grid grid-cols-2 gap-1 w-fit">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Nº Pedido
+                  </label>
                   <Input
-                    type="text"
-                    name="enderecoDeEntrega.bairro"
-                    readOnly={isUseRegisteredAddressForDelivery}
-                    value={orderSale.enderecoDeEntrega?.bairro}
-                    onChange={handleChange}
-                    placeholder="Bairro"
-                    className="w-full"
-                  />
-
-                  <Input
-                    type="text"
-                    name="enderecoDeEntrega.cep"
-                    readOnly={isUseRegisteredAddressForDelivery}
-                    value={orderSale.enderecoDeEntrega?.cep}
-                    onChange={handleChange}
-                    placeholder="CEP"
-                    className="w-full"
-                  />
-
-                  <Input
-                    type="text"
-                    name="enderecoDeEntrega.complemento"
-                    readOnly={isUseRegisteredAddressForDelivery}
-                    value={orderSale.enderecoDeEntrega?.complemento}
-                    onChange={handleChange}
-                    placeholder="Complemento"
-                    className="w-full"
-                  />
-
-                  <Input
-                    type="text"
-                    name="enderecoDeEntrega.logradouro"
-                    readOnly={isUseRegisteredAddressForDelivery}
-                    value={orderSale.enderecoDeEntrega?.logradouro}
-                    onChange={handleChange}
-                    placeholder="Logradouro"
-                    className="w-full"
-                  />
-
-                  <Input
-                    type="text"
-                    name="enderecoDeEntrega.numero"
-                    readOnly={isUseRegisteredAddressForDelivery}
-                    value={orderSale.enderecoDeEntrega?.numero}
-                    onChange={handleChange}
-                    placeholder="Número"
-                    className="w-full"
+                    value={orderSale.order_code}
+                    readOnly
+                    className="mt-1 w-[4rem]"
                   />
                 </div>
 
-                <div className="mt-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Data
+                  </label>
+                  <Input value={orderCreationDate} readOnly className="mt-1" />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Vendedor
+                  </label>
+                  <Input value={vendedorName} readOnly className="mt-1" />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Observações
+                  </label>
+                  <Input
+                    type="text"
+                    value={orderSale.observacaoDoPedidoDeVenda}
+                    onChange={(e) =>
+                      setOrderSale((prev) => ({
+                        ...prev,
+                        observacaoDoPedidoDeVenda: e.target.value,
+                      }))
+                    }
+                    placeholder="Observação do Pedido"
+                    className="mt-1"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Valor do Frete
+                  </label>
+                  <Input
+                    type="number"
+                    value={orderSale.valorDoFrete}
+                    onChange={(e) =>
+                      setOrderSale((prev) => ({
+                        ...prev,
+                        valorDoFrete: Number(e.target.value),
+                      }))
+                    }
+                    className="mt-1"
+                  />
+                </div>
+              </div>
+              <div className="rounded-lg p-2 w-fit h-fit">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Cliente
+                </label>
+                <Clients onSelectClient={handleSelectClient} />
+              </div>
+              <div className=" rounded-lg p-2 h-fit">
+                <label className="block text-sm font-medium text-gray-700">
+                  Endereço de Entrega
+                </label>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1 mt-1">
+                  <div>
+                    <Input
+                      type="text"
+                      name="enderecoDeEntrega.bairro"
+                      readOnly={isUseRegisteredAddressForDelivery}
+                      value={orderSale.enderecoDeEntrega?.bairro}
+                      onChange={handleChange}
+                      placeholder="Bairro"
+                    />
+                  </div>
+                  <div>
+                    <Input
+                      type="text"
+                      name="enderecoDeEntrega.cep"
+                      readOnly={isUseRegisteredAddressForDelivery}
+                      value={orderSale.enderecoDeEntrega?.cep}
+                      onChange={handleChange}
+                      placeholder="CEP"
+                    />
+                  </div>
+                  <div>
+                    <Input
+                      type="text"
+                      name="enderecoDeEntrega.complemento"
+                      readOnly={isUseRegisteredAddressForDelivery}
+                      value={orderSale.enderecoDeEntrega?.complemento}
+                      onChange={handleChange}
+                      placeholder="Complemento"
+                    />
+                  </div>
+                  <div>
+                    <Input
+                      type="text"
+                      name="enderecoDeEntrega.logradouro"
+                      readOnly={isUseRegisteredAddressForDelivery}
+                      value={orderSale.enderecoDeEntrega?.logradouro}
+                      onChange={handleChange}
+                      placeholder="Logradouro"
+                    />
+                  </div>
+                  <div>
+                    <Input
+                      type="text"
+                      name="enderecoDeEntrega.numero"
+                      readOnly={isUseRegisteredAddressForDelivery}
+                      value={orderSale.enderecoDeEntrega?.numero}
+                      onChange={handleChange}
+                      placeholder="Número"
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-1">
                   <label className="inline-flex items-center">
                     <input
                       type="checkbox"
@@ -399,75 +465,71 @@ const OrderSaleProps: React.FC = () => {
                           !isUseRegisteredAddressForDelivery
                         )
                       }
-                      className="OrderSaleTypes-checkbox"
                     />
-                    <span className="ml-2">Usar endereço cadastrado ?</span>
+                    <span className="ml-1 text-sm">
+                      Usar endereço cadastrado?
+                    </span>
                   </label>
                 </div>
-              </fieldset>
+              </div>
+            </div>
 
-              {clienteSelecionado && (
-                <>
-                  {/* Produtos */}
-                  <fieldset className="border border-gray-200 rounded-lg min-w-full max-w-full overflow-x-hidden">
-                    <legend className="text-lg font-semibold text-gray-700">
-                      Produtos
-                    </legend>
-                    <ProductSelector
-                      priceListId={priceListId}
-                      selectedProducts={selectedProducts}
-                      onProductSelect={handleProductSelect}
-                      onRemoveProduct={handleRemoveProduct}
-                    />
-                  </fieldset>
+            {/* Produtos */}
+            <div className="border border-gray-300 rounded-lg p-2">
+              <ProductSelector
+                priceListId={priceListId}
+                selectedProducts={selectedProducts}
+                onProductSelect={handleProductSelect}
+                onRemoveProduct={handleRemoveProduct}
+              />
+            </div>
 
-                  {/* Métodos de pagamento */}
-                  <fieldset className="border border-gray-200 rounded-lg p-4 mt-4">
-                    <legend className="text-lg font-semibold text-gray-700">
-                      Métodos de pagamento
-                    </legend>
-                    <Select
-                      required
-                      onValueChange={handleSelectPaymentMethod}
-                      value={selectedPaymentMethod}
-                      disabled={selectedProducts.length === 0}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue
-                          placeholder={
-                            selectedPaymentMethod
-                              ? selectedPaymentMethod
-                              : "Método de pagamento:"
-                          }
-                        />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="1">Dinheiro</SelectItem>
-                        <SelectItem value="2">Cheque</SelectItem>
-                        <SelectItem value="3">Devolução</SelectItem>
-                        <SelectItem value="4">Cartão de crédito</SelectItem>
-                        <SelectItem value="5">Cartão de débito</SelectItem>
-                        <SelectItem value="6">Boleto</SelectItem>
-                        <SelectItem value="7">Cartão Voucher</SelectItem>
-                        <SelectItem value="8">PIX</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </fieldset>
-                </>
-              )}
-            </form>
-          </CardContent>
-          <CardFooter className="justify-end">
-            <Button
-              onClick={handlePostSaleOrder}
-              disabled={selectedProducts.length === 0}
-            >
-              Enviar Pedido
-            </Button>
-          </CardFooter>
-        </Card>
+            {/* Métodos de pagamento */}
+            <div className="border border-gray-300 rounded-lg p-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Método de Pagamento
+              </label>
+              <Select
+                required
+                onValueChange={handleSelectPaymentMethod}
+                value={selectedPaymentMethod}
+                disabled={selectedProducts.length === 0}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue
+                    placeholder={
+                      selectedPaymentMethod
+                        ? selectedPaymentMethod
+                        : "Selecione o método de pagamento"
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">Dinheiro</SelectItem>
+                  <SelectItem value="2">Cheque</SelectItem>
+                  <SelectItem value="3">Devolução</SelectItem>
+                  <SelectItem value="4">Cartão de crédito</SelectItem>
+                  <SelectItem value="5">Cartão de débito</SelectItem>
+                  <SelectItem value="6">Boleto</SelectItem>
+                  <SelectItem value="7">Cartão Voucher</SelectItem>
+                  <SelectItem value="8">PIX</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <CardFooter className="flex justify-end mt-2">
+              <Button
+                onClick={handlePostSaleOrder}
+                disabled={selectedProducts.length === 0}
+              >
+                Enviar Pedido
+              </Button>
+            </CardFooter>
+          </form>
+
+          <DialogSubmit isSubmitting={isSubmitting} />
+        </div>
       </div>
-      <DialogSubmit isSubmitting={isSubmitting} />
     </div>
   );
 };

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState } from "react";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import {
@@ -7,27 +8,29 @@ import {
   SelectContent,
   SelectValue,
 } from "@/components/ui/select";
-import { PlusIcon, MinusIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+// import { PlusIcon, MinusIcon } from "lucide-react";
+// import { Button } from "@/components/ui/button";
 import { ClientData, EnderecoDeEntrega } from "./PostSaleOrder";
-import InputMask from "react-input-mask";
+import { BadgeDollarSignIcon, DollarSignIcon } from "lucide-react";
+// import InputMask from "react-input-mask";
 
 export interface Client {
-  id_priceList: string;
+  id_priceList?: string;
   type_user: string;
   user_IE?: string;
-  user_cep: number;
+  CEP: number;
   user_complement?: string;
   user_fantasyName?: string;
-  user_ibgeCode: number;
-  user_logradouro: string;
+  IBGE: number;
+  logradouro: string;
   user_id: string;
-  user_name: string;
-  user_email: string;
-  user_neighborhood: string;
-  user_phone: string;
-  user_houseNumber: number;
-  user_CPF: string;
+  name: string;
+  email: string;
+  bairro: string;
+  phoneNumber: string;
+  numberHouse: number;
+  cpf: string;
+  creditos?: number;
 }
 
 interface ClientsProps {
@@ -55,7 +58,7 @@ const Clients = ({ onSelectClient }: ClientsProps) => {
         });
         console.log(clientesList);
         setClientes(
-          clientesList.filter((client) => client.type_user === "cliente")
+          clientesList.filter((client) => client.type_user === "common")
         );
       } catch (error) {
         console.error("Erro ao buscar clientes:", error);
@@ -70,20 +73,20 @@ const Clients = ({ onSelectClient }: ClientsProps) => {
 
     if (client) {
       const clientData: ClientData = {
-        documento: client.user_CPF,
-        email: client.user_email,
+        documento: client.cpf,
+        email: client.email,
         inscricaoEstadual: client.user_IE || "",
-        nomeDoCliente: client.user_name,
+        nomeDoCliente: client.name,
         nomeFantasia: client.user_fantasyName || "",
       };
 
       const enderecoDeEntrega: EnderecoDeEntrega = {
-        bairro: client.user_neighborhood,
-        cep: client.user_cep.toString(),
-        codigoIbge: client.user_ibgeCode,
+        bairro: client.bairro,
+        cep: client.CEP.toString(),
+        codigoIbge: client.IBGE,
         complemento: client.user_complement || "",
-        logradouro: client.user_logradouro,
-        numero: client.user_houseNumber,
+        logradouro: client.logradouro,
+        numero: client.numberHouse,
       };
 
       setSelectedClient(client);
@@ -96,7 +99,7 @@ const Clients = ({ onSelectClient }: ClientsProps) => {
         "Lista de preço do cliente selecionado:",
         client.id_priceList,
         "length:",
-        client.id_priceList.length
+        client.id_priceList?.length
       );
     } else {
       setSelectedClient(null);
@@ -121,14 +124,14 @@ const Clients = ({ onSelectClient }: ClientsProps) => {
             <SelectItem
               key={cliente.user_id}
               value={cliente.user_id}
-              className="p-2 hover:bg-gray-100"
+              className="p-2 hover:bg-gray-100 antialiased text-xs font-semibold"
             >
-              {cliente.user_name}
+              {cliente.name.toLocaleUpperCase()} - {cliente.cpf}
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
-
+      {/* 
       {selectedClient && (
         <div className="mt-4 space-y-2">
           <Button
@@ -136,8 +139,8 @@ const Clients = ({ onSelectClient }: ClientsProps) => {
             variant="link"
             className="text-blue-500 hover:underline"
             type="button"
-          >
-            {showDetails ? (
+          > */}
+      {/* {showDetails ? (
               <span className="flex items-center gap-x-1">
                 <MinusIcon /> Ocultar Detalhes
               </span>
@@ -145,10 +148,10 @@ const Clients = ({ onSelectClient }: ClientsProps) => {
               <span className="flex items-center gap-x-1">
                 <PlusIcon /> Detalhes
               </span>
-            )}
-          </Button>
+            )} */}
+      {/* </Button> */}
 
-          {showDetails && (
+      {/* {showDetails && (
             <div className="mt-4 space-y-1 flex flex-col">
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-gray-700">
@@ -171,7 +174,7 @@ const Clients = ({ onSelectClient }: ClientsProps) => {
                 <InputMask
                   readOnly
                   mask={"99999-999"}
-                  defaultValue={selectedClient.user_cep.toString()}
+                  defaultValue={selectedClient.CEP.toString()}
                   className="p-2 border border-gray-300 rounded-md w-full text-sm"
                 />
               </div>
@@ -183,12 +186,12 @@ const Clients = ({ onSelectClient }: ClientsProps) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <input
                     readOnly
-                    defaultValue={selectedClient.user_logradouro || ""}
+                    defaultValue={selectedClient.logradouro || ""}
                     className="p-2 border border-gray-300 rounded-md w-full text-sm"
                   />
                   <input
                     readOnly
-                    defaultValue={selectedClient.user_neighborhood || ""}
+                    defaultValue={selectedClient.bairro || ""}
                     className="p-2 border border-gray-300 rounded-md w-full text-sm"
                   />
                 </div>
@@ -202,7 +205,7 @@ const Clients = ({ onSelectClient }: ClientsProps) => {
                   <input
                     readOnly
                     defaultValue={
-                      selectedClient.user_houseNumber.toString() || ""
+                      selectedClient.numberHouse.toString() || ""
                     }
                     className="p-2 border border-gray-300 rounded-md w-full text-sm"
                   />
@@ -233,7 +236,7 @@ const Clients = ({ onSelectClient }: ClientsProps) => {
                 </label>
                 <input
                   readOnly
-                  defaultValue={selectedClient.user_ibgeCode.toString() || ""}
+                  defaultValue={selectedClient.IBGE.toString() || ""}
                   className="p-2 border border-gray-300 rounded-md w-full text-sm"
                 />
               </div>
@@ -249,9 +252,17 @@ const Clients = ({ onSelectClient }: ClientsProps) => {
                 />
               </div>
             </div>
-          )}
-        </div>
-      )}
+          )} */}
+      {/* </div> */}
+      {/* )} */}
+      <div className="flex gap-x-2 py-2 antialiased font-semibold text-green-600">
+        {selectedClient && (
+          <span className="flex items-center gap-x-1">
+            <BadgeDollarSignIcon />
+            {selectedClient?.creditos}
+          </span>
+        )}
+      </div>
     </div>
   );
 };

@@ -17,6 +17,7 @@ export interface Product {
   preco: number;
   quantidade: number;
   id_seq?: number;
+  descricao: string;
 }
 
 interface ContextStates {
@@ -122,7 +123,7 @@ export const useZustandContext = create<ContextStates>((set) => ({
     }
     try {
       console.log("Requisitando produtos ao back-end...");
-      const response = await axios.get(`${apiBaseUrl}/produtos`, {
+      const response = await axios.get(`${apiBaseUrl}/products`, {
         headers: {
           Authorization: `Bearer ${user.accessToken}`,
         },
@@ -132,13 +133,12 @@ export const useZustandContext = create<ContextStates>((set) => ({
       'response.data.products.produtos'
       valor original 'response.data.products'
       */
-      const updateProductsList = response.data.products.map(
-        (product: Product) => ({
-          ...product,
-          quantidade: 0,
-          id_seq: (initialIdSeq += 1),
-        })
-      );
+      const products = response.data.data;
+      const updateProductsList = products.map((product: Product) => ({
+        ...product,
+        quantidade: 0,
+        id_seq: (initialIdSeq += 1),
+      }));
       set({
         products: updateProductsList,
         loading: false,
@@ -156,7 +156,7 @@ export const useZustandContext = create<ContextStates>((set) => ({
 
   handleAddItemInList: (newProduct) =>
     set((state) => {
-      const { id, nome, preco, imagem, categoria } = newProduct;
+      const { id, nome, preco, imagem, categoria, descricao } = newProduct;
 
       const existingProductIndex = state.listProductsInCart.findIndex(
         (product) => product.id === id
@@ -178,6 +178,7 @@ export const useZustandContext = create<ContextStates>((set) => ({
           categoria,
           quantidade: 1,
           imagem,
+          descricao,
         });
       }
 

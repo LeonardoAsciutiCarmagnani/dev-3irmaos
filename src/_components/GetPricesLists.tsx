@@ -62,6 +62,7 @@ const PriceListsOverview = () => {
 
   useEffect(() => {
     fetchPriceLists();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

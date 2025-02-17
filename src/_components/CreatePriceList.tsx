@@ -114,7 +114,7 @@ const PostPricesList = () => {
           >
             <div className="flex items-center justify-between text-gray-800 mb-4 gap-x-4 ">
               <p className="text-gray-700 font-sm">{product.nome}</p>
-              <div className="rounded-full p-1 w-fit text-xs font-semibold uppercase text-amber-500">
+              <div className="rounded-full p-1 w-fit text-xs font-semibold uppercase text-store-secondary">
                 {product.categoria}
               </div>
             </div>

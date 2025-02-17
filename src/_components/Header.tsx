@@ -12,7 +12,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "../components/ui/sheet";
-import logoKyoto from "../assets/logo.png";
+import logoKyoto from "../assets/logo.jpeg";
 import Sidebar from "./Sidebar";
 
 const Header: React.FC = () => {
@@ -32,7 +32,11 @@ const Header: React.FC = () => {
         <Sidebar />
       </div>
       <div>
-        <img src={logoKyoto} alt="Kyoto" className="rounded-full size-[4rem]" />
+        <img
+          src={logoKyoto}
+          alt="Kyoto"
+          className="rounded-full size-[4.5rem]"
+        />
       </div>
       <div className="flex items-center gap-3">
         {/* Icone do carrinho de compras + o count de produtos selecionados */}
@@ -43,7 +47,7 @@ const Header: React.FC = () => {
                 className="text-gray-800 relative left-3"
                 size={32}
               />
-              <span className="relative right-[0.2rem] bottom-2.5 flex items-center justify-center text-lg text-black bg-yellow-400 border-2 border-black rounded-full size-6 font-semibold">
+              <span className="relative right-[0.2rem] bottom-2.5 flex items-center justify-center text-lg text-white bg-store-secondary border-2 border-black rounded-full size-6 font-semibold">
                 {countItemsInCart}
               </span>
             </div>

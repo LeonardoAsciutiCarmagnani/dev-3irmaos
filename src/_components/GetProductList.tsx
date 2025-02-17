@@ -1,12 +1,7 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { firestore } from "@/firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
+
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -17,7 +12,7 @@ import {
   TableHead,
   TableFooter,
 } from "@/components/ui/table";
-import { LucideTrash2 } from "lucide-react";
+import { ChevronDownIcon, LucideTrash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Product } from "@/context/cartContext";
 import { usePostOrderStore } from "@/context/postOrder";
@@ -35,6 +30,8 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
   onRemoveProduct,
   priceListId,
 }) => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProductId, setSelectedProductId] = useState("");
   const [quantity, setQuantity] = useState(1);
@@ -82,9 +79,9 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
     }
   };
 
-  const handleSelectProduct = (productId: string) => {
-    setSelectedProductId(productId);
-  };
+  // const handleSelectProduct = (productId: string) => {
+  //   setSelectedProductId(productId);
+  // };
 
   const handleAddProduct = (event: React.MouseEvent) => {
     event.preventDefault();
@@ -127,129 +124,153 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
     setTotal(total);
 
     fetchProducts();
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [priceListId, setTotal]);
 
   return (
-    <div className="p-[0.45rem]">
-      {/* Dropdown para selecionar produtos */}
-
-      <div className="ml-2 flex items-center gap-x-2 px-2 justify-around md:justify-normal">
-        <h2>Lista de preços:</h2>
-        <h3 className="font-semibold text-amber-500 text-md text-nowrap">
-          {priceListName?.toUpperCase()}
-        </h3>
+    <div className="p-2 space-y-4">
+      {/* Header da Lista de Preços */}
+      <div className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium text-gray-600">
+            Lista de preços:
+          </span>
+          <span className="font-semibold text-blue-600 text-sm">
+            {priceListName?.toUpperCase()}
+          </span>
+        </div>
       </div>
-      <div className="mb-4 relative">
-        <Select value={selectedProductId} onValueChange={handleSelectProduct}>
-          <SelectTrigger className="w-full md:w-1/2 lg:w-1/3 mt-2">
+
+      {/* Área de Seleção de Produtos */}
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_100px_120px] gap-2">
+        <div className="relative" ref={dropdownRef}>
+          <button
+            type="button"
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className="w-full flex items-center justify-between p-3 text-sm bg-white border rounded-lg transition-colors"
+          >
             {selectedProductId
-              ? products.find((product) => product.id === selectedProductId)
-                  ?.nome
-              : "Produtos"}
-          </SelectTrigger>
-          <SelectContent>
-            {/* Campo de pesquisa no dropdown */}
-            <div className="p-2">
-              <input
-                type="text"
-                placeholder="Digite o nome do produto"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)} // Atualiza o texto de pesquisa
-                className="w-full p-2 border rounded mb-2"
-              />
-            </div>
+              ? products.find((p) => p.id === selectedProductId)?.nome
+              : "Selecione um produto"}
+            <ChevronDownIcon className="w-4 h-4 text-gray-400" />
+          </button>
 
-            {/* Exibe os produtos filtrados */}
-            {filteredProducts.length > 0 ? (
-              filteredProducts.map((product) => (
-                <SelectItem
-                  key={product.id}
-                  value={product.id}
-                  onClick={() => {
-                    setSelectedProductId(product.id);
-                  }}
-                  className="p-0 m-0"
-                >
-                  <div className="flex items-center justify-end w-full p-2 gap-x-3">
+          {isDropdownOpen && (
+            <div className="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto">
+              <div className="p-2 border-b">
+                <input
+                  type="text"
+                  placeholder="Buscar produto..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full p-2 text-sm border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  autoFocus
+                />
+              </div>
+
+              <div className="divide-y">
+                {filteredProducts.map((product) => (
+                  <button
+                    key={product.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedProductId(product.id);
+                      setIsDropdownOpen(false);
+                    }}
+                    className="w-full p-3 text-sm text-left hover:bg-blue-50 transition-colors flex items-center justify-between"
+                  >
                     <span>{product.nome}</span>
-                    <span className="text-xs text-green-500">
-                      {product.preco.toLocaleString("pt-BR", {
-                        style: "currency",
-                        currency: "BRL",
-                      })}
-                    </span>
-                    <span className="text-xs font-semibold text-amber-500 justify-self-end">
-                      {product.categoria}
-                    </span>
-                  </div>
-                </SelectItem>
-              ))
-            ) : (
-              <SelectItem value="no-products-found" disabled>
-                Sem produtos encontrados
-              </SelectItem>
-            )}
-          </SelectContent>
-        </Select>
-      </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-green-600 font-medium">
+                        {product.preco.toLocaleString("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        })}
+                      </span>
+                      {product.categoria && (
+                        <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full">
+                          {product.categoria}
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
 
-      {/* Input para quantidade */}
-      <div className="mb-4">
-        <Input
-          type="number"
-          value={"" + quantity}
-          onChange={(e) => setQuantity(Number(e.target.value))}
-          min={1}
-          className="w-full md:w-20"
-        />
-      </div>
+        <div className="flex flex-col gap-1">
+          <Input
+            type="number"
+            value={quantity}
+            onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))}
+            min={1}
+            className="w-full h-11"
+          />
+        </div>
 
-      {/* Botão para adicionar o produto */}
-      <div className="mb-4">
-        <Button onClick={handleAddProduct} className="w-full md:w-auto">
+        <Button
+          onClick={handleAddProduct}
+          className="h-11 whitespace-nowrap"
+          disabled={!selectedProductId}
+        >
           Adicionar
         </Button>
       </div>
 
-      {/* Tabela para exibir produtos selecionados */}
-      <div>
-        <Table className="w-full max-w-full overflow-x-hidden">
-          <TableHeader>
+      {/* Tabela de Produtos Selecionados */}
+      <div className="border rounded-lg overflow-hidden">
+        <Table className="w-full">
+          <TableHeader className="bg-gray-50">
             <TableRow>
-              <TableHead className="w-1/4 p-2 text-center text-xs text-gray-700">
+              <TableHead className="w-[45%] py-3 text-xs font-semibold text-gray-600">
                 Produto
               </TableHead>
-              <TableHead className="w-1/4 p-2 text-center text-xs text-gray-700">
-                Valor
+              <TableHead className="text-center py-3 text-xs font-semibold text-gray-600">
+                Valor Unitário
               </TableHead>
-              <TableHead className="w-[1rem] p-1 text-center text-xs text-gray-700">
+              <TableHead className="text-center py-3 text-xs font-semibold text-gray-600">
                 Qtd
               </TableHead>
-              <TableHead className="w-1/4 p-1 text-center text-xs text-gray-700">
+              <TableHead className="text-center py-3 text-xs font-semibold text-gray-600">
                 Ações
               </TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
+
+          <TableBody className="divide-y">
             {selectedProducts.map((item) => (
-              <TableRow key={item.product.id} className="hover:bg-gray-50">
-                <TableCell className="p-2 text-xs text-center font-medium text-gray-800 whitespace-wrap">
+              <TableRow key={item.product.id} className="hover:bg-gray-50/50">
+                <TableCell className="py-3 text-sm font-medium text-gray-900">
                   {item.product.nome}
                 </TableCell>
-                <TableCell className="p-2 text-xs text-center font-medium text-gray-800 whitespace-nowrap">
+                <TableCell className="py-3 text-center text-sm text-gray-600">
                   {item.product.preco.toLocaleString("pt-BR", {
                     style: "currency",
                     currency: "BRL",
                   })}
                 </TableCell>
-                <TableCell className="p-2 text-center font-medium text-gray-800">
+                <TableCell className="py-3 text-center text-sm text-gray-600">
                   {item.quantity}
                 </TableCell>
-                <TableCell className="p-2 text-center">
+                <TableCell className="py-3 text-center">
                   <Button
-                    variant="outline"
+                    variant="ghost"
                     onClick={() => onRemoveProduct(item.product.id)}
-                    className="text-red-500 hover:bg-red-100"
+                    className="text-red-600 hover:bg-red-100/50 hover:text-red-700"
+                    size="sm"
                   >
                     <LucideTrash2 size={16} />
                   </Button>
@@ -257,15 +278,13 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
               </TableRow>
             ))}
           </TableBody>
-          <TableFooter>
+
+          <TableFooter className="bg-gray-50">
             <TableRow>
-              <TableCell
-                colSpan={3}
-                className="text-right font-bold p-3 text-gray-800"
-              >
+              <TableCell colSpan={3} className="py-3 text-right font-semibold">
                 Total:
               </TableCell>
-              <TableCell className="p-3 text-xs font-medium text-gray-800">
+              <TableCell className="py-3 text-center font-semibold text-blue-600">
                 {totalFormatted}
               </TableCell>
             </TableRow>

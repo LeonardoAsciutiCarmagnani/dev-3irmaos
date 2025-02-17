@@ -308,7 +308,7 @@ export function GetOrdersClientComponent() {
                   <td className="border px-4 py-2 text-sm md:text-base">
                     <Dialog>
                       <DialogTrigger>
-                        <span className="bg-amber-500 text-white px-2  text-xs md:text-base py-1 rounded hover:bg-amber-600">
+                        <span className="bg-store-primary text-white px-2  text-xs md:text-base py-1 rounded hover:bg-store-hover-primary">
                           Ver
                         </span>
                       </DialogTrigger>
@@ -335,7 +335,7 @@ export function GetOrdersClientComponent() {
                             onClick={() => {
                               handlePrintItensClient(order);
                             }}
-                            className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                            className="bg-store-primary hover:bg-store-hover-primary text-white px-2 py-1 rounded"
                           >
                             Imprimir
                           </Button>
@@ -383,7 +383,7 @@ export function GetOrdersClientComponent() {
                         onClick={() => {
                           handlePrintItensClient(order);
                         }}
-                        className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                        className="bg-store-primary hover:bg-store-hover-primary text-white px-2 py-1 rounded"
                       >
                         Imprimir
                       </Button>
@@ -447,7 +447,7 @@ export function GetOrdersClientComponent() {
                   <td className="border px-4 py-2 text-sm md:text-base">
                     <Dialog>
                       <DialogTrigger>
-                        <span className="bg-amber-500 text-white px-2  text-xs md:text-base py-1 rounded hover:bg-amber-600">
+                        <span className="bg-store-primary text-white px-2  text-xs md:text-base py-1 rounded hover:bg-store-hover-primary">
                           Ver
                         </span>
                       </DialogTrigger>
@@ -474,7 +474,7 @@ export function GetOrdersClientComponent() {
                             onClick={() => {
                               handlePrintItensClient(order);
                             }}
-                            className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                            className="bg-store-primary hover:bg-store-hover-primary text-white px-2 py-1 rounded"
                           >
                             Imprimir
                           </Button>
@@ -521,7 +521,7 @@ export function GetOrdersClientComponent() {
                       onClick={() => {
                         handlePrintItensClient(order);
                       }}
-                      className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                      className="bg-store-primary hover:bg-store-hover-primary text-white px-2 py-1 rounded"
                     >
                       Imprimir
                     </Button>

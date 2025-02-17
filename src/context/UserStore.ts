@@ -44,8 +44,9 @@ const useUserStore = create<UserStoreState>((set) => ({
       const docSnap = await getDoc(clientDoc);
       console.log("Requisição feita");
 
+      console.log("DocSnap:", docSnap.data());
       if (docSnap.exists()) {
-        const userName: string = docSnap.data()?.user_name;
+        const userName: string = docSnap.data()?.name;
         localStorage.setItem("userName", userName);
 
         return userName || null;

@@ -10,6 +10,9 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       colors: {
+        "store-primary": "#0284c7",
+        "store-hover-primary": "#20B2AA",
+        "store-secondary": "#2563eb",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {

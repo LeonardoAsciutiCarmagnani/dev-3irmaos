@@ -148,6 +148,7 @@ export const Clients = () => {
     fetchPriceLists();
     fetchTypeUser();
     fetchSaveUsername();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [db]);
 
   useEffect(() => {
@@ -409,11 +410,6 @@ export const Clients = () => {
                   if (a.type_user === "adm" && b.type_user !== "adm") return -1;
                   if (a.type_user !== "adm" && b.type_user === "adm") return 1;
 
-                  if (a.type_user === "fábrica" && b.type_user !== "fábrica")
-                    return -1;
-                  if (a.type_user !== "fábrica" && b.type_user === "fábrica")
-                    return 1;
-
                   // Depois, ordena por `user_name` em ordem alfabética
                   return a.user_name.localeCompare(b.user_name);
                 })
@@ -424,13 +420,8 @@ export const Clients = () => {
                   >
                     <div className="flex items-center space-x-2">
                       <User
-                        className={`w-8 h-8 ${
-                          cliente.type_user === "adm"
-                            ? "text-red-500"
-                            : cliente.type_user === "fábrica"
-                            ? "text-blue-500"
-                            : "text-amber-500"
-                        }`}
+                        className="w-8 h-8 
+                          cliente.type_user text-store-secondary"
                       />
                       <div>
                         <p className="text-gray-800 font-semibold">
@@ -441,8 +432,6 @@ export const Clients = () => {
                             variant={`${
                               cliente.type_user === "adm"
                                 ? "destructive"
-                                : cliente.type_user === "fábrica"
-                                ? "fabrica"
                                 : "default"
                             }`}
                             className="text-xs"
@@ -450,7 +439,7 @@ export const Clients = () => {
                             {cliente.type_user.toUpperCase()}
                           </Badge>
                           {cliente.type_user === "cliente" && (
-                            <Badge className="bg-amber-500 text-nowrap text-[0.7rem] w-fit">
+                            <Badge className="bg-store-secondary text-nowrap text-[0.7rem] w-fit">
                               {cliente.priceListName.toUpperCase() ||
                                 "lista padrão".toUpperCase()}
                             </Badge>
@@ -512,7 +501,7 @@ export const Clients = () => {
           </DialogHeader>
           {isEditMode ? (
             <form className="space-y-4" onSubmit={handleSubmit}>
-              <h2 className="font-semibold text-md text-amber-500">
+              <h2 className="font-semibold text-md text-store-secondary">
                 Informações
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -622,7 +611,7 @@ export const Clients = () => {
                 />
               </div>
               <div>
-                <h1 className="font-semibold text-md text-amber-500">
+                <h1 className="font-semibold text-md text-store-secondary">
                   Endereço
                 </h1>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-[16px]">
@@ -711,7 +700,7 @@ export const Clients = () => {
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-fit">
                 <div className=" flex flex-col p-1.5 h-fit">
-                  <h1 className="text-amber-500 w-fit border-b-[0.2rem] border-dashed border-amber-500 font-semibold">
+                  <h1 className="text-store-secondary w-fit border-b-[0.2rem] border-dashed border-store-secondary font-semibold">
                     Informações
                   </h1>
                   <p className="text-sm text-gray-600">
@@ -745,7 +734,7 @@ export const Clients = () => {
 
               <div className="space-y-1 h-fit">
                 <div>
-                  <h1 className="font-semibold text-md text-amber-500 w-fit border-b-[0.2rem] border-dashed border-amber-500">
+                  <h1 className="font-semibold text-md text-store-secondary w-fit border-b-[0.2rem] border-dashed border-store-secondary">
                     Endereço
                   </h1>
                 </div>
@@ -776,11 +765,11 @@ export const Clients = () => {
               </div>
 
               <div className=" flex items-center gap-x-3 h-fit">
-                <strong className="text-amber-500 w-fit border-b-[0.2rem] border-dashed border-amber-500 text-nowrap">
+                <strong className="text-store-secondary w-fit border-b-[0.2rem] border-dashed border-store-secondary text-nowrap">
                   Lista de preços:
                 </strong>
                 <div className="flex gap-x-1 pt-2 items-center">
-                  <span className="px-2 py-1 text-xs rounded-full bg-amber-400 text-black font-semibold w-fit text-nowrap">
+                  <span className="px-2 py-1 text-xs rounded-full bg-store-primary text-black font-semibold w-fit text-nowrap">
                     {selectedClient?.priceListName || "Lista padrão"}
                   </span>
                   {selectedClient?.type_user === "cliente" && (
@@ -842,10 +831,10 @@ export const Clients = () => {
           {!isEditMode ? (
             <div className="flex items-center gap-x-2 justify-start">
               <button
-                className="flex items-center px-4 py-2 bg-gray-100 rounded-md hover:bg-gray-200 border-2 border-amber-500 "
+                className="flex items-center px-4 py-2 bg-gray-100 rounded-md hover:bg-gray-200 border-2 border-store-secondary "
                 onClick={handleResetPassword}
               >
-                <KeyRoundIcon className="w-5 h-5 mr-2 text-amber-500" />
+                <KeyRoundIcon className="w-5 h-5 mr-2 text-store-secondary" />
                 <span className="text-xs">Redefinir Senha</span>
               </button>
             </div>
