@@ -4,6 +4,7 @@ import React, { Suspense } from "react";
 import ProtectedAdminRoute from "./_components/ProtectedAdminRoute";
 import PrintPageClient from "./pages/printpageClient";
 import SignupForm from "./_components/signup";
+import { CreditClient } from "./pages/creditClient";
 
 const Register = React.lazy(() => import("./pages/register"));
 const Home = React.lazy(() => import("./pages/home"));
@@ -158,6 +159,16 @@ export const router = createBrowserRouter(
         <Suspense fallback={<div>Carregando...</div>}>
           <ProtectedRoute>
             <PrintPageClient />
+          </ProtectedRoute>
+        </Suspense>
+      ),
+    },
+    {
+      path: "/credit-client",
+      element: (
+        <Suspense fallback={<div>Carregando...</div>}>
+          <ProtectedRoute>
+            <CreditClient />
           </ProtectedRoute>
         </Suspense>
       ),
