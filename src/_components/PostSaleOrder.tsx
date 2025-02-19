@@ -28,8 +28,9 @@ import { useNavigate } from "react-router-dom";
 import DialogSubmit from "./DialogSubmitOrder";
 import apiBaseUrl from "@/lib/apiConfig";
 import { DatePicker } from "./DatePicker";
-import { CheckCircleIcon, CircleIcon } from "lucide-react";
+import { CheckIcon, ChevronsRightIcon, CircleIcon } from "lucide-react";
 import InstallmentsTable from "./InstallmentsTable";
+import logo from "../assets/logo_sem_fundo.png";
 
 export type OrderSaleTypes = {
   IdClient?: string;
@@ -368,10 +369,23 @@ const OrderSaleProps: React.FC = () => {
         <div className="flex-1 bg-white p-4 rounded shadow-xl overflow-auto">
           {/* Cabeçalho */}
           <CardHeader className="mb-2 flex flex-row gap-x-4 justify-between">
-            <CardTitle className="text-xl font-bold">Nova cotação</CardTitle>
+            <CardTitle className="text-xl font-bold">
+              <div className="flex items-center justify-start gap-x-12">
+                <img src={logo} className="size-[8rem] rounded-full " />
+                <h1 className="antialised text-[1.7rem]  flex items-center gap-x-1 text-gray-600">
+                  <span>
+                    <ChevronsRightIcon
+                      size={26}
+                      className="text-store-primary"
+                    />
+                  </span>
+                  Nova cotação
+                </h1>
+              </div>
+            </CardTitle>
             <CardDescription>
               <div>
-                <span>
+                <span className="text-store-primary">
                   Nº {orderSale.order_code} - {orderCreationDate}
                 </span>
               </div>
@@ -610,14 +624,13 @@ const OrderSaleProps: React.FC = () => {
                 />
               </div>
               <div>
-                <Button
+                <CheckIcon
+                  size={30}
+                  aria-disabled={createInstallmentsList}
                   onClick={handleCreateInstallmentsList}
-                  className="bg-green-500 hover:bg-green-400"
-                  disabled={createInstallmentsList}
-                >
-                  {" "}
-                  <CheckCircleIcon size={20} />
-                </Button>
+                  color="green"
+                  className="cursor-pointer"
+                />
               </div>
             </div>
 
