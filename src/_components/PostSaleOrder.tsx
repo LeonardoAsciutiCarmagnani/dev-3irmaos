@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Clients from "./DropdownGetClients";
@@ -76,7 +81,7 @@ interface ProductWithQuantity {
 }
 
 const OrderSaleProps: React.FC = () => {
-  const orderCreationDate = format(new Date(), "yyyy/MM/dd - HH:mm:ss");
+  const orderCreationDate = format(new Date(), "yyyy/MM/dd HH:mm:ss");
   const [orderSale, setOrderSale] = useState<OrderSaleTypes>({
     status_order: 1,
     order_code: 0,
@@ -312,6 +317,16 @@ const OrderSaleProps: React.FC = () => {
     }
   };
 
+  type AddressKey = keyof EnderecoDeEntrega;
+
+  const addressFields: AddressKey[] = [
+    "logradouro",
+    "numero",
+    "bairro",
+    "cep",
+    "complemento",
+  ];
+
   return (
     <div className="flex h-screen overflow-hidden bg-gray-100 pb-[1rem]">
       {/* Sidebar */}
@@ -323,152 +338,97 @@ const OrderSaleProps: React.FC = () => {
       <div className="flex-1 p-4 flex flex-col pt-[3rem]">
         <div className="flex-1 bg-white p-4 rounded shadow-xl overflow-auto">
           {/* Cabeçalho */}
-          <CardHeader className="mb-2">
+          <CardHeader className="mb-2 flex flex-row gap-x-4 justify-between">
             <CardTitle className="text-xl font-bold">Nova cotação</CardTitle>
+            <CardDescription>
+              <div>
+                <span>
+                  Nº {orderSale.order_code} - {orderCreationDate}
+                </span>
+              </div>
+            </CardDescription>
           </CardHeader>
 
           <form onSubmit={handlePostSaleOrder} className="space-y-2">
             {/* Informações do pedido */}
 
-            <div className="border border-gray-300 rounded-lg p-2 flex justify-evenly gap-x-4">
-              <div className="grid grid-cols-2 gap-1 w-fit">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Nº Pedido
-                  </label>
-                  <Input
-                    value={orderSale.order_code}
-                    readOnly
-                    className="mt-1 w-[4rem]"
-                  />
-                </div>
+            <div className="border border-gray-300 rounded-lg p-4 grid lg:grid-cols-2 gap-6">
+              {/* Seção Cliente/Vendedor */}
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Cliente
+                    </label>
+                    <div className="w-full">
+                      <Clients onSelectClient={handleSelectClient} />
+                    </div>
+                  </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Data
-                  </label>
-                  <Input value={orderCreationDate} readOnly className="mt-1" />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Vendedor
-                  </label>
-                  <Input value={vendedorName} readOnly className="mt-1" />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Observações
-                  </label>
-                  <Input
-                    type="text"
-                    value={orderSale.observacaoDoPedidoDeVenda}
-                    onChange={(e) =>
-                      setOrderSale((prev) => ({
-                        ...prev,
-                        observacaoDoPedidoDeVenda: e.target.value,
-                      }))
-                    }
-                    placeholder="Observação do Pedido"
-                    className="mt-1"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Valor do Frete
-                  </label>
-                  <Input
-                    type="number"
-                    value={orderSale.valorDoFrete}
-                    onChange={(e) =>
-                      setOrderSale((prev) => ({
-                        ...prev,
-                        valorDoFrete: Number(e.target.value),
-                      }))
-                    }
-                    className="mt-1"
-                  />
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Vendedor
+                    </label>
+                    <Input
+                      value={vendedorName}
+                      readOnly
+                      className="w-full bg-gray-50 cursor-not-allowed"
+                    />
+                  </div>
                 </div>
               </div>
-              <div className="rounded-lg p-2 w-fit h-fit">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Cliente
-                </label>
-                <Clients onSelectClient={handleSelectClient} />
-              </div>
-              <div className=" rounded-lg p-2 h-fit">
-                <label className="block text-sm font-medium text-gray-700">
-                  Endereço de Entrega
-                </label>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1 mt-1">
-                  <div>
-                    <Input
-                      type="text"
-                      name="enderecoDeEntrega.bairro"
-                      readOnly={isUseRegisteredAddressForDelivery}
-                      value={orderSale.enderecoDeEntrega?.bairro}
-                      onChange={handleChange}
-                      placeholder="Bairro"
-                    />
-                  </div>
-                  <div>
-                    <Input
-                      type="text"
-                      name="enderecoDeEntrega.cep"
-                      readOnly={isUseRegisteredAddressForDelivery}
-                      value={orderSale.enderecoDeEntrega?.cep}
-                      onChange={handleChange}
-                      placeholder="CEP"
-                    />
-                  </div>
-                  <div>
-                    <Input
-                      type="text"
-                      name="enderecoDeEntrega.complemento"
-                      readOnly={isUseRegisteredAddressForDelivery}
-                      value={orderSale.enderecoDeEntrega?.complemento}
-                      onChange={handleChange}
-                      placeholder="Complemento"
-                    />
-                  </div>
-                  <div>
-                    <Input
-                      type="text"
-                      name="enderecoDeEntrega.logradouro"
-                      readOnly={isUseRegisteredAddressForDelivery}
-                      value={orderSale.enderecoDeEntrega?.logradouro}
-                      onChange={handleChange}
-                      placeholder="Logradouro"
-                    />
-                  </div>
-                  <div>
-                    <Input
-                      type="text"
-                      name="enderecoDeEntrega.numero"
-                      readOnly={isUseRegisteredAddressForDelivery}
-                      value={orderSale.enderecoDeEntrega?.numero}
-                      onChange={handleChange}
-                      placeholder="Número"
-                    />
+
+              {/* Seção Endereço de Entrega */}
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Endereço de Entrega
+                  </label>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {addressFields.map((field) => (
+                      <div key={field} className="space-y-1">
+                        <Input
+                          type="text"
+                          name={`enderecoDeEntrega.${field}`}
+                          readOnly={isUseRegisteredAddressForDelivery}
+                          value={orderSale.enderecoDeEntrega?.[field]}
+                          onChange={handleChange}
+                          placeholder={
+                            field === "logradouro"
+                              ? "Logradouro"
+                              : field === "complemento"
+                              ? "Complemento"
+                              : field === "bairro"
+                              ? "Bairro"
+                              : field === "cep"
+                              ? "CEP"
+                              : "Número"
+                          }
+                          className={`w-full transition-colors ${
+                            isUseRegisteredAddressForDelivery
+                              ? "bg-gray-100 cursor-not-allowed"
+                              : "hover:border-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                          }`}
+                        />
+                      </div>
+                    ))}
                   </div>
                 </div>
 
-                <div className="mt-1">
-                  <label className="inline-flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={isUseRegisteredAddressForDelivery}
-                      onChange={() =>
-                        setisUseRegisteredAddressForDelivery(
-                          !isUseRegisteredAddressForDelivery
-                        )
-                      }
-                    />
-                    <span className="ml-1 text-sm">
-                      Usar endereço cadastrado?
-                    </span>
+                <div className="flex items-center mt-3">
+                  <input
+                    type="checkbox"
+                    checked={isUseRegisteredAddressForDelivery}
+                    onChange={() =>
+                      setisUseRegisteredAddressForDelivery(
+                        !isUseRegisteredAddressForDelivery
+                      )
+                    }
+                    className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <label className="ml-2 text-sm text-gray-700">
+                    Usar endereço cadastrado?
                   </label>
                 </div>
               </div>
@@ -517,12 +477,60 @@ const OrderSaleProps: React.FC = () => {
               </Select>
             </div>
 
-            <CardFooter className="flex justify-end mt-2">
+            <div className="flex gap-x-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Observações
+                </label>
+                <Input
+                  type="text"
+                  value={orderSale.observacaoDoPedidoDeVenda}
+                  onChange={(e) =>
+                    setOrderSale((prev) => ({
+                      ...prev,
+                      observacaoDoPedidoDeVenda: e.target.value,
+                    }))
+                  }
+                  placeholder="Observação do Pedido"
+                  className="mt-1 min-w-[65rem]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Valor do Frete
+                </label>
+                <Input
+                  type="number"
+                  value={orderSale.valorDoFrete}
+                  onChange={(e) =>
+                    setOrderSale((prev) => ({
+                      ...prev,
+                      valorDoFrete: Number(e.target.value),
+                    }))
+                  }
+                  className="mt-1"
+                />
+              </div>
+            </div>
+
+            <CardFooter className="flex justify-end mt-2 gap-x-4">
               <Button
                 onClick={handlePostSaleOrder}
-                disabled={selectedProducts.length === 0}
+                className="bg-green-500"
+                disabled={
+                  selectedProducts.length === 0 && selectedPaymentMethod === ""
+                }
               >
-                Enviar Pedido
+                Salvar orçamento
+              </Button>
+              <Button
+                onClick={handlePostSaleOrder}
+                disabled={
+                  selectedProducts.length === 0 && selectedPaymentMethod === ""
+                }
+              >
+                Criar Pedido
               </Button>
             </CardFooter>
           </form>

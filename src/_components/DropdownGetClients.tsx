@@ -114,7 +114,7 @@ const Clients = ({ onSelectClient }: ClientsProps) => {
   };
 
   return (
-    <div className="p-4">
+    <div>
       <Select onValueChange={(value) => handleSelectClient(value)}>
         <SelectTrigger className="w-full flex items-center justify-between border border-gray-300 rounded-md p-2">
           <SelectValue placeholder="Selecione um cliente" />
