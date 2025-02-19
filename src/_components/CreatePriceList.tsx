@@ -12,6 +12,7 @@ interface ProductProps {
   preco: number;
   imagem?: string;
   categoria?: string;
+  peso: string;
 }
 
 interface PriceListProps {

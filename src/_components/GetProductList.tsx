@@ -29,33 +29,27 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
   const { setTotal } = usePostOrderStore();
   const [searchQuery, setSearchQuery] = useState("");
   const [priceListName, setPriceListName] = useState("");
+  // Armazena os descontos para cada item como string para permitir campo vazio
+  const [discounts, setDiscounts] = useState<{ [index: number]: string }>({});
 
   const filteredProducts = products.filter((product) =>
     product.nome.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Fetch de produtos da Firestore
+  // Fetch de produtos da Firestore (quando o priceListId muda)
   const fetchProducts = async () => {
-    console.log("priceListId: ", priceListId);
-
+    console.log("priceListId:", priceListId);
     try {
-      let docRef;
-
-      if (priceListId === "") {
-        console.log("Usando a lista de preços padrão.");
-        docRef = doc(firestore, "default_prices-list", "DEFAULT");
-      } else {
-        console.log(`Usando a lista de preços com ID: ${priceListId}`);
-        docRef = doc(firestore, "prices_lists", priceListId);
-      }
+      const docRef =
+        priceListId === ""
+          ? doc(firestore, "default_prices-list", "DEFAULT")
+          : doc(firestore, "prices_lists", priceListId);
 
       const docSnap = await getDoc(docRef);
-
       if (docSnap.exists()) {
         const priceListData = docSnap.data()?.products;
         const priceListName = docSnap.data()?.name;
         setPriceListName(priceListName);
-
         if (priceListData) {
           setProducts(priceListData);
           console.log("Produtos carregados com sucesso:", priceListData);
@@ -70,52 +64,62 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
     }
   };
 
-  // const handleSelectProduct = (productId: string) => {
-  //   setSelectedProductId(productId);
-  // };
-
+  // Adiciona o produto selecionado e inicializa o desconto (campo vazio)
   const handleAddProduct = (event: React.MouseEvent) => {
     event.preventDefault();
     setSearchQuery("");
-
     const product = products.find((p) => p.id === selectedProductId);
     if (product && quantity > 0) {
       const newProduct = { product, quantity };
       const updatedProducts = [...selectedProducts, newProduct];
       onProductSelect(updatedProducts);
-      console.log("UpdatedProducts: ", updatedProducts);
+      console.log("UpdatedProducts:", updatedProducts);
 
-      const total = updatedProducts.reduce(
-        (total, item) => total + item.product.preco * item.quantity,
-        0
-      );
-      setTotal(total);
+      // Inicializa o desconto para o novo item com valor vazio
+      setDiscounts((prev) => ({
+        ...prev,
+        [updatedProducts.length - 1]: "",
+      }));
 
       setQuantity(1);
       setSelectedProductId("");
     }
   };
 
-  const totalFormatted = useMemo(() => {
-    const total = selectedProducts.reduce(
-      (total, item) => total + item.product.preco * item.quantity,
-      0
-    );
-    return total.toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    });
-  }, [selectedProducts]);
+  // Atualiza o desconto para um item (permite valor vazio)
+  const handleDiscountChange = (index: number, discount: string) => {
+    // Permite valor vazio ou números maiores ou iguais a 0
+    if (discount === "" || parseFloat(discount) >= 0) {
+      setDiscounts((prev) => ({
+        ...prev,
+        [index]: discount,
+      }));
+    }
+  };
 
+  // Recalcula o total sempre que os produtos selecionados ou os descontos mudam
   useEffect(() => {
-    const total = selectedProducts.reduce(
-      (total, item) => total + item.product.preco * item.quantity,
-      0
-    );
+    const total = selectedProducts.reduce((total, item, index) => {
+      const discountStr = discounts[index];
+      const discountValue =
+        discountStr === "" || discountStr === undefined
+          ? 0
+          : parseFloat(discountStr);
+      // Se o desconto for igual ou maior que o preço, ignora-o (para não zerar ou deixar negativo)
+      const validDiscount =
+        discountValue < item.product.preco ? discountValue : 0;
+      return total + (item.product.preco - validDiscount) * item.quantity;
+    }, 0);
     setTotal(total);
+  }, [selectedProducts, discounts, setTotal]);
 
+  // useEffect para buscar os produtos sempre que priceListId mudar
+  useEffect(() => {
     fetchProducts();
+  }, [priceListId]);
 
+  // useEffect para fechar o dropdown ao clicar fora
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
@@ -126,8 +130,25 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [priceListId, setTotal]);
+  }, []);
+
+  // Total formatado usando useMemo, considerando descontos
+  const totalFormatted = useMemo(() => {
+    const total = selectedProducts.reduce((total, item, index) => {
+      const discountStr = discounts[index];
+      const discountValue =
+        discountStr === "" || discountStr === undefined
+          ? 0
+          : parseFloat(discountStr);
+      const validDiscount =
+        discountValue < item.product.preco ? discountValue : 0;
+      return total + (item.product.preco - validDiscount) * item.quantity;
+    }, 0);
+    return total.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    });
+  }, [selectedProducts, discounts]);
 
   return (
     <div className="p-2 space-y-4">
@@ -169,7 +190,6 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
                   autoFocus
                 />
               </div>
-
               <div className="divide-y">
                 {filteredProducts.map((product) => (
                   <button
@@ -224,41 +244,84 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
       {/* Tabela de Produtos Selecionados */}
       <div className="border rounded-lg overflow-hidden flex flex-col max-h-[10.8rem]">
         {/* Header Fixo */}
-        <div className="grid grid-cols-12 bg-gray-50 sticky top-0 p-2 border-b">
-          <div className="col-span-6 text-xs font-semibold text-gray-600">
+        <div className="grid grid-cols-7 bg-gray-50 sticky top-0 p-2 border-b">
+          <div className="col-span-1.5 text-xs font-semibold text-gray-600">
             Produto
           </div>
-          <div className="col-span-2 text-center text-xs font-semibold text-gray-600">
-            Valor Unitário
-          </div>
-          <div className="col-span-2 text-center text-xs font-semibold text-gray-600">
+          <div className="col-span-1 text-center text-xs font-semibold text-gray-600">
             Qtd
           </div>
-          <div className="col-span-2 text-center text-xs font-semibold text-gray-600">
+          <div className="col-span-1 text-center text-xs font-semibold text-gray-600">
+            Valor Unitário
+          </div>
+          <div className="col-span-1 text-center text-xs font-semibold text-gray-600">
+            Desconto
+          </div>
+          <div className="col-span-1 text-center text-xs font-semibold text-gray-600">
+            Valor total
+          </div>
+          <div className="col-span-1 text-center text-xs font-semibold text-gray-600">
+            Peso
+          </div>
+          <div className="col-span-1 text-center text-xs font-semibold text-gray-600">
             Ações
           </div>
         </div>
 
         {/* Body com Scroll */}
         <div className="flex-1 overflow-y-auto">
-          {selectedProducts.map((item) => (
+          {selectedProducts.map((item, index) => (
             <div
               key={item.product.id}
-              className="grid grid-cols-12 items-center hover:bg-gray-50/50 p-2 border-b"
+              className="grid grid-cols-7 items-center hover:bg-gray-50/50 p-2 border-b"
             >
-              <div className="col-span-6 text-sm font-medium text-gray-900 truncate">
+              <div className="col-span-1.5 text-sm font-medium text-gray-900 truncate">
                 {item.product.nome}
               </div>
-              <div className="col-span-2 text-center text-sm text-gray-600">
+              <div className="col-span-1 text-center text-sm text-gray-600">
+                {item.quantity}
+              </div>
+              <div className="col-span-1 text-center text-sm text-gray-600">
                 {item.product.preco.toLocaleString("pt-BR", {
                   style: "currency",
                   currency: "BRL",
                 })}
               </div>
-              <div className="col-span-2 text-center text-sm text-gray-600">
-                {item.quantity}
+              <div className="col-span-1 text-center text-sm text-gray-600 flex justify-center">
+                <div className="flex items-center">
+                  {discounts[index] !== "" &&
+                    discounts[index] !== undefined && <span>R$</span>}
+                  <input
+                    type="number"
+                    className="text-center w-[3rem]"
+                    value={discounts[index] ?? ""}
+                    onChange={(e) =>
+                      handleDiscountChange(index, e.target.value)
+                    }
+                    min="0"
+                    max={(item.product.preco - 0.01).toFixed(2)}
+                    step="0.01"
+                  />
+                </div>
               </div>
-              <div className="col-span-2 text-center">
+              <div className="col-span-1 text-center text-sm text-gray-600">
+                {(
+                  (item.product.preco -
+                    (discounts[index] === "" || discounts[index] === undefined
+                      ? 0
+                      : parseFloat(discounts[index]) < item.product.preco
+                      ? parseFloat(discounts[index])
+                      : 0)) *
+                  item.quantity
+                ).toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                })}
+              </div>
+              <div className="col-span-1 text-center text-sm text-gray-600 ml-2">
+                {(item.product.peso * item.quantity).toFixed(2)} KG
+              </div>
+              <div className="col-span-1 text-center">
                 <Button
                   variant="ghost"
                   onClick={() => onRemoveProduct(item.product.id)}
@@ -274,8 +337,10 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
 
         {/* Footer Fixo */}
         <div className="grid grid-cols-12 bg-gray-50 sticky bottom-0 p-2 border-t">
-          <div className="col-span-10 text-right font-semibold">Total:</div>
-          <div className="col-span-2 text-center font-semibold text-blue-600">
+          <div className="col-span-10 text-right font-semibold">
+            Total geral:
+          </div>
+          <div className="col-span-2 text-center font-semibold text-green-600">
             {totalFormatted}
           </div>
         </div>

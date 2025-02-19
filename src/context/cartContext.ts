@@ -18,6 +18,7 @@ export interface Product {
   quantidade: number;
   id_seq?: number;
   descricao: string;
+  peso: number;
 }
 
 interface ContextStates {
@@ -156,7 +157,8 @@ export const useZustandContext = create<ContextStates>((set) => ({
 
   handleAddItemInList: (newProduct) =>
     set((state) => {
-      const { id, nome, preco, imagem, categoria, descricao } = newProduct;
+      const { id, nome, preco, imagem, categoria, descricao, peso } =
+        newProduct;
 
       const existingProductIndex = state.listProductsInCart.findIndex(
         (product) => product.id === id
@@ -179,6 +181,7 @@ export const useZustandContext = create<ContextStates>((set) => ({
           quantidade: 1,
           imagem,
           descricao,
+          peso,
         });
       }
 

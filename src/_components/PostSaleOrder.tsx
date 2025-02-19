@@ -25,6 +25,7 @@ import { usePostOrderStore } from "@/context/postOrder";
 import { useNavigate } from "react-router-dom";
 import DialogSubmit from "./DialogSubmitOrder";
 import apiBaseUrl from "@/lib/apiConfig";
+import { CircleIcon } from "lucide-react";
 
 export type OrderSaleTypes = {
   IdClient?: string;
@@ -445,7 +446,7 @@ const OrderSaleProps: React.FC = () => {
             </div>
 
             {/* Métodos de pagamento */}
-            <div className="border border-gray-300 rounded-lg p-2">
+            <div className="border border-gray-300 rounded-lg p-2 w-fit">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Método de Pagamento
               </label>
@@ -465,6 +466,18 @@ const OrderSaleProps: React.FC = () => {
                   />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="10">
+                    <span className="flex items-center gap-x-2">
+                      Crédito em loja{" "}
+                      <span>
+                        <CircleIcon
+                          color="green"
+                          className="fill-green-300"
+                          size={14}
+                        />
+                      </span>
+                    </span>
+                  </SelectItem>
                   <SelectItem value="1">Dinheiro</SelectItem>
                   <SelectItem value="2">Cheque</SelectItem>
                   <SelectItem value="3">Devolução</SelectItem>
