@@ -1,8 +1,0 @@
-{
-  "projects": {
-    "default": "server-kyoto",
-    "kyoto": "kyoto-f1764"
-  },
-  "targets": {},
-  "etags": {}
-}

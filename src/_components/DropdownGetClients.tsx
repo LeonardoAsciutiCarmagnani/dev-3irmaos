@@ -11,7 +11,7 @@ import {
 // import { PlusIcon, MinusIcon } from "lucide-react";
 // import { Button } from "@/components/ui/button";
 import { ClientData, EnderecoDeEntrega } from "./PostSaleOrder";
-import { BadgeDollarSignIcon, DollarSignIcon } from "lucide-react";
+import { BadgeDollarSignIcon, CircleIcon, DollarSignIcon } from "lucide-react";
 // import InputMask from "react-input-mask";
 
 export interface Client {
@@ -126,7 +126,19 @@ const Clients = ({ onSelectClient }: ClientsProps) => {
               value={cliente.user_id}
               className="p-2 hover:bg-gray-100 antialiased text-xs font-semibold"
             >
-              {cliente.name.toLocaleUpperCase()} - {cliente.cpf}
+              <span className="flex items-center gap-x-2">
+                {" "}
+                {cliente.name.toLocaleUpperCase()}{" "}
+                <span>
+                  <CircleIcon
+                    size={15}
+                    color={`${cliente.creditos ? "green" : "red"}`}
+                    className={`${
+                      cliente.creditos ? "fill-green-300" : "fill-red-300"
+                    }`}
+                  />
+                </span>
+              </span>
             </SelectItem>
           ))}
         </SelectContent>

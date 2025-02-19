@@ -13,6 +13,7 @@ interface ProductSelectorProps {
   selectedProducts: { product: Product; quantity: number }[];
   onRemoveProduct: (productId: string) => void;
   priceListId: string;
+  clientSelected: boolean;
 }
 
 const ProductSelector: React.FC<ProductSelectorProps> = ({
@@ -20,6 +21,7 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
   selectedProducts,
   onRemoveProduct,
   priceListId,
+  clientSelected,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -86,10 +88,22 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
     }
   };
 
+  type ProductInlist = { product: Product; quantity: number };
+
   // Atualiza o desconto para um item (permite valor vazio)
-  const handleDiscountChange = (index: number, discount: string) => {
+  const handleDiscountChange = (
+    index: number,
+    discount: string,
+    item: ProductInlist
+  ) => {
+    const totalValue = item.quantity * item.product.preco;
+    const discountValue = parseFloat(discount);
+
     // Permite valor vazio ou números maiores ou iguais a 0
-    if (discount === "" || parseFloat(discount) >= 0) {
+    if (
+      discount === "" ||
+      (discountValue >= 0 && discountValue <= totalValue)
+    ) {
       setDiscounts((prev) => ({
         ...prev,
         [index]: discount,
@@ -99,17 +113,16 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
 
   // Recalcula o total sempre que os produtos selecionados ou os descontos mudam
   useEffect(() => {
-    const total = selectedProducts.reduce((total, item, index) => {
-      const discountStr = discounts[index];
-      const discountValue =
-        discountStr === "" || discountStr === undefined
-          ? 0
-          : parseFloat(discountStr);
-      // Se o desconto for igual ou maior que o preço, ignora-o (para não zerar ou deixar negativo)
-      const validDiscount =
-        discountValue < item.product.preco ? discountValue : 0;
-      return total + (item.product.preco - validDiscount) * item.quantity;
+    const total = selectedProducts.reduce((acc, item, index) => {
+      const desconto = discounts[index] ? parseFloat(discounts[index]) || 0 : 0;
+
+      // Garante que o desconto nunca seja maior que o total da linha
+      const totalLinha = item.quantity * item.product.preco;
+      const descontoValido = desconto <= totalLinha ? desconto : totalLinha;
+
+      return acc + (totalLinha - descontoValido);
     }, 0);
+
     setTotal(total);
   }, [selectedProducts, discounts, setTotal]);
 
@@ -134,16 +147,18 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
 
   // Total formatado usando useMemo, considerando descontos
   const totalFormatted = useMemo(() => {
-    const total = selectedProducts.reduce((total, item, index) => {
-      const discountStr = discounts[index];
-      const discountValue =
-        discountStr === "" || discountStr === undefined
-          ? 0
-          : parseFloat(discountStr);
-      const validDiscount =
-        discountValue < item.product.preco ? discountValue : 0;
-      return total + (item.product.preco - validDiscount) * item.quantity;
+    if (!selectedProducts.length) return "R$ 0,00";
+
+    const total = selectedProducts.reduce((acc, item, index) => {
+      const desconto = discounts[index] ? parseFloat(discounts[index]) || 0 : 0;
+
+      // Certifique-se de que o desconto nunca é maior que o total da linha
+      const totalLinha = item.quantity * item.product.preco;
+      const descontoValido = desconto <= totalLinha ? desconto : totalLinha;
+
+      return acc + (totalLinha - descontoValido);
     }, 0);
+
     return total.toLocaleString("pt-BR", {
       style: "currency",
       currency: "BRL",
@@ -171,6 +186,7 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
             type="button"
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             className="w-full flex items-center justify-between p-3 text-sm bg-white border rounded-lg transition-colors"
+            disabled={!clientSelected}
           >
             {selectedProductId
               ? products.find((p) => p.id === selectedProductId)?.nome
@@ -179,7 +195,7 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
           </button>
 
           {isDropdownOpen && (
-            <div className="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto">
+            <div className="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-[45vh] overflow-y-auto">
               <div className="p-2 border-b">
                 <input
                   type="text"
@@ -202,18 +218,18 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
                     className="w-full p-3 text-sm text-left hover:bg-blue-50 transition-colors flex items-center justify-between"
                   >
                     <span>{product.nome}</span>
-                    <div className="flex items-center gap-2">
+                    <div className="flex  items-center gap-2">
+                      {product.categoria && (
+                        <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full">
+                          {product.categoria}
+                        </span>
+                      )}
                       <span className="text-green-600 font-medium">
                         {product.preco.toLocaleString("pt-BR", {
                           style: "currency",
                           currency: "BRL",
                         })}
                       </span>
-                      {product.categoria && (
-                        <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full">
-                          {product.categoria}
-                        </span>
-                      )}
                     </div>
                   </button>
                 ))}
@@ -296,23 +312,20 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
                     className="text-center w-[3rem]"
                     value={discounts[index] ?? ""}
                     onChange={(e) =>
-                      handleDiscountChange(index, e.target.value)
+                      handleDiscountChange(index, e.target.value, item)
                     }
                     min="0"
-                    max={(item.product.preco - 0.01).toFixed(2)}
+                    max={(item.quantity * item.product.preco - 0.01).toFixed(2)}
                     step="0.01"
                   />
                 </div>
               </div>
               <div className="col-span-1 text-center text-sm text-gray-600">
                 {(
-                  (item.product.preco -
-                    (discounts[index] === "" || discounts[index] === undefined
-                      ? 0
-                      : parseFloat(discounts[index]) < item.product.preco
-                      ? parseFloat(discounts[index])
-                      : 0)) *
-                  item.quantity
+                  item.quantity * item.product.preco -
+                  (discounts[index] && !isNaN(parseFloat(discounts[index]))
+                    ? parseFloat(discounts[index])
+                    : 0)
                 ).toLocaleString("pt-BR", {
                   style: "currency",
                   currency: "BRL",

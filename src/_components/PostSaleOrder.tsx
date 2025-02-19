@@ -13,7 +13,9 @@ import ProductSelector from "../_components/GetProductList";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -25,7 +27,9 @@ import { usePostOrderStore } from "@/context/postOrder";
 import { useNavigate } from "react-router-dom";
 import DialogSubmit from "./DialogSubmitOrder";
 import apiBaseUrl from "@/lib/apiConfig";
-import { CircleIcon } from "lucide-react";
+import { DatePicker } from "./DatePicker";
+import { CheckCircleIcon, CircleIcon } from "lucide-react";
+import InstallmentsTable from "./InstallmentsTable";
 
 export type OrderSaleTypes = {
   IdClient?: string;
@@ -133,6 +137,17 @@ const OrderSaleProps: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { total } = usePostOrderStore();
   const [vendedorName, setVendedorName] = useState<string>("");
+  const [firstDueDate, setFirstDueDate] = useState<Date | null>(null);
+  const [deliveryDate, setDeliveryDate] = useState<Date | null>(null);
+  const [selectedPaymentOption, setSelectedPaymentOption] =
+    useState<string>("");
+
+  const [valorFrete, setValorFrete] = useState<number>(0);
+
+  const [period, setPeriod] = useState<string>("semanal");
+  const [installments, setInstallments] = useState<string>("1");
+  const [createInstallmentsList, setCreateInstallmentsList] =
+    useState<boolean>(false);
 
   const navigate = useNavigate();
 
@@ -269,13 +284,21 @@ const OrderSaleProps: React.FC = () => {
         meiosDePagamento: [
           {
             idMeioDePagamento: selectedId,
-            parcelas: 1,
+            parcelas: parseInt(installments, 10),
             valor: total,
           },
         ],
       }));
     } else {
       console.error("ID do meio de pagamento inválido");
+    }
+  };
+
+  const handleCreateInstallmentsList = () => {
+    if (installments && firstDueDate && selectedPaymentMethod) {
+      setCreateInstallmentsList(true);
+    } else {
+      toastError("Por favor, preencha todos os campos.");
     }
   };
 
@@ -300,6 +323,11 @@ const OrderSaleProps: React.FC = () => {
       toastError("Usuário não encontrado.");
       return;
     }
+
+    setOrderSale((prevOrderSaleTypes) => ({
+      ...prevOrderSaleTypes,
+      valorDoFrete: valorFrete,
+    }));
 
     try {
       await axios.post(`${apiBaseUrl}/pedido-de-venda/${clientId}`, orderSale, {
@@ -442,52 +470,155 @@ const OrderSaleProps: React.FC = () => {
                 selectedProducts={selectedProducts}
                 onProductSelect={handleProductSelect}
                 onRemoveProduct={handleRemoveProduct}
+                clientSelected={clienteSelecionado}
               />
             </div>
 
             {/* Métodos de pagamento */}
-            <div className="border border-gray-300 rounded-lg p-2 w-fit">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Método de Pagamento
-              </label>
-              <Select
-                required
-                onValueChange={handleSelectPaymentMethod}
-                value={selectedPaymentMethod}
-                disabled={selectedProducts.length === 0}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue
-                    placeholder={
-                      selectedPaymentMethod
-                        ? selectedPaymentMethod
-                        : "Selecione o método de pagamento"
-                    }
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="10">
-                    <span className="flex items-center gap-x-2">
-                      Crédito em loja{" "}
-                      <span>
-                        <CircleIcon
-                          color="green"
-                          className="fill-green-300"
-                          size={14}
-                        />
-                      </span>
-                    </span>
-                  </SelectItem>
-                  <SelectItem value="1">Dinheiro</SelectItem>
-                  <SelectItem value="2">Cheque</SelectItem>
-                  <SelectItem value="3">Devolução</SelectItem>
-                  <SelectItem value="4">Cartão de crédito</SelectItem>
-                  <SelectItem value="5">Cartão de débito</SelectItem>
-                  <SelectItem value="6">Boleto</SelectItem>
-                  <SelectItem value="7">Cartão Voucher</SelectItem>
-                  <SelectItem value="8">PIX</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="flex flex-wrap items-end gap-4">
+              {/* 1) Tipo de Pagamento (À vista ou Parcelado) */}
+              <div className="flex flex-col">
+                <label className="text-xs font-medium leading-none mb-1">
+                  Tipo de Pagamento
+                </label>
+                <Select
+                  value={selectedPaymentOption}
+                  onValueChange={setSelectedPaymentOption}
+                >
+                  <SelectTrigger className="w-[120px] h-9">
+                    <SelectValue placeholder="Selecione" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="cash">À Vista</SelectItem>
+                      <SelectItem value="installment">Parcelado</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* 2) Condição (número de parcelas) - só exibe se for “Parcelado” */}
+              {selectedPaymentOption === "installment" && (
+                <div className="flex flex-col">
+                  <label className="text-xs font-medium leading-none mb-1">
+                    Condição
+                  </label>
+                  <Select value={installments} onValueChange={setInstallments}>
+                    <SelectTrigger className="w-[80px] h-9">
+                      <SelectValue placeholder="..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((num) => (
+                          <SelectItem key={num} value={String(num)}>
+                            {num}x
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {/* 3) Período (Semanal, Quinzenal, Mensal...) - exemplo opcional, 
+    pois na imagem há “Semanal” */}
+              {selectedPaymentOption === "installment" && (
+                <div className="flex flex-col">
+                  <label className="text-xs font-medium leading-none mb-1">
+                    Período
+                  </label>
+                  <Select value={period} onValueChange={setPeriod}>
+                    <SelectTrigger className="w-[120px] h-9">
+                      <SelectValue placeholder={period} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value="semanal">Semanal</SelectItem>
+                        <SelectItem value="quinzenal">Quinzenal</SelectItem>
+                        <SelectItem value="mensal">Mensal</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {/* 4) Forma de Pagamento (ex.: Débito Bancário) */}
+              <div className="flex flex-col">
+                <label className="text-xs font-medium leading-none mb-1">
+                  Forma de Pagamento
+                </label>
+                <Select
+                  value={selectedPaymentMethod}
+                  onValueChange={handleSelectPaymentMethod}
+                >
+                  <SelectTrigger className="w-[20rem] h-9">
+                    <SelectValue placeholder="Selecione" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {/* Você pode remover o <Selectlabel> ou usá-lo como “categoria” */}
+                      <SelectLabel>Escolha</SelectLabel>
+                      <SelectItem value="10">
+                        <span className="flex items-center gap-x-2">
+                          Crédito em loja{" "}
+                          <span>
+                            <CircleIcon
+                              color="green"
+                              size={15}
+                              className="fill-green-300"
+                            />
+                          </span>
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="1">Dinheiro</SelectItem>
+                      <SelectItem value="2">Cheque</SelectItem>
+                      <SelectItem value="3">Devolução</SelectItem>
+                      <SelectItem value="4">Cartão de crédito</SelectItem>
+                      <SelectItem value="5">Cartão de débito</SelectItem>
+                      <SelectItem value="6">Boleto</SelectItem>
+                      <SelectItem value="7">Cartão Voucher</SelectItem>
+                      <SelectItem value="8">PIX</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* 5) Primeiro Vencimento */}
+              <div className="flex flex-col">
+                <label className="text-xs font-medium leading-none mb-1">
+                  Primeiro Vencimento
+                </label>
+                <DatePicker
+                  date={firstDueDate}
+                  setDate={setFirstDueDate}
+                  minDate={new Date()}
+                  placeholderText="Selecione uma data"
+                  className="w-[16rem] h-9"
+                />
+              </div>
+
+              {/* Exemplo opcional: Valor do Pagamento (caso queira) */}
+              <div className="flex flex-col">
+                <label className="text-xs font-medium leading-none mb-1">
+                  Valor final
+                </label>
+                <Input
+                  type="number"
+                  value={total.toFixed(2)}
+                  className="w-[100px] h-9"
+                  readOnly
+                />
+              </div>
+              <div>
+                <Button
+                  onClick={handleCreateInstallmentsList}
+                  className="bg-green-500 hover:bg-green-400"
+                  disabled={createInstallmentsList}
+                >
+                  {" "}
+                  <CheckCircleIcon size={20} />
+                </Button>
+              </div>
             </div>
 
             <div className="flex gap-x-4">
@@ -505,24 +636,43 @@ const OrderSaleProps: React.FC = () => {
                     }))
                   }
                   placeholder="Observação do Pedido"
-                  className="mt-1 min-w-[65rem]"
+                  className="mt-1 min-w-[70rem]"
                 />
               </div>
+            </div>
 
+            {createInstallmentsList && (
+              <div className="border rounded-lg overflow-hidden flex flex-col max-h-[12rem] max-w-[70rem]">
+                <InstallmentsTable
+                  formaPagamento={selectedPaymentMethod}
+                  periodo={period}
+                  parcelamento={parseInt(installments, 10)}
+                  valorTotal={total}
+                />
+              </div>
+            )}
+            <div className="flex gap-x-4 justify-start items-center">
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Valor do Frete
                 </label>
                 <Input
                   type="number"
-                  value={orderSale.valorDoFrete}
-                  onChange={(e) =>
-                    setOrderSale((prev) => ({
-                      ...prev,
-                      valorDoFrete: Number(e.target.value),
-                    }))
-                  }
-                  className="mt-1"
+                  value={valorFrete}
+                  onChange={(e) => setValorFrete(Number(e.target.value))}
+                  className="mt-1 w-[5rem] text-center"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Previsão de entrega
+                </label>
+                <DatePicker
+                  date={deliveryDate}
+                  setDate={setDeliveryDate}
+                  minDate={new Date()}
+                  placeholderText="Selecione uma data"
+                  className="w-[16rem] h-9"
                 />
               </div>
             </div>
@@ -530,9 +680,13 @@ const OrderSaleProps: React.FC = () => {
             <CardFooter className="flex justify-end mt-2 gap-x-4">
               <Button
                 onClick={handlePostSaleOrder}
-                className="bg-green-500"
+                className="bg-green-500 hover:bg-green-400"
                 disabled={
-                  selectedProducts.length === 0 && selectedPaymentMethod === ""
+                  selectedProducts.length === 0 &&
+                  selectedPaymentMethod === "" &&
+                  !clienteSelecionado &&
+                  !firstDueDate &&
+                  selectedPaymentOption === ""
                 }
               >
                 Salvar orçamento
@@ -540,7 +694,11 @@ const OrderSaleProps: React.FC = () => {
               <Button
                 onClick={handlePostSaleOrder}
                 disabled={
-                  selectedProducts.length === 0 && selectedPaymentMethod === ""
+                  selectedProducts.length === 0 &&
+                  selectedPaymentMethod === "" &&
+                  !clienteSelecionado &&
+                  !firstDueDate &&
+                  selectedPaymentOption === ""
                 }
               >
                 Criar Pedido
