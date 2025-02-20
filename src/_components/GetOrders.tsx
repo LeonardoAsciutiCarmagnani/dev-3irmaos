@@ -1,3 +1,4 @@
+
 /* eslint-disable react-hooks/exhaustive-deps */
 import {
   collection,
@@ -34,7 +35,7 @@ import { DateRange } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { Calendar } from "@/components/ui/calendar";
 import { ptBR } from "date-fns/locale";
-import { Trash } from "lucide-react";
+import { ArrowRight, CircleIcon, Trash } from "lucide-react";
 import useUserStore from "@/context/UserStore";
 
 interface StatusProps {
@@ -61,6 +62,8 @@ export function GetOrdersComponent() {
   });
   const [check, setCheck] = useState(false);
   const [isCleared, setIsCleared] = useState(false);
+
+  const [open, setOpen] = useState(false);
 
   const { typeUser, setTypeUser } = useUserStore();
 
@@ -97,7 +100,7 @@ export function GetOrdersComponent() {
         setFilteredOrders(queryList);
       }
     } catch (e) {
-      console.log(e);
+      console.error(e);
       toastError("Ocorreu um erro ao buscar os pedidos !");
     }
   };
@@ -512,12 +515,33 @@ export function GetOrdersComponent() {
     }
   };
 
+  const handleAprovedOrder = async (order: OrderSaleTypes) => {
+    if (!order.id) {
+      console.error("Order ID is undefined.");
+      return;
+    }
+    const orderUpdateDate = format(new Date(), "yyyy/MM/dd HH:mm:ss");
+
+    const collectionRef = doc(firestore, "sales_orders", order.id);
+
+    await updateDoc(collectionRef, {
+      status_order: order.status_order + 1,
+      updated_at: orderUpdateDate,
+    });
+    try {
+      console.log("Order status updated successfully.");
+    } catch (error) {
+      console.error("Error updating order status:", error);
+    }
+  };
   const selectOptions = [
-    { value: 1, label: "Pedido Aberto" },
-    { value: 2, label: "Em produção" },
-    { value: 3, label: "Pedido pronto" },
-    { value: 5, label: "Pedido enviado" },
-    { value: 6, label: "Entregue" },
+    // { value: 1, label: "Orçamento" },
+    // { value: 2, label: "Pedido" },
+    { value: 3, label: "Não faturado" },
+    { value: 4, label: "Faturado" },
+    { value: 5, label: "Em separação" },
+    { value: 6, label: "Enviado" },
+    { value: 7, label: "Concluído" },
   ];
 
   const formattedFrom = range?.from
@@ -555,12 +579,10 @@ export function GetOrdersComponent() {
             {...register("selectStatus")}
           >
             <option value="0">Todos os status</option>
-            <option value="1">Pedido Aberto</option>
-            <option value="2">Em produção</option>
-            <option value="3">Pedido pronto</option>
-            <option value="4">Pedido faturado</option>
-            <option value="5">Pedido enviado</option>
-            <option value="6">Entregue</option>
+            <option value="3">Não faturado</option>
+            <option value="5">Em separação</option>
+            <option value="6">Enviado</option>
+            <option value="7">Concluído</option>
           </select>
 
           <Popover>
@@ -620,11 +642,11 @@ export function GetOrdersComponent() {
                   {...register("selectData")}
                   disabled={selectedOrderList.length === 0}
                 >
-                  <option value="1">Pedido Aberto</option>
-                  <option value="2">Em produção</option>
-                  <option value="3">Pedido pronto</option>
-                  <option value="5">Pedido enviado</option>
-                  <option value="6">Entregue</option>
+                  <option value="0">Todos os status</option>
+                  <option value="3">Não faturado</option>
+                  <option value="5">Em separação</option>
+                  <option value="6">Enviado</option>
+                  <option value="7">Concluído</option>
                 </select>
                 <div className="space-y-2 overflow-y-scroll h-56">
                   {selectedOrderList.length > 0 ? (
@@ -652,14 +674,10 @@ export function GetOrdersComponent() {
                           </div>
                           <div
                             className={`px-2 py-1 rounded ${
-                              order.status_order === 1
-                                ? "bg-green-100 text-green-700 hover:bg-green-200"
-                                : order.status_order === 2
-                                ? "bg-yellow-200 text-yellow-800 hover:bg-yellow-300"
-                                : order.status_order === 3
+                              order.status_order === 3
                                 ? "bg-blue-200 text-blue-800 hover:bg-blue-300"
                                 : order.status_order === 4
-                                ? "bg-orange-200 text-orange-800 hover:bg-orange-300"
+                                ? "bg-purple-200 text-purple-800 hover:bg-purple-300"
                                 : order.status_order === 6
                                 ? "bg-green-300 text-green-900 "
                                 : "bg-gray-200 text-gray-800 hover:bg-gray-300"
@@ -667,14 +685,18 @@ export function GetOrdersComponent() {
                           >
                             <span className="text-sm md:text-base text-nowrap">
                               {order.status_order === 1
-                                ? "Pedido Aberto"
+                                ? "Em aprovação"
                                 : order.status_order === 2
-                                ? "Em produção"
+                                ? "Em aprovação"
                                 : order.status_order === 3
-                                ? "Pedido pronto"
+                                ? "Não faturado"
+                                : order.status_order === 4
+                                ? "Faturado"
                                 : order.status_order === 5
-                                ? "Pedido enviado"
-                                : order.status_order === 6 && "Entregue"}
+                                ? "Em separação"
+                                : order.status_order === 6
+                                ? "Entregue"
+                                : order.status_order === 7 && "Concluído"}
                             </span>
                           </div>
                         </div>
@@ -721,6 +743,30 @@ export function GetOrdersComponent() {
           </Button>
         </form>
       </div>
+      <div className="flex flex-col p-2 bg-gray-50">
+        <span className="font-semibold ">Legenda:</span>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center">
+            <CircleIcon className={`fill-orange-200 text-orange-400`} />
+            <ArrowRight size={20} />
+          </div>
+          <span>Cotação</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center">
+            <CircleIcon className={`fill-blue-200 text-blue-400`} />
+            <ArrowRight size={20} />
+          </div>
+          <span>Pedido de venda</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center">
+            <CircleIcon className={`fill-purple-200 text-purple-400`} />
+            <ArrowRight size={20} />
+          </div>
+          <span>Faturado</span>
+        </div>
+      </div>
       <table className="w-full border-collapse text-center border-gray-200">
         <thead className="bg-gray-100">
           <tr>
@@ -747,7 +793,10 @@ export function GetOrdersComponent() {
             </th>
             <th className="border md:px-4 py-2 text-xs md:text-base">Status</th>
             <th className="border md:px-4 py-2 text-xs md:text-base">
-              Detalhes
+              Aprovação
+            </th>
+            <th className="border md:px-4 py-2 text-xs md:text-base">
+              Logística
             </th>
             {typeUser !== "fábrica" && (
               <th className={`border md:px-4 py-2 hidden md:table-cell`}>
@@ -763,72 +812,96 @@ export function GetOrdersComponent() {
           {filteredOrders.length > 0 ? (
             <>
               {filteredOrders.map((order) => (
-                <tr
-                  key={order.id}
-                  className={
-                    order.created_at === undefined
-                      ? "hidden"
-                      : "hover:bg-gray-50"
-                  }
-                >
-                  <td className="border px-4 py-2 text-sm md:text-base ">
-                    <input
-                      type="checkbox"
-                      name=""
-                      id=""
-                      checked={selectedOrderList.includes(order) && !isCleared}
-                      onChange={() => {
-                        handleSelectOrder(order);
-                      }}
-                    />
-                  </td>
-                  <td className="border px-4 py-2 hidden md:table-cell text-sm md:text-base">
-                    {order.order_code}
-                  </td>
-
-                  <td className="border px-4 py-2 hidden md:table-cell text-sm md:text-base">
-                    {order.created_at
-                      ? format(order.created_at, "dd/MM/yyyy 'ás' HH:mm:ss")
-                      : "Data indisponível"}
-                  </td>
-                  <td className="border px-4 py-2 text-xs md:text-base">
-                    {order.cliente?.nomeDoCliente}
-                  </td>
-                  <td className="border px-4 py-2 ">
-                    <select
-                      value={order.status_order}
-                      onChange={(e) => {
-                        if (order.status_order && order.id) {
-                          const nextStatus = Number(e.target.value);
-                          handleUpdatedStatusOrder(order.id, nextStatus);
-                        }
-                      }}
-                      disabled={(order.status_order ?? 0) >= 6}
-                      className={`px-2 py-1 rounded text-xs md:text-base  ${
+                <Dialog open={open} onOpenChange={setOpen} key={order.id}>
+                  <tr
+                    onDoubleClick={() => setOpen(true)}
+                    className={`
+                    ${order.created_at === undefined && "hidden"}
+                      ${
                         order.status_order === 1
-                          ? "bg-green-100 text-green-700 hover:bg-green-200"
+                          ? "bg-orange-100 hover:bg-orange-200"
                           : order.status_order === 2
-                          ? "bg-yellow-200 text-yellow-800 hover:bg-yellow-300"
-                          : order.status_order === 3
-                          ? "bg-blue-200 text-blue-800 hover:bg-blue-300"
-                          : order.status_order === 5
-                          ? "bg-orange-200 text-orange-800 hover:bg-orange-300"
-                          : order.status_order === 6
-                          ? "bg-green-300 text-green-900 "
-                          : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-                      }`}
-                    >
-                      {selectOptions.map((option, index) => {
-                        return (
-                          <option key={index} value={option.value}>
-                            {option.label}
-                          </option>
-                        );
-                      })}
-                    </select>
-                  </td>
-                  <td className="border px-4 py-2 text-sm md:text-base">
-                    <Dialog>
+                          ? "bg-blue-100 hover:bg-blue-200"
+                          : order.status_order === 4 &&
+                            "bg-purple-100 hover:bg-purple-200"
+                      }
+                  `}
+                  >
+                    <td className="border px-4 py-2 text-sm md:text-base ">
+                      <input
+                        type="checkbox"
+                        name=""
+                        id=""
+                        checked={
+                          selectedOrderList.includes(order) && !isCleared
+                        }
+                        onChange={() => {
+                          handleSelectOrder(order);
+                        }}
+                      />
+                    </td>
+                    <td className="border px-4 py-2 hidden md:table-cell text-sm md:text-base">
+                      {order.order_code}
+                    </td>
+                    <td className="border px-4 py-2 hidden md:table-cell text-sm md:text-base">
+                      {order.created_at
+                        ? format(order.created_at, "dd/MM/yyyy 'ás' HH:mm:ss")
+                        : "Data indisponível"}
+                    </td>
+                    <td className="border px-4 py-2 text-xs md:text-base">
+                      {order.cliente?.nomeDoCliente}
+                    </td>
+                    <td className=" border px-4 py-2 ">
+                      <div className="flex  justify-center">
+                        <CircleIcon
+                          className={`${
+                            order.status_order === 1
+                              ? " fill-orange-200  text-orange-400"
+                              : order.status_order === 2
+                              ? "text-blue-500 fill-blue-300 "
+                              : order.status_order === 4 &&
+                                "fill-purple-200 text-purple-400"
+                          } `}
+                        />
+                      </div>
+                    </td>
+                    <td className=" border px-4 py-2 ">
+                      <Button
+                        className="text-zinc-50 bg-purple-500"
+                        onClick={() => handleAprovedOrder(order)}
+                      >
+                        Aprovar
+                      </Button>
+                    </td>
+                    <td className="border px-4 py-2 ">
+                      <select
+                        value={order.status_order}
+                        onChange={(e) => {
+                          if (order.status_order && order.id) {
+                            const nextStatus = Number(e.target.value);
+                            handleUpdatedStatusOrder(order.id, nextStatus);
+                          }
+                        }}
+                        disabled={(order.status_order ?? 0) >= 6}
+                        className={`px-2 py-1 rounded text-xs md:text-base  ${
+                          order.status_order === 3
+                            ? "bg-blue-200 text-blue-800 hover:bg-blue-300"
+                            : order.status_order === 4
+                            ? "bg-purple-200 text-purple-800 hover:bg-purple-300"
+                            : order.status_order === 5
+                            ? "bg-green-300 text-green-900 "
+                            : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                        }`}
+                      >
+                        {selectOptions.map((option, index) => {
+                          return (
+                            <option key={index} value={option.value}>
+                              {option.label}
+                            </option>
+                          );
+                        })}
+                      </select>
+                      {/*  <Dialog>
                       <DialogTrigger>
                         <span className="bg-amber-500 text-white px-2  text-xs md:text-base py-1 rounded hover:bg-amber-600">
                           Ver
@@ -841,19 +914,7 @@ export function GetOrdersComponent() {
                         <DialogHeader className="items-center">
                           <DialogTitle>Detalhes</DialogTitle>
                         </DialogHeader>
-                        <div className=" md:hidden space-y-2 flex flex-col items-center justify-center">
-                          {typeUser !== "fábrica" && (
-                            <div className="flex gap-1 justify-between rounded-lg items-center p-1">
-                              <span className="text-base font-semibold">
-                                Valor total do pedido:
-                              </span>
-                              <span>
-                                {order.total?.toLocaleString("pt-BR", {
-                                  style: "currency",
-                                  currency: "BRL",
-                                })}
-                              </span>
-                            </div>
+                      
                           )}
 
                           <Popover>
@@ -889,16 +950,70 @@ export function GetOrdersComponent() {
                             </PopoverContent>
                           </Popover>
                         </div>
+                      
+                          ))}
+                        </div>
+                      </DialogContent>
+                    </Dialog> */}
+                    </td>
+                    {typeUser !== "fábrica" && (
+                      <td className="border px-4 py-2 hidden md:table-cell">
+                        {order.total?.toLocaleString("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        })}
+                      </td>
+                    )}
+                    <td className="border px-4 py-2 hidden md:table-cell">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded">
+                            Imprimir
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent>
+                          <div className="flex flex-col">
+                            <span>Escolha o tipo de impressão:</span>
+                            <div className="flex gap-2">
+                              <Button
+                                onClick={() => {
+                                  const type = "A4";
+                                  handlePrintItens(order, type);
+                                }}
+                                className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                              >
+                                Imprimir A4
+                              </Button>
+                              <Button
+                                onClick={() => {
+                                  const type = "termica";
+                                  handlePrintItens(order, type);
+                                }}
+                                className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                              >
+                                Imprimir Térmica
+                              </Button>
+                            </div>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    </td>
+                  </tr>
+                  <DialogContent aria-describedby={undefined}>
+                    <DialogTitle className="hidden" />
+
+                    <div className="  space-y-2 flex flex-col items-center justify-center">
+                      <div>
                         <div className="text-lg font-semibold text-center">
-                          Lista de produtos:
+                          Produtos:
                         </div>
                         <div className=" rounded-lg text-sm space-y-2 p-2 md:text-base">
-                          {order.itens.map((product) => (
-                            <div
-                              key={product.produtoId}
-                              className="flex flex-col border-2 space-y-2 p-2 rounded-lg items-center"
-                            >
-                              <div>
+                          {order.itens.map((product) => {
+                            return (
+                              <div
+                                key={product.produtoId}
+                                className="flex flex-col border-2 space-y-2 p-2 rounded-lg items-center"
+                              >
                                 <span className="font-semibold">
                                   {product.nome}
                                 </span>{" "}
@@ -906,21 +1021,122 @@ export function GetOrdersComponent() {
                                 <span className="font-semibold">
                                   {product.categoria}
                                 </span>
+                                <span>Quantidade: {product.quantidade}</span>
+                                {typeUser !== "fábrica" && (
+                                  <span>
+                                    {product.preco?.toLocaleString("pt-BR", {
+                                      style: "currency",
+                                      currency: "BRL",
+                                    })}
+                                  </span>
+                                )}
                               </div>
-                              <span>Quantidade: {product.quantidade}</span>
-                              {typeUser !== "fábrica" && (
-                                <span>
-                                  {product.preco?.toLocaleString("pt-BR", {
-                                    style: "currency",
-                                    currency: "BRL",
-                                  })}
-                                </span>
-                              )}
+                            );
+                          })}
+
+                          {typeUser !== "fábrica" && (
+                            <div className="flex gap-1 justify-between rounded-lg items-center p-1">
+                              <span className="text-base font-semibold">
+                                Total do pedido:
+                              </span>
+                              <span className="text-lg">
+                                {order.total?.toLocaleString("pt-BR", {
+                                  style: "currency",
+                                  currency: "BRL",
+                                })}
+                              </span>
                             </div>
-                          ))}
+                          )}
                         </div>
-                      </DialogContent>
-                    </Dialog>
+
+                        <span>Métodos de pagamento</span>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              ))}
+            </>
+          ) : (
+            <>
+              {orderList.map((order) => (
+                <tr
+                  key={order.id}
+                  className={`
+              ${order.created_at === undefined && "hidden"}
+                ${
+                  order.status_order === 1
+                    ? "bg-orange-100 hover:bg-orange-200"
+                    : order.status_order === 2
+                    ? "bg-blue-100 hover:bg-blue-200"
+                    : order.status_order === 4 &&
+                      "bg-purple-100 hover:bg-purple-200"
+                }
+            `}
+                >
+                  <td className="border px-4 py-2 text-sm md:text-base ">
+                    <input
+                      type="checkbox"
+                      name=""
+                      id=""
+                      checked={selectedOrderList.includes(order) && !isCleared}
+                      onChange={() => {
+                        handleSelectOrder(order);
+                      }}
+                    />
+                  </td>
+                  <td className="border px-4 py-2 hidden md:table-cell text-sm md:text-base">
+                    {order.order_code}
+                  </td>
+                  <td className="border px-4 py-2 hidden md:table-cell text-sm md:text-base">
+                    {order.created_at
+                      ? format(order.created_at, "dd/MM/yyyy 'ás' HH:mm:ss")
+                      : "Data indisponível"}
+                  </td>
+                  <td className="border px-4 py-2 text-xs md:text-base">
+                    {order.cliente?.nomeDoCliente}
+                  </td>
+                  <td className=" border px-4 py-2 ">
+                    <div className="flex  justify-center">
+                      <CircleIcon
+                        className={`${
+                          order.status_order === 1
+                            ? " fill-orange-200  text-orange-400"
+                            : order.status_order === 2
+                            ? "text-blue-500 fill-blue-300 "
+                            : order.status_order === 4 &&
+                              "fill-purple-200 text-purple-400"
+                        } `}
+                      />
+                    </div>
+                  </td>
+                  <td className="border px-4 py-2 ">
+                    <select
+                      value={order.status_order}
+                      onChange={(e) => {
+                        if (order.status_order && order.id) {
+                          const nextStatus = Number(e.target.value);
+                          handleUpdatedStatusOrder(order.id, nextStatus);
+                        }
+                      }}
+                      disabled={(order.status_order ?? 0) >= 6}
+                      className={`px-2 py-1 rounded text-xs md:text-base  ${
+                        order.status_order === 3
+                          ? "bg-blue-200 text-blue-800 hover:bg-blue-300"
+                          : order.status_order === 4
+                          ? "bg-purple-200 text-purple-800 hover:bg-purple-300"
+                          : order.status_order === 5
+                          ? "bg-green-300 text-green-900 "
+                          : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                      }`}
+                    >
+                      {selectOptions.map((option, index) => {
+                        return (
+                          <option key={index} value={option.value}>
+                            {option.label}
+                          </option>
+                        );
+                      })}
+                    </select>
                   </td>
                   {typeUser !== "fábrica" && (
                     <td className="border px-4 py-2 hidden md:table-cell">
@@ -963,216 +1179,6 @@ export function GetOrdersComponent() {
                         </div>
                       </PopoverContent>
                     </Popover>
-                  </td>
-                </tr>
-              ))}
-            </>
-          ) : (
-            <>
-              {orderList.map((order) => (
-                <tr
-                  key={order.id}
-                  className={
-                    order.created_at === undefined
-                      ? "hidden"
-                      : "hover:bg-gray-50"
-                  }
-                >
-                  <td className="border px-4 py-2 text-sm md:text-base ">
-                    <input
-                      type="checkbox"
-                      name=""
-                      id=""
-                      checked={selectedOrderList.includes(order) && !isCleared}
-                      onChange={() => {
-                        handleSelectOrder(order);
-                      }}
-                    />
-                  </td>
-                  <td className="border px-4 py-2 hidden md:table-cell text-sm md:text-base">
-                    {order.order_code}
-                  </td>
-
-                  <td className="border px-4 py-2 hidden md:table-cell text-sm md:text-base">
-                    {order.created_at
-                      ? format(order.created_at, "dd/MM/yyyy 'ás' HH:mm:ss")
-                      : "Data indisponível"}
-                  </td>
-                  <td className="border px-4 py-2 text-xs md:text-base">
-                    {order.cliente?.nomeDoCliente}
-                  </td>
-                  <td className="border px-4 py-2 ">
-                    <select
-                      value={order.status_order}
-                      onChange={(e) => {
-                        if (order.status_order && order.id) {
-                          const nextStatus = Number(e.target.value);
-                          handleUpdatedStatusOrder(order.id, nextStatus);
-                        }
-                      }}
-                      disabled={(order.status_order ?? 0) >= 6}
-                      className={`px-2 py-1 rounded text-xs md:text-base  ${
-                        order.status_order === 1
-                          ? "bg-green-100 text-green-700 hover:bg-green-200"
-                          : order.status_order === 2
-                          ? "bg-yellow-200 text-yellow-800 hover:bg-yellow-300"
-                          : order.status_order === 3
-                          ? "bg-blue-200 text-blue-800 hover:bg-blue-300"
-                          : order.status_order === 4
-                          ? "bg-purple-200 text-purple-800 hover:bg-purple-300"
-                          : order.status_order === 5
-                          ? "bg-orange-200 text-orange-800 hover:bg-orange-300"
-                          : order.status_order === 6
-                          ? "bg-green-300 text-green-900 "
-                          : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-                      }`}
-                    >
-                      {selectOptions.map((option, index) => {
-                        return (
-                          <option key={index} value={option.value}>
-                            {option.label}
-                          </option>
-                        );
-                      })}
-                    </select>
-                  </td>
-                  <td className="border px-4 py-2 text-sm md:text-base">
-                    <Dialog>
-                      <DialogTrigger>
-                        <span className="bg-amber-500 hover:bg-amber-600 text-white px-2  text-xs md:text-base py-1 rounded ">
-                          Ver
-                        </span>
-                      </DialogTrigger>
-                      <DialogContent
-                        className="overflow-y-scroll h-96"
-                        aria-describedby={undefined}
-                      >
-                        <DialogHeader className="items-center">
-                          <DialogTitle>Detalhes</DialogTitle>
-                        </DialogHeader>
-                        <div className=" md:hidden space-y-2 flex flex-col items-center justify-center">
-                          {typeUser !== "fábrica" && (
-                            <div className="flex gap-1 justify-between rounded-lg items-center p-1">
-                              <span className="text-base font-semibold">
-                                Valor total do pedido:
-                              </span>
-                              <span>
-                                {order.total?.toLocaleString("pt-BR", {
-                                  style: "currency",
-                                  currency: "BRL",
-                                })}
-                              </span>
-                            </div>
-                          )}
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <Button className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded">
-                                Imprimir
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent>
-                              <div className="flex flex-col">
-                                <span>Escolha o tipo de impressão:</span>
-                                <div className="flex gap-2">
-                                  <Button
-                                    onClick={() => {
-                                      const type = "A4";
-                                      handlePrintItens(order, type);
-                                    }}
-                                    className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
-                                  >
-                                    Imprimir A4
-                                  </Button>
-                                  <Button
-                                    onClick={() => {
-                                      const type = "termica";
-                                      handlePrintItens(order, type);
-                                    }}
-                                    className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
-                                  >
-                                    Imprimir Térmica
-                                  </Button>
-                                </div>
-                              </div>
-                            </PopoverContent>
-                          </Popover>
-                        </div>
-                        <div className="text-lg font-semibold text-center">
-                          Lista de produtos:
-                        </div>
-                        <div className=" rounded-lg text-sm space-y-2 p-2 md:text-base">
-                          {order.itens.map((product) => (
-                            <div
-                              key={product.produtoId}
-                              className="flex flex-col border-2 space-y-2 p-2 rounded-lg items-center"
-                            >
-                              <div>
-                                <span className="font-semibold">
-                                  {product.nome}
-                                </span>{" "}
-                                -{" "}
-                                <span className="font-semibold">
-                                  {product.categoria}
-                                </span>
-                              </div>
-                              <span>Quantidade: {product.quantidade}</span>
-                              {typeUser !== "fábrica" && (
-                                <span>
-                                  {product.preco?.toLocaleString("pt-BR", {
-                                    style: "currency",
-                                    currency: "BRL",
-                                  })}
-                                </span>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                  </td>
-                  {typeUser !== "fábrica" && (
-                    <td className="border px-4 py-2 hidden md:table-cell">
-                      {order.total?.toLocaleString("pt-BR", {
-                        style: "currency",
-                        currency: "BRL",
-                      })}
-                    </td>
-                  )}
-                  <td className="border px-4 py-2 hidden md:table-cell">
-                    <div>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded">
-                            Imprimir
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                          <div className="flex flex-col">
-                            <span>Escolha o tipo de impressão:</span>
-                            <div className="flex gap-2">
-                              <Button
-                                onClick={() => {
-                                  const type = "A4";
-                                  handlePrintItens(order, type);
-                                }}
-                                className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
-                              >
-                                Imprimir A4
-                              </Button>
-                              <Button
-                                onClick={() => {
-                                  const type = "termica";
-                                  handlePrintItens(order, type);
-                                }}
-                                className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
-                              >
-                                Imprimir Térmica
-                              </Button>
-                            </div>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                    </div>
                   </td>
                 </tr>
               ))}

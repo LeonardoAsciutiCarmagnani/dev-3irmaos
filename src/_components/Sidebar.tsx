@@ -5,6 +5,7 @@ import {
   HomeIcon,
   LogOutIcon,
   MenuIcon,
+  NotebookPenIcon,
   PackageIcon,
   ReceiptIcon,
   UserIcon,
@@ -157,6 +158,20 @@ export default function Sidebar() {
             </li>
             {typeUser === "adm" && (
               <>
+                <li>
+                  <Link
+                    to="/credit-client"
+                    className="block text-gray-800 hover:text-white hover:bg-sky-400 rounded-md px-3 py-2 transition-colors"
+                  >
+                    <span className="flex items-center gap-x-4">
+                      <NotebookPenIcon
+                        className="text-store-secondary hover:text-white"
+                        size={24}
+                      />
+                      Crédito do Cliente
+                    </span>
+                  </Link>
+                </li>
                 <li>
                   <Link
                     to="/prices-lists"
