@@ -93,6 +93,7 @@ const OrderSaleProps: React.FC = () => {
     order_code: 0,
     created_at: orderCreationDate,
     updated_at: orderCreationDate,
+    IdClient: "",
     cliente: null,
     enderecoDeCobranca: {
       bairro: "",
@@ -148,6 +149,7 @@ const OrderSaleProps: React.FC = () => {
   const { total } = usePostOrderStore();
   const [vendedorName, setVendedorName] = useState<string>("");
   const [firstDueDate, setFirstDueDate] = useState<Date | null>(null);
+  const [today, setToday] = useState<Date | null>(startOfToday());
   const [deliveryDate, setDeliveryDate] = useState<Date | null>(null);
   const [entries, setEntries] = useState<PaymentEntry[]>([]);
   const [selectedPaymentOption, setSelectedPaymentOption] = useState<
@@ -159,6 +161,7 @@ const OrderSaleProps: React.FC = () => {
   const [createInstallmentsList, setCreateInstallmentsList] =
     useState<boolean>(false);
   const [valorPagamento, setValorPagamento] = useState<number>(0);
+
   const navigate = useNavigate();
 
   const totalPaymentList = useMemo(
@@ -288,54 +291,67 @@ const OrderSaleProps: React.FC = () => {
   };
 
   const handleSelectPaymentMethod = (value: string) => {
+    // Atualiza o método selecionado individualmente
     setSelectedPaymentMethod(value);
+
+    // Atualiza os inputs de pagamento
+
     const selectedId = parseInt(value, 10);
-    console.log("total no pai: ", total);
 
     if (!isNaN(selectedId)) {
-      // Atualiza o estado de meiosDePagamento
-      setOrderSale((prevOrderSaleTypes) => ({
-        ...prevOrderSaleTypes,
+      setOrderSale({
+        ...orderSale,
         meiosDePagamento: [
           {
             idMeioDePagamento: selectedId,
-            parcelas: parseInt(installments, 10),
+            parcelas: installments ? parseInt(installments) : 1,
             valor: total,
           },
         ],
-      }));
-    } else {
-      console.error("ID do meio de pagamento inválido");
+      });
     }
   };
 
   const handleCreateInstallmentsList = () => {
     const remaining = total - totalPaymentList;
-    if (
-      valorPagamento <= 0 ||
-      valorPagamento > remaining ||
-      !selectedPaymentMethod ||
-      !firstDueDate
-    ) {
+
+    if (!valorPagamento || valorPagamento <= 0 || valorPagamento > remaining) {
       toastError("Valor de pagamento inválido.");
       return;
     }
 
-    const newEntry: PaymentEntry = {
-      tipo: selectedPaymentOption,
-      formaPagamento: selectedPaymentMethod,
-      valor: valorPagamento,
-      firstDueDate: new Date(firstDueDate), // Garantir nova referência
-      parcelamento:
-        selectedPaymentOption === "installment"
-          ? parseInt(installments)
-          : undefined,
-      periodo: selectedPaymentOption === "installment" ? period : undefined,
-    };
+    if (
+      (selectedPaymentMethod === "10" && today) ||
+      (selectedPaymentMethod !== "10" && firstDueDate)
+    ) {
+      const newEntry: PaymentEntry = {
+        tipo: selectedPaymentMethod === "10" ? "cash" : selectedPaymentOption,
+        formaPagamento: selectedPaymentMethod,
+        valor: Number(valorPagamento), // Converte para número explicitamente
+        firstDueDate:
+          selectedPaymentMethod === "10"
+            ? new Date(today!)
+            : new Date(firstDueDate!),
+        parcelamento:
+          selectedPaymentMethod === "10"
+            ? 1 // À vista sempre tem 1 parcela
+            : selectedPaymentOption === "installment"
+            ? parseInt(installments)
+            : undefined,
+        periodo:
+          selectedPaymentMethod === "10"
+            ? undefined // À vista não tem período
+            : selectedPaymentOption === "installment"
+            ? period
+            : undefined,
+      };
 
-    setEntries([...entries, newEntry]);
-    setValorPagamento(0);
-    setCreateInstallmentsList(true);
+      setEntries([...entries, newEntry]);
+
+      // Opcional: Reseta o valor para o método atual após adicionar a entrada
+
+      setCreateInstallmentsList(true);
+    }
   };
 
   const handlePostSaleOrder = async (e: React.FormEvent) => {
@@ -362,11 +378,11 @@ const OrderSaleProps: React.FC = () => {
 
     setOrderSale((prevOrderSaleTypes) => ({
       ...prevOrderSaleTypes,
-      valorDoFrete: valorFrete,
+      IdClient: clientId,
     }));
 
     try {
-      await axios.post(`${apiBaseUrl}/pedido-de-venda/${clientId}`, orderSale, {
+      await axios.post(`${apiBaseUrl}/post-order`, orderSale, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -380,6 +396,20 @@ const OrderSaleProps: React.FC = () => {
       console.error("Erro ao enviar pedido:", error);
       toastError("Erro ao criar o pedido.");
     }
+  };
+
+  const handleCreateBudget = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Valor frete:", valorFrete);
+
+    const newOrderSale = {
+      ...orderSale,
+      valorDoFrete: valorFrete,
+    };
+
+    setOrderSale(newOrderSale);
+
+    console.log("Budget:", newOrderSale);
   };
 
   type AddressKey = keyof EnderecoDeEntrega;
@@ -554,7 +584,12 @@ const OrderSaleProps: React.FC = () => {
                   <label className="text-xs font-medium leading-none mb-1">
                     Condição
                   </label>
-                  <Select value={installments} onValueChange={setInstallments}>
+                  <Select
+                    value={installments}
+                    onValueChange={(value) => {
+                      setInstallments(value);
+                    }}
+                  >
                     <SelectTrigger className="w-[80px] h-9">
                       <SelectValue placeholder="..." />
                     </SelectTrigger>
@@ -642,12 +677,10 @@ const OrderSaleProps: React.FC = () => {
                   Primeiro Vencimento
                 </label>
                 <DatePicker
-                  date={
-                    `${selectedPaymentMethod}` === "10"
-                      ? startOfToday()
-                      : firstDueDate
+                  date={selectedPaymentMethod === "10" ? today : firstDueDate}
+                  setDate={
+                    selectedPaymentMethod === "10" ? setToday : setFirstDueDate
                   }
-                  setDate={setFirstDueDate}
                   minDate={startOfToday()}
                   placeholderText="Selecione uma data"
                   className="w-[16rem] h-9"
@@ -730,6 +763,7 @@ const OrderSaleProps: React.FC = () => {
                   type="number"
                   value={valorFrete}
                   onChange={(e) => setValorFrete(Number(e.target.value))}
+                  placeholder="0.00"
                   className="mt-1 w-[5rem] text-center"
                 />
               </div>
@@ -749,15 +783,14 @@ const OrderSaleProps: React.FC = () => {
 
             <CardFooter className="flex justify-end mt-2 gap-x-4">
               <Button
-                onClick={handlePostSaleOrder}
+                onClick={handleCreateBudget}
                 className="bg-green-500 hover:bg-green-400"
                 disabled={
                   selectedProducts.length === 0 &&
                   selectedPaymentMethod === "" &&
-                  !clienteSelecionado &&
-                  !firstDueDate &&
-                  !selectedPaymentOption
+                  !clienteSelecionado
                 }
+                type="button"
               >
                 Salvar orçamento
               </Button>
@@ -770,6 +803,7 @@ const OrderSaleProps: React.FC = () => {
                   !firstDueDate &&
                   !selectedPaymentOption
                 }
+                type="submit"
               >
                 Criar Pedido
               </Button>
