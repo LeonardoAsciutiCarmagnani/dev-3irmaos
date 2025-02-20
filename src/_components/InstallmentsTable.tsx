@@ -1,10 +1,16 @@
 import { useMemo } from "react";
 
-type ParcelasTableProps = {
-  parcelamento: number;
-  periodo: string;
-  valorTotal: number;
+interface PaymentEntry {
+  tipo: "cash" | "installment";
   formaPagamento: string;
+  valor: number;
+  firstDueDate: Date;
+  parcelamento?: number;
+  periodo?: string;
+}
+
+type ParcelasTableProps = {
+  entries: PaymentEntry[];
 };
 
 const paymentMethods: Record<string, string> = {
@@ -19,38 +25,55 @@ const paymentMethods: Record<string, string> = {
   "10": "Crédito em loja",
 };
 
-const InstallmentsTable = ({
-  parcelamento,
-  periodo,
-  valorTotal,
-  formaPagamento,
-}: ParcelasTableProps) => {
+const InstallmentsTable = ({ entries }: ParcelasTableProps) => {
   // Função para calcular as datas de vencimento
-  const calcularDatas = (quantidadeParcelas: number, periodo: string) => {
+  const calcularDatas = (
+    quantidadeParcelas: number,
+    periodo: string,
+    firstDueDate: Date
+  ) => {
     const datas = [];
-    const dataAtual = new Date();
+    const dataBase = new Date(firstDueDate);
     for (let i = 0; i < quantidadeParcelas; i++) {
-      const novaData = new Date(dataAtual);
-      if (periodo === "mensal") novaData.setMonth(dataAtual.getMonth() + i);
-      if (periodo === "semanal") novaData.setDate(dataAtual.getDate() + i * 7);
+      const novaData = new Date(dataBase);
+      if (periodo === "mensal") novaData.setMonth(dataBase.getMonth() + i);
+      if (periodo === "semanal") novaData.setDate(dataBase.getDate() + i * 7);
+      if (periodo === "quinzenal")
+        novaData.setDate(dataBase.getDate() + i * 15);
       datas.push(novaData.toLocaleDateString());
     }
     return datas;
   };
 
   const parcelas = useMemo(() => {
-    if (!parcelamento || !valorTotal) return [];
-    const valorParcela = valorTotal / parcelamento;
-    const datasVencimento = calcularDatas(parcelamento, periodo);
-
-    return datasVencimento.map((data, index) => ({
-      parcela: index + 1,
-      dataVencimento: data,
-      valor: valorParcela.toFixed(2),
-      formaPagamento:
-        paymentMethods[formaPagamento?.toString()] || "Desconhecido",
-    }));
-  }, [parcelamento, periodo, valorTotal, formaPagamento]);
+    return entries.flatMap((entry) => {
+      if (entry.tipo === "cash") {
+        return [
+          {
+            parcela: 1,
+            dataVencimento: new Date(entry.firstDueDate).toLocaleDateString(),
+            valor: entry.valor.toFixed(2),
+            formaPagamento:
+              paymentMethods[entry.formaPagamento] || "Desconhecido",
+          },
+        ];
+      } else {
+        const valorParcela = entry.valor / (entry.parcelamento || 1);
+        const datas = calcularDatas(
+          entry.parcelamento || 1,
+          entry.periodo || "mensal",
+          entry.firstDueDate
+        );
+        return datas.map((data, index) => ({
+          parcela: index + 1,
+          dataVencimento: data,
+          valor: valorParcela.toFixed(2),
+          formaPagamento:
+            paymentMethods[entry.formaPagamento] || "Desconhecido",
+        }));
+      }
+    });
+  }, [entries]);
 
   return (
     <div className="border rounded-lg overflow-hidden flex flex-col max-h-[10.8rem]">

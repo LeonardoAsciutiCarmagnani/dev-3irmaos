@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import {
   CardDescription,
@@ -21,14 +21,14 @@ import {
 } from "@/components/ui/select";
 import ToastNotifications from "./Toasts";
 import { Product } from "@/context/cartContext";
-import { format } from "date-fns";
+import { format, startOfToday } from "date-fns";
 import Sidebar from "./Sidebar";
 import { usePostOrderStore } from "@/context/postOrder";
 import { useNavigate } from "react-router-dom";
 import DialogSubmit from "./DialogSubmitOrder";
 import apiBaseUrl from "@/lib/apiConfig";
 import { DatePicker } from "./DatePicker";
-import { CheckIcon, ChevronsRightIcon, CircleIcon } from "lucide-react";
+import { ChevronsRightIcon, CircleIcon, PlusCircleIcon } from "lucide-react";
 import InstallmentsTable from "./InstallmentsTable";
 import logo from "../assets/logo_sem_fundo.png";
 
@@ -123,6 +123,15 @@ const OrderSaleProps: React.FC = () => {
     valorDoFrete: 0,
   });
 
+  interface PaymentEntry {
+    tipo: "cash" | "installment";
+    formaPagamento: string;
+    valor: number;
+    firstDueDate: Date;
+    parcelamento?: number;
+    periodo?: string;
+  }
+
   const [
     isUseRegisteredAddressForDelivery,
     setisUseRegisteredAddressForDelivery,
@@ -140,17 +149,22 @@ const OrderSaleProps: React.FC = () => {
   const [vendedorName, setVendedorName] = useState<string>("");
   const [firstDueDate, setFirstDueDate] = useState<Date | null>(null);
   const [deliveryDate, setDeliveryDate] = useState<Date | null>(null);
-  const [selectedPaymentOption, setSelectedPaymentOption] =
-    useState<string>("");
-
+  const [entries, setEntries] = useState<PaymentEntry[]>([]);
+  const [selectedPaymentOption, setSelectedPaymentOption] = useState<
+    "cash" | "installment"
+  >("cash");
   const [valorFrete, setValorFrete] = useState<number>(0);
-
   const [period, setPeriod] = useState<string>("semanal");
   const [installments, setInstallments] = useState<string>("1");
   const [createInstallmentsList, setCreateInstallmentsList] =
     useState<boolean>(false);
-
+  const [valorPagamento, setValorPagamento] = useState<number>(0);
   const navigate = useNavigate();
+
+  const totalPaymentList = useMemo(
+    () => entries.reduce((sum, entry) => sum + entry.valor, 0),
+    [entries]
+  );
 
   const handleSelectClient = (data: {
     clientData: ClientData | null;
@@ -296,11 +310,32 @@ const OrderSaleProps: React.FC = () => {
   };
 
   const handleCreateInstallmentsList = () => {
-    if (installments && firstDueDate && selectedPaymentMethod) {
-      setCreateInstallmentsList(true);
-    } else {
-      toastError("Por favor, preencha todos os campos.");
+    const remaining = total - totalPaymentList;
+    if (
+      valorPagamento <= 0 ||
+      valorPagamento > remaining ||
+      !selectedPaymentMethod ||
+      !firstDueDate
+    ) {
+      toastError("Valor de pagamento inválido.");
+      return;
     }
+
+    const newEntry: PaymentEntry = {
+      tipo: selectedPaymentOption,
+      formaPagamento: selectedPaymentMethod,
+      valor: valorPagamento,
+      firstDueDate: new Date(firstDueDate), // Garantir nova referência
+      parcelamento:
+        selectedPaymentOption === "installment"
+          ? parseInt(installments)
+          : undefined,
+      periodo: selectedPaymentOption === "installment" ? period : undefined,
+    };
+
+    setEntries([...entries, newEntry]);
+    setValorPagamento(0);
+    setCreateInstallmentsList(true);
   };
 
   const handlePostSaleOrder = async (e: React.FormEvent) => {
@@ -497,7 +532,9 @@ const OrderSaleProps: React.FC = () => {
                 </label>
                 <Select
                   value={selectedPaymentOption}
-                  onValueChange={setSelectedPaymentOption}
+                  onValueChange={(value) =>
+                    setSelectedPaymentOption(value as "cash" | "installment")
+                  }
                 >
                   <SelectTrigger className="w-[120px] h-9">
                     <SelectValue placeholder="Selecione" />
@@ -572,18 +609,20 @@ const OrderSaleProps: React.FC = () => {
                     <SelectGroup>
                       {/* Você pode remover o <Selectlabel> ou usá-lo como “categoria” */}
                       <SelectLabel>Escolha</SelectLabel>
-                      <SelectItem value="10">
-                        <span className="flex items-center gap-x-2">
-                          Crédito em loja{" "}
-                          <span>
-                            <CircleIcon
-                              color="green"
-                              size={15}
-                              className="fill-green-300"
-                            />
+                      {selectedPaymentOption !== "installment" && (
+                        <SelectItem value="10">
+                          <span className="flex items-center gap-x-2">
+                            Crédito em loja{" "}
+                            <span>
+                              <CircleIcon
+                                color="green"
+                                size={15}
+                                className="fill-green-300"
+                              />
+                            </span>
                           </span>
-                        </span>
-                      </SelectItem>
+                        </SelectItem>
+                      )}
                       <SelectItem value="1">Dinheiro</SelectItem>
                       <SelectItem value="2">Cheque</SelectItem>
                       <SelectItem value="3">Devolução</SelectItem>
@@ -603,34 +642,57 @@ const OrderSaleProps: React.FC = () => {
                   Primeiro Vencimento
                 </label>
                 <DatePicker
-                  date={firstDueDate}
+                  date={
+                    `${selectedPaymentMethod}` === "10"
+                      ? startOfToday()
+                      : firstDueDate
+                  }
                   setDate={setFirstDueDate}
-                  minDate={new Date()}
+                  minDate={startOfToday()}
                   placeholderText="Selecione uma data"
                   className="w-[16rem] h-9"
                 />
               </div>
-
-              {/* Exemplo opcional: Valor do Pagamento (caso queira) */}
-              <div className="flex flex-col">
-                <label className="text-xs font-medium leading-none mb-1">
-                  Valor final
-                </label>
-                <Input
-                  type="number"
-                  value={total.toFixed(2)}
-                  className="w-[100px] h-9"
-                  readOnly
-                />
+              <div className="flex items-end w-max mr-20">
+                <div className="flex flex-col">
+                  <label className="text-xs font-medium leading-none mb-1">
+                    Valor de pagamento
+                  </label>
+                  <Input
+                    type="number"
+                    className="w-[100px] h-9"
+                    value={valorPagamento}
+                    onChange={(e) => setValorPagamento(Number(e.target.value))}
+                  />
+                </div>
+                <div>
+                  <PlusCircleIcon
+                    size={30}
+                    onClick={handleCreateInstallmentsList}
+                    color={valorPagamento > 0 ? "green" : "gray"}
+                    className="cursor-pointer"
+                  />
+                </div>
               </div>
-              <div>
-                <CheckIcon
-                  size={30}
-                  aria-disabled={createInstallmentsList}
-                  onClick={handleCreateInstallmentsList}
-                  color="green"
-                  className="cursor-pointer"
-                />
+
+              <div className="flex gap-x-2 w-max">
+                <div className="flex flex-col">
+                  <label className="text-xs font-medium leading-none mb-1">
+                    Valor faltante
+                  </label>
+                  <Input
+                    type="number"
+                    value={(total - totalPaymentList).toFixed(2)}
+                    className={`w-[100px] h-9 ${
+                      total - totalPaymentList <= 0
+                        ? "bg-green-100"
+                        : "bg-yellow-100"
+                    }`}
+                    readOnly
+                  />
+                </div>
+
+                {/* Exemplo opcional: Valor do Pagamento (caso queira) */}
               </div>
             </div>
 
@@ -656,12 +718,7 @@ const OrderSaleProps: React.FC = () => {
 
             {createInstallmentsList && (
               <div className="border rounded-lg overflow-hidden flex flex-col max-h-[12rem] max-w-[70rem]">
-                <InstallmentsTable
-                  formaPagamento={selectedPaymentMethod}
-                  periodo={period}
-                  parcelamento={parseInt(installments, 10)}
-                  valorTotal={total}
-                />
+                <InstallmentsTable entries={entries} />
               </div>
             )}
             <div className="flex gap-x-4 justify-start items-center">
@@ -683,7 +740,7 @@ const OrderSaleProps: React.FC = () => {
                 <DatePicker
                   date={deliveryDate}
                   setDate={setDeliveryDate}
-                  minDate={new Date()}
+                  minDate={startOfToday()}
                   placeholderText="Selecione uma data"
                   className="w-[16rem] h-9"
                 />
@@ -699,7 +756,7 @@ const OrderSaleProps: React.FC = () => {
                   selectedPaymentMethod === "" &&
                   !clienteSelecionado &&
                   !firstDueDate &&
-                  selectedPaymentOption === ""
+                  !selectedPaymentOption
                 }
               >
                 Salvar orçamento
@@ -711,7 +768,7 @@ const OrderSaleProps: React.FC = () => {
                   selectedPaymentMethod === "" &&
                   !clienteSelecionado &&
                   !firstDueDate &&
-                  selectedPaymentOption === ""
+                  !selectedPaymentOption
                 }
               >
                 Criar Pedido

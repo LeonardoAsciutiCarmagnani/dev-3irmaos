@@ -320,6 +320,7 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
                   />
                 </div>
               </div>
+
               <div className="col-span-1 text-center text-sm text-gray-600">
                 {(
                   item.quantity * item.product.preco -
@@ -332,7 +333,7 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
                 })}
               </div>
               <div className="col-span-1 text-center text-sm text-gray-600 ml-2">
-                {(item.product.peso * item.quantity).toFixed(2)} KG
+                {item.product.peso * item.quantity} KG
               </div>
               <div className="col-span-1 text-center">
                 <Button
