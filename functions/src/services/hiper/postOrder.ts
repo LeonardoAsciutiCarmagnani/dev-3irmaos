@@ -29,18 +29,20 @@ const getLastOrderCode = async () => {
 };
 
 const storeOrderInFirestore = async (
-  order: any,
+  order: OrderData,
   codeHiper: string,
-  userId: string
+  userId: string,
+  installments: any
 ) => {
   const orderWithClientId = {
     ...order,
     IdClient: userId,
     order_code: codeHiper,
-    status_order: 1,
+    status_order: 2,
+    installments: installments !== undefined ? installments : null,
   };
 
-  const docRef = firestore.collection("sales_orders").doc(order.id);
+  const docRef = firestore.collection("sales_orders").doc();
   await docRef.set(orderWithClientId);
 };
 
@@ -83,6 +85,7 @@ const postOrderSale = async (
     numeroPedidoDeVenda,
     observacaoDoPedidoDeVenda,
     valorDoFrete,
+    installments,
   } = orderData;
 
   const adjustedItens = itens.map((item) => ({
@@ -173,7 +176,12 @@ const postOrderSale = async (
 
     console.log("Código do pedido de venda obtido ou gerado:", codeOrderHiper);
 
-    await storeOrderInFirestore(updatedOrderData, codeOrderHiper, userId);
+    await storeOrderInFirestore(
+      updatedOrderData,
+      codeOrderHiper,
+      userId,
+      installments
+    );
     return {
       generatedId: generatedId,
       codeOrderHiper: codeOrderHiper,

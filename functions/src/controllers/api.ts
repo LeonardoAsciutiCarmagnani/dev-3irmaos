@@ -15,6 +15,7 @@ import postPricesList from "../services/firebase/postPriceList";
 import putPriceListInFirestore from "../services/firebase/putPriceList";
 import deletePriceList from "../services/firebase/deletePriceList";
 import deleteUserData from "../services/firebase/deleteClient";
+import postBudget from "../services/firebase/postBudget";
 
 // Types
 interface ProductQuery {
@@ -203,9 +204,20 @@ export class UserController {
   }
 }
 
+type InstallmentsType = {
+  tipo: string;
+  formaPagamento: number;
+  valor: number;
+  firstDueDate: string;
+  parcelamento: number;
+  periodo: string;
+};
+
 export interface OrderData {
   IdClient: string;
+  order_code?: string;
   created_at: string;
+  installments?: InstallmentsType[];
   cliente: {
     documento: string;
     email: string;
@@ -273,6 +285,35 @@ export class OrderController {
       res.status(400).json({
         success: false,
         message: "Erro ao enviar venda",
+      });
+
+      next(error);
+    }
+  }
+
+  public static async postBudget(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const orderData: OrderData = req.body;
+      const userId = orderData.IdClient;
+      console.log("BACK-END: USUÁRIO IDENTIFICADO: ", userId);
+
+      const result = await postBudget(orderData, userId);
+
+      console.log("result: ", result);
+
+      res.status(201).json({
+        success: true,
+        message: "Cotação criada com sucesso",
+        data: result,
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: "Erro ao enviar cotação",
       });
 
       next(error);

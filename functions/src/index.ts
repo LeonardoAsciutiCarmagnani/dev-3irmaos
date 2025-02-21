@@ -85,6 +85,7 @@ class App {
     router.post("/create-prices-list", PricesListsController.createPriceList);
     router.post("/check-email", UserController.checkEmail);
     router.post("/post-order", OrderController.postOrderSale);
+    router.post("/post-budget", OrderController.postBudget);
     router.post("/find-CEP", CEPController.getCEP);
     //PUT ROUTES
     router.put("/prices-lists/:id", PricesListsController.putPriceListById);

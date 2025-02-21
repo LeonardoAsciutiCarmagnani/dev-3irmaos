@@ -13,6 +13,7 @@ interface Product {
   imagem?: string;
   categoria?: string;
   descricao?: string;
+  peso: number;
 }
 
 interface ApiResponse {
@@ -98,6 +99,7 @@ class ProductService {
           descricao: product.descricao,
           imagem: product.imagem,
           categoria: product.categoria,
+          peso: product.peso,
         })
       );
 
