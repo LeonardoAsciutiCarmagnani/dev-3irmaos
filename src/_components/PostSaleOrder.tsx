@@ -727,8 +727,22 @@ const OrderSaleProps: React.FC = () => {
                   <Input
                     type="number"
                     className="w-[100px] h-9"
-                    value={valorPagamento}
-                    onChange={(e) => setValorPagamento(Number(e.target.value))}
+                    value={valorPagamento === 0 ? "" : valorPagamento}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      // Permite string vazia para que o usuário possa apagar
+                      if (value === "") {
+                        setValorPagamento(0);
+                      } else {
+                        setValorPagamento(Math.max(1, Number(value)));
+                      }
+                    }}
+                    onBlur={() => {
+                      if (valorPagamento === 0) {
+                        setValorPagamento(1);
+                      }
+                    }}
+                    min={1}
                   />
                 </div>
                 <div>
