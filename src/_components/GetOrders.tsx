@@ -1,4 +1,3 @@
-
 /* eslint-disable react-hooks/exhaustive-deps */
 import {
   collection,
@@ -35,8 +34,10 @@ import { DateRange } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { Calendar } from "@/components/ui/calendar";
 import { ptBR } from "date-fns/locale";
-import { ArrowRight, CircleIcon, Trash } from "lucide-react";
+import { ChevronsRightIcon, CircleIcon, Trash } from "lucide-react";
 import useUserStore from "@/context/UserStore";
+import { CardHeader, CardTitle } from "@/components/ui/card";
+import logo from "../assets/logo_sem_fundo.png";
 
 interface StatusProps {
   [key: number]: string;
@@ -62,8 +63,6 @@ export function GetOrdersComponent() {
   });
   const [check, setCheck] = useState(false);
   const [isCleared, setIsCleared] = useState(false);
-
-  const [open, setOpen] = useState(false);
 
   const { typeUser, setTypeUser } = useUserStore();
 
@@ -515,20 +514,47 @@ export function GetOrdersComponent() {
     }
   };
 
-  const handleAprovedOrder = async (order: OrderSaleTypes) => {
-    if (!order.id) {
+  const handleAprovedOrder = async (
+    orderId: string | null,
+    newStatus: number
+  ) => {
+    if (!orderId) {
       console.error("Order ID is undefined.");
       return;
     }
-    const orderUpdateDate = format(new Date(), "yyyy/MM/dd HH:mm:ss");
-
-    const collectionRef = doc(firestore, "sales_orders", order.id);
-
-    await updateDoc(collectionRef, {
-      status_order: order.status_order + 1,
-      updated_at: orderUpdateDate,
-    });
     try {
+      const orderUpdateDate = format(new Date(), "yyyy/MM/dd HH:mm:ss");
+
+      const collectionRef = doc(firestore, "sales_orders", orderId);
+
+      await updateDoc(collectionRef, {
+        status_order: newStatus,
+        updated_at: orderUpdateDate,
+      });
+
+      setOrderList((prevList) => {
+        return prevList.map((order) => {
+          if (order.id === orderId) {
+            return {
+              ...order,
+              status_order: newStatus,
+            };
+          }
+          return order;
+        });
+      });
+
+      setFilteredOrders((prevList) => {
+        return prevList.map((order) => {
+          if (order.id === orderId) {
+            return {
+              ...order,
+              status_order: newStatus,
+            };
+          }
+          return order;
+        });
+      });
       console.log("Order status updated successfully.");
     } catch (error) {
       console.error("Error updating order status:", error);
@@ -537,8 +563,8 @@ export function GetOrdersComponent() {
   const selectOptions = [
     // { value: 1, label: "Orçamento" },
     // { value: 2, label: "Pedido" },
-    { value: 3, label: "Não faturado" },
-    { value: 4, label: "Faturado" },
+    // { value: 3, label: "Não faturado" },
+    // { value: 4, label: "Faturado" },
     { value: 5, label: "Em separação" },
     { value: 6, label: "Enviado" },
     { value: 7, label: "Concluído" },
@@ -555,18 +581,28 @@ export function GetOrdersComponent() {
     console.log("Type User: ", typeUser);
   }, [typeUser]);
 
+  const [openDialogId, setOpenDialogId] = useState<string | null>(null);
+
   return (
     <>
-      <div className="flex flex-col text-center">
-        <header className="flex  w-full items-center justify-between  p-4 bg-gray-100">
-          <Sidebar />
-          <div className="flex w-full text-center items-center justify-center">
-            <h1 className="text-xl font-bold">Lista de Pedidos</h1>
-          </div>
-        </header>
+      <div className="flex flex-col ">
+        <Sidebar />
+        <CardHeader className="bg-white rounded w-full flex  justify-between ">
+          <CardTitle className="text-xl font-bold">
+            <div className="flex items-center justify-start gap-x-12">
+              <img src={logo} className="size-[8rem] rounded-full " />
+              <h1 className="antialised text-[1.7rem]  flex items-center gap-x-1 text-gray-600">
+                <span>
+                  <ChevronsRightIcon size={26} className="text-store-primary" />
+                </span>
+                Lista de pedidos
+              </h1>
+            </div>
+          </CardTitle>
+        </CardHeader>
         <form
           onSubmit={handleSubmit(handleSearchOrders)}
-          className="flex flex-wrap items-center gap-4 p-4 bg-gray-50"
+          className="flex flex-wrap items-center gap-4 p-4  bg-gray-50"
         >
           <Input
             type="text"
@@ -579,7 +615,7 @@ export function GetOrdersComponent() {
             {...register("selectStatus")}
           >
             <option value="0">Todos os status</option>
-            <option value="3">Não faturado</option>
+            {/* <option value="3">Não faturado</option> */}
             <option value="5">Em separação</option>
             <option value="6">Enviado</option>
             <option value="7">Concluído</option>
@@ -643,7 +679,7 @@ export function GetOrdersComponent() {
                   disabled={selectedOrderList.length === 0}
                 >
                   <option value="0">Todos os status</option>
-                  <option value="3">Não faturado</option>
+                  {/* <option value="3">Não faturado</option> */}
                   <option value="5">Em separação</option>
                   <option value="6">Enviado</option>
                   <option value="7">Concluído</option>
@@ -678,7 +714,11 @@ export function GetOrdersComponent() {
                                 ? "bg-blue-200 text-blue-800 hover:bg-blue-300"
                                 : order.status_order === 4
                                 ? "bg-purple-200 text-purple-800 hover:bg-purple-300"
+                                : order.status_order === 5
+                                ? "bg-green-200 text-green-800"
                                 : order.status_order === 6
+                                ? "bg-red-500"
+                                : order.status_order === 7
                                 ? "bg-green-300 text-green-900 "
                                 : "bg-gray-200 text-gray-800 hover:bg-gray-300"
                             }`}
@@ -688,11 +728,11 @@ export function GetOrdersComponent() {
                                 ? "Em aprovação"
                                 : order.status_order === 2
                                 ? "Em aprovação"
-                                : order.status_order === 3
-                                ? "Não faturado"
-                                : order.status_order === 4
-                                ? "Faturado"
-                                : order.status_order === 5
+                                : /* : order.status_order === 3
+                                ? "Não faturado" */
+                                /*   order.status_order === 4
+                                ? "Faturado" */
+                                order.status_order === 5
                                 ? "Em separação"
                                 : order.status_order === 6
                                 ? "Entregue"
@@ -743,32 +783,29 @@ export function GetOrdersComponent() {
           </Button>
         </form>
       </div>
-      <div className="flex flex-col p-2 bg-gray-50">
+      {/*   <div className="flex flex-col p-2 bg-gray-50 ">
         <span className="font-semibold ">Legenda:</span>
         <div className="flex items-center gap-2">
           <div className="flex items-center">
             <CircleIcon className={`fill-orange-200 text-orange-400`} />
-            <ArrowRight size={20} />
           </div>
           <span>Cotação</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="flex items-center">
             <CircleIcon className={`fill-blue-200 text-blue-400`} />
-            <ArrowRight size={20} />
           </div>
           <span>Pedido de venda</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="flex items-center">
             <CircleIcon className={`fill-purple-200 text-purple-400`} />
-            <ArrowRight size={20} />
           </div>
           <span>Faturado</span>
         </div>
-      </div>
-      <table className="w-full border-collapse text-center border-gray-200">
-        <thead className="bg-gray-100">
+      </div> */}
+      <table className="w-full border-collapse text-center border-gray-200 pl-[3rem]">
+        <thead className="bg-gray-100 ">
           <tr>
             <th className="border md:px-4 py-2 text-xs md:text-base">
               <input
@@ -811,20 +848,22 @@ export function GetOrdersComponent() {
         <tbody>
           {filteredOrders.length > 0 ? (
             <>
+              {/*  */}
               {filteredOrders.map((order) => (
-                <Dialog open={open} onOpenChange={setOpen} key={order.id}>
+                <Dialog
+                  open={openDialogId === order.id}
+                  onOpenChange={(isOpen) => {
+                    setOpenDialogId(isOpen ? order.id ?? null : null);
+                  }}
+                  key={order.id}
+                >
                   <tr
-                    onDoubleClick={() => setOpen(true)}
-                    className={`
+                    onDoubleClick={() =>
+                      setOpenDialogId(order.id ? order.id : null)
+                    }
+                    className={` 
                     ${order.created_at === undefined && "hidden"}
-                      ${
-                        order.status_order === 1
-                          ? "bg-orange-100 hover:bg-orange-200"
-                          : order.status_order === 2
-                          ? "bg-blue-100 hover:bg-blue-200"
-                          : order.status_order === 4 &&
-                            "bg-purple-100 hover:bg-purple-200"
-                      }
+                     
                   `}
                   >
                     <td className="border px-4 py-2 text-sm md:text-base ">
@@ -853,24 +892,41 @@ export function GetOrdersComponent() {
                     </td>
                     <td className=" border px-4 py-2 ">
                       <div className="flex  justify-center">
-                        <CircleIcon
-                          className={`${
+                        <div
+                          className={` border-2 p-1 rounded-lg ${
                             order.status_order === 1
-                              ? " fill-orange-200  text-orange-400"
+                              ? " bg-orange-200  text-orange-400 border-orange-500"
                               : order.status_order === 2
-                              ? "text-blue-500 fill-blue-300 "
-                              : order.status_order === 4 &&
-                                "fill-purple-200 text-purple-400"
+                              ? "text-blue-500 bg-blue-300 border-blue-500"
+                              : order.status_order === 4
+                              ? "bg-purple-100 border-purple-500 text-purple-900"
+                              : order.status_order > 4 &&
+                                "bg-purple-100 border-purple-500 text-purple-900"
                           } `}
-                        />
+                        >
+                          {order.status_order === 1
+                            ? "Cotação"
+                            : order.status_order === 2
+                            ? "Pedido de venda"
+                            : order.status_order === 4
+                            ? "Pedido faturado"
+                            : order.status_order > 4 && "Pedido faturado"}
+                        </div>
                       </div>
                     </td>
                     <td className=" border px-4 py-2 ">
                       <Button
-                        className="text-zinc-50 bg-purple-500"
-                        onClick={() => handleAprovedOrder(order)}
+                        className={` " bg-gray-200  text-black border border-slate-400 hover:bg-orange-300" 
+                          `}
+                        onClick={() =>
+                          handleAprovedOrder(
+                            order.id ?? null,
+                            order.status_order + 1
+                          )
+                        }
+                        disabled={order.status_order > 1}
                       >
-                        Aprovar
+                        {order.status_order <= 1 ? "Aprovar" : "Aprovado"}
                       </Button>
                     </td>
                     <td className="border px-4 py-2 ">
@@ -882,14 +938,18 @@ export function GetOrdersComponent() {
                             handleUpdatedStatusOrder(order.id, nextStatus);
                           }
                         }}
-                        disabled={(order.status_order ?? 0) >= 6}
+                        // disabled={(order.status_order ?? 0) >= 7}
                         className={`px-2 py-1 rounded text-xs md:text-base  ${
                           order.status_order === 3
                             ? "bg-blue-200 text-blue-800 hover:bg-blue-300"
                             : order.status_order === 4
                             ? "bg-purple-200 text-purple-800 hover:bg-purple-300"
                             : order.status_order === 5
-                            ? "bg-green-300 text-green-900 "
+                            ? "bg-red-300 text-yellow-900 "
+                            : order.status_order === 6
+                            ? "bg-amber-300"
+                            : order.status_order === 7
+                            ? "bg-green-200"
                             : "bg-gray-200 text-gray-800 hover:bg-gray-300"
                         }`}
                       >
@@ -967,7 +1027,7 @@ export function GetOrdersComponent() {
                     <td className="border px-4 py-2 hidden md:table-cell">
                       <Popover>
                         <PopoverTrigger asChild>
-                          <Button className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded">
+                          <Button className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded">
                             Imprimir
                           </Button>
                         </PopoverTrigger>
@@ -980,7 +1040,7 @@ export function GetOrdersComponent() {
                                   const type = "A4";
                                   handlePrintItens(order, type);
                                 }}
-                                className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                                className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded"
                               >
                                 Imprimir A4
                               </Button>
@@ -989,7 +1049,7 @@ export function GetOrdersComponent() {
                                   const type = "termica";
                                   handlePrintItens(order, type);
                                 }}
-                                className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                                className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded"
                               >
                                 Imprimir Térmica
                               </Button>
@@ -999,46 +1059,113 @@ export function GetOrdersComponent() {
                       </Popover>
                     </td>
                   </tr>
-                  <DialogContent aria-describedby={undefined}>
-                    <DialogTitle className="hidden" />
 
-                    <div className="  space-y-2 flex flex-col items-center justify-center">
-                      <div>
-                        <div className="text-lg font-semibold text-center">
-                          Produtos:
+                  <DialogContent
+                    aria-describedby={undefined}
+                    className="flex flex-col w-screen max-w-6xl items-center "
+                  >
+                    <DialogTitle className="w-full text-gray-700">
+                      Orçamento: {order.order_code}
+                    </DialogTitle>
+                    <div className="flex w-9/12 justify-around">
+                      <div className="flex flex-col items-start w-fit gap-2">
+                        <span className="text-gray-700">Cliente:</span>
+                        <Input
+                          type="text"
+                          disabled
+                          className="bg-gray-100"
+                          defaultValue={order.cliente?.nomeDoCliente}
+                        />
+                        <Input
+                          type="text"
+                          disabled
+                          className="bg-gray-100"
+                          defaultValue={order.cliente?.documento}
+                        />
+                      </div>
+
+                      <div className="flex flex-col gap-2">
+                        <span className="text-gray-700">
+                          Endereço de entrega:{" "}
+                        </span>
+                        <div className="flex items-center gap-2 ">
+                          <Input
+                            type="text"
+                            disabled
+                            className="bg-gray-100"
+                            defaultValue={order.enderecoDeEntrega?.cep}
+                          />
+                          <Input
+                            type="text"
+                            disabled
+                            className="bg-gray-100"
+                            defaultValue={order.enderecoDeEntrega?.logradouro}
+                          />
                         </div>
-                        <div className=" rounded-lg text-sm space-y-2 p-2 md:text-base">
-                          {order.itens.map((product) => {
-                            return (
-                              <div
-                                key={product.produtoId}
-                                className="flex flex-col border-2 space-y-2 p-2 rounded-lg items-center"
-                              >
-                                <span className="font-semibold">
-                                  {product.nome}
-                                </span>{" "}
-                                -{" "}
-                                <span className="font-semibold">
-                                  {product.categoria}
-                                </span>
-                                <span>Quantidade: {product.quantidade}</span>
-                                {typeUser !== "fábrica" && (
-                                  <span>
-                                    {product.preco?.toLocaleString("pt-BR", {
-                                      style: "currency",
-                                      currency: "BRL",
-                                    })}
-                                  </span>
-                                )}
-                              </div>
-                            );
-                          })}
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="text"
+                            disabled
+                            className="bg-gray-100"
+                            defaultValue={order.enderecoDeEntrega?.bairro}
+                          />
+                          <Input
+                            type="text"
+                            disabled
+                            className="bg-gray-100"
+                            defaultValue={order.enderecoDeEntrega?.numero}
+                          />
+                        </div>
+                      </div>
+                    </div>
 
-                          {typeUser !== "fábrica" && (
-                            <div className="flex gap-1 justify-between rounded-lg items-center p-1">
-                              <span className="text-base font-semibold">
-                                Total do pedido:
+                    <div className="space-y-2 flex flex-col  justify-center items-center">
+                      <div className="text-lg font-semibold text-center text-gray-700">
+                        Produtos:
+                      </div>
+                      <div className="flex flex-col border w-full  rounded-lg text-sm   p-2 md:text-sm">
+                        <div className="grid grid-cols-3  text-center">
+                          <span className="font-semibold text-lg col-span-1 text-gray-700">
+                            Produto
+                          </span>
+                          <span className="font-semibold text-lg col-span-1 text-gray-700">
+                            Quantidade
+                          </span>
+                          <span className="font-semibold text-lg col-span-1 text-gray-700">
+                            Valor unitário
+                          </span>
+                        </div>
+                        {order.itens.map((product) => {
+                          return (
+                            <div
+                              key={product.produtoId}
+                              className="grid grid-cols-3 text-center items-center justify-around border-b space-y-2 p-2 "
+                            >
+                              <span className="font-semibold  col-span-1 ">
+                                {product.nome}
                               </span>
+                              <span className="col-span-1">
+                                {product.quantidade}
+                              </span>
+                              {typeUser !== "fábrica" && (
+                                <span className="col-span-1">
+                                  {product.preco?.toLocaleString("pt-BR", {
+                                    style: "currency",
+                                    currency: "BRL",
+                                  })}
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })}
+
+                        {typeUser !== "fábrica" && (
+                          <div className="flex gap-1 justify-between rounded-lg items-center p-1">
+                            <div className="flex-1" />
+                            <div>
+                              <span className="text-base font-semibold text-gray-700">
+                                Total do pedido:
+                              </span>{" "}
                               <span className="text-lg">
                                 {order.total?.toLocaleString("pt-BR", {
                                   style: "currency",
@@ -1046,10 +1173,55 @@ export function GetOrdersComponent() {
                                 })}
                               </span>
                             </div>
-                          )}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex justify-between w-full">
+                        <div className="flex flex-col   rounded-lg p-1 w-9/12">
+                          <span className="border w-fit p-2 rounded-lg">
+                            <span className="font-semibold text-gray-700  text-nowrap">
+                              Métodos de pagamento
+                            </span>
+                            <span className="flex ">
+                              {order.meiosDePagamento.map((method) => {
+                                return (
+                                  <div className="flex flex-col text-sm">
+                                    <span>
+                                      {method.idMeioDePagamento === 1
+                                        ? "Dinheiro"
+                                        : method.idMeioDePagamento === 2
+                                        ? "Cheque"
+                                        : method.idMeioDePagamento === 3
+                                        ? "Devolução"
+                                        : method.idMeioDePagamento === 4
+                                        ? "Cartão de crédito"
+                                        : method.idMeioDePagamento === 5
+                                        ? "Cartão de Débito"
+                                        : method.idMeioDePagamento === 6
+                                        ? "Boleto"
+                                        : method.idMeioDePagamento === 7
+                                        ? "Crédito do cliente"
+                                        : method.idMeioDePagamento === 8 &&
+                                          "Pix"}
+                                    </span>
+                                    <span>
+                                      {method.parcelas === 1
+                                        ? "Á vista"
+                                        : method.parcelas}
+                                    </span>
+                                  </div>
+                                );
+                              })}
+                            </span>
+                          </span>
                         </div>
 
-                        <span>Métodos de pagamento</span>
+                        <div className="flex flex-col border rounded-lg p-1 w-9/12">
+                          Observações:
+                          <span className="text-sm">
+                            {order.observacaoDoPedidoDeVenda}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </DialogContent>
@@ -1108,6 +1280,28 @@ export function GetOrdersComponent() {
                         } `}
                       />
                     </div>
+                  </td>
+                  <td className=" border px-4 py-2 ">
+                    <Button
+                      className={` ${
+                        order.status_order === 1
+                          ? " bg-orange-100  text-orange-400 hover:bg-orange-300"
+                          : order.status_order === 2
+                          ? "text-blue-500 bg-blue-300"
+                          : order.status_order === 4
+                          ? "bg-purple-200 text-purple-400"
+                          : "bg-slate-200 text-black"
+                      } `}
+                      onClick={() =>
+                        handleAprovedOrder(
+                          order.id ?? null,
+                          order.status_order + 1
+                        )
+                      }
+                      disabled={order.status_order > 1}
+                    >
+                      {order.status_order <= 1 ? "Aprovar" : "Aprovado"}
+                    </Button>
                   </td>
                   <td className="border px-4 py-2 ">
                     <select

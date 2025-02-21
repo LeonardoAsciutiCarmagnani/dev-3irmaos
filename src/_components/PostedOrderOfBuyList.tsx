@@ -42,6 +42,7 @@ export type ProductInPriceList = {
 };
 
 interface ItensProps {
+  produtoId: string;
   quantidade: number;
   categoria?: string;
   preco: number;
@@ -58,6 +59,7 @@ const PedidoVendaForm: React.FC = () => {
     created_at: orderCreationDate,
     updated_at: orderCreationDate,
     cliente: null,
+    IdClient: "",
     enderecoDeCobranca: {
       bairro: "",
       cep: "",
@@ -149,18 +151,25 @@ const PedidoVendaForm: React.FC = () => {
 
     const getUserId = localStorage.getItem("loggedUser");
 
-    const userId = getUserId && JSON.parse(getUserId);
-    console.log(userId);
+    const user = getUserId && JSON.parse(getUserId);
+    if (!user) {
+      toastError("Usuário não encontrado.");
+      return;
+    }
+
+    console.log(user.uid);
+
+    setOrderSale((prev) => ({
+      ...prev,
+      IdClient: user.uid,
+    }));
+
     try {
-      const response = await axios.post(
-        `${apiBaseUrl}/pedido-de-venda/${userId.uid}`,
-        orderSale,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await axios.post(`${apiBaseUrl}/post-order`, orderSale, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       console.log("Pedido enviado com sucesso:", response.data);
       toastSuccess("Pedido criado com sucesso !");
       setTimeout(() => {
@@ -209,20 +218,20 @@ const PedidoVendaForm: React.FC = () => {
     }
 
     const updatedClientData = {
-      documento: data.user_CPF || "",
-      email: data.user_email || "",
+      documento: data.cpf || "",
+      email: data.email || "",
       inscricaoEstadual: data.user_IE || "",
-      nomeDoCliente: data.user_name || "",
+      nomeDoCliente: data.name || "",
       nomeFantasia: data.user_fantasyName || "",
     };
 
     const createAddress = (clientData: Client) => ({
-      bairro: clientData.user_neighborhood || "",
-      cep: String(clientData.user_cep || ""),
-      codigoIbge: clientData.user_ibgeCode || 0,
+      bairro: clientData.bairro || "",
+      cep: String(clientData.CEP || ""),
+      codigoIbge: clientData.IBGE || 0,
       complemento: clientData.user_complement || "",
-      logradouro: clientData.user_logradouro || "",
-      numero: clientData.user_houseNumber || 0,
+      logradouro: clientData.logradouro || "",
+      numero: clientData.numberHouse || 0,
     });
 
     const updatedAddress = createAddress(data);
@@ -238,6 +247,7 @@ const PedidoVendaForm: React.FC = () => {
   useEffect(() => {
     fetchClientes();
     fetchLastOrders();
+
     console.log("Lista de produtos: ", listProductsInCart);
     console.log("OrderSale: ", orderSale);
   }, []);
@@ -407,7 +417,7 @@ const PedidoVendaForm: React.FC = () => {
             <SelectItem value="4">Cartão de crédito</SelectItem>
             <SelectItem value="5">Cartão de débito</SelectItem>
             <SelectItem value="6">Boleto</SelectItem>
-            <SelectItem value="7">Cartão Voucher</SelectItem>
+            <SelectItem value="7">Crédito do cliente</SelectItem>
             <SelectItem value="8">PIX</SelectItem>
           </SelectContent>
         </Select>
