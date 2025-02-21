@@ -376,10 +376,16 @@ const OrderSaleProps: React.FC = () => {
       return;
     }
 
-    setOrderSale((prevOrderSaleTypes) => ({
-      ...prevOrderSaleTypes,
+    const newOrderSale = {
+      ...orderSale,
       IdClient: clientId,
-    }));
+      valorDoFrete: valorFrete,
+      installments: entries,
+    };
+
+    setOrderSale(newOrderSale);
+
+    console.log("Order sale:", orderSale);
 
     try {
       await axios.post(`${apiBaseUrl}/post-order`, orderSale, {
@@ -400,16 +406,41 @@ const OrderSaleProps: React.FC = () => {
 
   const handleCreateBudget = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const user = localStorage.getItem("loggedUser");
+    const clientId = user ? JSON.parse(user).uid : null;
+    if (!clientId) {
+      toastError("Usuário não encontrado.");
+      return;
+    }
+
     console.log("Valor frete:", valorFrete);
 
     const newOrderSale = {
       ...orderSale,
+      IdClient: clientId,
       valorDoFrete: valorFrete,
+      installments: entries,
     };
 
     setOrderSale(newOrderSale);
 
     console.log("Budget:", newOrderSale);
+
+    try {
+      await axios.post(`${apiBaseUrl}/post-budget`, newOrderSale, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      setIsSubmitting(false);
+      navigate("/get-orders");
+      toastSuccess("Orçamento criado com sucesso.");
+    } catch (error) {
+      setIsSubmitting(false);
+      console.error("Erro ao enviar orçamento:", error);
+      toastError("Erro ao criar o orçamento.");
+    }
   };
 
   type AddressKey = keyof EnderecoDeEntrega;

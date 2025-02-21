@@ -241,8 +241,21 @@ const ProductSelector: React.FC<ProductSelectorProps> = ({
         <div className="flex flex-col gap-1">
           <Input
             type="number"
-            value={quantity}
-            onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))}
+            value={quantity === 0 ? "" : quantity}
+            onChange={(e) => {
+              const value = e.target.value;
+              // Permite string vazia para que o usuário possa apagar
+              if (value === "") {
+                setQuantity(0);
+              } else {
+                setQuantity(Math.max(1, Number(value)));
+              }
+            }}
+            onBlur={() => {
+              if (quantity === 0) {
+                setQuantity(1);
+              }
+            }}
             min={1}
             className="w-full h-11"
           />
