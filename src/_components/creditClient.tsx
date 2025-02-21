@@ -26,6 +26,7 @@ import {
 import useUserStore from "@/context/UserStore";
 import { CardHeader, CardTitle } from "@/components/ui/card";
 import logo from "../assets/logo_sem_fundo.png";
+import { OrderSaleTypes } from "./PostSaleOrder";
 
 interface UsersProps {
   user_id: string;
@@ -39,6 +40,7 @@ interface OperationListProps {
   created_at: string;
   credito: number;
   operation_type: string;
+  sale?: OrderSaleTypes;
 }
 
 type OperationsType = "sum" | "sub";
@@ -71,7 +73,7 @@ export function CreditClientComponent() {
   );
   const [usersFiltered, setUsersFiltered] = useState<UsersProps[]>([]);
   const [operations, setOperations] = useState<OperationListProps[]>([]);
-
+  // const [sales, setSales] = useState<OrderSaleTypes[]>([]);
   const [open, setOpen] = useState(false);
 
   const usersList =
@@ -93,6 +95,9 @@ export function CreditClientComponent() {
 
   async function handlingSearchAllOperations(id: string) {
     try {
+      const operationsList: OperationListProps[] = [];
+      // const salesList: OrderSaleTypes[] = [];
+
       const clientRef = doc(firestore, "clients", id);
       const clientDoc = await getDoc(clientRef);
 
@@ -101,7 +106,6 @@ export function CreditClientComponent() {
         setCredit(fireStoreUser.credito);
       }
 
-      const operationsList: OperationListProps[] = [];
       const operationsRef = collection(
         firestore,
         "operations",
@@ -117,8 +121,20 @@ export function CreditClientComponent() {
 
         operationsList.push(operation);
       });
-
       setOperations(operationsList);
+
+      /* const salesRef = collection(firestore, "sales_orders");
+      const querySales = query(salesRef, where("IdClient", "==", id));
+
+      const salesDocs = await getDocs(querySales);
+
+      salesDocs.forEach((sale) => {
+        const saleData = sale.data() as OrderSaleTypes;
+
+        salesList.push(saleData);
+      });
+ */
+      // setSales(salesList);
     } catch (e) {
       console.error(
         "Ocorreu um erro ao buscar as operações do cliente selecionado !",
@@ -245,6 +261,9 @@ export function CreditClientComponent() {
   useEffect(() => {
     console.log("Operations: ", operations);
     console.log("Usuários filtrados: ", usersFiltered);
+    operations.forEach((op) => {
+      console.log(op);
+    });
   }, [operations, usersFiltered]);
 
   return (
@@ -445,6 +464,43 @@ export function CreditClientComponent() {
                         </span>
                       </div>
                     ))}
+                  {/*     {sales.map((sale, index) => {
+                    return (
+                      <div
+                        key={index}
+                        className={`grid grid-cols-4 border rounded-lg justify-around items-center text-center p-2
+                     bg-red-500 bg-opacity-70
+                        `}
+                      >
+                        <span className="font-semibold col-span-1">Débito</span>
+                        <span className="font-semibold col-span-1">
+                          {sale.cliente?.nomeDoCliente}
+                        </span>
+                        <span className="col-span-1">
+                          {format(
+                            sale.updated_at
+                              ? sale.updated_at
+                              : "Data não informada",
+                            "dd/MM/yyyy 'ás' HH:mm:ss"
+                          )}
+                        </span>
+                        <span className="col-span-1">
+                          {
+                            <>
+                              <strong>-</strong>
+                              {sale.meiosDePagamento[0].valor.toLocaleString(
+                                "pt-BR",
+                                {
+                                  style: "currency",
+                                  currency: "BRL",
+                                }
+                              )}
+                            </>
+                          }
+                        </span>
+                      </div>
+                    );
+                  })} */}
                 </div>
               </div>
             </div>

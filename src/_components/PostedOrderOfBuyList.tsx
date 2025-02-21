@@ -158,11 +158,9 @@ const PedidoVendaForm: React.FC = () => {
     }
 
     console.log(user.uid);
+    const newOrderSale = { ...orderSale, IdClient: user.uid };
 
-    setOrderSale((prev) => ({
-      ...prev,
-      IdClient: user.uid,
-    }));
+    setOrderSale(newOrderSale);
 
     try {
       const response = await axios.post(`${apiBaseUrl}/post-order`, orderSale, {
