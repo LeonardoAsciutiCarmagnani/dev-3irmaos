@@ -1,12 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import PedidoVendaForm from "@/_components/PostedOrderOfBuyList";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
+
 import { useZustandContext } from "@/context/cartContext";
 import { useEffect } from "react";
 
@@ -34,55 +28,38 @@ export default function BuyList() {
           </span>
         </div>
         <h1>Lista de produtos selecionados:</h1>
-        <div className="flex flex-col space-y-2  p-8 w-full mr-2">
-          <Carousel>
-            <CarouselContent className=" mx-1 gap-3 h-64">
-              {listProductsInCart.map((item) => {
-                return (
-                  <CarouselItem
-                    key={item.id}
-                    className="basis-full flex flex-col p-2 text-center items-center border-2 rounded-lg border-black space-y-3"
-                  >
-                    {item.imagem ? (
-                      <img
-                        src={item.imagem}
-                        className="size-48 rounded-lg"
-                        alt="Imagem"
-                      />
-                    ) : (
-                      <div className="w-60 size-48  bg-gray-100 rounded-lg flex items-center justify-center text-sm text-gray-500">
-                        Sem imagem
-                      </div>
-                    )}
-                    <div>
-                      <span className="text-sm font-semibold">{item.nome}</span>
-                      <div>
-                        <span className="text-sm font-semibold">
-                          {item.categoria}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-sm">
-                          quantidade: {item.quantidade}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-sm">
-                          Valor unitario:{" "}
-                          {item.preco.toLocaleString("pt-BR", {
-                            style: "currency",
-                            currency: "BRL",
-                          })}
-                        </span>
-                      </div>
-                    </div>
-                  </CarouselItem>
-                );
-              })}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
+        <div className="flex flex-col space-y-2  p-8 w-1/2 mr-2">
+          {listProductsInCart.map((item) => {
+            return (
+              <div
+                key={item.id}
+                className="basis-full flex flex-col p-2 text-center items-center border-2 rounded-lg border-black space-y-3 last:border-b"
+              >
+                <div>
+                  <span className="text-sm font-semibold">{item.nome}</span>
+                  <div>
+                    <span className="text-sm font-semibold">
+                      {item.categoria}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-sm">
+                      quantidade: {item.quantidade}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-sm">
+                      Valor unitario:{" "}
+                      {item.preco.toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      })}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

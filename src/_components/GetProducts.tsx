@@ -30,6 +30,7 @@ interface Product {
   quantidade: number;
   imagem?: string;
   descricao: string;
+  peso: number;
 }
 
 interface ProductCardProps {
