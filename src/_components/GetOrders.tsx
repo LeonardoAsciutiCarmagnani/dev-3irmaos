@@ -563,8 +563,8 @@ export function GetOrdersComponent() {
   const selectOptions = [
     // { value: 1, label: "Orçamento" },
     // { value: 2, label: "Pedido" },
-    { value: 3, label: "Não faturado" },
-    { value: 4, label: "Faturado" },
+    // { value: 3, label: "Não faturado" },
+    // { value: 4, label: "Faturado" },
     { value: 5, label: "Em separação" },
     { value: 6, label: "Enviado" },
     { value: 7, label: "Concluído" },
@@ -615,7 +615,7 @@ export function GetOrdersComponent() {
             {...register("selectStatus")}
           >
             <option value="0">Todos os status</option>
-            <option value="3">Não faturado</option>
+            {/* <option value="3">Não faturado</option> */}
             <option value="5">Em separação</option>
             <option value="6">Enviado</option>
             <option value="7">Concluído</option>
@@ -679,7 +679,7 @@ export function GetOrdersComponent() {
                   disabled={selectedOrderList.length === 0}
                 >
                   <option value="0">Todos os status</option>
-                  <option value="3">Não faturado</option>
+                  {/* <option value="3">Não faturado</option> */}
                   <option value="5">Em separação</option>
                   <option value="6">Enviado</option>
                   <option value="7">Concluído</option>
@@ -714,7 +714,11 @@ export function GetOrdersComponent() {
                                 ? "bg-blue-200 text-blue-800 hover:bg-blue-300"
                                 : order.status_order === 4
                                 ? "bg-purple-200 text-purple-800 hover:bg-purple-300"
+                                : order.status_order === 5
+                                ? "bg-green-200 text-green-800"
                                 : order.status_order === 6
+                                ? "bg-red-500"
+                                : order.status_order === 7
                                 ? "bg-green-300 text-green-900 "
                                 : "bg-gray-200 text-gray-800 hover:bg-gray-300"
                             }`}
@@ -724,11 +728,11 @@ export function GetOrdersComponent() {
                                 ? "Em aprovação"
                                 : order.status_order === 2
                                 ? "Em aprovação"
-                                : order.status_order === 3
-                                ? "Não faturado"
-                                : order.status_order === 4
-                                ? "Faturado"
-                                : order.status_order === 5
+                                : /* : order.status_order === 3
+                                ? "Não faturado" */
+                                /*   order.status_order === 4
+                                ? "Faturado" */
+                                order.status_order === 5
                                 ? "Em separação"
                                 : order.status_order === 6
                                 ? "Entregue"
@@ -779,7 +783,7 @@ export function GetOrdersComponent() {
           </Button>
         </form>
       </div>
-      <div className="flex flex-col p-2 bg-gray-50 ">
+      {/*   <div className="flex flex-col p-2 bg-gray-50 ">
         <span className="font-semibold ">Legenda:</span>
         <div className="flex items-center gap-2">
           <div className="flex items-center">
@@ -799,7 +803,7 @@ export function GetOrdersComponent() {
           </div>
           <span>Faturado</span>
         </div>
-      </div>
+      </div> */}
       <table className="w-full border-collapse text-center border-gray-200 pl-[3rem]">
         <thead className="bg-gray-100 ">
           <tr>
@@ -859,14 +863,7 @@ export function GetOrdersComponent() {
                     }
                     className={` 
                     ${order.created_at === undefined && "hidden"}
-                      ${
-                        order.status_order === 1
-                          ? "bg-orange-100 hover:bg-orange-200"
-                          : order.status_order === 2
-                          ? "bg-blue-100 hover:bg-blue-200"
-                          : order.status_order === 4 &&
-                            "bg-purple-100 hover:bg-purple-200"
-                      }
+                     
                   `}
                   >
                     <td className="border px-4 py-2 text-sm md:text-base ">
@@ -895,28 +892,32 @@ export function GetOrdersComponent() {
                     </td>
                     <td className=" border px-4 py-2 ">
                       <div className="flex  justify-center">
-                        <CircleIcon
-                          className={`${
+                        <div
+                          className={` border-2 p-1 rounded-lg ${
                             order.status_order === 1
-                              ? " fill-orange-200  text-orange-400"
+                              ? " bg-orange-200  text-orange-400 border-orange-500"
                               : order.status_order === 2
-                              ? "text-blue-500 fill-blue-300 "
-                              : order.status_order === 4 &&
-                                "fill-purple-200 text-purple-400"
+                              ? "text-blue-500 bg-blue-300 border-blue-500"
+                              : order.status_order === 4
+                              ? "bg-purple-100 border-purple-500 text-purple-900"
+                              : order.status_order > 4 &&
+                                "bg-purple-100 border-purple-500 text-purple-900"
                           } `}
-                        />
+                        >
+                          {order.status_order === 1
+                            ? "Cotação"
+                            : order.status_order === 2
+                            ? "Pedido de venda"
+                            : order.status_order === 4
+                            ? "Pedido faturado"
+                            : order.status_order > 4 && "Pedido faturado"}
+                        </div>
                       </div>
                     </td>
                     <td className=" border px-4 py-2 ">
                       <Button
-                        className={` ${
-                          order.status_order === 1
-                            ? " bg-orange-200  text-orange-400 hover:bg-orange-300"
-                            : order.status_order === 2
-                            ? "text-blue-500 bg-blue-300 "
-                            : order.status_order === 4 &&
-                              "bg-purple-200 text-purple-400"
-                        } `}
+                        className={` " bg-gray-200  text-black border border-slate-400 hover:bg-orange-300" 
+                          `}
                         onClick={() =>
                           handleAprovedOrder(
                             order.id ?? null,
@@ -937,14 +938,18 @@ export function GetOrdersComponent() {
                             handleUpdatedStatusOrder(order.id, nextStatus);
                           }
                         }}
-                        disabled={(order.status_order ?? 0) >= 6}
+                        // disabled={(order.status_order ?? 0) >= 7}
                         className={`px-2 py-1 rounded text-xs md:text-base  ${
                           order.status_order === 3
                             ? "bg-blue-200 text-blue-800 hover:bg-blue-300"
                             : order.status_order === 4
                             ? "bg-purple-200 text-purple-800 hover:bg-purple-300"
                             : order.status_order === 5
-                            ? "bg-green-300 text-green-900 "
+                            ? "bg-red-300 text-yellow-900 "
+                            : order.status_order === 6
+                            ? "bg-amber-300"
+                            : order.status_order === 7
+                            ? "bg-green-200"
                             : "bg-gray-200 text-gray-800 hover:bg-gray-300"
                         }`}
                       >
@@ -1022,7 +1027,7 @@ export function GetOrdersComponent() {
                     <td className="border px-4 py-2 hidden md:table-cell">
                       <Popover>
                         <PopoverTrigger asChild>
-                          <Button className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded">
+                          <Button className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded">
                             Imprimir
                           </Button>
                         </PopoverTrigger>
@@ -1035,7 +1040,7 @@ export function GetOrdersComponent() {
                                   const type = "A4";
                                   handlePrintItens(order, type);
                                 }}
-                                className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                                className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded"
                               >
                                 Imprimir A4
                               </Button>
@@ -1044,7 +1049,7 @@ export function GetOrdersComponent() {
                                   const type = "termica";
                                   handlePrintItens(order, type);
                                 }}
-                                className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded"
+                                className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded"
                               >
                                 Imprimir Térmica
                               </Button>
@@ -1280,11 +1285,12 @@ export function GetOrdersComponent() {
                     <Button
                       className={` ${
                         order.status_order === 1
-                          ? " bg-orange-200  text-orange-400 hover:bg-orange-300"
+                          ? " bg-orange-100  text-orange-400 hover:bg-orange-300"
                           : order.status_order === 2
-                          ? "text-blue-500 bg-blue-300 "
-                          : order.status_order === 4 &&
-                            "bg-purple-200 text-purple-400"
+                          ? "text-blue-500 bg-blue-300"
+                          : order.status_order === 4
+                          ? "bg-purple-200 text-purple-400"
+                          : "bg-slate-200 text-black"
                       } `}
                       onClick={() =>
                         handleAprovedOrder(
