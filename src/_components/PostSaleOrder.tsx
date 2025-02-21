@@ -38,6 +38,7 @@ export type OrderSaleTypes = {
   status_order: number;
   created_at?: string;
   updated_at?: string;
+  previsaoDeEntrega?: string;
   id?: string;
   total?: number;
   cliente: ClientData | null;
@@ -435,11 +436,11 @@ const OrderSaleProps: React.FC = () => {
       });
       setIsSubmitting(false);
       navigate("/get-orders");
-      toastSuccess("Orçamento criado com sucesso.");
+      toastSuccess("Cotação salva com sucesso.");
     } catch (error) {
       setIsSubmitting(false);
-      console.error("Erro ao enviar orçamento:", error);
-      toastError("Erro ao criar o orçamento.");
+      console.error("Erro ao enviar cotação:", error);
+      toastError("Erro ao criar o cotação.");
     }
   };
 
@@ -823,7 +824,7 @@ const OrderSaleProps: React.FC = () => {
                 }
                 type="button"
               >
-                Salvar orçamento
+                Salvar cotação
               </Button>
               <Button
                 onClick={handlePostSaleOrder}

@@ -34,7 +34,15 @@ import { DateRange } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { Calendar } from "@/components/ui/calendar";
 import { ptBR } from "date-fns/locale";
-import { ChevronsRightIcon, CircleIcon, Trash } from "lucide-react";
+import {
+  CalendarIcon,
+  ChevronsRightIcon,
+  CircleIcon,
+  MapPinIcon,
+  Trash,
+  TruckIcon,
+  UserIcon,
+} from "lucide-react";
 import useUserStore from "@/context/UserStore";
 import { CardHeader, CardTitle } from "@/components/ui/card";
 import logo from "../assets/logo_sem_fundo.png";
@@ -1062,166 +1070,214 @@ export function GetOrdersComponent() {
 
                   <DialogContent
                     aria-describedby={undefined}
-                    className="flex flex-col w-screen max-w-6xl items-center "
+                    className="flex flex-col w-screen max-h-[95vh] overflow-y-auto max-w-screen-xl bg-gradient-to-br from-gray-50 to-white rounded-xl shadow-2xl p-8"
                   >
-                    <DialogTitle className="w-full text-gray-700">
-                      Orçamento: {order.order_code}
+                    <DialogTitle className="w-full text-2xl font-bold text-gray-800 border-b-2 border-emerald-500 pb-4 mb-6">
+                      📑{" "}
+                      {`${
+                        order.status_order == 1 ? "Cotação:" : "Pedido de venda"
+                      }`}{" "}
+                      <span className="text-emerald-600 pl-6">
+                        #{order.order_code}
+                      </span>
                     </DialogTitle>
-                    <div className="flex w-9/12 justify-around">
-                      <div className="flex flex-col items-start w-fit gap-2">
-                        <span className="text-gray-700">Cliente:</span>
-                        <Input
-                          type="text"
-                          disabled
-                          className="bg-gray-100"
-                          defaultValue={order.cliente?.nomeDoCliente}
-                        />
-                        <Input
-                          type="text"
-                          disabled
-                          className="bg-gray-100"
-                          defaultValue={order.cliente?.documento}
-                        />
-                      </div>
 
-                      <div className="flex flex-col gap-2">
-                        <span className="text-gray-700">
-                          Endereço de entrega:{" "}
-                        </span>
-                        <div className="flex items-center gap-2 ">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full mb-8">
+                      {/* Seção Cliente */}
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
+                          <UserIcon className="w-5 h-5 text-emerald-600" />
+                          Informações do Cliente
+                        </h3>
+                        <div className="space-y-3">
                           <Input
                             type="text"
                             disabled
-                            className="bg-gray-100"
-                            defaultValue={order.enderecoDeEntrega?.cep}
+                            className="bg-gray-50 border-gray-200 hover:bg-gray-100 transition-colors"
+                            defaultValue={order.cliente?.nomeDoCliente}
                           />
+
                           <Input
                             type="text"
                             disabled
-                            className="bg-gray-100"
-                            defaultValue={order.enderecoDeEntrega?.logradouro}
+                            className="bg-gray-50 border-gray-200 hover:bg-gray-100"
+                            defaultValue={order.cliente?.documento}
                           />
                         </div>
-                        <div className="flex items-center gap-2">
+                      </div>
+
+                      {/* Seção Endereço */}
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
+                          <MapPinIcon className="w-5 h-5 text-emerald-600" />
+                          Endereço de Entrega
+                        </h3>
+                        <div className="grid grid-cols-2 gap-3">
                           <Input
                             type="text"
                             disabled
-                            className="bg-gray-100"
+                            className="bg-gray-50 border-gray-200"
+                            defaultValue={order.enderecoDeEntrega?.cep}
+                          />
+
+                          <Input
+                            type="text"
+                            disabled
+                            className="bg-gray-50 border-gray-200"
+                            defaultValue={order.enderecoDeEntrega?.logradouro}
+                          />
+
+                          <Input
+                            type="text"
+                            disabled
+                            className="bg-gray-50 border-gray-200"
                             defaultValue={order.enderecoDeEntrega?.bairro}
                           />
+
                           <Input
                             type="text"
                             disabled
-                            className="bg-gray-100"
+                            className="bg-gray-50 border-gray-200"
                             defaultValue={order.enderecoDeEntrega?.numero}
                           />
                         </div>
                       </div>
                     </div>
 
-                    <div className="space-y-2 flex flex-col  justify-center items-center">
-                      <div className="text-lg font-semibold text-center text-gray-700">
-                        Produtos:
-                      </div>
-                      <div className="flex flex-col border w-full  rounded-lg text-sm   p-2 md:text-sm">
-                        <div className="grid grid-cols-3  text-center">
-                          <span className="font-semibold text-lg col-span-1 text-gray-700">
+                    {/* Seção Produtos */}
+                    <div className="w-full space-y-6">
+                      <h3 className="text-xl font-bold text-gray-800 text-center mb-4">
+                        🛒 Produtos Selecionados
+                      </h3>
+
+                      <div className="rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                        <div className="grid grid-cols-3 bg-emerald-50/80 px-6 py-4 border-b border-emerald-100">
+                          <span className="font-semibold text-emerald-700">
                             Produto
                           </span>
-                          <span className="font-semibold text-lg col-span-1 text-gray-700">
+                          <span className="font-semibold text-emerald-700 text-center">
                             Quantidade
                           </span>
-                          <span className="font-semibold text-lg col-span-1 text-gray-700">
-                            Valor unitário
+                          <span className="font-semibold text-emerald-700 text-right">
+                            Valor Unitário
                           </span>
                         </div>
-                        {order.itens.map((product) => {
-                          return (
-                            <div
-                              key={product.produtoId}
-                              className="grid grid-cols-3 text-center items-center justify-around border-b space-y-2 p-2 "
-                            >
-                              <span className="font-semibold  col-span-1 ">
-                                {product.nome}
-                              </span>
-                              <span className="col-span-1">
-                                {product.quantidade}
-                              </span>
-                              {typeUser !== "fábrica" && (
-                                <span className="col-span-1">
-                                  {product.preco?.toLocaleString("pt-BR", {
-                                    style: "currency",
-                                    currency: "BRL",
-                                  })}
-                                </span>
-                              )}
-                            </div>
-                          );
-                        })}
 
-                        {typeUser !== "fábrica" && (
-                          <div className="flex gap-1 justify-between rounded-lg items-center p-1">
-                            <div className="flex-1" />
-                            <div>
-                              <span className="text-base font-semibold text-gray-700">
-                                Total do pedido:
-                              </span>{" "}
-                              <span className="text-lg">
-                                {order.total?.toLocaleString("pt-BR", {
+                        {order.itens.map((product) => (
+                          <div
+                            key={product.produtoId}
+                            className="grid grid-cols-3 items-center px-6 py-4 even:bg-gray-50/50 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0"
+                          >
+                            <span className="font-medium text-gray-700">
+                              {product.nome}
+                            </span>
+                            <span className="text-center text-gray-600">
+                              {product.quantidade}x
+                            </span>
+                            {typeUser !== "fábrica" && (
+                              <span className="text-right font-medium text-emerald-700">
+                                {product.preco?.toLocaleString("pt-BR", {
                                   style: "currency",
                                   currency: "BRL",
                                 })}
                               </span>
-                            </div>
+                            )}
                           </div>
-                        )}
+                        ))}
                       </div>
-                      <div className="flex justify-between w-full">
-                        <div className="flex flex-col   rounded-lg p-1 w-9/12">
-                          <span className="border w-fit p-2 rounded-lg">
-                            <span className="font-semibold text-gray-700  text-nowrap">
-                              Métodos de pagamento
+
+                      {typeUser !== "fábrica" && (
+                        <div className="flex justify-end px-6 py-4 bg-emerald-50 rounded-lg">
+                          <div className="flex items-center gap-4">
+                            <span className="text-lg font-semibold text-gray-700">
+                              Total do Pedido:
                             </span>
-                            <span className="flex ">
-                              {order.meiosDePagamento.map((method) => {
-                                return (
-                                  <div className="flex flex-col text-sm">
-                                    <span>
-                                      {method.idMeioDePagamento === 1
-                                        ? "Dinheiro"
-                                        : method.idMeioDePagamento === 2
-                                        ? "Cheque"
-                                        : method.idMeioDePagamento === 3
-                                        ? "Devolução"
-                                        : method.idMeioDePagamento === 4
-                                        ? "Cartão de crédito"
-                                        : method.idMeioDePagamento === 5
-                                        ? "Cartão de Débito"
-                                        : method.idMeioDePagamento === 6
-                                        ? "Boleto"
-                                        : method.idMeioDePagamento === 7
-                                        ? "Crédito do cliente"
-                                        : method.idMeioDePagamento === 8 &&
-                                          "Pix"}
-                                    </span>
-                                    <span>
-                                      {method.parcelas === 1
-                                        ? "Á vista"
-                                        : method.parcelas}
-                                    </span>
-                                  </div>
-                                );
+                            <span className="text-2xl font-bold text-emerald-700">
+                              {order.total?.toLocaleString("pt-BR", {
+                                style: "currency",
+                                currency: "BRL",
                               })}
                             </span>
-                          </span>
+                          </div>
                         </div>
+                      )}
+                    </div>
 
-                        <div className="flex flex-col border rounded-lg p-1 w-9/12">
-                          Observações:
-                          <span className="text-sm">
-                            {order.observacaoDoPedidoDeVenda}
-                          </span>
+                    {/* Seção Inferior */}
+                    <div className="grid grid-cols-3 lg:grid-cols-3 gap-4 w-full mt-8 justify-items-center">
+                      {/* Métodos de Pagamento */}
+                      <div className="bg-indigo-50/50 p-6 rounded-xl border border-indigo-100 w-full">
+                        <h3 className="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                          💳 Métodos de Pagamento
+                        </h3>
+                        <div className="flex flex-wrap gap-3">
+                          {order.meiosDePagamento.map((method) => (
+                            <div
+                              key={method.idMeioDePagamento}
+                              className="bg-white px-4 py-2 rounded-lg border border-indigo-100 shadow-sm"
+                            >
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-medium text-indigo-700">
+                                  {method.idMeioDePagamento === 1 && "Dinheiro"}
+                                  {method.idMeioDePagamento === 2 && "Cheque"}
+                                  {method.idMeioDePagamento === 3 &&
+                                    "Devolução"}
+                                  {method.idMeioDePagamento === 4 &&
+                                    "Cartão Crédito"}
+                                  {method.idMeioDePagamento === 5 &&
+                                    "Cartão Débito"}
+                                  {method.idMeioDePagamento === 6 && "Boleto"}
+                                  {method.idMeioDePagamento === 7 &&
+                                    "Crédito Cliente"}
+                                  {method.idMeioDePagamento === 8 && "Pix"}
+                                </span>
+                                <span className="text-xs text-indigo-500 bg-indigo-100 px-2 py-1 rounded-full">
+                                  {method.parcelas === 1
+                                    ? "À vista"
+                                    : `${method.parcelas}x`}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
                         </div>
+                      </div>
+
+                      <div className="bg-amber-50/50 p-6 rounded-xl border border-amber-100 w-full">
+                        <h3 className="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                          📦 Previsão de entrega
+                        </h3>
+
+                        <div className="flex gap-x-4 justify-center items-center">
+                          <div className="flex gap-x-1 items-center">
+                            <h2>
+                              <TruckIcon className="w-6 h-6 text-amber-500" />
+                            </h2>
+                            <p className="text-gray-600 leading-relaxed whitespace-pre-line">
+                              {order.valorDoFrete.toLocaleString("pt-BR", {
+                                style: "currency",
+                                currency: "BRL",
+                              }) || "Frete não informado"}
+                            </p>
+                          </div>
+                          <div className="flex gap-x-2 items-center">
+                            <CalendarIcon className="w-5 h-5 text-amber-500" />
+                            <p className="text-gray-600 leading-relaxed whitespace-pre-line">
+                              {order.previsaoDeEntrega ||
+                                "Previsão de entrega não informada"}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Observações */}
+                      <div className="bg-red-50/50 p-6 rounded-xl border border-red-100 w-full">
+                        <h3 className="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                          📝 Observações
+                        </h3>
+                        <p className="text-gray-600 leading-relaxed whitespace-pre-line">
+                          {order.observacaoDoPedidoDeVenda ||
+                            "Nenhuma observação registrada"}
+                        </p>
                       </div>
                     </div>
                   </DialogContent>
