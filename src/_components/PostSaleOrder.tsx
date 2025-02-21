@@ -353,6 +353,7 @@ const OrderSaleProps: React.FC = () => {
 
       setCreateInstallmentsList(true);
     }
+    setValorPagamento(0);
   };
 
   const handlePostSaleOrder = async (e: React.FormEvent) => {

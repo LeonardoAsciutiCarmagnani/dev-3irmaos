@@ -870,7 +870,9 @@ export function GetOrdersComponent() {
                       setOpenDialogId(order.id ? order.id : null)
                     }
                     className={` 
-                    ${order.created_at === undefined && "hidden"}
+                    ${
+                      order.created_at === undefined && "hidden"
+                    } cursor-pointer hover:bg-gray-100
                      
                   `}
                   >
@@ -899,26 +901,26 @@ export function GetOrdersComponent() {
                       {order.cliente?.nomeDoCliente}
                     </td>
                     <td className=" border px-4 py-2 ">
-                      <div className="flex  justify-center">
+                      <div className="flex justify-center">
                         <div
-                          className={` border-2 p-1 rounded-lg ${
+                          className={`border-2 px-2 py-1 rounded-lg w-[7rem]${
                             order.status_order === 1
-                              ? " bg-orange-200  text-orange-400 border-orange-500"
+                              ? " bg-orange-200  border-orange-500"
                               : order.status_order === 2
                               ? "text-blue-500 bg-blue-300 border-blue-500"
                               : order.status_order === 4
-                              ? "bg-purple-100 border-purple-500 text-purple-900"
+                              ? "bg-purple-100 border-purple-500 text-gray-100"
                               : order.status_order > 4 &&
-                                "bg-purple-100 border-purple-500 text-purple-900"
+                                "bg-purple-100 border-purple-500 text-gray-100"
                           } `}
                         >
                           {order.status_order === 1
                             ? "Cotação"
                             : order.status_order === 2
-                            ? "Pedido de venda"
+                            ? "Pedido"
                             : order.status_order === 4
-                            ? "Pedido faturado"
-                            : order.status_order > 4 && "Pedido faturado"}
+                            ? "Faturado"
+                            : order.status_order > 4 && "Faturado"}
                         </div>
                       </div>
                     </td>
@@ -1072,12 +1074,12 @@ export function GetOrdersComponent() {
                     aria-describedby={undefined}
                     className="flex flex-col w-screen max-h-[95vh] overflow-y-auto max-w-screen-xl bg-gradient-to-br from-gray-50 to-white rounded-xl shadow-2xl p-8"
                   >
-                    <DialogTitle className="w-full text-2xl font-bold text-gray-800 border-b-2 border-emerald-500 pb-4 mb-6">
+                    <DialogTitle className="w-full text-2xl font-bold text-gray-800 border-b-2 border-store-primary pb-4 mb-6">
                       📑{" "}
                       {`${
                         order.status_order == 1 ? "Cotação:" : "Pedido de venda"
                       }`}{" "}
-                      <span className="text-emerald-600 pl-6">
+                      <span className="text-store-primary pl-6">
                         #{order.order_code}
                       </span>
                     </DialogTitle>
@@ -1086,7 +1088,7 @@ export function GetOrdersComponent() {
                       {/* Seção Cliente */}
                       <div className="space-y-4">
                         <h3 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
-                          <UserIcon className="w-5 h-5 text-emerald-600" />
+                          <UserIcon className="w-5 h-5 text-store-primary" />
                           Informações do Cliente
                         </h3>
                         <div className="space-y-3">
@@ -1109,7 +1111,7 @@ export function GetOrdersComponent() {
                       {/* Seção Endereço */}
                       <div className="space-y-4">
                         <h3 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
-                          <MapPinIcon className="w-5 h-5 text-emerald-600" />
+                          <MapPinIcon className="w-5 h-5 text-store-primary" />
                           Endereço de Entrega
                         </h3>
                         <div className="grid grid-cols-2 gap-3">
@@ -1230,6 +1232,8 @@ export function GetOrdersComponent() {
                                   {method.idMeioDePagamento === 7 &&
                                     "Crédito Cliente"}
                                   {method.idMeioDePagamento === 8 && "Pix"}
+                                  {method.idMeioDePagamento === 10 &&
+                                    "Crédito em loja"}
                                 </span>
                                 <span className="text-xs text-indigo-500 bg-indigo-100 px-2 py-1 rounded-full">
                                   {method.parcelas === 1
@@ -1242,12 +1246,12 @@ export function GetOrdersComponent() {
                         </div>
                       </div>
 
-                      <div className="bg-amber-50/50 p-6 rounded-xl border border-amber-100 w-full">
+                      <div className="bg-amber-50/50 p-6 rounded-xl border border-amber-100 w-full ">
                         <h3 className="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
                           📦 Previsão de entrega
                         </h3>
 
-                        <div className="flex gap-x-4 justify-center items-center">
+                        <div className="flex gap-x-4 justify-start items-center">
                           <div className="flex gap-x-1 items-center">
                             <h2>
                               <TruckIcon className="w-6 h-6 text-amber-500" />
@@ -1262,8 +1266,7 @@ export function GetOrdersComponent() {
                           <div className="flex gap-x-2 items-center">
                             <CalendarIcon className="w-5 h-5 text-amber-500" />
                             <p className="text-gray-600 leading-relaxed whitespace-pre-line">
-                              {order.previsaoDeEntrega ||
-                                "Previsão de entrega não informada"}
+                              {order.previsaoDeEntrega || "Não informada"}
                             </p>
                           </div>
                         </div>
