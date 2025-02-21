@@ -1,4 +1,4 @@
-import { CreditClientComponent } from "@/_components/creditClient";
+import { CreditClientComponent } from "@/_components/CreditClient";
 
 export function CreditClient() {
   return (
