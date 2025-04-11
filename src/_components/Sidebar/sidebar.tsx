@@ -9,7 +9,7 @@ const Sidebar = () => {
     { label: "Orçamentos", icon: <FileBoxIcon className="size-6" /> },
   ];
   return (
-    <div>
+    <div className="p-4">
       {clientMenuItems.map((item) => (
         <div
           key={item.label}

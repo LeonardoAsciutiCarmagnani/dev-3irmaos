@@ -2,7 +2,7 @@ import { api } from "@/lib/axios";
 import ProductCard from "./product-card";
 import { useEffect, useState } from "react";
 import { Product } from "@/interfaces/Product";
-import Loader from "../Loader/Loader";
+import Loader from "@/_components/Loader/loader";
 
 const Home = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -11,7 +11,7 @@ const Home = () => {
   const getProducts = async () => {
     try {
       setIsLoading(true);
-      const getProducts = await api.get("/get-products");
+      const getProducts = await api.get("/products");
       const products = getProducts.data.data;
       console.log("Produtos", products);
       setProducts(products);
@@ -36,7 +36,7 @@ const Home = () => {
         products.map((product: Product) => (
           <div
             key={product.id}
-            className="flex items-center justify-center w-full"
+            className="flex items-center justify-center  w-full"
           >
             <ProductCard {...product} />
           </div>
