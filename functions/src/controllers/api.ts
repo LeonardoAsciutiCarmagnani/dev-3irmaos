@@ -9,11 +9,6 @@ import fetchAdminOrderCompleted from "../services/chat4sales/push/adminOrderComp
 import fetchPaymentLinkAdded from "../services/chat4sales/push/paymentLinkAdded";
 import fetchOrderCompleted from "../services/chat4sales/push/orderCompleted";
 import updateUserData from "../services/firebase/updateClient";
-import { fetchPricesLists } from "../services/firebase/fetchPricesLists";
-import { fetchPriceListById } from "../services/firebase/fetchPriceList";
-import postPricesList from "../services/firebase/postPriceList";
-import putPriceListInFirestore from "../services/firebase/putPriceList";
-import deletePriceList from "../services/firebase/deletePriceList";
 import deleteUserData from "../services/firebase/deleteClient";
 import postBudget from "../services/firebase/postBudget";
 
@@ -320,86 +315,6 @@ export class OrderController {
     }
   }
 }
-
-export class PricesListsController {
-  public static async getAllPricesLists(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const pricesLists = await fetchPricesLists();
-      res.json({ pricesLists });
-      console.log("Listas de preços obtidas:", pricesLists);
-    } catch (e) {
-      next(e);
-    }
-  }
-  public static async getPriceListById(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const id = req.params.id;
-      const priceList = await fetchPriceListById(id);
-      res.json({ priceList });
-      console.log("Lista de preço selecionada:", priceList);
-    } catch (e) {
-      next(e);
-    }
-  }
-  public static async createPriceList(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const pricesListData = req.body;
-      const pricesList = await postPricesList(pricesListData);
-      res.json({ pricesList });
-      console.log("Listas de preços obtidas:", pricesList);
-    } catch (e) {
-      next(e);
-    }
-  }
-  public static async putPriceListById(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const id = req.params.id;
-      const priceListData = req.body;
-      const priceList = await putPriceListInFirestore(id, priceListData);
-      res.json({ priceList });
-      console.log("Lista de precos atualizada:", priceList);
-    } catch (e) {
-      next(e);
-    }
-  }
-  public static async deletePriceListById(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
-    try {
-      const id = req.params.id;
-      const result = await deletePriceList(id);
-
-      if (result.error) {
-        return res.status(404).json(result.error);
-      }
-
-      console.log("Lista de preços deletada:", result);
-      res.json(result);
-    } catch (e) {
-      console.error("Erro no backend:", e);
-      next(e);
-    }
-  }
-}
-
 export class CEPController {
   public static async getCEP(req: Request, res: Response, next: NextFunction) {
     const { cep } = req.body;

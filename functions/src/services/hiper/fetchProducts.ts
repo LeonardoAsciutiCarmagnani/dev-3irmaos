@@ -1,19 +1,44 @@
 import axios, { AxiosInstance } from "axios";
 import { fetchToken } from "./fetchToken";
 import env from "../../config/env";
-import { firestore } from "../../firebaseConfig";
-import { formatInTimeZone } from "date-fns-tz";
-import { ptBR } from "date-fns/locale";
 
 // Interfaces
 interface Product {
+  pontoDeSincronizacao: number;
+  altura: number;
+  ativo: boolean;
+  categoria: string;
+  codigo: number;
+  codigoDeBarras: string;
+  comprimento: number;
+  descricao: string;
+  grade: boolean;
   id: string;
-  preco: number;
+  imagem: string;
+  imagensAdicionais?: {
+    imagem: string;
+  }[];
+  largura: number;
+  marca: string;
   nome: string;
-  imagem?: string;
-  categoria?: string;
-  descricao?: string;
   peso: number;
+  preco: number;
+  produtoPrimarioId: string;
+  quantidadeEmEstoque: number;
+  quantidadeMinimaEmEstoque: number;
+  unidade: string;
+  variacao?: {
+    codigo: number;
+    codigoDeBarras: string;
+    id: string;
+    nomeVariacaoA: string;
+    nomeVariacaoB: string | null;
+    quantidadeEmEstoque: number;
+    quantidadeEmEstoqueReservado: number;
+    quantidadeMinimaEmEstoque: number;
+    tipoVariacaoA: string | null;
+    tipoVariacaoB: string | null;
+  }[];
 }
 
 interface ApiResponse {
@@ -60,9 +85,6 @@ class ProductService {
           params: { pontoDeSincronizacao },
         }
       );
-
-      await this.updateDefaultFirebasePriceList(response.data);
-
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -85,49 +107,6 @@ class ProductService {
       errors: [error],
       message: "Erro ao buscar produtos",
     };
-  }
-
-  private async updateDefaultFirebasePriceList(
-    fetchedProducts: ApiResponse
-  ): Promise<void> {
-    try {
-      const priceListData = fetchedProducts.produtos.map(
-        (product: Product) => ({
-          id: product.id,
-          preco: product.preco,
-          nome: product.nome,
-          descricao: product.descricao,
-          imagem: product.imagem,
-          categoria: product.categoria,
-          peso: product.peso,
-        })
-      );
-
-      const now = new Date();
-      const timeZone = "America/Sao_Paulo";
-
-      const formattedDate = formatInTimeZone(
-        now, // Data e hora em UTC
-        timeZone, // Fuso horário desejado
-        "HH:mm:ss - dd/MM", // Formato desejado
-        { locale: ptBR } // Localização para formatação
-      );
-
-      // Atualiza a coleção "default_prices-list" no Firestore com os novos dados
-      await firestore.collection("default_prices-list").doc("DEFAULT").set({
-        name: "Lista padrão",
-        products: priceListData,
-        updatedAt: formattedDate,
-      });
-
-      console.log(
-        "Lista de preço padrão atualizada com sucesso",
-        formattedDate
-      );
-    } catch (error) {
-      console.error("Erro ao atualizar lista de preço padrão", error);
-      throw error; // Propaga o erro para ser tratado em um nível superior, se necessário.
-    }
   }
 }
 
