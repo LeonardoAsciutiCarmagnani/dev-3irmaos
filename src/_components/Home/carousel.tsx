@@ -6,22 +6,48 @@ import {
   CarouselContent,
   CarouselItem,
 } from "../../components/ui/carousel";
+import { ImageOffIcon } from "lucide-react";
 
-export function ImageCarousel() {
+interface ImageCarouselProps {
+  images: {
+    imagem: string;
+  }[];
+}
+
+export function ImageCarousel({ images }: ImageCarouselProps) {
+  const validImages = images.filter(
+    (img) => img.imagem && img.imagem.trim() !== ""
+  );
+
   return (
-    <Carousel className="w-full" plugins={[Autoplay({ delay: 2500 }), Fade()]}>
+    <Carousel
+      className="w-full h-full"
+      plugins={[Autoplay({ delay: 2500 }), Fade()]}
+    >
       <CarouselContent className="rounded-none">
-        {Array.from({ length: 5 }).map((_, index) => (
-          <CarouselItem key={index}>
-            <div>
-              <Card className="rounded-none h-[7.5rem] flex items-center justify-center object-cover">
-                <CardContent className="flex items-center justify-center w-full">
-                  <span className="text-4xl font-semibold">{index + 1}</span>
+        {validImages.length > 0 ? (
+          validImages.map((img, index) => (
+            <CarouselItem key={index}>
+              <Card className="rounded-none h-[10.5rem] flex items-center justify-center">
+                <CardContent className="p-0 m-0 w-full h-full">
+                  <img
+                    src={img.imagem}
+                    alt={`Imagem ${index + 1}`}
+                    className="object-cover w-full h-full"
+                  />
                 </CardContent>
               </Card>
-            </div>
+            </CarouselItem>
+          ))
+        ) : (
+          <CarouselItem className="w-full h-full ">
+            <Card className="rounded-none h-[10.5rem] bg-gray-200">
+              <CardContent className="p-0 m-0 w-full h-full flex items-center justify-center">
+                <ImageOffIcon size={40} />
+              </CardContent>
+            </Card>
           </CarouselItem>
-        ))}
+        )}
       </CarouselContent>
     </Carousel>
   );
