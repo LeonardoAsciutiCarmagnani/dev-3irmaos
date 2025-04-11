@@ -10,31 +10,56 @@ import {
 } from "@/components/ui/carousel";
 import Fade from "embla-carousel-fade";
 import Autoplay from "embla-carousel-autoplay";
+import { productsContext } from "@/context/productsContext";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const productSchema = z.object({
+  altura: z.coerce.number().min(1, "Altura obrigatória"),
+  comprimento: z.coerce.number().min(1, "Comprimento obrigatório"),
+  largura: z.coerce.number().min(1, "Largura obrigatória"),
+  quantidade: z.coerce.number().min(1, "Quantidade obrigatória"),
+});
+
+export type ProductFormData = z.infer<typeof productSchema>;
 
 export const DetailsProduct = () => {
   const { state } = useLocation();
-  const [typeProduct, setTypeProduct] = useState(false);
 
-  const product: Product = state;
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ProductFormData>({
+    resolver: zodResolver(productSchema),
+  });
 
-  console.log(product);
+  const { handleAddProduct } = productsContext();
+  const [typeProduct, setTypeProduct] = useState(true);
+  const [product, setProduct] = useState<Product>(state);
 
   const CarouselImages = [
     { imagem: product.imagem },
     ...product.imagensAdicionais,
   ];
 
+  const onSubmit = (data: ProductFormData) => {
+    handleAddProduct(data);
+  };
+
   return (
     <div className="h-screen">
       <div className="flex flex-col  justify-center  items-start p-4 md:p-10 space-y-4 ">
         <h1 className="font-bold text-xl text-gray-800">Detalhes do produto</h1>
         <div className="flex flex-col md:flex-row gap-4 w-full ">
-          <div className="w-2/5 ">
+          <div className="md:w-2/5 ">
             <Carousel plugins={[Autoplay({ delay: 2500 }), Fade()]}>
               <CarouselContent className=" w-full">
-                {CarouselImages.map((imagem) => (
+                {CarouselImages.map((imagem, index) => (
                   <CarouselItem className="border w-full">
                     <img
+                      key={index}
                       src={imagem.imagem}
                       alt={`Imagens do produto ${product.nome}`}
                       className="w-full h-96"
@@ -71,8 +96,8 @@ export const DetailsProduct = () => {
                   name="typeProduct"
                   id="sobmedida"
                   className="hover:cursor-pointer"
-                  checked={typeProduct === true}
-                  onClick={() => setTypeProduct(true)}
+                  checked={typeProduct === false}
+                  onChange={() => setTypeProduct(false)}
                 />
                 <label
                   htmlFor="sobmedida"
@@ -87,8 +112,8 @@ export const DetailsProduct = () => {
                   name="typeProduct"
                   id="prontaentrega"
                   className="hover:cursor-pointer"
-                  checked={typeProduct === false}
-                  onClick={() => setTypeProduct(false)}
+                  checked={typeProduct === true}
+                  onChange={() => setTypeProduct(true)}
                 />
                 <label
                   htmlFor="prontaentrega"
@@ -98,28 +123,79 @@ export const DetailsProduct = () => {
                 </label>
               </div>
             </div>
-            <div className="flex flex-col md:flex-row md:justify-around space-y-2 ">
-              <Input
-                placeholder="Altura"
-                className="w-fit focus-visible:border-red-900 focus-visible:ring-red-900 focus-visible:ring-1"
-              />
-              <Input
-                placeholder="Comprimento"
-                className="w-fit focus-visible:border-red-900 focus-visible:ring-red-900 focus-visible:ring-1"
-              />
-              <Input
-                placeholder="Largura"
-                className="w-fit focus-visible:border-red-900 focus-visible:ring-red-900 focus-visible:ring-1"
-              />
-              <Input
-                type="number"
-                placeholder="Quantidade"
-                className="w-fit focus-visible:border-red-900 focus-visible:ring-red-900 focus-visible:ring-1"
-              />
-            </div>
-            <div className=" flex md:justify-center">
-              <Button className="w-[20rem]">Adicionar produto</Button>
-            </div>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="flex flex-col items-center md:flex-row md:justify-around space-y-2">
+                <div>
+                  <label htmlFor="altura">Altura</label>
+                  <Input
+                    id="altura"
+                    type="number"
+                    placeholder="Altura"
+                    {...register("altura")}
+                    className="w-fit focus-visible:border-red-900 focus-visible:ring-red-900 focus-visible:ring-1"
+                  />
+                  {errors.altura && (
+                    <span className="text-red-500 text-sm">
+                      {errors.altura.message}
+                    </span>
+                  )}
+                </div>
+
+                <div>
+                  <label htmlFor="comprimento">Comprimento</label>
+                  <Input
+                    id="comprimento"
+                    type="number"
+                    placeholder="Comprimento"
+                    {...register("comprimento")}
+                    className="w-fit focus-visible:border-red-900 focus-visible:ring-red-900 focus-visible:ring-1"
+                  />
+                  {errors.comprimento && (
+                    <span className="text-red-500 text-sm">
+                      {errors.comprimento.message}
+                    </span>
+                  )}
+                </div>
+
+                <div>
+                  <label htmlFor="largura">Largura</label>
+                  <Input
+                    id="largura"
+                    type="number"
+                    placeholder="Largura"
+                    {...register("largura")}
+                    className="w-fit focus-visible:border-red-900 focus-visible:ring-red-900 focus-visible:ring-1"
+                  />
+                  {errors.largura && (
+                    <span className="text-red-500 text-sm">
+                      {errors.largura.message}
+                    </span>
+                  )}
+                </div>
+
+                <div>
+                  <label htmlFor="quantidade">Quantidade</label>
+                  <Input
+                    id="quantidade"
+                    type="number"
+                    placeholder="Quantidade"
+                    {...register("quantidade")}
+                    className="w-fit focus-visible:border-red-900 focus-visible:ring-red-900 focus-visible:ring-1"
+                  />
+                  {errors.quantidade && (
+                    <span className="text-red-500 text-sm">
+                      {errors.quantidade.message}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex md:justify-center mt-4">
+                <Button type="submit" className="w-full md:w-[20rem]">
+                  Adicionar produto
+                </Button>
+              </div>
+            </form>
             <div className="flex justify-around">
               <Button className="text-xs md:text-sm">
                 Adicionar novos produtos

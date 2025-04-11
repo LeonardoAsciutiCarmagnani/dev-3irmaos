@@ -1,4 +1,5 @@
 export interface Product {
+  quantidade?: number;
   pontoDeSincronizacao: number;
   altura: number;
   ativo: boolean;
