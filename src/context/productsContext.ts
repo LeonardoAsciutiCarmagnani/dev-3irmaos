@@ -11,6 +11,7 @@ export const productsContext = create<IProductsContext>((set) => ({
   productsInCart: [],
   handleAddProduct: (product) =>
     set(({ productsInCart }) => {
+      console.log("Recebendo produto na função", product);
       const findIndex = productsInCart.findIndex(
         (item) => item.id === product.id
       );
@@ -27,17 +28,26 @@ export const productsContext = create<IProductsContext>((set) => ({
         return {
           productsInCart: updatedProducts,
         };
+      } else {
+        return {
+          productsInCart: [
+            ...productsInCart,
+            { ...product, quantidade: product.quantidade },
+          ],
+        };
       }
-
-      return {
-        productsInCart: [product],
-      };
     }),
   /* Esas funcionalidade estará presente somente no popover do carrinho e na tela de checkout */
   handleRemoveProduct: (productId) =>
     set(({ productsInCart }) => {
-      const removeItem = productsInCart.filter((item) => item.id !== productId);
+      const updatedCart = productsInCart
+        .map((item) =>
+          item.id === productId
+            ? { ...item, quantidade: (item.quantidade ?? 0) - 1 }
+            : item
+        )
+        .filter((item) => (item.quantidade ?? 0) > 0);
 
-      return { productsInCart: removeItem };
+      return { productsInCart: updatedCart };
     }),
 }));

@@ -1,5 +1,9 @@
 export interface Product {
   quantidade?: number;
+  selectedVariation: {
+    id: string;
+    nomeVariacao: string;
+  };
   pontoDeSincronizacao: number;
   altura: number;
   ativo: boolean;
