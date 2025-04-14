@@ -31,7 +31,7 @@ export const DetailsProduct = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
 
-  const { handleAddProduct } = productsContext();
+  const { productsInCart, handleAddProduct } = productsContext();
   const [product, setProduct] = useState<Product>(state);
   const [typeProduct, setTypeProduct] = useState({
     typeProduct: true,
@@ -210,7 +210,7 @@ export const DetailsProduct = () => {
               </div>
             </div>
             <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="flex flex-col items-center md:flex-row md:justify-around space-y-2 ">
+              <div className="flex h-24 flex-col items-center md:flex-row md:justify-around space-y-2 ">
                 <div>
                   <label htmlFor="altura">Altura</label>
                   <Input
@@ -281,13 +281,23 @@ export const DetailsProduct = () => {
                   )}
                 </div>
               </div>
-
+              {typeProduct.typeProduct === true && (
+                <>
+                  <div className="flex items-center justify-end gap-1 text-end">
+                    <span className="font-semibold text-red-900 text-lg">
+                      Preço:
+                    </span>
+                    <span className="text-gray-700">{product.preco}</span>
+                  </div>
+                </>
+              )}
               <div className="flex md:justify-center mt-4">
                 <Button type="submit" className="w-full md:w-[20rem]">
                   Adicionar produto
                 </Button>
               </div>
             </form>
+
             <div className="flex justify-around">
               <Button
                 onClick={() => navigate("/")}
@@ -298,6 +308,7 @@ export const DetailsProduct = () => {
               <Button
                 onClick={() => navigate("/orçamento")}
                 className="text-xs md:text-sm"
+                disabled={productsInCart.length === 0}
               >
                 Prosseguir com a cotação
               </Button>

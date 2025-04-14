@@ -3,6 +3,7 @@ import LayoutPage from "./_components/Layout/layout";
 import HomePage from "./pages/home";
 import DetailsProduct from "./_components/Home/details-product";
 import { CheckoutPage } from "./pages/Checkout";
+import Orders from "./pages/Orders";
 
 export const routes = createBrowserRouter([
   {
@@ -18,6 +19,14 @@ export const routes = createBrowserRouter([
     element: (
       <LayoutPage>
         <CheckoutPage />
+      </LayoutPage>
+    ),
+  },
+  {
+    path: "/pedidos-e-orçamentos",
+    element: (
+      <LayoutPage>
+        <Orders />
       </LayoutPage>
     ),
   },

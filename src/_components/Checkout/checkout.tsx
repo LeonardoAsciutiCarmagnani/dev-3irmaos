@@ -39,6 +39,14 @@ export const Checkout = () => {
     }
   }, []);
 
+  const total = productsInCart.reduce((acc, product) => {
+    if (product.selectedVariation.nomeVariacao === "Sob Medida") {
+      return acc;
+    }
+    const quantidade = product.quantidade ?? 0;
+    return (acc += product.preco * quantidade);
+  }, 0);
+
   return (
     <div className="flex border-gray-300 p-4 rounded-lg">
       {productsInCart.length !== 0 ? (
@@ -69,6 +77,15 @@ export const Checkout = () => {
                       })}
                       / Cx
                     </span> */}
+                    {product.selectedVariation.nomeVariacao ===
+                      "Medida Padrao" && (
+                      <span className="font-semibold text-sm md:text-base text-gray-700">
+                        {product.preco.toLocaleString("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        })}
+                      </span>
+                    )}
                   </div>
 
                   <div className="flex w-[9rem] justify-around items-center">
@@ -227,23 +244,15 @@ export const Checkout = () => {
                   </SelectGroup>
                 </SelectContent>
               </Select> */}
-              {/*   {total < minValueClient && (
-                <span className="text-sm text-center font-semibold text-red-500">
-                  Seu pedido ainda não atingiu o valor mínimo de:{" "}
-                  {minValueClient.toLocaleString("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  })}
-                </span>
-              )} */}
+
               <div className="flex items-center justify-between p-2">
                 <span className="text-lg font-semibold">Total</span>
-                {/*  <span className="font-bold text-gray-900 text-xl">
+                <span className="font-bold text-gray-900 text-xl">
                   {total.toLocaleString("pt-BR", {
                     style: "currency",
                     currency: "BRL",
                   })}
-                </span> */}
+                </span>
               </div>
 
               {/* <Button
