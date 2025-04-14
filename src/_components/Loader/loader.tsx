@@ -1,16 +1,12 @@
-import { ColorRing } from "react-loader-spinner";
+import { FallingLines } from "react-loader-spinner";
 
 const Loader = () => {
   return (
-    <div>
-      <ColorRing
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50">
+      <FallingLines
+        color="oklch(25.8% 0.092 26.042)"
+        width="100"
         visible={true}
-        height="80"
-        width="80"
-        ariaLabel="color-ring-loading"
-        wrapperStyle={{}}
-        wrapperClass="color-ring-wrapper"
-        colors={["#e15b64", "#f47e60", "#f8b26a", "#abbd81", "#849b87"]}
       />
     </div>
   );

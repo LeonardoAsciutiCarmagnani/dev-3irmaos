@@ -38,3 +38,9 @@ export interface Product {
     tipoVariacaoB: string | null;
   }[];
 }
+
+export interface ProductInCart {
+  produtoId: string;
+  quantidade: number;
+  precoUnitario: number;
+}

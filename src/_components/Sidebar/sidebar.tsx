@@ -17,13 +17,15 @@ const Sidebar = () => {
     <div className="p-4">
       <div
         onClick={() => setOpen(!open)}
-        className={`flex  w-full cursor-pointer ${
+        className={`flex mb-2 w-full cursor-pointer ${
           open ? "justify-end" : "justify-center"
         }`}
       >
         <ArrowRight
           size={26}
-          className={` bg-red-900 rounded-full ${open ? "rotate-180" : ""}`}
+          className={`text-slate-100 bg-gray-800 rounded-xs ${
+            open ? "rotate-180" : ""
+          }`}
         />
       </div>
       {clientMenuItems.map((item) => (

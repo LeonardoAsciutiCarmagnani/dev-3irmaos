@@ -12,8 +12,8 @@ const ProductCard = (Product: Product) => {
   ];
 
   return (
-    <div className="flex flex-col  items-center justify-center h-full bg-gray-50 w-full hover:scale-101 hover:cursor-pointer hover:shadow-sm transition-all duration-300 ease-in-out shadow-sm">
-      <div className="flex flex-col items-center justify-center w-full space-y-1">
+    <div className="flex flex-col items-center justify-center h-full bg-gray-50 w-full hover:scale-101 hover:cursor-pointer hover:shadow-sm transition-all duration-300 ease-in-out shadow-sm">
+      <div className="flex flex-col items-center justify-center w-full space-y-2">
         <ImageCarousel images={CarouselImages} />
 
         <div className="flex flex-col items-center justify-center gap-y-2 p-1">
@@ -29,7 +29,7 @@ const ProductCard = (Product: Product) => {
           </Badge>
           <div className="text-green-500 font-semibold text-sm rounded-xs ">
             <span
-              className="text-gray-800 text-lg underline hover:text-emerald-500"
+              className="text-gray-800 text-sm underline hover:text-emerald-500"
               onClick={() =>
                 navigate(`/detalhes/${Product.id}`, { state: Product })
               }
