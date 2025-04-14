@@ -1,15 +1,11 @@
 import express, { Application, Request, Response, NextFunction } from "express";
 import cors from "cors";
 import { onRequest } from "firebase-functions/v2/https";
-import {
-  CEPController,
-  OrderController,
-  ProductController,
-  UserController,
-} from "./controllers/api";
+
 import helmet from "helmet";
 import morgan from "morgan";
 import env from "./config/env";
+import { ProductController } from "./controllers/Product/productController";
 
 const errorHandler = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -47,14 +43,12 @@ class App {
       })
     );
 
-    // Logging
     if (env.NODE_ENV === "development") {
       this.app.use(morgan("dev"));
     } else {
       this.app.use(morgan("combined"));
     }
 
-    // Custom request logger
     this.app.use((req, res, next) => {
       console.log(
         `[${new Date().toISOString()}] ${req.method} ${req.originalUrl} - IP: ${
@@ -70,7 +64,7 @@ class App {
 
     // ****API ROUTES**** \\
     //GET ROUTES
-    router.get("/get-products", ProductController.getProducts);
+    router.get("/get-products", ProductController.GetAll);
     // router.get("/prices-lists", PricesListsController.getAllPricesLists);
     // router.get("/prices-lists/:id", PricesListsController.getPriceListById);
     // //POST ROUTES
@@ -89,12 +83,8 @@ class App {
     //   PricesListsController.deletePriceListById
     // );
     // router.delete("/client/:id", UserController.deleteUserById);
-    // HEALTH CHECK ROUTE
 
-    // Apply routes with version prefix
     this.app.use("/v1", router);
-
-    // Handle 404
   }
 
   private setupErrorHandling(): void {

@@ -3,7 +3,7 @@ import { fetchToken } from "./fetchToken";
 import env from "../../config/env";
 
 // Interfaces
-interface Product {
+interface HiperProduct {
   pontoDeSincronizacao: number;
   altura: number;
   ativo: boolean;
@@ -43,7 +43,7 @@ interface Product {
 
 interface ApiResponse {
   pontoDeSincronizacao: number;
-  produtos: Product[];
+  produtos: HiperProduct[];
   errors: any[];
   message: string | null;
 }

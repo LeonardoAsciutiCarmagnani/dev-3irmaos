@@ -36,35 +36,35 @@ const createUserSchema = z.object({
 });
 
 // Controllers
-export class ProductController {
-  public static async getProducts(
-    req: Request<{}, {}, {}, ProductQuery>,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const productsResponse = await productService.fetchProducts();
+// export class ProductController {
+//   public static async getProducts(
+//     req: Request<{}, {}, {}, ProductQuery>,
+//     res: Response,
+//     next: NextFunction
+//   ): Promise<void> {
+//     try {
+//       const productsResponse = await productService.fetchProducts();
 
-      if (!productsResponse.produtos) {
-        throw new Error("Falha ao obter produtos da API");
-      }
+//       if (!productsResponse.produtos) {
+//         throw new Error("Falha ao obter produtos da API");
+//       }
 
-      const products = productsResponse.produtos;
-      console.log("Total de produtos:", products.length);
+//       const products = productsResponse.produtos;
+//       console.log("Total de produtos:", products.length);
 
-      console.log("Produtos encontrados:", products.length);
+//       console.log("Produtos encontrados:", products.length);
 
-      res.status(200).json({
-        success: true,
-        data: products,
-        total: products.length,
-      });
-    } catch (error) {
-      console.error("Erro ao buscar produtos:", error);
-      next(error);
-    }
-  }
-}
+//       res.status(200).json({
+//         success: true,
+//         data: products,
+//         total: products.length,
+//       });
+//     } catch (error) {
+//       console.error("Erro ao buscar produtos:", error);
+//       next(error);
+//     }
+//   }
+// }
 
 export class UserController {
   public static async createUser(
