@@ -1,8 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Product } from "@/interfaces/Product";
-import { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Carousel,
   CarouselContent,
@@ -14,6 +15,8 @@ import { productsContext } from "@/context/productsContext";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
 
 const productSchema = z.object({
   altura: z.coerce.number().min(1, "Altura obrigatória"),
@@ -26,18 +29,61 @@ export type ProductFormData = z.infer<typeof productSchema>;
 
 export const DetailsProduct = () => {
   const { state } = useLocation();
+  const navigate = useNavigate();
+
+  const { handleAddProduct } = productsContext();
+  const [product, setProduct] = useState<Product>(state);
+  const [typeProduct, setTypeProduct] = useState({
+    typeProduct: true,
+    productVariationSelected: {
+      id: product.variacao?.[0]?.id || "",
+      nomeVariacao: product.variacao?.[0].nomeVariacaoA || "",
+    },
+  });
 
   const {
+    reset,
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
+    defaultValues: typeProduct.typeProduct
+      ? {
+          altura: product.altura,
+          comprimento: product.comprimento,
+          largura: product.largura,
+          quantidade: 1,
+        }
+      : {
+          altura: 0,
+          comprimento: 0,
+          largura: 0,
+          quantidade: 1,
+        },
   });
 
-  const { handleAddProduct } = productsContext();
-  const [typeProduct, setTypeProduct] = useState(true);
-  const [product, setProduct] = useState<Product>(state);
+  useEffect(() => {
+    if (typeProduct.typeProduct) {
+      reset({
+        altura: product.altura,
+        comprimento: product.comprimento,
+        largura: product.largura,
+        quantidade: 1,
+      });
+    } else {
+      reset({
+        altura: 0,
+        comprimento: 0,
+        largura: 0,
+        quantidade: 1,
+      });
+    }
+    console.log(
+      "Variação selecionada => ",
+      typeProduct.productVariationSelected
+    );
+  }, [typeProduct]);
 
   const CarouselImages = [
     { imagem: product.imagem },
@@ -45,11 +91,31 @@ export const DetailsProduct = () => {
   ];
 
   const onSubmit = (data: ProductFormData) => {
-    handleAddProduct(data);
+    const updatedProduct = {
+      ...product,
+      selectedVariation: typeProduct.productVariationSelected,
+      altura: data.altura,
+      comprimento: data.comprimento,
+      largura: data.largura,
+      quantidade: data.quantidade,
+    };
+
+    setProduct(updatedProduct);
+    handleAddProduct(updatedProduct);
+    toast.success("Produto adicionado ao orçamento !", {
+      id: 1,
+      position: "top-right",
+      description:
+        "Você pode adicionar mais produtos ou prosseguir com a cotação",
+      duration: 3000,
+      closeButton: true,
+    });
+    reset();
   };
 
   return (
-    <div className="h-screen">
+    <div className="h-screen ">
+      <Toaster richColors />
       <div className="flex flex-col  justify-center  items-start p-4 md:p-10 space-y-4 ">
         <h1 className="font-bold text-xl text-gray-800">Detalhes do produto</h1>
         <div className="flex flex-col md:flex-row gap-4 w-full ">
@@ -95,9 +161,19 @@ export const DetailsProduct = () => {
                   type="radio"
                   name="typeProduct"
                   id="sobmedida"
+                  value={product.variacao?.[1]?.nomeVariacaoA || ""}
                   className="hover:cursor-pointer"
-                  checked={typeProduct === false}
-                  onChange={() => setTypeProduct(false)}
+                  checked={typeProduct.typeProduct === false}
+                  onChange={() =>
+                    setTypeProduct(() => ({
+                      typeProduct: false,
+                      productVariationSelected: {
+                        id: product.variacao?.[1]?.id || "",
+                        nomeVariacao:
+                          product.variacao?.[1]?.nomeVariacaoA || "",
+                      },
+                    }))
+                  }
                 />
                 <label
                   htmlFor="sobmedida"
@@ -111,9 +187,19 @@ export const DetailsProduct = () => {
                   type="radio"
                   name="typeProduct"
                   id="prontaentrega"
+                  value={product.variacao?.[0]?.nomeVariacaoA || ""}
                   className="hover:cursor-pointer"
-                  checked={typeProduct === true}
-                  onChange={() => setTypeProduct(true)}
+                  checked={typeProduct.typeProduct === true}
+                  onChange={() =>
+                    setTypeProduct(() => ({
+                      typeProduct: true,
+                      productVariationSelected: {
+                        id: product.variacao?.[0]?.id || "",
+                        nomeVariacao:
+                          product.variacao?.[0]?.nomeVariacaoA || "",
+                      },
+                    }))
+                  }
                 />
                 <label
                   htmlFor="prontaentrega"
@@ -124,15 +210,17 @@ export const DetailsProduct = () => {
               </div>
             </div>
             <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="flex flex-col items-center md:flex-row md:justify-around space-y-2">
+              <div className="flex flex-col items-center md:flex-row md:justify-around space-y-2 ">
                 <div>
                   <label htmlFor="altura">Altura</label>
                   <Input
                     id="altura"
                     type="number"
+                    step={"0.01"}
                     placeholder="Altura"
                     {...register("altura")}
-                    className="w-fit focus-visible:border-red-900 focus-visible:ring-red-900 focus-visible:ring-1"
+                    disabled={typeProduct.typeProduct}
+                    className="w-fit focus-visible:border-red-900 focus-visible:ring-red-900 focus-visible:ring-1 disabled:bg-gray-100 disabled:text-black"
                   />
                   {errors.altura && (
                     <span className="text-red-500 text-sm">
@@ -146,9 +234,11 @@ export const DetailsProduct = () => {
                   <Input
                     id="comprimento"
                     type="number"
+                    step={"0.01"}
                     placeholder="Comprimento"
                     {...register("comprimento")}
-                    className="w-fit focus-visible:border-red-900 focus-visible:ring-red-900 focus-visible:ring-1"
+                    disabled={typeProduct.typeProduct}
+                    className="w-fit focus-visible:border-red-900 focus-visible:ring-red-900 focus-visible:ring-1 disabled:bg-gray-100 disabled:text-black"
                   />
                   {errors.comprimento && (
                     <span className="text-red-500 text-sm">
@@ -162,9 +252,11 @@ export const DetailsProduct = () => {
                   <Input
                     id="largura"
                     type="number"
+                    step={"0.01"}
                     placeholder="Largura"
                     {...register("largura")}
-                    className="w-fit focus-visible:border-red-900 focus-visible:ring-red-900 focus-visible:ring-1"
+                    disabled={typeProduct.typeProduct}
+                    className="w-fit focus-visible:border-red-900 focus-visible:ring-red-900 focus-visible:ring-1 disabled:bg-gray-100 disabled:text-black"
                   />
                   {errors.largura && (
                     <span className="text-red-500 text-sm">
@@ -197,10 +289,16 @@ export const DetailsProduct = () => {
               </div>
             </form>
             <div className="flex justify-around">
-              <Button className="text-xs md:text-sm">
+              <Button
+                onClick={() => navigate("/")}
+                className="text-xs md:text-sm"
+              >
                 Adicionar novos produtos
               </Button>
-              <Button className="text-xs md:text-sm">
+              <Button
+                onClick={() => navigate("/orçamento")}
+                className="text-xs md:text-sm"
+              >
                 Prosseguir com a cotação
               </Button>
             </div>
