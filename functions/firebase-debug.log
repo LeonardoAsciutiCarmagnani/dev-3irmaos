@@ -639,3 +639,1763 @@ Issues? Report them at https://github.com/firebase/firebase-tools/issues and att
 [debug] [2025-04-14T17:12:47.647Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=close"}}
 [debug] [2025-04-14T17:12:47.647Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
 [info] >  GET /v1/get-products 304 3171.434 ms - - {"user":"\u001b[0mGET /v1/get-products \u001b[36m304\u001b[0m 3171.434 ms - -\u001b[0m","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m \u001b[0mGET /v1/get-products \u001b[36m304\u001b[0m 3171.434 ms - -\u001b[0m"}}
+[debug] [2025-04-14T17:27:15.156Z] [work-queue] {"queuedWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T17:27:15.156Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2025-04-14T17:27:15.156Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T17:27:15.156Z"],"workRunningCount":1}
+[debug] [2025-04-14T17:27:15.156Z] Accepted request GET /dev-3irmaos/us-central1/api/v1/get-products --> us-central1-api
+[debug] [2025-04-14T17:27:15.158Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2025-04-14T17:27:15.158Z] [functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products"}}
+[debug] [2025-04-14T17:27:15.158Z] [worker-pool] submitRequest(triggerId=us-central1-api) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-api)"}}
+[info] i  functions: Beginning execution of "us-central1-api" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Beginning execution of \"us-central1-api\""}}
+[debug] [2025-04-14T17:27:15.158Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY"}}
+[info] >  [2025-04-14T17:27:15.160Z] GET /v1/get-products - IP: undefined {"user":"[2025-04-14T17:27:15.160Z] GET /v1/get-products - IP: undefined","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m [2025-04-14T17:27:15.160Z] GET /v1/get-products - IP: undefined"}}
+[info] >  Token recuperado do cache. {"user":"Token recuperado do cache.","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m Token recuperado do cache."}}
+[debug] [2025-04-14T17:27:18.392Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-api" in 3233.7228ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finished \"us-central1-api\" in 3233.7228ms"}}
+[debug] [2025-04-14T17:27:18.392Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE"}}
+[debug] [2025-04-14T17:27:18.392Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2025-04-14T17:27:18.392Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2025-04-14T17:27:18.393Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[info] >  GET /v1/get-products 200 3231.210 ms - 5725 {"user":"\u001b[0mGET /v1/get-products \u001b[32m200\u001b[0m 3231.210 ms - 5725\u001b[0m","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m \u001b[0mGET /v1/get-products \u001b[32m200\u001b[0m 3231.210 ms - 5725\u001b[0m"}}
+[debug] [2025-04-14T17:27:18.397Z] [work-queue] {"queuedWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T17:27:18.397Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2025-04-14T17:27:18.397Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T17:27:18.397Z"],"workRunningCount":1}
+[debug] [2025-04-14T17:27:18.397Z] Accepted request GET /dev-3irmaos/us-central1/api/v1/get-products --> us-central1-api
+[debug] [2025-04-14T17:27:18.397Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2025-04-14T17:27:18.398Z] [functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products"}}
+[debug] [2025-04-14T17:27:18.398Z] [worker-pool] submitRequest(triggerId=us-central1-api) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-api)"}}
+[info] i  functions: Beginning execution of "us-central1-api" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Beginning execution of \"us-central1-api\""}}
+[debug] [2025-04-14T17:27:18.398Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY"}}
+[info] >  [2025-04-14T17:27:18.399Z] GET /v1/get-products - IP: undefined {"user":"[2025-04-14T17:27:18.399Z] GET /v1/get-products - IP: undefined","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m [2025-04-14T17:27:18.399Z] GET /v1/get-products - IP: undefined"}}
+[info] >  Token recuperado do cache. {"user":"Token recuperado do cache.","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m Token recuperado do cache."}}
+[debug] [2025-04-14T17:27:18.926Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-api" in 527.8849ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finished \"us-central1-api\" in 527.8849ms"}}
+[debug] [2025-04-14T17:27:18.926Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE"}}
+[debug] [2025-04-14T17:27:18.926Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2025-04-14T17:27:18.926Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2025-04-14T17:27:18.926Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[info] >  GET /v1/get-products 304 525.950 ms - - {"user":"\u001b[0mGET /v1/get-products \u001b[36m304\u001b[0m 525.950 ms - -\u001b[0m","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m \u001b[0mGET /v1/get-products \u001b[36m304\u001b[0m 525.950 ms - -\u001b[0m"}}
+[debug] [2025-04-14T17:27:24.124Z] [work-queue] {"queuedWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T17:27:24.124Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2025-04-14T17:27:24.124Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T17:27:24.124Z"],"workRunningCount":1}
+[debug] [2025-04-14T17:27:24.124Z] Accepted request GET /dev-3irmaos/us-central1/api/v1/get-products --> us-central1-api
+[debug] [2025-04-14T17:27:24.126Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2025-04-14T17:27:24.126Z] [functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products"}}
+[debug] [2025-04-14T17:27:24.126Z] [worker-pool] submitRequest(triggerId=us-central1-api) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-api)"}}
+[info] i  functions: Beginning execution of "us-central1-api" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Beginning execution of \"us-central1-api\""}}
+[debug] [2025-04-14T17:27:24.126Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY"}}
+[info] >  [2025-04-14T17:27:24.128Z] GET /v1/get-products - IP: undefined {"user":"[2025-04-14T17:27:24.128Z] GET /v1/get-products - IP: undefined","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m [2025-04-14T17:27:24.128Z] GET /v1/get-products - IP: undefined"}}
+[info] >  Token recuperado do cache. {"user":"Token recuperado do cache.","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m Token recuperado do cache."}}
+[debug] [2025-04-14T17:27:26.084Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-api" in 1957.8546999999999ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finished \"us-central1-api\" in 1957.8546999999999ms"}}
+[debug] [2025-04-14T17:27:26.084Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE"}}
+[debug] [2025-04-14T17:27:26.084Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2025-04-14T17:27:26.084Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2025-04-14T17:27:26.084Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[info] >  GET /v1/get-products 304 1955.130 ms - - {"user":"\u001b[0mGET /v1/get-products \u001b[36m304\u001b[0m 1955.130 ms - -\u001b[0m","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m \u001b[0mGET /v1/get-products \u001b[36m304\u001b[0m 1955.130 ms - -\u001b[0m"}}
+[debug] [2025-04-14T17:27:26.089Z] [work-queue] {"queuedWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T17:27:26.089Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2025-04-14T17:27:26.089Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T17:27:26.089Z"],"workRunningCount":1}
+[debug] [2025-04-14T17:27:26.089Z] Accepted request GET /dev-3irmaos/us-central1/api/v1/get-products --> us-central1-api
+[debug] [2025-04-14T17:27:26.089Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2025-04-14T17:27:26.090Z] [functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products"}}
+[debug] [2025-04-14T17:27:26.090Z] [worker-pool] submitRequest(triggerId=us-central1-api) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-api)"}}
+[info] i  functions: Beginning execution of "us-central1-api" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Beginning execution of \"us-central1-api\""}}
+[debug] [2025-04-14T17:27:26.090Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY"}}
+[info] >  [2025-04-14T17:27:26.091Z] GET /v1/get-products - IP: undefined {"user":"[2025-04-14T17:27:26.091Z] GET /v1/get-products - IP: undefined","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m [2025-04-14T17:27:26.091Z] GET /v1/get-products - IP: undefined"}}
+[info] >  Token recuperado do cache. {"user":"Token recuperado do cache.","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m Token recuperado do cache."}}
+[debug] [2025-04-14T17:27:26.558Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-api" in 467.9923ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finished \"us-central1-api\" in 467.9923ms"}}
+[debug] [2025-04-14T17:27:26.558Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE"}}
+[debug] [2025-04-14T17:27:26.558Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2025-04-14T17:27:26.558Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2025-04-14T17:27:26.558Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[info] >  GET /v1/get-products 304 466.361 ms - - {"user":"\u001b[0mGET /v1/get-products \u001b[36m304\u001b[0m 466.361 ms - -\u001b[0m","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m \u001b[0mGET /v1/get-products \u001b[36m304\u001b[0m 466.361 ms - -\u001b[0m"}}
+[debug] [2025-04-14T17:27:48.109Z] [work-queue] {"queuedWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T17:27:48.109Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2025-04-14T17:27:48.109Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T17:27:48.109Z"],"workRunningCount":1}
+[debug] [2025-04-14T17:27:48.109Z] Accepted request GET /dev-3irmaos/us-central1/api/v1/get-products --> us-central1-api
+[debug] [2025-04-14T17:27:48.111Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2025-04-14T17:27:48.111Z] [functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products"}}
+[debug] [2025-04-14T17:27:48.111Z] [worker-pool] submitRequest(triggerId=us-central1-api) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-api)"}}
+[info] i  functions: Beginning execution of "us-central1-api" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Beginning execution of \"us-central1-api\""}}
+[debug] [2025-04-14T17:27:48.111Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY"}}
+[info] >  [2025-04-14T17:27:48.114Z] GET /v1/get-products - IP: undefined {"user":"[2025-04-14T17:27:48.114Z] GET /v1/get-products - IP: undefined","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m [2025-04-14T17:27:48.114Z] GET /v1/get-products - IP: undefined"}}
+[info] >  Token recuperado do cache. {"user":"Token recuperado do cache.","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m Token recuperado do cache."}}
+[debug] [2025-04-14T17:27:48.933Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-api" in 821.7503ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finished \"us-central1-api\" in 821.7503ms"}}
+[debug] [2025-04-14T17:27:48.934Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE"}}
+[debug] [2025-04-14T17:27:48.934Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2025-04-14T17:27:48.934Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2025-04-14T17:27:48.934Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[info] >  GET /v1/get-products 304 818.886 ms - - {"user":"\u001b[0mGET /v1/get-products \u001b[36m304\u001b[0m 818.886 ms - -\u001b[0m","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m \u001b[0mGET /v1/get-products \u001b[36m304\u001b[0m 818.886 ms - -\u001b[0m"}}
+[debug] [2025-04-14T17:27:48.939Z] [work-queue] {"queuedWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T17:27:48.939Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2025-04-14T17:27:48.939Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T17:27:48.939Z"],"workRunningCount":1}
+[debug] [2025-04-14T17:27:48.939Z] Accepted request GET /dev-3irmaos/us-central1/api/v1/get-products --> us-central1-api
+[debug] [2025-04-14T17:27:48.940Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2025-04-14T17:27:48.940Z] [functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products"}}
+[debug] [2025-04-14T17:27:48.940Z] [worker-pool] submitRequest(triggerId=us-central1-api) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-api)"}}
+[info] i  functions: Beginning execution of "us-central1-api" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Beginning execution of \"us-central1-api\""}}
+[debug] [2025-04-14T17:27:48.940Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY"}}
+[info] >  [2025-04-14T17:27:48.942Z] GET /v1/get-products - IP: undefined {"user":"[2025-04-14T17:27:48.942Z] GET /v1/get-products - IP: undefined","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m [2025-04-14T17:27:48.942Z] GET /v1/get-products - IP: undefined"}}
+[info] >  Token recuperado do cache. {"user":"Token recuperado do cache.","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m Token recuperado do cache."}}
+[debug] [2025-04-14T17:27:49.391Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-api" in 451.2673ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finished \"us-central1-api\" in 451.2673ms"}}
+[debug] [2025-04-14T17:27:49.392Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE"}}
+[debug] [2025-04-14T17:27:49.392Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2025-04-14T17:27:49.392Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2025-04-14T17:27:49.392Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[info] >  GET /v1/get-products 304 449.470 ms - - {"user":"\u001b[0mGET /v1/get-products \u001b[36m304\u001b[0m 449.470 ms - -\u001b[0m","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m \u001b[0mGET /v1/get-products \u001b[36m304\u001b[0m 449.470 ms - -\u001b[0m"}}
+[debug] [2025-04-14T17:31:12.168Z] [work-queue] {"queuedWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T17:31:12.168Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2025-04-14T17:31:12.168Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T17:31:12.168Z"],"workRunningCount":1}
+[debug] [2025-04-14T17:31:12.168Z] Accepted request GET /dev-3irmaos/us-central1/api/v1/get-products --> us-central1-api
+[debug] [2025-04-14T17:31:12.170Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2025-04-14T17:31:12.170Z] [functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products"}}
+[debug] [2025-04-14T17:31:12.170Z] [worker-pool] submitRequest(triggerId=us-central1-api) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-api)"}}
+[info] i  functions: Beginning execution of "us-central1-api" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Beginning execution of \"us-central1-api\""}}
+[debug] [2025-04-14T17:31:12.170Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY"}}
+[info] >  [2025-04-14T17:31:12.171Z] GET /v1/get-products - IP: undefined {"user":"[2025-04-14T17:31:12.171Z] GET /v1/get-products - IP: undefined","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m [2025-04-14T17:31:12.171Z] GET /v1/get-products - IP: undefined"}}
+[info] >  Token recuperado do cache. {"user":"Token recuperado do cache.","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m Token recuperado do cache."}}
+[debug] [2025-04-14T17:31:12.861Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-api" in 690.9727ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finished \"us-central1-api\" in 690.9727ms"}}
+[debug] [2025-04-14T17:31:12.861Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE"}}
+[debug] [2025-04-14T17:31:12.861Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2025-04-14T17:31:12.861Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2025-04-14T17:31:12.861Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[info] >  GET /v1/get-products 304 688.678 ms - - {"user":"\u001b[0mGET /v1/get-products \u001b[36m304\u001b[0m 688.678 ms - -\u001b[0m","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m \u001b[0mGET /v1/get-products \u001b[36m304\u001b[0m 688.678 ms - -\u001b[0m"}}
+[debug] [2025-04-14T17:31:12.865Z] [work-queue] {"queuedWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T17:31:12.865Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2025-04-14T17:31:12.865Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T17:31:12.865Z"],"workRunningCount":1}
+[debug] [2025-04-14T17:31:12.865Z] Accepted request GET /dev-3irmaos/us-central1/api/v1/get-products --> us-central1-api
+[debug] [2025-04-14T17:31:12.865Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2025-04-14T17:31:12.865Z] [functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products"}}
+[debug] [2025-04-14T17:31:12.865Z] [worker-pool] submitRequest(triggerId=us-central1-api) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-api)"}}
+[info] i  functions: Beginning execution of "us-central1-api" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Beginning execution of \"us-central1-api\""}}
+[debug] [2025-04-14T17:31:12.866Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY"}}
+[info] >  [2025-04-14T17:31:12.866Z] GET /v1/get-products - IP: undefined {"user":"[2025-04-14T17:31:12.866Z] GET /v1/get-products - IP: undefined","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m [2025-04-14T17:31:12.866Z] GET /v1/get-products - IP: undefined"}}
+[info] >  Token recuperado do cache. {"user":"Token recuperado do cache.","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m Token recuperado do cache."}}
+[debug] [2025-04-14T17:31:13.389Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-api" in 523.5298ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finished \"us-central1-api\" in 523.5298ms"}}
+[debug] [2025-04-14T17:31:13.389Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE"}}
+[debug] [2025-04-14T17:31:13.389Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2025-04-14T17:31:13.389Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2025-04-14T17:31:13.389Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[info] >  GET /v1/get-products 304 521.662 ms - - {"user":"\u001b[0mGET /v1/get-products \u001b[36m304\u001b[0m 521.662 ms - -\u001b[0m","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m \u001b[0mGET /v1/get-products \u001b[36m304\u001b[0m 521.662 ms - -\u001b[0m"}}
+[debug] [2025-04-14T17:34:17.433Z] [work-queue] {"queuedWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T17:34:17.433Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2025-04-14T17:34:17.433Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T17:34:17.433Z"],"workRunningCount":1}
+[debug] [2025-04-14T17:34:17.433Z] Accepted request GET /dev-3irmaos/us-central1/api/v1/get-products --> us-central1-api
+[debug] [2025-04-14T17:34:17.435Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2025-04-14T17:34:17.435Z] [functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products"}}
+[debug] [2025-04-14T17:34:17.435Z] [worker-pool] submitRequest(triggerId=us-central1-api) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-api)"}}
+[info] i  functions: Beginning execution of "us-central1-api" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Beginning execution of \"us-central1-api\""}}
+[debug] [2025-04-14T17:34:17.436Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY"}}
+[info] >  [2025-04-14T17:34:17.438Z] GET /v1/get-products - IP: undefined {"user":"[2025-04-14T17:34:17.438Z] GET /v1/get-products - IP: undefined","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m [2025-04-14T17:34:17.438Z] GET /v1/get-products - IP: undefined"}}
+[info] >  Token recuperado do cache. {"user":"Token recuperado do cache.","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m Token recuperado do cache."}}
+[debug] [2025-04-14T17:34:18.347Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-api" in 911.4165ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finished \"us-central1-api\" in 911.4165ms"}}
+[debug] [2025-04-14T17:34:18.347Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE"}}
+[debug] [2025-04-14T17:34:18.347Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2025-04-14T17:34:18.348Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2025-04-14T17:34:18.348Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[info] >  GET /v1/get-products 200 908.659 ms - 5725 {"user":"\u001b[0mGET /v1/get-products \u001b[32m200\u001b[0m 908.659 ms - 5725\u001b[0m","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m \u001b[0mGET /v1/get-products \u001b[32m200\u001b[0m 908.659 ms - 5725\u001b[0m"}}
+[debug] [2025-04-14T17:34:18.352Z] [work-queue] {"queuedWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T17:34:18.352Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2025-04-14T17:34:18.352Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T17:34:18.352Z"],"workRunningCount":1}
+[debug] [2025-04-14T17:34:18.353Z] Accepted request GET /dev-3irmaos/us-central1/api/v1/get-products --> us-central1-api
+[debug] [2025-04-14T17:34:18.353Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2025-04-14T17:34:18.353Z] [functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products"}}
+[debug] [2025-04-14T17:34:18.353Z] [worker-pool] submitRequest(triggerId=us-central1-api) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-api)"}}
+[info] i  functions: Beginning execution of "us-central1-api" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Beginning execution of \"us-central1-api\""}}
+[debug] [2025-04-14T17:34:18.353Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY"}}
+[info] >  [2025-04-14T17:34:18.354Z] GET /v1/get-products - IP: undefined {"user":"[2025-04-14T17:34:18.354Z] GET /v1/get-products - IP: undefined","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m [2025-04-14T17:34:18.354Z] GET /v1/get-products - IP: undefined"}}
+[info] >  Token recuperado do cache. {"user":"Token recuperado do cache.","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m Token recuperado do cache."}}
+[debug] [2025-04-14T17:34:18.869Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-api" in 515.4306ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finished \"us-central1-api\" in 515.4306ms"}}
+[debug] [2025-04-14T17:34:18.869Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE"}}
+[debug] [2025-04-14T17:34:18.869Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2025-04-14T17:34:18.869Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2025-04-14T17:34:18.869Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[info] >  GET /v1/get-products 200 513.510 ms - 5725 {"user":"\u001b[0mGET /v1/get-products \u001b[32m200\u001b[0m 513.510 ms - 5725\u001b[0m","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m \u001b[0mGET /v1/get-products \u001b[32m200\u001b[0m 513.510 ms - 5725\u001b[0m"}}
+[debug] [2025-04-14T17:42:56.463Z] [work-queue] {"queuedWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T17:42:56.463Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2025-04-14T17:42:56.464Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T17:42:56.463Z"],"workRunningCount":1}
+[debug] [2025-04-14T17:42:56.464Z] Accepted request GET /dev-3irmaos/us-central1/api/v1/get-products --> us-central1-api
+[debug] [2025-04-14T17:42:56.465Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2025-04-14T17:42:56.465Z] [functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products"}}
+[debug] [2025-04-14T17:42:56.465Z] [worker-pool] submitRequest(triggerId=us-central1-api) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-api)"}}
+[info] i  functions: Beginning execution of "us-central1-api" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Beginning execution of \"us-central1-api\""}}
+[debug] [2025-04-14T17:42:56.466Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY"}}
+[info] >  [2025-04-14T17:42:56.467Z] GET /v1/get-products - IP: undefined {"user":"[2025-04-14T17:42:56.467Z] GET /v1/get-products - IP: undefined","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m [2025-04-14T17:42:56.467Z] GET /v1/get-products - IP: undefined"}}
+[info] >  Token recuperado do cache. {"user":"Token recuperado do cache.","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m Token recuperado do cache."}}
+[debug] [2025-04-14T17:42:57.571Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-api" in 1105.3554ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finished \"us-central1-api\" in 1105.3554ms"}}
+[debug] [2025-04-14T17:42:57.571Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE"}}
+[debug] [2025-04-14T17:42:57.571Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2025-04-14T17:42:57.572Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2025-04-14T17:42:57.572Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[info] >  GET /v1/get-products 304 1103.341 ms - - {"user":"\u001b[0mGET /v1/get-products \u001b[36m304\u001b[0m 1103.341 ms - -\u001b[0m","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m \u001b[0mGET /v1/get-products \u001b[36m304\u001b[0m 1103.341 ms - -\u001b[0m"}}
+[debug] [2025-04-14T17:42:57.576Z] [work-queue] {"queuedWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T17:42:57.576Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2025-04-14T17:42:57.576Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T17:42:57.576Z"],"workRunningCount":1}
+[debug] [2025-04-14T17:42:57.576Z] Accepted request GET /dev-3irmaos/us-central1/api/v1/get-products --> us-central1-api
+[debug] [2025-04-14T17:42:57.576Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2025-04-14T17:42:57.576Z] [functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products"}}
+[debug] [2025-04-14T17:42:57.576Z] [worker-pool] submitRequest(triggerId=us-central1-api) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-api)"}}
+[info] i  functions: Beginning execution of "us-central1-api" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Beginning execution of \"us-central1-api\""}}
+[debug] [2025-04-14T17:42:57.577Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY"}}
+[info] >  [2025-04-14T17:42:57.577Z] GET /v1/get-products - IP: undefined {"user":"[2025-04-14T17:42:57.577Z] GET /v1/get-products - IP: undefined","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m [2025-04-14T17:42:57.577Z] GET /v1/get-products - IP: undefined"}}
+[info] >  Token recuperado do cache. {"user":"Token recuperado do cache.","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m Token recuperado do cache."}}
+[debug] [2025-04-14T17:42:58.002Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-api" in 425.828ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finished \"us-central1-api\" in 425.828ms"}}
+[debug] [2025-04-14T17:42:58.003Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE"}}
+[debug] [2025-04-14T17:42:58.003Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2025-04-14T17:42:58.003Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2025-04-14T17:42:58.003Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[info] >  GET /v1/get-products 304 423.881 ms - - {"user":"\u001b[0mGET /v1/get-products \u001b[36m304\u001b[0m 423.881 ms - -\u001b[0m","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m \u001b[0mGET /v1/get-products \u001b[36m304\u001b[0m 423.881 ms - -\u001b[0m"}}
+[debug] [2025-04-14T17:49:46.797Z] [work-queue] {"queuedWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T17:49:46.797Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2025-04-14T17:49:46.797Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T17:49:46.797Z"],"workRunningCount":1}
+[debug] [2025-04-14T17:49:46.797Z] Accepted request GET /dev-3irmaos/us-central1/api/v1/get-products --> us-central1-api
+[debug] [2025-04-14T17:49:46.799Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2025-04-14T17:49:46.800Z] [functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products"}}
+[debug] [2025-04-14T17:49:46.800Z] [worker-pool] submitRequest(triggerId=us-central1-api) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-api)"}}
+[info] i  functions: Beginning execution of "us-central1-api" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Beginning execution of \"us-central1-api\""}}
+[debug] [2025-04-14T17:49:46.800Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY"}}
+[info] >  [2025-04-14T17:49:46.801Z] GET /v1/get-products - IP: undefined {"user":"[2025-04-14T17:49:46.801Z] GET /v1/get-products - IP: undefined","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m [2025-04-14T17:49:46.801Z] GET /v1/get-products - IP: undefined"}}
+[info] >  Token recuperado do cache. {"user":"Token recuperado do cache.","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m Token recuperado do cache."}}
+[debug] [2025-04-14T17:49:50.788Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-api" in 3988.5586ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finished \"us-central1-api\" in 3988.5586ms"}}
+[debug] [2025-04-14T17:49:50.789Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE"}}
+[debug] [2025-04-14T17:49:50.789Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2025-04-14T17:49:50.789Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2025-04-14T17:49:50.789Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[info] >  GET /v1/get-products 304 3986.400 ms - - {"user":"\u001b[0mGET /v1/get-products \u001b[36m304\u001b[0m 3986.400 ms - -\u001b[0m","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m \u001b[0mGET /v1/get-products \u001b[36m304\u001b[0m 3986.400 ms - -\u001b[0m"}}
+[debug] [2025-04-14T17:49:50.794Z] [work-queue] {"queuedWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T17:49:50.794Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2025-04-14T17:49:50.794Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T17:49:50.794Z"],"workRunningCount":1}
+[debug] [2025-04-14T17:49:50.794Z] Accepted request GET /dev-3irmaos/us-central1/api/v1/get-products --> us-central1-api
+[debug] [2025-04-14T17:49:50.795Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2025-04-14T17:49:50.795Z] [functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products"}}
+[debug] [2025-04-14T17:49:50.795Z] [worker-pool] submitRequest(triggerId=us-central1-api) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-api)"}}
+[info] i  functions: Beginning execution of "us-central1-api" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Beginning execution of \"us-central1-api\""}}
+[debug] [2025-04-14T17:49:50.795Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY"}}
+[info] >  [2025-04-14T17:49:50.796Z] GET /v1/get-products - IP: undefined {"user":"[2025-04-14T17:49:50.796Z] GET /v1/get-products - IP: undefined","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m [2025-04-14T17:49:50.796Z] GET /v1/get-products - IP: undefined"}}
+[info] >  Token recuperado do cache. {"user":"Token recuperado do cache.","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m Token recuperado do cache."}}
+[debug] [2025-04-14T17:49:51.223Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-api" in 427.7188ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finished \"us-central1-api\" in 427.7188ms"}}
+[debug] [2025-04-14T17:49:51.223Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE"}}
+[debug] [2025-04-14T17:49:51.223Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2025-04-14T17:49:51.223Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2025-04-14T17:49:51.223Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[info] >  GET /v1/get-products 304 425.817 ms - - {"user":"\u001b[0mGET /v1/get-products \u001b[36m304\u001b[0m 425.817 ms - -\u001b[0m","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m \u001b[0mGET /v1/get-products \u001b[36m304\u001b[0m 425.817 ms - -\u001b[0m"}}
+[debug] [2025-04-14T17:59:18.655Z] [work-queue] {"queuedWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T17:59:18.655Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2025-04-14T17:59:18.655Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T17:59:18.655Z"],"workRunningCount":1}
+[debug] [2025-04-14T17:59:18.655Z] Accepted request GET /dev-3irmaos/us-central1/api/v1/get-products --> us-central1-api
+[debug] [2025-04-14T17:59:18.659Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2025-04-14T17:59:18.659Z] [functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products"}}
+[debug] [2025-04-14T17:59:18.659Z] [worker-pool] submitRequest(triggerId=us-central1-api) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-api)"}}
+[info] i  functions: Beginning execution of "us-central1-api" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Beginning execution of \"us-central1-api\""}}
+[debug] [2025-04-14T17:59:18.659Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY"}}
+[info] >  [2025-04-14T17:59:18.661Z] GET /v1/get-products - IP: undefined {"user":"[2025-04-14T17:59:18.661Z] GET /v1/get-products - IP: undefined","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m [2025-04-14T17:59:18.661Z] GET /v1/get-products - IP: undefined"}}
+[info] >  Novo token gerado e armazenado no cache. {"user":"Novo token gerado e armazenado no cache.","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m Novo token gerado e armazenado no cache."}}
+[debug] [2025-04-14T17:59:20.242Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-api" in 1582.4285ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finished \"us-central1-api\" in 1582.4285ms"}}
+[debug] [2025-04-14T17:59:20.242Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE"}}
+[debug] [2025-04-14T17:59:20.242Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2025-04-14T17:59:20.242Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2025-04-14T17:59:20.242Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[info] >  GET /v1/get-products 200 1579.974 ms - 5725 {"user":"\u001b[0mGET /v1/get-products \u001b[32m200\u001b[0m 1579.974 ms - 5725\u001b[0m","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m \u001b[0mGET /v1/get-products \u001b[32m200\u001b[0m 1579.974 ms - 5725\u001b[0m"}}
+[debug] [2025-04-14T17:59:20.247Z] [work-queue] {"queuedWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T17:59:20.247Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2025-04-14T17:59:20.247Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T17:59:20.247Z"],"workRunningCount":1}
+[debug] [2025-04-14T17:59:20.247Z] Accepted request GET /dev-3irmaos/us-central1/api/v1/get-products --> us-central1-api
+[debug] [2025-04-14T17:59:20.248Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2025-04-14T17:59:20.248Z] [functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products"}}
+[debug] [2025-04-14T17:59:20.248Z] [worker-pool] submitRequest(triggerId=us-central1-api) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-api)"}}
+[info] i  functions: Beginning execution of "us-central1-api" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Beginning execution of \"us-central1-api\""}}
+[debug] [2025-04-14T17:59:20.248Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY"}}
+[info] >  [2025-04-14T17:59:20.249Z] GET /v1/get-products - IP: undefined {"user":"[2025-04-14T17:59:20.249Z] GET /v1/get-products - IP: undefined","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m [2025-04-14T17:59:20.249Z] GET /v1/get-products - IP: undefined"}}
+[info] >  Token recuperado do cache. {"user":"Token recuperado do cache.","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m Token recuperado do cache."}}
+[debug] [2025-04-14T17:59:20.671Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-api" in 422.5493ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finished \"us-central1-api\" in 422.5493ms"}}
+[debug] [2025-04-14T17:59:20.671Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE"}}
+[debug] [2025-04-14T17:59:20.671Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2025-04-14T17:59:20.671Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2025-04-14T17:59:20.671Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[info] >  GET /v1/get-products 304 420.656 ms - - {"user":"\u001b[0mGET /v1/get-products \u001b[36m304\u001b[0m 420.656 ms - -\u001b[0m","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m \u001b[0mGET /v1/get-products \u001b[36m304\u001b[0m 420.656 ms - -\u001b[0m"}}
+[debug] [2025-04-14T19:33:13.523Z] [work-queue] {"queuedWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T19:33:13.523Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2025-04-14T19:33:13.525Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T19:33:13.523Z"],"workRunningCount":1}
+[debug] [2025-04-14T19:33:13.525Z] Accepted request GET /dev-3irmaos/us-central1/api/v1/get-products --> us-central1-api
+[debug] [2025-04-14T19:33:13.530Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2025-04-14T19:33:13.530Z] [functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products"}}
+[debug] [2025-04-14T19:33:13.531Z] [worker-pool] submitRequest(triggerId=us-central1-api) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-api)"}}
+[info] i  functions: Beginning execution of "us-central1-api" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Beginning execution of \"us-central1-api\""}}
+[debug] [2025-04-14T19:33:13.532Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY"}}
+[info] >  [2025-04-14T19:33:13.540Z] GET /v1/get-products - IP: undefined {"user":"[2025-04-14T19:33:13.540Z] GET /v1/get-products - IP: undefined","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m [2025-04-14T19:33:13.540Z] GET /v1/get-products - IP: undefined"}}
+[info] >  Novo token gerado e armazenado no cache. {"user":"Novo token gerado e armazenado no cache.","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m Novo token gerado e armazenado no cache."}}
+[debug] [2025-04-14T19:33:16.666Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-api" in 3134.6762ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finished \"us-central1-api\" in 3134.6762ms"}}
+[debug] [2025-04-14T19:33:16.667Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE"}}
+[debug] [2025-04-14T19:33:16.667Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2025-04-14T19:33:16.667Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2025-04-14T19:33:16.667Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[info] >  GET /v1/get-products 200 3124.755 ms - 5725 {"user":"\u001b[0mGET /v1/get-products \u001b[32m200\u001b[0m 3124.755 ms - 5725\u001b[0m","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m \u001b[0mGET /v1/get-products \u001b[32m200\u001b[0m 3124.755 ms - 5725\u001b[0m"}}
+[debug] [2025-04-14T19:33:16.677Z] [work-queue] {"queuedWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T19:33:16.677Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2025-04-14T19:33:16.677Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/dev-3irmaos/us-central1/api/v1/get-products-2025-04-14T19:33:16.677Z"],"workRunningCount":1}
+[debug] [2025-04-14T19:33:16.677Z] Accepted request GET /dev-3irmaos/us-central1/api/v1/get-products --> us-central1-api
+[debug] [2025-04-14T19:33:16.677Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2025-04-14T19:33:16.678Z] [functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/dev-3irmaos/us-central1/api/v1/get-products, mapping to path=/v1/get-products"}}
+[debug] [2025-04-14T19:33:16.678Z] [worker-pool] submitRequest(triggerId=us-central1-api) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-api)"}}
+[info] i  functions: Beginning execution of "us-central1-api" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Beginning execution of \"us-central1-api\""}}
+[debug] [2025-04-14T19:33:16.678Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: BUSY"}}
+[info] >  [2025-04-14T19:33:16.679Z] GET /v1/get-products - IP: undefined {"user":"[2025-04-14T19:33:16.679Z] GET /v1/get-products - IP: undefined","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m [2025-04-14T19:33:16.679Z] GET /v1/get-products - IP: undefined"}}
+[info] >  Token recuperado do cache. {"user":"Token recuperado do cache.","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m Token recuperado do cache."}}
+[debug] [2025-04-14T19:33:17.642Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-api" in 964.4694ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finished \"us-central1-api\" in 964.4694ms"}}
+[debug] [2025-04-14T19:33:17.643Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: IDLE"}}
+[debug] [2025-04-14T19:33:17.643Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2025-04-14T19:33:17.643Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2025-04-14T19:33:17.643Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[info] >  GET /v1/get-products 200 962.622 ms - 5725 {"user":"\u001b[0mGET /v1/get-products \u001b[32m200\u001b[0m 962.622 ms - 5725\u001b[0m","metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"\u001b[90m> \u001b[39m \u001b[0mGET /v1/get-products \u001b[32m200\u001b[0m 962.622 ms - 5725\u001b[0m"}}
+[debug] [2025-04-14T19:39:20.567Z] File C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\src\controllers\User\UserController.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\lasciuti\\Documents\\Projetos Multi\\Três irmãos\\BACK-3I\\functions\\src\\controllers\\User\\UserController.ts changed, reloading triggers"}}
+[debug] [2025-04-14T19:39:21.585Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[debug] [2025-04-14T19:39:22.824Z] > [functions] package.json contents: {
+  "main": "dist/index.js",
+  "name": "functions",
+  "version": "1.0.0",
+  "engines": {
+    "node": "22"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.2.0",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "node-cache": "^5.1.2",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.14.0",
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "lint": "echo \"No linting configured.\""
+  }
+}
+[debug] [2025-04-14T19:39:22.825Z] Building nodejs source
+[debug] [2025-04-14T19:39:22.825Z] Failed to find version of module node: reached end of search path C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules
+[info] +  functions: Using node@22 from host. 
+[info] i  functions: Loaded environment variables from .env. 
+[debug] [2025-04-14T19:39:22.828Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-04-14T19:39:22.836Z] Found firebase-functions binary at 'C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8692
+
+[info] Server started in development mode
+
+[debug] [2025-04-14T19:39:23.955Z] Got response from /__/functions.yaml {"endpoints":{"api":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"api"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: api. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: api."}}
+[debug] [2025-04-14T19:39:27.978Z] [worker-pool] Shutting down IDLE worker (us-central1-api) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] Shutting down IDLE worker (us-central1-api)"}}
+[debug] [2025-04-14T19:39:27.978Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: FINISHING {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: FINISHING"}}
+[debug] [2025-04-14T19:39:27.986Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: exited {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: exited"}}
+[debug] [2025-04-14T19:39:27.986Z] [worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: FINISHED {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-api"},"extension":{},"message":"[worker-us-central1-api-7b01a7c7-bda5-47be-bb1c-9ea96fa2183b]: FINISHED"}}
+[debug] [2025-04-14T19:41:03.870Z] File C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\pnpm-lock.yaml changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\lasciuti\\Documents\\Projetos Multi\\Três irmãos\\BACK-3I\\functions\\pnpm-lock.yaml changed, reloading triggers"}}
+[debug] [2025-04-14T19:41:03.876Z] File C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\package.json changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\lasciuti\\Documents\\Projetos Multi\\Três irmãos\\BACK-3I\\functions\\package.json changed, reloading triggers"}}
+[debug] [2025-04-14T19:41:04.878Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[debug] [2025-04-14T19:41:05.862Z] > [functions] package.json contents: {
+  "main": "dist/index.js",
+  "name": "functions",
+  "version": "1.0.0",
+  "engines": {
+    "node": "22"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.2.0",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "node-cache": "^5.1.2",
+    "uuid": "^11.1.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.14.0",
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "lint": "echo \"No linting configured.\""
+  }
+}
+[debug] [2025-04-14T19:41:05.862Z] Building nodejs source
+[debug] [2025-04-14T19:41:05.862Z] Failed to find version of module node: reached end of search path C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules
+[info] +  functions: Using node@22 from host. 
+[info] i  functions: Loaded environment variables from .env. 
+[debug] [2025-04-14T19:41:05.864Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-04-14T19:41:05.870Z] Found firebase-functions binary at 'C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8016
+
+[info] Server started in development mode
+
+[debug] [2025-04-14T19:41:06.633Z] Got response from /__/functions.yaml {"endpoints":{"api":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"api"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: api. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: api."}}
+[debug] [2025-04-14T19:42:54.845Z] File C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\src\services\User\createClient.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\lasciuti\\Documents\\Projetos Multi\\Três irmãos\\BACK-3I\\functions\\src\\services\\User\\createClient.ts changed, reloading triggers"}}
+[debug] [2025-04-14T19:42:55.859Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[debug] [2025-04-14T19:42:56.837Z] > [functions] package.json contents: {
+  "main": "dist/index.js",
+  "name": "functions",
+  "version": "1.0.0",
+  "engines": {
+    "node": "22"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.2.0",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "node-cache": "^5.1.2",
+    "uuid": "^11.1.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.14.0",
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "lint": "echo \"No linting configured.\""
+  }
+}
+[debug] [2025-04-14T19:42:56.837Z] Building nodejs source
+[debug] [2025-04-14T19:42:56.837Z] Failed to find version of module node: reached end of search path C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules
+[info] +  functions: Using node@22 from host. 
+[info] i  functions: Loaded environment variables from .env. 
+[debug] [2025-04-14T19:42:56.838Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-04-14T19:42:56.844Z] Found firebase-functions binary at 'C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8245
+
+[info] Server started in development mode
+
+[debug] [2025-04-14T19:42:57.517Z] Got response from /__/functions.yaml {"endpoints":{"api":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"api"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: api. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: api."}}
+[debug] [2025-04-14T19:44:24.969Z] File C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\src\services\User\createClient.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\lasciuti\\Documents\\Projetos Multi\\Três irmãos\\BACK-3I\\functions\\src\\services\\User\\createClient.ts changed, reloading triggers"}}
+[debug] [2025-04-14T19:44:25.976Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[debug] [2025-04-14T19:44:26.982Z] > [functions] package.json contents: {
+  "main": "dist/index.js",
+  "name": "functions",
+  "version": "1.0.0",
+  "engines": {
+    "node": "22"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.2.0",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "node-cache": "^5.1.2",
+    "uuid": "^11.1.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.14.0",
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "lint": "echo \"No linting configured.\""
+  }
+}
+[debug] [2025-04-14T19:44:26.982Z] Building nodejs source
+[debug] [2025-04-14T19:44:26.982Z] Failed to find version of module node: reached end of search path C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules
+[info] +  functions: Using node@22 from host. 
+[info] i  functions: Loaded environment variables from .env. 
+[debug] [2025-04-14T19:44:26.983Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-04-14T19:44:26.989Z] Found firebase-functions binary at 'C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8942
+
+[info] Server started in development mode
+
+[debug] [2025-04-14T19:44:27.665Z] Got response from /__/functions.yaml {"endpoints":{"api":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"api"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: api. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: api."}}
+[debug] [2025-04-14T19:45:43.351Z] File C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\src\services\User\createClient.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\lasciuti\\Documents\\Projetos Multi\\Três irmãos\\BACK-3I\\functions\\src\\services\\User\\createClient.ts changed, reloading triggers"}}
+[debug] [2025-04-14T19:45:44.354Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[debug] [2025-04-14T19:45:45.340Z] > [functions] package.json contents: {
+  "main": "dist/index.js",
+  "name": "functions",
+  "version": "1.0.0",
+  "engines": {
+    "node": "22"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.2.0",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "node-cache": "^5.1.2",
+    "uuid": "^11.1.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.14.0",
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "lint": "echo \"No linting configured.\""
+  }
+}
+[debug] [2025-04-14T19:45:45.340Z] Building nodejs source
+[debug] [2025-04-14T19:45:45.340Z] Failed to find version of module node: reached end of search path C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules
+[info] +  functions: Using node@22 from host. 
+[info] i  functions: Loaded environment variables from .env. 
+[debug] [2025-04-14T19:45:45.341Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-04-14T19:45:45.347Z] Found firebase-functions binary at 'C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8282
+
+[info] Server started in development mode
+
+[debug] [2025-04-14T19:45:46.007Z] Got response from /__/functions.yaml {"endpoints":{"api":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"api"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: api. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: api."}}
+[debug] [2025-04-14T19:46:00.282Z] File C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\src\services\User\createClient.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\lasciuti\\Documents\\Projetos Multi\\Três irmãos\\BACK-3I\\functions\\src\\services\\User\\createClient.ts changed, reloading triggers"}}
+[debug] [2025-04-14T19:46:01.285Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[debug] [2025-04-14T19:46:02.201Z] > [functions] package.json contents: {
+  "main": "dist/index.js",
+  "name": "functions",
+  "version": "1.0.0",
+  "engines": {
+    "node": "22"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.2.0",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "node-cache": "^5.1.2",
+    "uuid": "^11.1.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.14.0",
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "lint": "echo \"No linting configured.\""
+  }
+}
+[debug] [2025-04-14T19:46:02.201Z] Building nodejs source
+[debug] [2025-04-14T19:46:02.201Z] Failed to find version of module node: reached end of search path C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules
+[info] +  functions: Using node@22 from host. 
+[info] i  functions: Loaded environment variables from .env. 
+[debug] [2025-04-14T19:46:02.202Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-04-14T19:46:02.207Z] Found firebase-functions binary at 'C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8967
+
+[info] Server started in development mode
+
+[debug] [2025-04-14T19:46:02.869Z] Got response from /__/functions.yaml {"endpoints":{"api":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"api"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: api. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: api."}}
+[debug] [2025-04-14T19:46:12.746Z] File C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\src\services\User\createClient.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\lasciuti\\Documents\\Projetos Multi\\Três irmãos\\BACK-3I\\functions\\src\\services\\User\\createClient.ts changed, reloading triggers"}}
+[debug] [2025-04-14T19:46:13.759Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[debug] [2025-04-14T19:46:14.788Z] > [functions] package.json contents: {
+  "main": "dist/index.js",
+  "name": "functions",
+  "version": "1.0.0",
+  "engines": {
+    "node": "22"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.2.0",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "node-cache": "^5.1.2",
+    "uuid": "^11.1.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.14.0",
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "lint": "echo \"No linting configured.\""
+  }
+}
+[debug] [2025-04-14T19:46:14.788Z] Building nodejs source
+[debug] [2025-04-14T19:46:14.789Z] Failed to find version of module node: reached end of search path C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules
+[info] +  functions: Using node@22 from host. 
+[info] i  functions: Loaded environment variables from .env. 
+[debug] [2025-04-14T19:46:14.790Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-04-14T19:46:14.796Z] Found firebase-functions binary at 'C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8893
+
+[info] Server started in development mode
+
+[debug] [2025-04-14T19:46:15.454Z] Got response from /__/functions.yaml {"endpoints":{"api":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"api"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: api. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: api."}}
+[debug] [2025-04-14T19:46:30.090Z] File C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\src\services\User\createClient.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\lasciuti\\Documents\\Projetos Multi\\Três irmãos\\BACK-3I\\functions\\src\\services\\User\\createClient.ts changed, reloading triggers"}}
+[debug] [2025-04-14T19:46:31.093Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[debug] [2025-04-14T19:46:32.198Z] > [functions] package.json contents: {
+  "main": "dist/index.js",
+  "name": "functions",
+  "version": "1.0.0",
+  "engines": {
+    "node": "22"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.2.0",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "node-cache": "^5.1.2",
+    "uuid": "^11.1.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.14.0",
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "lint": "echo \"No linting configured.\""
+  }
+}
+[debug] [2025-04-14T19:46:32.198Z] Building nodejs source
+[debug] [2025-04-14T19:46:32.198Z] Failed to find version of module node: reached end of search path C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules
+[info] +  functions: Using node@22 from host. 
+[info] i  functions: Loaded environment variables from .env. 
+[debug] [2025-04-14T19:46:32.200Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-04-14T19:46:32.208Z] Found firebase-functions binary at 'C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8196
+
+[info] Server started in development mode
+
+[debug] [2025-04-14T19:46:32.906Z] Got response from /__/functions.yaml {"endpoints":{"api":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"api"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: api. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: api."}}
+[debug] [2025-04-14T19:47:04.988Z] File C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\src\controllers\User\UserController.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\lasciuti\\Documents\\Projetos Multi\\Três irmãos\\BACK-3I\\functions\\src\\controllers\\User\\UserController.ts changed, reloading triggers"}}
+[debug] [2025-04-14T19:47:05.991Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[debug] [2025-04-14T19:47:06.948Z] > [functions] package.json contents: {
+  "main": "dist/index.js",
+  "name": "functions",
+  "version": "1.0.0",
+  "engines": {
+    "node": "22"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.2.0",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "node-cache": "^5.1.2",
+    "uuid": "^11.1.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.14.0",
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "lint": "echo \"No linting configured.\""
+  }
+}
+[debug] [2025-04-14T19:47:06.948Z] Building nodejs source
+[debug] [2025-04-14T19:47:06.948Z] Failed to find version of module node: reached end of search path C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules
+[info] +  functions: Using node@22 from host. 
+[info] i  functions: Loaded environment variables from .env. 
+[debug] [2025-04-14T19:47:06.949Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-04-14T19:47:06.955Z] Found firebase-functions binary at 'C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8246
+
+[info] Server started in development mode
+
+[debug] [2025-04-14T19:47:07.629Z] Got response from /__/functions.yaml {"endpoints":{"api":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"api"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: api. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: api."}}
+[debug] [2025-04-14T19:48:17.497Z] File C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\src\services\User\createClient.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\lasciuti\\Documents\\Projetos Multi\\Três irmãos\\BACK-3I\\functions\\src\\services\\User\\createClient.ts changed, reloading triggers"}}
+[debug] [2025-04-14T19:48:18.508Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[debug] [2025-04-14T19:48:19.484Z] > [functions] package.json contents: {
+  "main": "dist/index.js",
+  "name": "functions",
+  "version": "1.0.0",
+  "engines": {
+    "node": "22"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.2.0",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "node-cache": "^5.1.2",
+    "uuid": "^11.1.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.14.0",
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "lint": "echo \"No linting configured.\""
+  }
+}
+[debug] [2025-04-14T19:48:19.484Z] Building nodejs source
+[debug] [2025-04-14T19:48:19.484Z] Failed to find version of module node: reached end of search path C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules
+[info] +  functions: Using node@22 from host. 
+[info] i  functions: Loaded environment variables from .env. 
+[debug] [2025-04-14T19:48:19.485Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-04-14T19:48:19.491Z] Found firebase-functions binary at 'C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8938
+
+[info] Server started in development mode
+
+[debug] [2025-04-14T19:48:20.179Z] Got response from /__/functions.yaml {"endpoints":{"api":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"api"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[debug] [2025-04-14T19:48:22.490Z] File C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\src\controllers\User\UserController.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\lasciuti\\Documents\\Projetos Multi\\Três irmãos\\BACK-3I\\functions\\src\\controllers\\User\\UserController.ts changed, reloading triggers"}}
+[debug] [2025-04-14T19:48:23.498Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[debug] [2025-04-14T19:48:24.449Z] > [functions] package.json contents: {
+  "main": "dist/index.js",
+  "name": "functions",
+  "version": "1.0.0",
+  "engines": {
+    "node": "22"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.2.0",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "node-cache": "^5.1.2",
+    "uuid": "^11.1.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.14.0",
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "lint": "echo \"No linting configured.\""
+  }
+}
+[debug] [2025-04-14T19:48:24.450Z] Building nodejs source
+[debug] [2025-04-14T19:48:24.450Z] Failed to find version of module node: reached end of search path C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules
+[info] +  functions: Using node@22 from host. 
+[info] i  functions: Loaded environment variables from .env. 
+[debug] [2025-04-14T19:48:24.451Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-04-14T19:48:24.457Z] Found firebase-functions binary at 'C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules\.bin\firebase-functions'
+[info] +  functions: Loaded functions definitions from source: api. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: api."}}
+[info] Serving at port 8306
+
+[info] Server started in development mode
+
+[debug] [2025-04-14T19:48:25.119Z] Got response from /__/functions.yaml {"endpoints":{"api":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"api"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: api. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: api."}}
+[debug] [2025-04-14T19:48:42.323Z] File C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\src\services\User\createClient.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\lasciuti\\Documents\\Projetos Multi\\Três irmãos\\BACK-3I\\functions\\src\\services\\User\\createClient.ts changed, reloading triggers"}}
+[debug] [2025-04-14T19:48:43.327Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[debug] [2025-04-14T19:48:44.235Z] > [functions] package.json contents: {
+  "main": "dist/index.js",
+  "name": "functions",
+  "version": "1.0.0",
+  "engines": {
+    "node": "22"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.2.0",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "node-cache": "^5.1.2",
+    "uuid": "^11.1.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.14.0",
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "lint": "echo \"No linting configured.\""
+  }
+}
+[debug] [2025-04-14T19:48:44.236Z] Building nodejs source
+[debug] [2025-04-14T19:48:44.236Z] Failed to find version of module node: reached end of search path C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules
+[info] +  functions: Using node@22 from host. 
+[info] i  functions: Loaded environment variables from .env. 
+[debug] [2025-04-14T19:48:44.236Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-04-14T19:48:44.243Z] Found firebase-functions binary at 'C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8983
+
+[info] Server started in development mode
+
+[debug] [2025-04-14T19:48:44.924Z] Got response from /__/functions.yaml {"endpoints":{"api":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"api"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[debug] [2025-04-14T19:48:48.070Z] File C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\src\services\User\createClient.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\lasciuti\\Documents\\Projetos Multi\\Três irmãos\\BACK-3I\\functions\\src\\services\\User\\createClient.ts changed, reloading triggers"}}
+[info] +  functions: Loaded functions definitions from source: api. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: api."}}
+[debug] [2025-04-14T19:48:49.074Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[debug] [2025-04-14T19:48:50.101Z] > [functions] package.json contents: {
+  "main": "dist/index.js",
+  "name": "functions",
+  "version": "1.0.0",
+  "engines": {
+    "node": "22"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.2.0",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "node-cache": "^5.1.2",
+    "uuid": "^11.1.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.14.0",
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "lint": "echo \"No linting configured.\""
+  }
+}
+[debug] [2025-04-14T19:48:50.101Z] Building nodejs source
+[debug] [2025-04-14T19:48:50.101Z] Failed to find version of module node: reached end of search path C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules
+[info] +  functions: Using node@22 from host. 
+[info] i  functions: Loaded environment variables from .env. 
+[debug] [2025-04-14T19:48:50.102Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-04-14T19:48:50.107Z] Found firebase-functions binary at 'C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8698
+
+[info] Server started in development mode
+
+[debug] [2025-04-14T19:48:50.768Z] Got response from /__/functions.yaml {"endpoints":{"api":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"api"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: api. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: api."}}
+[debug] [2025-04-14T19:48:59.625Z] File C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\src\services\User\createClient.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\lasciuti\\Documents\\Projetos Multi\\Três irmãos\\BACK-3I\\functions\\src\\services\\User\\createClient.ts changed, reloading triggers"}}
+[debug] [2025-04-14T19:49:00.633Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[debug] [2025-04-14T19:49:01.630Z] > [functions] package.json contents: {
+  "main": "dist/index.js",
+  "name": "functions",
+  "version": "1.0.0",
+  "engines": {
+    "node": "22"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.2.0",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "node-cache": "^5.1.2",
+    "uuid": "^11.1.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.14.0",
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "lint": "echo \"No linting configured.\""
+  }
+}
+[debug] [2025-04-14T19:49:01.630Z] Building nodejs source
+[debug] [2025-04-14T19:49:01.630Z] Failed to find version of module node: reached end of search path C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules
+[info] +  functions: Using node@22 from host. 
+[info] i  functions: Loaded environment variables from .env. 
+[debug] [2025-04-14T19:49:01.631Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-04-14T19:49:01.637Z] Found firebase-functions binary at 'C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8450
+
+[info] Server started in development mode
+
+[debug] [2025-04-14T19:49:02.328Z] Got response from /__/functions.yaml {"endpoints":{"api":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"api"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: api. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: api."}}
+[debug] [2025-04-14T19:49:07.888Z] File C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\src\services\User\createClient.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\lasciuti\\Documents\\Projetos Multi\\Três irmãos\\BACK-3I\\functions\\src\\services\\User\\createClient.ts changed, reloading triggers"}}
+[debug] [2025-04-14T19:49:08.902Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[debug] [2025-04-14T19:49:09.842Z] > [functions] package.json contents: {
+  "main": "dist/index.js",
+  "name": "functions",
+  "version": "1.0.0",
+  "engines": {
+    "node": "22"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.2.0",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "node-cache": "^5.1.2",
+    "uuid": "^11.1.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.14.0",
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "lint": "echo \"No linting configured.\""
+  }
+}
+[debug] [2025-04-14T19:49:09.843Z] Building nodejs source
+[debug] [2025-04-14T19:49:09.843Z] Failed to find version of module node: reached end of search path C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules
+[info] +  functions: Using node@22 from host. 
+[info] i  functions: Loaded environment variables from .env. 
+[debug] [2025-04-14T19:49:09.844Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-04-14T19:49:09.850Z] Found firebase-functions binary at 'C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8294
+
+[info] Server started in development mode
+
+[debug] [2025-04-14T19:49:10.557Z] Got response from /__/functions.yaml {"endpoints":{"api":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"api"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: api. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: api."}}
+[debug] [2025-04-14T19:49:45.005Z] File C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\src\controllers\User\UserController.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\lasciuti\\Documents\\Projetos Multi\\Três irmãos\\BACK-3I\\functions\\src\\controllers\\User\\UserController.ts changed, reloading triggers"}}
+[debug] [2025-04-14T19:49:46.009Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[debug] [2025-04-14T19:49:46.905Z] > [functions] package.json contents: {
+  "main": "dist/index.js",
+  "name": "functions",
+  "version": "1.0.0",
+  "engines": {
+    "node": "22"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.2.0",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "node-cache": "^5.1.2",
+    "uuid": "^11.1.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.14.0",
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "lint": "echo \"No linting configured.\""
+  }
+}
+[debug] [2025-04-14T19:49:46.905Z] Building nodejs source
+[debug] [2025-04-14T19:49:46.905Z] Failed to find version of module node: reached end of search path C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules
+[info] +  functions: Using node@22 from host. 
+[info] i  functions: Loaded environment variables from .env. 
+[debug] [2025-04-14T19:49:46.906Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-04-14T19:49:46.912Z] Found firebase-functions binary at 'C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8852
+
+[info] Server started in development mode
+
+[debug] [2025-04-14T19:49:47.599Z] Got response from /__/functions.yaml {"endpoints":{"api":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"api"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: api. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: api."}}
+[debug] [2025-04-14T19:50:19.025Z] File C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\src\controllers\User\UserController.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\lasciuti\\Documents\\Projetos Multi\\Três irmãos\\BACK-3I\\functions\\src\\controllers\\User\\UserController.ts changed, reloading triggers"}}
+[debug] [2025-04-14T19:50:20.028Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[debug] [2025-04-14T19:50:20.961Z] > [functions] package.json contents: {
+  "main": "dist/index.js",
+  "name": "functions",
+  "version": "1.0.0",
+  "engines": {
+    "node": "22"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.2.0",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "node-cache": "^5.1.2",
+    "uuid": "^11.1.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.14.0",
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "lint": "echo \"No linting configured.\""
+  }
+}
+[debug] [2025-04-14T19:50:20.962Z] Building nodejs source
+[debug] [2025-04-14T19:50:20.962Z] Failed to find version of module node: reached end of search path C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules
+[info] +  functions: Using node@22 from host. 
+[info] i  functions: Loaded environment variables from .env. 
+[debug] [2025-04-14T19:50:20.962Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-04-14T19:50:20.968Z] Found firebase-functions binary at 'C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8604
+
+[info] Server started in development mode
+
+[debug] [2025-04-14T19:50:21.653Z] Got response from /__/functions.yaml {"endpoints":{"api":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"api"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: api. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: api."}}
+[debug] [2025-04-14T19:51:09.949Z] File C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\src\services\User\createADM.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\lasciuti\\Documents\\Projetos Multi\\Três irmãos\\BACK-3I\\functions\\src\\services\\User\\createADM.ts changed, reloading triggers"}}
+[debug] [2025-04-14T19:51:10.953Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[debug] [2025-04-14T19:51:11.853Z] > [functions] package.json contents: {
+  "main": "dist/index.js",
+  "name": "functions",
+  "version": "1.0.0",
+  "engines": {
+    "node": "22"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.2.0",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "node-cache": "^5.1.2",
+    "uuid": "^11.1.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.14.0",
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "lint": "echo \"No linting configured.\""
+  }
+}
+[debug] [2025-04-14T19:51:11.853Z] Building nodejs source
+[debug] [2025-04-14T19:51:11.853Z] Failed to find version of module node: reached end of search path C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules
+[info] +  functions: Using node@22 from host. 
+[info] i  functions: Loaded environment variables from .env. 
+[debug] [2025-04-14T19:51:11.854Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-04-14T19:51:11.860Z] Found firebase-functions binary at 'C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8649
+
+[info] Server started in development mode
+
+[debug] [2025-04-14T19:51:12.523Z] Got response from /__/functions.yaml {"endpoints":{"api":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"api"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: api. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: api."}}
+[debug] [2025-04-14T19:51:40.682Z] File C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\src\services\User\createADM.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\lasciuti\\Documents\\Projetos Multi\\Três irmãos\\BACK-3I\\functions\\src\\services\\User\\createADM.ts changed, reloading triggers"}}
+[debug] [2025-04-14T19:51:41.683Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[debug] [2025-04-14T19:51:42.786Z] > [functions] package.json contents: {
+  "main": "dist/index.js",
+  "name": "functions",
+  "version": "1.0.0",
+  "engines": {
+    "node": "22"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.2.0",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "node-cache": "^5.1.2",
+    "uuid": "^11.1.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.14.0",
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "lint": "echo \"No linting configured.\""
+  }
+}
+[debug] [2025-04-14T19:51:42.786Z] Building nodejs source
+[debug] [2025-04-14T19:51:42.786Z] Failed to find version of module node: reached end of search path C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules
+[info] +  functions: Using node@22 from host. 
+[info] i  functions: Loaded environment variables from .env. 
+[debug] [2025-04-14T19:51:42.787Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-04-14T19:51:42.793Z] Found firebase-functions binary at 'C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8034
+
+[info] Server started in development mode
+
+[debug] [2025-04-14T19:51:43.485Z] Got response from /__/functions.yaml {"endpoints":{"api":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"api"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: api. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: api."}}
+[debug] [2025-04-14T19:52:00.832Z] File C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\src\services\User\createADM.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\lasciuti\\Documents\\Projetos Multi\\Três irmãos\\BACK-3I\\functions\\src\\services\\User\\createADM.ts changed, reloading triggers"}}
+[debug] [2025-04-14T19:52:01.842Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[debug] [2025-04-14T19:52:03.013Z] > [functions] package.json contents: {
+  "main": "dist/index.js",
+  "name": "functions",
+  "version": "1.0.0",
+  "engines": {
+    "node": "22"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.2.0",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "node-cache": "^5.1.2",
+    "uuid": "^11.1.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.14.0",
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "lint": "echo \"No linting configured.\""
+  }
+}
+[debug] [2025-04-14T19:52:03.014Z] Building nodejs source
+[debug] [2025-04-14T19:52:03.014Z] Failed to find version of module node: reached end of search path C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules
+[info] +  functions: Using node@22 from host. 
+[info] i  functions: Loaded environment variables from .env. 
+[debug] [2025-04-14T19:52:03.015Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-04-14T19:52:03.020Z] Found firebase-functions binary at 'C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8037
+
+[info] Server started in development mode
+
+[debug] [2025-04-14T19:52:03.685Z] Got response from /__/functions.yaml {"endpoints":{"api":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"api"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[debug] [2025-04-14T19:52:06.826Z] File C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\src\services\User\createADM.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\lasciuti\\Documents\\Projetos Multi\\Três irmãos\\BACK-3I\\functions\\src\\services\\User\\createADM.ts changed, reloading triggers"}}
+[info] +  functions: Loaded functions definitions from source: api. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: api."}}
+[debug] [2025-04-14T19:52:07.836Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[debug] [2025-04-14T19:52:09.030Z] > [functions] package.json contents: {
+  "main": "dist/index.js",
+  "name": "functions",
+  "version": "1.0.0",
+  "engines": {
+    "node": "22"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.2.0",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "node-cache": "^5.1.2",
+    "uuid": "^11.1.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.14.0",
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "lint": "echo \"No linting configured.\""
+  }
+}
+[debug] [2025-04-14T19:52:09.030Z] Building nodejs source
+[debug] [2025-04-14T19:52:09.030Z] Failed to find version of module node: reached end of search path C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules
+[info] +  functions: Using node@22 from host. 
+[info] i  functions: Loaded environment variables from .env. 
+[debug] [2025-04-14T19:52:09.031Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-04-14T19:52:09.038Z] Found firebase-functions binary at 'C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8210
+
+[info] Server started in development mode
+
+[debug] [2025-04-14T19:52:09.694Z] Got response from /__/functions.yaml {"endpoints":{"api":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"api"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: api. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: api."}}
+[debug] [2025-04-14T19:52:24.276Z] File C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\src\services\User\createADM.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\lasciuti\\Documents\\Projetos Multi\\Três irmãos\\BACK-3I\\functions\\src\\services\\User\\createADM.ts changed, reloading triggers"}}
+[debug] [2025-04-14T19:52:25.280Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[debug] [2025-04-14T19:52:26.508Z] > [functions] package.json contents: {
+  "main": "dist/index.js",
+  "name": "functions",
+  "version": "1.0.0",
+  "engines": {
+    "node": "22"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.2.0",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "node-cache": "^5.1.2",
+    "uuid": "^11.1.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.14.0",
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "lint": "echo \"No linting configured.\""
+  }
+}
+[debug] [2025-04-14T19:52:26.508Z] Building nodejs source
+[debug] [2025-04-14T19:52:26.508Z] Failed to find version of module node: reached end of search path C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules
+[info] +  functions: Using node@22 from host. 
+[info] i  functions: Loaded environment variables from .env. 
+[debug] [2025-04-14T19:52:26.509Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-04-14T19:52:26.515Z] Found firebase-functions binary at 'C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8188
+
+[info] Server started in development mode
+
+[debug] [2025-04-14T19:52:27.214Z] Got response from /__/functions.yaml {"endpoints":{"api":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"api"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: api. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: api."}}
+[debug] [2025-04-14T19:53:38.058Z] File C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\src\services\User\createADM.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\lasciuti\\Documents\\Projetos Multi\\Três irmãos\\BACK-3I\\functions\\src\\services\\User\\createADM.ts changed, reloading triggers"}}
+[debug] [2025-04-14T19:53:39.072Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[debug] [2025-04-14T19:53:40.037Z] > [functions] package.json contents: {
+  "main": "dist/index.js",
+  "name": "functions",
+  "version": "1.0.0",
+  "engines": {
+    "node": "22"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.2.0",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "node-cache": "^5.1.2",
+    "uuid": "^11.1.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.14.0",
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "lint": "echo \"No linting configured.\""
+  }
+}
+[debug] [2025-04-14T19:53:40.037Z] Building nodejs source
+[debug] [2025-04-14T19:53:40.037Z] Failed to find version of module node: reached end of search path C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules
+[info] +  functions: Using node@22 from host. 
+[info] i  functions: Loaded environment variables from .env. 
+[debug] [2025-04-14T19:53:40.038Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-04-14T19:53:40.044Z] Found firebase-functions binary at 'C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8636
+
+[info] Server started in development mode
+
+[debug] [2025-04-14T19:53:40.710Z] Got response from /__/functions.yaml {"endpoints":{"api":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"api"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: api. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: api."}}
+[debug] [2025-04-14T19:54:07.866Z] File C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\src\controllers\User\UserController.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\lasciuti\\Documents\\Projetos Multi\\Três irmãos\\BACK-3I\\functions\\src\\controllers\\User\\UserController.ts changed, reloading triggers"}}
+[debug] [2025-04-14T19:54:08.879Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[debug] [2025-04-14T19:54:09.867Z] > [functions] package.json contents: {
+  "main": "dist/index.js",
+  "name": "functions",
+  "version": "1.0.0",
+  "engines": {
+    "node": "22"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.2.0",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "node-cache": "^5.1.2",
+    "uuid": "^11.1.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.14.0",
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "lint": "echo \"No linting configured.\""
+  }
+}
+[debug] [2025-04-14T19:54:09.867Z] Building nodejs source
+[debug] [2025-04-14T19:54:09.867Z] Failed to find version of module node: reached end of search path C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules
+[info] +  functions: Using node@22 from host. 
+[info] i  functions: Loaded environment variables from .env. 
+[debug] [2025-04-14T19:54:09.868Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-04-14T19:54:09.874Z] Found firebase-functions binary at 'C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8750
+
+[info] Server started in development mode
+
+[debug] [2025-04-14T19:54:10.531Z] Got response from /__/functions.yaml {"endpoints":{"api":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"api"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: api. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: api."}}
+[debug] [2025-04-14T19:57:36.505Z] File C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\src\index.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\lasciuti\\Documents\\Projetos Multi\\Três irmãos\\BACK-3I\\functions\\src\\index.ts changed, reloading triggers"}}
+[debug] [2025-04-14T19:57:37.506Z] Validating nodejs source
+[warn] !  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[debug] [2025-04-14T19:57:38.476Z] > [functions] package.json contents: {
+  "main": "dist/index.js",
+  "name": "functions",
+  "version": "1.0.0",
+  "engines": {
+    "node": "22"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.2.0",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "node-cache": "^5.1.2",
+    "uuid": "^11.1.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.14.0",
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "lint": "echo \"No linting configured.\""
+  }
+}
+[debug] [2025-04-14T19:57:38.476Z] Building nodejs source
+[debug] [2025-04-14T19:57:38.476Z] Failed to find version of module node: reached end of search path C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules
+[info] +  functions: Using node@22 from host. 
+[info] i  functions: Loaded environment variables from .env. 
+[debug] [2025-04-14T19:57:38.477Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-04-14T19:57:38.483Z] Found firebase-functions binary at 'C:\Users\lasciuti\Documents\Projetos Multi\Três irmãos\BACK-3I\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8728
+
+[info] Server started in development mode
+
+[debug] [2025-04-14T19:57:39.158Z] Got response from /__/functions.yaml {"endpoints":{"api":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"api"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: api. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: api."}}
