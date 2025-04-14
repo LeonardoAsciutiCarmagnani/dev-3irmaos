@@ -1,14 +1,18 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAuthStore } from "@/context/authContext";
 import { productsContext } from "@/context/productsContext";
 import { api } from "@/lib/axios";
 import { Trash2 } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import RegisterModal from "./register-modal";
 
 export const Checkout = () => {
   const { productsInCart, handleRemoveProduct } = productsContext();
+  const { user } = useAuthStore();
+  const [modalIsOpen, setModalIsOpen] = useState(false);
   const [address, setAddress] = useState({
     cep: "",
     neighborhood: "",
@@ -38,6 +42,12 @@ export const Checkout = () => {
       console.error(error);
     }
   }, []);
+
+  useEffect(() => {
+    if (!user) {
+      setModalIsOpen(true);
+    }
+  }, [user]);
 
   return (
     <div className="flex border-gray-300 p-4 rounded-lg">
@@ -280,6 +290,7 @@ export const Checkout = () => {
           </div>
         </>
       )}
+      {modalIsOpen && <RegisterModal open={modalIsOpen} />}
     </div>
   );
 };
