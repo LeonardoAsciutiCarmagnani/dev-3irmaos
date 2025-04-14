@@ -1,3 +1,5 @@
+import { Badge } from "@/components/ui/badge";
+import { useAuthStore } from "@/context/authContext";
 import { ArrowRight, FileBoxIcon, Home } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -5,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 const Sidebar = () => {
   const [open, setOpen] = useState(true);
   const navigate = useNavigate();
+  const { user } = useAuthStore();
 
   const clientMenuItems = [
     { label: "Tela inicial", path: "/", icon: <Home className="size-6" /> },
@@ -45,6 +48,15 @@ const Sidebar = () => {
           )}
         </div>
       ))}
+
+      <div className="flex items-center gap-x-2">
+        <div>
+          <Badge variant={user?.role === "admin" ? "destructive" : "default"}>
+            {user?.role === "admin" ? "Admin" : "Cliente"}
+          </Badge>
+        </div>
+        <div className={`text-sm ${open ? "" : "hidden"}`}>{user?.email}</div>
+      </div>
     </div>
   );
 };
