@@ -48,15 +48,16 @@ const Sidebar = () => {
           )}
         </div>
       ))}
-
-      <div className="flex items-center gap-x-2">
-        <div>
-          <Badge variant={user?.role === "admin" ? "destructive" : "default"}>
-            {user?.role === "admin" ? "Admin" : "Cliente"}
-          </Badge>
+      {user && (
+        <div className="flex items-center gap-x-2">
+          <div>
+            <Badge variant={user?.role === "admin" ? "destructive" : "default"}>
+              {user?.role === "admin" ? "Admin" : "Cliente"}
+            </Badge>
+          </div>
+          <div className={`text-sm ${open ? "" : "hidden"}`}>{user?.email}</div>
         </div>
-        <div className={`text-sm ${open ? "" : "hidden"}`}>{user?.email}</div>
-      </div>
+      )}
     </div>
   );
 };

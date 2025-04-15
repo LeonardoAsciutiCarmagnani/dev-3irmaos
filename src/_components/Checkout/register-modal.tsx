@@ -61,9 +61,10 @@ type FormSchema = z.infer<typeof formSchema>;
 
 type Props = {
   open: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const RegisterModal = ({ open }: Props) => {
+const RegisterModal = ({ open, setIsOpen }: Props) => {
   const [isIndividual, setIsIndividual] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -122,8 +123,6 @@ const RegisterModal = ({ open }: Props) => {
     setIsSubmitting(true);
 
     try {
-      console.log("Dados do formulário:", values);
-
       const methods = await fetchSignInMethodsForEmail(auth, values.Email);
 
       if (methods.length > 0) {
@@ -153,6 +152,7 @@ const RegisterModal = ({ open }: Props) => {
       const { data } = createdUser.data;
 
       await signInWithEmailAndPassword(auth, data.email, data.password);
+
       toast.success("Conta criada com sucesso!");
       console.log("Conta criada com sucesso!");
     } catch (error) {
@@ -165,7 +165,7 @@ const RegisterModal = ({ open }: Props) => {
 
   return (
     <div>
-      <Dialog open={open}>
+      <Dialog open={open} onOpenChange={setIsOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Crie sua conta</DialogTitle>

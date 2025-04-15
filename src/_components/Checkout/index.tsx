@@ -54,6 +54,8 @@ export const Checkout = () => {
   useEffect(() => {
     if (!user) {
       setModalIsOpen(true);
+    } else {
+      setModalIsOpen(false);
     }
   }, [user]);
 
@@ -299,7 +301,9 @@ export const Checkout = () => {
           </div>
         </>
       )}
-      {modalIsOpen && <RegisterModal open={modalIsOpen} />}
+      {modalIsOpen && (
+        <RegisterModal open={modalIsOpen} setIsOpen={setModalIsOpen} />
+      )}
     </div>
   );
 };

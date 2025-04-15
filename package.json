@@ -23,11 +23,8 @@
     "axios": "^1.8.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-<<<<<<< HEAD
-    "date-fns": "^4.1.0",
-=======
     "cpf-cnpj-validator": "^1.0.3",
->>>>>>> 3f6ec2f23655ff35d044612a8ed345fc4a60ea3d
+    "date-fns": "^4.1.0",
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-fade": "^8.6.0",
     "embla-carousel-react": "^8.6.0",

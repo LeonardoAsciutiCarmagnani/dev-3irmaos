@@ -4,6 +4,7 @@ import HomePage from "./pages/home";
 import DetailsProduct from "./_components/Home/details-product";
 import { CheckoutPage } from "./pages/Checkout";
 import Orders from "./pages/Orders";
+import AuthenticatedRoute from "./_components/ProtectedRoutes/AuthenticatedRoute";
 
 export const routes = createBrowserRouter([
   {
@@ -11,6 +12,14 @@ export const routes = createBrowserRouter([
     element: (
       <LayoutPage>
         <HomePage />
+      </LayoutPage>
+    ),
+  },
+  {
+    path: "/detalhes/:id",
+    element: (
+      <LayoutPage>
+        <DetailsProduct />
       </LayoutPage>
     ),
   },
@@ -25,17 +34,11 @@ export const routes = createBrowserRouter([
   {
     path: "/pedidos-e-orçamentos",
     element: (
-      <LayoutPage>
-        <Orders />
-      </LayoutPage>
-    ),
-  },
-  {
-    path: "/detalhes/:id",
-    element: (
-      <LayoutPage>
-        <DetailsProduct />
-      </LayoutPage>
+      <AuthenticatedRoute>
+        <LayoutPage>
+          <Orders />
+        </LayoutPage>
+      </AuthenticatedRoute>
     ),
   },
 ]);

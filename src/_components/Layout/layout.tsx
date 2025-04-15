@@ -1,5 +1,6 @@
 import Header from "@/_components/Header/Header";
 import Sidebar from "../Sidebar/sidebar";
+import { Toaster } from "@/components/ui/sonner";
 
 const LayoutPage = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -9,7 +10,13 @@ const LayoutPage = ({ children }: { children: React.ReactNode }) => {
         <div className="hidden md:flex">
           <Sidebar />
         </div>
-        <div className="flex-1"> {children}</div>
+        <div className="flex-1">{children}</div>
+        <Toaster
+          richColors
+          position="top-right"
+          duration={3000}
+          closeButton={true}
+        />
       </div>
     </div>
   );

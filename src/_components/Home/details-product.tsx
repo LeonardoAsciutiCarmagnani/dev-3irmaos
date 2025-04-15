@@ -16,7 +16,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { Toaster } from "@/components/ui/sonner";
 
 const productSchema = z.object({
   altura: z.coerce.number().min(1, "Altura obrigatória"),
@@ -103,19 +102,15 @@ export const DetailsProduct = () => {
     setProduct(updatedProduct);
     handleAddProduct(updatedProduct);
     toast.success("Produto adicionado ao orçamento !", {
-      id: 1,
-      position: "top-right",
       description:
         "Você pode adicionar mais produtos ou prosseguir com a cotação",
-      duration: 3000,
-      closeButton: true,
+      duration: 5000,
     });
     reset();
   };
 
   return (
     <div className="h-screen ">
-      <Toaster richColors />
       <div className="flex flex-col  justify-center  items-start p-4 md:p-10 space-y-4 ">
         <h1 className="font-bold text-xl text-gray-800">Detalhes do produto</h1>
         <div className="flex flex-col md:flex-row gap-4 w-full ">
