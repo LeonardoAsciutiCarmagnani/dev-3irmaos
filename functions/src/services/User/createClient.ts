@@ -3,24 +3,24 @@ import { v4 as uuid } from "uuid";
 
 interface UserFirestore {
   Id: string;
-  Name: string;
-  Email: string;
-  Document: string;
-  Phone: string;
-  IE: string | null;
-  FantasyName: string | null;
-  Address: {
-    Cep: string;
-    Street: string;
-    Number: number;
-    Neighborhood: string;
-    City: string;
-    State: string;
-    Ibge: string;
+  name: string;
+  email: string;
+  document: string;
+  phone: string;
+  ie: string | null;
+  fantasyName: string | null;
+  address: {
+    cep: string;
+    street: string;
+    number: number;
+    neighborhood: string;
+    city: string;
+    state: string;
+    ibge: string;
   };
-  Password: string;
-  CreatedAt: string;
-  UpdatedAt: string;
+  password: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export type CreateClientResponse = {
@@ -31,7 +31,7 @@ export type CreateClientResponse = {
 
 export class CreateClient {
   public static async execute(
-    userData: Omit<UserFirestore, "Id" | "CreatedAt" | "UpdatedAt">
+    userData: Omit<UserFirestore, "Id" | "createdAt" | "updatedAt">
   ): Promise<CreateClientResponse> {
     const randomHash = uuid();
     try {
@@ -39,18 +39,18 @@ export class CreateClient {
 
       const querySnapshot = await firestore
         .collection("clients")
-        .where("clientDocument", "==", userData.Document)
+        .where("clientDocument", "==", userData.document)
         .get();
 
       if (!querySnapshot.empty) {
-        return { success: false, error: "CNPJ/CPF já cadastrado." };
+        return { success: false, error: "CPF/CNPJ já cadastrado." };
       }
 
       const auth = admin.auth();
       const createdUser = await auth.createUser({
-        displayName: userData.Name,
-        email: userData.Email,
-        password: userData.Password,
+        displayName: userData.name,
+        email: userData.email,
+        password: userData.password,
         uid: randomHash,
       });
 
@@ -61,7 +61,7 @@ export class CreateClient {
       const userFirestoreData: UserFirestore = {
         ...userData,
         Id: createdUser.uid,
-        CreatedAt: new Date().toLocaleString("pt-BR", {
+        createdAt: new Date().toLocaleString("pt-BR", {
           timeZone: "America/Sao_Paulo",
           hour12: false,
           year: "numeric",
@@ -71,7 +71,7 @@ export class CreateClient {
           minute: "2-digit",
           second: "2-digit",
         }),
-        UpdatedAt: new Date().toLocaleString("pt-BR", {
+        updatedAt: new Date().toLocaleString("pt-BR", {
           timeZone: "America/Sao_Paulo",
           hour12: false,
           year: "numeric",

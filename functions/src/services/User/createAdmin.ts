@@ -3,11 +3,11 @@ import { v4 as uuid } from "uuid";
 
 interface AdmFirestore {
   Id: string;
-  Name: string;
-  Email: string;
-  Password: string;
-  CreatedAt: string;
-  UpdatedAt: string;
+  name: string;
+  email: string;
+  password: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export type CreateAdminResponse = {
@@ -18,7 +18,7 @@ export type CreateAdminResponse = {
 
 export class CreateAdmin {
   public static async execute(
-    userData: Omit<AdmFirestore, "Id" | "CreatedAt" | "UpdatedAt">
+    userData: Omit<AdmFirestore, "Id" | "createdAt" | "updatedAt">
   ): Promise<CreateAdminResponse> {
     const randomHash = uuid();
     try {
@@ -26,7 +26,7 @@ export class CreateAdmin {
 
       const querySnapshot = await firestore
         .collection("internal_users")
-        .where("clientDocument", "==", userData.Email)
+        .where("clientDocument", "==", userData.email)
         .get();
 
       if (!querySnapshot.empty) {
@@ -35,9 +35,9 @@ export class CreateAdmin {
 
       const auth = admin.auth();
       const createdUser = await auth.createUser({
-        displayName: userData.Name,
-        email: userData.Email,
-        password: userData.Password,
+        displayName: userData.name,
+        email: userData.email,
+        password: userData.password,
         uid: randomHash,
       });
 
@@ -48,7 +48,7 @@ export class CreateAdmin {
       const userFirestoreData: AdmFirestore = {
         ...userData,
         Id: createdUser.uid,
-        CreatedAt: new Date().toLocaleString("pt-BR", {
+        createdAt: new Date().toLocaleString("pt-BR", {
           timeZone: "America/Sao_Paulo",
           hour12: false,
           year: "numeric",
@@ -58,7 +58,7 @@ export class CreateAdmin {
           minute: "2-digit",
           second: "2-digit",
         }),
-        UpdatedAt: new Date().toLocaleString("pt-BR", {
+        updatedAt: new Date().toLocaleString("pt-BR", {
           timeZone: "America/Sao_Paulo",
           hour12: false,
           year: "numeric",

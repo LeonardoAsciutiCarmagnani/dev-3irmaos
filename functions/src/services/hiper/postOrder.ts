@@ -1,7 +1,6 @@
 import axios from "axios";
 import { firestore } from "../../firebaseConfig";
 import { fetchToken } from "./fetchToken";
-import { OrderData } from "../../controllers/api";
 
 const getLastOrderCode = async () => {
   const collectionRef = firestore.collection("sales_orders");
@@ -29,7 +28,7 @@ const getLastOrderCode = async () => {
 };
 
 const storeOrderInFirestore = async (
-  order: OrderData,
+  order: any,
   codeHiper: string,
   userId: string,
   installments: any
@@ -70,10 +69,7 @@ const fetchOrderSaleData = async (generatedId: string) => {
   }
 };
 
-const postOrderSale = async (
-  orderData: OrderData,
-  userId: string
-): Promise<any> => {
+const postOrderSale = async (any: any, userId: string): Promise<any> => {
   let token = await fetchToken();
 
   const {
@@ -86,9 +82,9 @@ const postOrderSale = async (
     observacaoDoPedidoDeVenda,
     valorDoFrete,
     installments,
-  } = orderData;
+  } = any;
 
-  const adjustedItens = itens.map((item) => ({
+  const adjustedItens = itens.map((item: any) => ({
     produtoId: item.produtoId,
     quantidade: item.quantidade,
     precoUnitarioBruto: item.precoUnitarioBruto,
@@ -143,7 +139,7 @@ const postOrderSale = async (
     );
 
     const generatedId = response.data.id;
-    const updatedOrderData = { ...orderData, id: generatedId };
+    const updatedany = { ...any, id: generatedId };
 
     // Tentativa de buscar o código da venda até que ele não esteja em branco, com limite de 3 tentativas
     let codeOrderHiper = "";
@@ -177,7 +173,7 @@ const postOrderSale = async (
     console.log("Código do pedido de venda obtido ou gerado:", codeOrderHiper);
 
     await storeOrderInFirestore(
-      updatedOrderData,
+      updatedany,
       codeOrderHiper,
       userId,
       installments

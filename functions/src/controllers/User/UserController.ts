@@ -4,28 +4,28 @@ import { CreateClient } from "../../services/User/createClient";
 import { CreateAdmin } from "../../services/User/createAdmin";
 
 const createClientSchema = z.object({
-  Name: z.string().min(3, "Nome deve ter pelo menos 3 caracteres."),
-  Email: z.string().email("E-mail inválido").trim().toLowerCase(),
-  Document: z.string(),
-  Phone: z.string().min(15, "Telefone inválido."),
-  IE: z.string().nullable(),
-  FantasyName: z.string().nullable(),
-  Address: z.object({
-    Cep: z.string().length(9, "CEP inválido."),
-    Street: z.string().min(3, "Logradouro inválido."),
-    Number: z.coerce.number().min(1, "Número inválido."),
-    Neighborhood: z.string().min(2, "Bairro inválido."),
-    City: z.string().min(2, "Cidade inválida."),
-    State: z.string().length(2, "UF inválida."),
-    Ibge: z.string().min(7, "Código IBGE inválido."),
+  name: z.string().min(3, "Nome deve ter pelo menos 3 caracteres."),
+  email: z.string().email("E-mail inválido").trim().toLowerCase(),
+  document: z.string(),
+  phone: z.string().min(15, "Telefone inválido."),
+  ie: z.string().nullable(),
+  fantasyName: z.string().nullable(),
+  address: z.object({
+    cep: z.string().length(9, "CEP inválido."),
+    city: z.string().min(2, "Cidade inválida."),
+    ibge: z.string().min(7, "Código IBGE inválido."),
+    neighborhood: z.string().min(2, "Bairro inválido."),
+    number: z.coerce.number().min(1, "Número inválido."),
+    state: z.string().length(2, "UF inválida."),
+    street: z.string().min(3, "Logradouro inválido."),
   }),
-  Password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres."),
+  password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres."),
 });
 
 const createAdminSchema = z.object({
-  Name: z.string().min(3, "Nome deve ter pelo menos 3 caracteres."),
-  Email: z.string().email("E-mail inválido").trim().toLowerCase(),
-  Password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres."),
+  name: z.string().min(3, "Nome deve ter pelo menos 3 caracteres."),
+  email: z.string().email("E-mail inválido").trim().toLowerCase(),
+  password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres."),
 });
 
 export class UserController {
