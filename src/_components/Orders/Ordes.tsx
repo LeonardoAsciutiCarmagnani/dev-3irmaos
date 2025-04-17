@@ -21,14 +21,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  CreditCard,
-  DollarSign,
-  InfoIcon,
-  PlusIcon,
-  RefreshCwIcon,
-  Truck,
-} from "lucide-react";
+import { InfoIcon, PlusIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { api } from "@/lib/axios";
 // import { toast } from "sonner";
@@ -41,7 +34,17 @@ import { api } from "@/lib/axios";
 //   updateDoc,
 //   where,
 // } from "firebase/firestore";
-import { IMaskInput } from "react-imask";
+
+import Dropzone from "../DropzoneImage/DropzoneImage";
+import { Input } from "@/components/ui/input";
+import DetaisOrder from "../DetailsOrder/DetailsOrder";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Textarea } from "@/components/ui/textarea";
 
 export interface ProductsInOrderProps {
   productId: number;
@@ -165,8 +168,12 @@ const OrdersTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState(0); // zero igual a todos os status
   const [showCardOrder, setShowCardOrder] = useState<number | null>(null);
-  const [valueToUpdateRateDelivery, setValueUpdateRateDelivery] = useState(0);
-  const [updateRateDelivery, setUpdateRateDelivery] = useState(false);
+  const [observacoes, setObservacoes] = useState("");
+  const [formaDePagamento, setformaDePagamento] = useState("");
+  const [entrega, setEntrega] = useState("");
+  const [frete, setFrete] = useState("");
+  const [total, setTotal] = useState("");
+
   const navigate = useNavigate();
 
   const lisToUse = filteredData.length > 0 ? filteredData : data;
@@ -247,9 +254,13 @@ const OrdersTable = () => {
   const selectedOptions = [
     { id: 1, option: "Orçamento", value: 1 },
     { id: 2, option: "Proposta enviada", value: 2 },
-    { id: 3, option: "Proposta aceita", value: 3 },
-    { id: 4, option: "Pedido em produção", value: 4 },
-    { id: 5, option: "Pedido concluído", value: 5 },
+    { id: 3, option: "Proposta recusada", value: 3 },
+    { id: 4, option: "Aprovado", value: 4 },
+    { id: 5, option: "Pedido em produção", value: 5 },
+    { id: 6, option: "Faturado", value: 6 },
+    { id: 7, option: "Despachado", value: 7 },
+    { id: 8, option: "Pedido Concluído", value: 8 },
+    { id: 9, option: "Cancelado", value: 9 },
   ];
   async function handleStatusChange(id: number, newStatus: number) {
     console.log(newStatus);
@@ -292,54 +303,6 @@ const OrdersTable = () => {
     setShowCardOrder(orderId);
   }
 
-  async function handleUpdateUrgentDeliveryValue(order: Order, value: number) {
-    console.log(order);
-    console.log(value);
-    /*  try {
-      const collectionRef = collection(db, "orders");
-      const q = query(collectionRef, where("orderId", "==", order.orderId));
-      const orderQuery = await getDocs(q);
-
-      if (orderQuery.empty) {
-        console.log("Pedido não encontrado!");
-        toast.error("Pedido não encontrado.");
-        return;
-      }
-      let orderData = null;
-
-      orderQuery.forEach((docSnap) => {
-        orderData = doc(db, "orders", docSnap.id);
-      });
-
-      if (!orderData) return;
-
-      await updateDoc(orderData, {
-        urgentDelivery: value,
-      });
-
-      setData((prev) => {
-        return prev.map((item) => {
-          if (item.orderId === order.orderId) {
-            return {
-              ...item,
-              urgentDelivery: value,
-            };
-          }
-          return item;
-        });
-      });
-
-      setUpdateRateDelivery(false);
-      setShowCardOrder(null);
-
-      toast.success("Taxa de urgência atualizada com sucesso !");
-    } catch (error) {
-      setUpdateRateDelivery(false);
-      toast.error("Ocorreu um erro ao atualizar a taxa do pedido");
-      console.error("Ocorreu um erro ao atualizar a taxa do pedido", error);
-    } */
-  }
-
   /* useEffect(() => {
     const collectionRef = collection(db, "orders");
     const q = query(collectionRef);
@@ -355,15 +318,15 @@ const OrdersTable = () => {
   }, []); */
 
   return (
-    <div className="space-y-2 p-4 bg-white shadow w-full h-full">
+    <div className="space-y-2 py-2 md:p-4 bg-white rounded-lg shadow w-full h-full">
       {/* Filtros */}
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col md:flex-row items-start md:items-center p-2 gap-4">
         <input
           type="text"
           placeholder="Buscar cliente..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="border p-2 rounded-sm w-1/3"
+          className="border p-2 rounded-sm md:w-1/3"
         />
 
         <select
@@ -372,11 +335,11 @@ const OrdersTable = () => {
           className="border p-2 rounded w-fit hover:cursor-pointer"
         >
           <option value={0}>Todos os status</option>
-          <option value={1}>Orçamento</option>
-          <option value={2}>Proposta enviada</option>
-          <option value={3}>Porposta aceita</option>
-          <option value={4}>Pedido em produção</option>
-          <option value={5}>Pedido concluído</option>
+          {selectedOptions.map((option) => (
+            <option key={option.id} value={option.value}>
+              {option.option}
+            </option>
+          ))}
         </select>
         <Popover>
           <PopoverTrigger className="flex items-center border p-2 w-52 rounded-sm hover:cursor-pointer">
@@ -404,7 +367,7 @@ const OrdersTable = () => {
         <Button onClick={() => filterOrders()}>Filtrar</Button>
       </div>
 
-      <div className="flex justify-between px-2">
+      <div className="flex flex-col md:flex-row justify-between px-2">
         <div className="flex items-center gap-x-2">
           <InfoIcon className="w-4 h-4 text-blue-500" />
           <h2 className="text-[0.67rem] text-gray-500">
@@ -472,7 +435,7 @@ const OrdersTable = () => {
                             <td className="px-4 py-3">{order.client.name}</td>
                             <td className="px-4 py-3">
                               <select
-                                className={`w-fit rounded-full p-1 text-white font-semibold text-sm hover:cursor-pointer ${
+                                className={`w-fit rounded-full p-1 text-white font-semibold text-xs hover:cursor-pointer ${
                                   order.orderStatus === 1
                                     ? "bg-orange-500"
                                     : order.orderStatus === 2
@@ -503,7 +466,7 @@ const OrdersTable = () => {
                           </tr>
                         </DialogTrigger>
 
-                        <DialogContent className="flex flex-col border bg-gray-100 w-2/3">
+                        <DialogContent className="flex flex-col border bg-gray-100 w-2/3 h-[80vh] overflow-y-scroll">
                           <DialogHeader>
                             <div className="flex justify-between items-center">
                               <DialogTitle>Detalhes do pedido</DialogTitle>
@@ -586,85 +549,125 @@ const OrdersTable = () => {
                             </div>
                           </div>
                           <div className="flex gap-2 items-center">
-                            <div
-                              className={`flex flex-col border rounded-lg border-red-300 bg-red-100 p-2 w-[16rem] shadow-md `}
-                            >
-                              <div className="flex flex-col gap-1 h-16">
-                                <div className="flex gap-2 items-center">
-                                  <Truck className="text-red-500" />
-                                  <span className="text-lg text-gray-700">
-                                    Taxa de urgência
-                                  </span>
-                                </div>
-                                <div className={`flex gap-2 `}>
-                                  <IMaskInput // Usa o IMaskInput no lugar do input normal
-                                    mask="R$ num"
-                                    blocks={{
-                                      num: {
-                                        mask: Number,
-                                        thousandsSeparator: ".", // Adiciona pontos para milhar
-                                        radix: ",", // Usa vírgula como separador decimal
-                                        scale: 2, // Duas casas decimais
-                                        min: 0, // Não permite valores negativos
-                                      },
-                                    }}
-                                    className={`w-full placeholder:text-gray-700 `}
-                                    onAccept={(val) => {
-                                      setValueUpdateRateDelivery(
-                                        Number(
-                                          val.split(" ")[1].replace(",", ".")
-                                        )
-                                      );
-                                    }}
-                                  />
-                                  <Button
-                                    className={`bg-red-500 hover:bg-red-600 w-fit `}
-                                    onClick={() => {
-                                      setUpdateRateDelivery(
-                                        !updateRateDelivery
-                                      );
-                                      handleUpdateUrgentDeliveryValue(
-                                        order,
-                                        valueToUpdateRateDelivery
-                                      );
-                                    }}
-                                  >
-                                    <RefreshCwIcon
-                                      className={`${
-                                        updateRateDelivery && "animate-spin"
-                                      }`}
-                                    />
-                                  </Button>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="flex flex-col h-20 justify-around border rounded-lg border-green-300 bg-green-100 p-2 w-fit shadow-md">
+                            {/* Sketches */}
+                            <div className="flex flex-col gap-2">
+                              <h1 className="font-semibold">
+                                Imagens fornecidas
+                              </h1>
                               <div className="flex gap-2 items-center">
-                                <DollarSign className="text-emerald-500" />
-                                <span className="text-lg text-gray-700">
-                                  Total do pedido
-                                </span>
+                                <img
+                                  src="https://images.unsplash.com/photo-1503898362-59e068e7f9d8?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                                  alt="Sketch"
+                                  className="size-32 rounded-lg hover:scale-105 transition-all duration-300"
+                                />
+                                <img
+                                  src="https://images.unsplash.com/photo-1536160885591-301854e2ed04?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                                  alt="Sketch"
+                                  className="size-32 rounded-lg hover:scale-105 transition-all duration-300"
+                                />
                               </div>
-                              <span className="text-lg text-end font-semibold text-gray-700">
-                                {order.totalValue.toLocaleString("pt-BR", {
-                                  style: "currency",
-                                  currency: "BRL",
-                                })}
-                              </span>
-                            </div>
-
-                            <div className="flex flex-col h-20 justify-around border rounded-lg border-indigo-300 bg-indigo-100 p-2 w-fit shadow-md">
-                              <div className="flex gap-2 items-center">
-                                <CreditCard className="text-indigo-500" />
-                                <span className="text-lg text-gray-700">
-                                  Método de pagamento
-                                </span>
-                              </div>
-                              <span className="text-lg text-end font-semibold text-gray-700">
-                                {order.paymentMethod?.name}
-                              </span>
                             </div>
                           </div>
+                          <div className="flex flex-col gap-4">
+                            {/* Upload de imagens */}
+                            <h1 className="font-semibold text-lg">
+                              Projeto (imagens ilustrativas)
+                            </h1>
+                            <Dropzone />
+                          </div>
+
+                          <div>
+                            {/* Inputs para alteração das informações dinâmicas da proposta */}
+                            <Accordion type="single" collapsible>
+                              <AccordionItem value="item-1">
+                                <AccordionTrigger className="text-lg">
+                                  Informar detalhes da proposta
+                                </AccordionTrigger>
+                                <AccordionContent className="flex flex-col space-y-2">
+                                  <div className="flex flex-col gap-2 w-1/2">
+                                    <label
+                                      htmlFor="observacoes"
+                                      className="font-semibold"
+                                    >
+                                      Observações:
+                                    </label>
+                                    <Textarea
+                                      placeholder="Observações da proposta"
+                                      id="observacoes"
+                                      onChange={(e) => {
+                                        setObservacoes(e.target.value);
+                                      }}
+                                    />
+                                  </div>
+                                  <div className="flex flex-col gap-2 w-1/2">
+                                    <label
+                                      htmlFor="pagamento"
+                                      className="font-semibold"
+                                    >
+                                      Forma de pagamento:
+                                    </label>
+                                    <Input
+                                      placeholder="Forma de pagamento"
+                                      id="pagamento"
+                                      onChange={(e) => {
+                                        setformaDePagamento(e.target.value);
+                                      }}
+                                    />
+                                  </div>
+                                  <div className="flex flex-col gap-2 w-1/2">
+                                    <label
+                                      htmlFor="prazo"
+                                      className="font-semibold"
+                                    >
+                                      Prazo de entrega:
+                                    </label>
+                                    <Input
+                                      placeholder="Prazo de entrega"
+                                      id="prazo"
+                                      onChange={(e) => {
+                                        setEntrega(e.target.value);
+                                      }}
+                                    />
+                                  </div>
+                                  <div className="flex flex-col gap-2 w-1/2">
+                                    <label
+                                      htmlFor="prazo"
+                                      className="font-semibold"
+                                    >
+                                      Frete:
+                                    </label>
+                                    <Input
+                                      placeholder="Prazo de entrega"
+                                      id="prazo"
+                                      onChange={(e) => setFrete(e.target.value)}
+                                    />
+                                  </div>
+                                  <div className="flex flex-col gap-2 w-1/2">
+                                    <label
+                                      htmlFor="prazo"
+                                      className="font-semibold"
+                                    >
+                                      Valor final da proposta:
+                                    </label>
+                                    <Input
+                                      placeholder="Prazo de entrega"
+                                      id="prazo"
+                                      onChange={(e) => setTotal(e.target.value)}
+                                    />
+                                  </div>
+                                </AccordionContent>
+                              </AccordionItem>
+                            </Accordion>
+
+                            <DetaisOrder
+                              observacoes={observacoes}
+                              formaDePagamento={formaDePagamento}
+                              prazoEntrega={entrega}
+                              frete={Number(frete)}
+                              total={Number(total)}
+                            />
+                          </div>
+                          <Button>Enviar proposta</Button>
                         </DialogContent>
                       </Dialog>
                     ))}
