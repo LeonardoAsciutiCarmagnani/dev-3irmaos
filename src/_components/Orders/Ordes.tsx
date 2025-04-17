@@ -355,7 +355,7 @@ const OrdersTable = () => {
   }, []); */
 
   return (
-    <div className="space-y-2 p-4 bg-white rounded-lg shadow w-full h-full">
+    <div className="space-y-2 p-4 bg-white shadow w-full h-full">
       {/* Filtros */}
       <div className="flex items-center gap-4">
         <input

@@ -37,7 +37,7 @@ const Home = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-2 xl:grid-cols-2 2xl:grid-cols-4 2xl:grid-rows-3 gap-[0.35rem] bg-gray-100 plac-items-start h-[89vh] overflow-y-auto overflow-x-hidden">
+      <div className="grid grid-cols-2 xl:grid-cols-2 2xl:grid-cols-4 2xl:grid-rows-3 gap-[0.35rem] bg-gray-100 plac-items-start h-screen overflow-y-auto overflow-x-hidden">
         {isLoading ? (
           <div className="flex justify-center items-center h-full w-full">
             <Loader />

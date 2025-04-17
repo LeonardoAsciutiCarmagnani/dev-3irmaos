@@ -12,7 +12,7 @@ const ProductCard = (Product: Product) => {
   ];
 
   return (
-    <div className="flex flex-col items-center justify-center h-full bg-gray-50 w-full hover:scale-101 hover:cursor-pointer hover:shadow-sm transition-all duration-300 ease-in-out shadow-sm">
+    <div className="flex flex-col items-center justify-center h-full bg-gray-50 w-full hover:cursor-pointer hover:shadow-sm transition-all duration-300 ease-in-out shadow-sm">
       <div className="flex flex-col items-center justify-center w-full space-y-2">
         <ImageCarousel images={CarouselImages} />
 

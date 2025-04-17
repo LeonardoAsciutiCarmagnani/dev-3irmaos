@@ -5,8 +5,13 @@ import DetailsProduct from "./_components/Home/details-product";
 import { CheckoutPage } from "./pages/Checkout";
 import Orders from "./pages/Orders";
 import AuthenticatedRoute from "./_components/ProtectedRoutes/AuthenticatedRoute";
+import LoginPage from "./pages/Login";
 
 export const routes = createBrowserRouter([
+  {
+    path: "/login",
+    element: <LoginPage />,
+  },
   {
     path: "/",
     element: (
