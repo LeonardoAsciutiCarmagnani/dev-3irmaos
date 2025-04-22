@@ -107,9 +107,7 @@ const Header = () => {
                           <Badge className="bg-red-900">ADM</Badge>
                         )}
                       </div>
-                      <h1>
-                        <h2 className="text-xs">{user.email}</h2>
-                      </h1>
+                      <h1 className="text-xs">{user.email}</h1>
                     </div>
                     <Button className="rounded-xs py-2 px-3">Sair</Button>
                   </div>
