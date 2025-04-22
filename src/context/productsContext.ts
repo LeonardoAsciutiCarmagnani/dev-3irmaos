@@ -5,6 +5,7 @@ interface IProductsContext {
   productsInCart: Product[];
   handleAddProduct: (product: Product) => void;
   handleRemoveProduct: (productId: string) => void;
+  handlingClearCart: () => void;
 }
 
 export const productsContext = create<IProductsContext>((set) => ({
@@ -49,5 +50,16 @@ export const productsContext = create<IProductsContext>((set) => ({
         .filter((item) => (item.quantidade ?? 0) > 0);
 
       return { productsInCart: updatedCart };
+    }),
+  handlingClearCart: () =>
+    set(({ productsInCart }) => {
+      const clearPropsProducts = productsInCart.map((product) => ({
+        ...product,
+        quantity: 0,
+      }));
+
+      return {
+        productsInCart: clearPropsProducts,
+      };
     }),
 }));

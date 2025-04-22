@@ -90,6 +90,14 @@ export const DetailsProduct = () => {
   ];
 
   const onSubmit = (data: ProductFormData) => {
+    const listImages = [
+      {
+        imagem: product.imagem,
+      },
+      ...product.imagensAdicionais,
+    ];
+
+    console.log("Lista de imagens", listImages);
     const updatedProduct = {
       ...product,
       selectedVariation: typeProduct.productVariationSelected,
@@ -97,6 +105,7 @@ export const DetailsProduct = () => {
       comprimento: data.comprimento,
       largura: data.largura,
       quantidade: data.quantidade,
+      listImages: listImages,
     };
 
     setProduct(updatedProduct);

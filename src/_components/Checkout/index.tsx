@@ -1,18 +1,39 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/context/authContext";
 import { productsContext } from "@/context/productsContext";
 import { api } from "@/lib/axios";
-import { Trash2 } from "lucide-react";
+import { LoaderCircle, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import RegisterModal from "./register-modal";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "../Utils/FirebaseConfig";
+import { format } from "date-fns";
+
+interface IFireStoreProps {
+  clientPhone: string;
+  clientAddress?: {
+    cep: string;
+    city: string;
+    ibge: string;
+    neighborhood: string;
+    number: number;
+    state: string;
+    street: string;
+  };
+}
 
 export const Checkout = () => {
-  const { productsInCart, handleRemoveProduct } = productsContext();
+  const navigate = useNavigate();
+  const { productsInCart, handleRemoveProduct, handlingClearCart } =
+    productsContext();
   const { user } = useAuthStore();
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [sendOrder, setSendOrder] = useState(false);
+  const [clientPhone, setClientPhone] = useState("");
   const [address, setAddress] = useState({
     cep: "",
     neighborhood: "",
@@ -22,11 +43,50 @@ export const Checkout = () => {
     state: "",
   });
 
+  console.log("Produtos no carrinho", productsInCart);
+
+  const getUserAddress = async () => {
+    if (!user?.uid) {
+      return toast.error("Usuário não autenticado.");
+    }
+
+    try {
+      const refCollection = collection(db, "clients");
+      const q = query(refCollection, where("Id", "==", user.uid));
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot.empty) {
+        return toast.error("Endereço não encontrado.");
+      }
+      // console.log("Dados depois da query => ", querySnapshot.docs[0]?.data());
+      const data = querySnapshot.docs[0]?.data();
+      if (!data || !data.phone) {
+        return toast.error("Dados do cliente incompletos.");
+      }
+      const fireStoreData: IFireStoreProps = {
+        clientPhone: data.phone,
+        clientAddress: data.address,
+      };
+
+      // console.log("Dados do Firestore => ", fireStoreData);
+
+      if (!fireStoreData?.clientAddress) {
+        return toast.error("Endereço não cadastrado.");
+      }
+      setAddress({ ...fireStoreData.clientAddress, number: 0 });
+      setClientPhone(fireStoreData.clientPhone);
+    } catch (error) {
+      console.error("Erro ao buscar endereço:", error);
+      toast.error("Erro ao buscar endereço do usuário.");
+    }
+  };
+
   const fetchAddress = useCallback(async (cep: string) => {
     if (!cep || cep.length < 8) return; // Evita requisições desnecessárias
 
     try {
       const { data } = await api.get(`https://viacep.com.br/ws/${cep}/json/`);
+      // console.log("Response data", data);
       if (data.erro) throw new Error("CEP não encontrado");
 
       setAddress((prev) => ({
@@ -43,6 +103,48 @@ export const Checkout = () => {
     }
   }, []);
 
+  const handleSubmitBudget = async () => {
+    if (!user?.uid) return toast.error("Usuário não autenticado.");
+    if (!address.cep || !address.street || !address.city) {
+      return toast.error("Endereço incompleto.");
+    }
+
+    setSendOrder(true);
+    const dateOrder = format(new Date(), "dd/MM/yyyy HH:mm:ss");
+
+    try {
+      const order = {
+        client: {
+          id: user.uid,
+          name: user.displayName,
+          email: user.email,
+          phone: clientPhone,
+        },
+        deliveryAddress: address,
+        products: productsInCart,
+        createdAt: dateOrder,
+        orderStatus: 1,
+        totalValue: total,
+      };
+
+      console.log("Dados do pedido", order);
+
+      const response = await api.post("/post-budget", order);
+      if (response.status === 201) {
+        toast.success("Orçamento enviado!");
+        setSendOrder(false);
+        navigate("/");
+        handlingClearCart();
+      }
+    } catch (error) {
+      toast.error(
+        "Erro ao enviar o pedido. Verifique os campos e tente novamente."
+      );
+      setSendOrder(false);
+      console.error("Erro ao enviar produtos para o servidor", error);
+    }
+  };
+
   const total = productsInCart.reduce((acc, product) => {
     if (product.selectedVariation.nomeVariacao === "Sob Medida") {
       return acc;
@@ -58,6 +160,12 @@ export const Checkout = () => {
       setModalIsOpen(false);
     }
   }, [user]);
+
+  useEffect(() => {
+    console.log("Chamou", address.cep, "oi");
+    getUserAddress();
+    fetchAddress(address.cep);
+  }, []);
 
   return (
     <div className="flex border-gray-300 p-4 rounded-lg">
@@ -111,12 +219,6 @@ export const Checkout = () => {
                     <span className="text-gray-600">
                       <strong>Qtd:</strong> {product.quantidade}{" "}
                     </span>
-                    {/*      <Button
-                      onClick={() => handlingAddProductInCart(product)}
-                      className="bg-red-500 hover:bg-red-600 hover:cursor-pointer"
-                    >
-                      <span className="font-bold text-lg">+</span>
-                    </Button> */}
                   </div>
                 </div>
               ))}
@@ -215,20 +317,6 @@ export const Checkout = () => {
                         }
                       />
                     </div>
-                    <div className="flex items-center gap-2 w-fit">
-                      <Input
-                        id="check"
-                        type="checkbox"
-                        className="size-5 text-center placeholder:text-center border-gray-400 hover:cursor-pointer"
-                        // onChange={() => setUrgencyDelivery(!urgencyDelivery)}
-                      />
-                      <label
-                        htmlFor="check"
-                        className="text-lg text-red-600 font-semibold hover:cursor-pointer"
-                      >
-                        Entrega com urgência
-                      </label>
-                    </div>
                   </>
                 ) : (
                   <span className="text-gray-500">
@@ -267,11 +355,11 @@ export const Checkout = () => {
                 </span>
               </div>
 
-              {/* <Button
+              <Button
                 variant={"default"}
-                className={`bg-red-500 hover:bg-red-600 hover:cursor-pointer w-full `}
-                onClick={() => handleSubmitProducts()}
-                disabled={sendOrder || total < minValueClient}
+                className={`bg-red-900 hover:bg-red-950 hover:cursor-pointer w-full `}
+                onClick={() => handleSubmitBudget()}
+                disabled={sendOrder}
               >
                 {sendOrder ? (
                   <>
@@ -280,7 +368,7 @@ export const Checkout = () => {
                 ) : (
                   "Confirmar"
                 )}
-              </Button> */}
+              </Button>
             </div>
           </div>
         </div>
@@ -288,7 +376,7 @@ export const Checkout = () => {
         <>
           <div className="flex flex-col w-full  space-y-2 items-center justify-center">
             <span className="text-center text-2xl font-bold text-gray-800">
-              Nenhum produto adicionado ao seu orçamento
+              Seu orçamento está vazio
             </span>
             <span className="text-center text-sm   text-gray-600">
               Volte para a tela inicial para continuar comprando !

@@ -45,12 +45,27 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  collection,
+  doc,
+  getDocs,
+  onSnapshot,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
+import { db } from "../Utils/FirebaseConfig";
+import { toast } from "sonner";
 
 export interface ProductsInOrderProps {
-  productId: number;
-  productName: string;
-  quantity: number;
-  price: number;
+  id: number;
+  nome: string;
+  quantidade: number;
+  preco: number;
+  altura: number;
+  largura: number;
+  comprimento: number;
+  listImages: { imagem: string }[];
 }
 
 export interface SellerProps {
@@ -81,7 +96,7 @@ interface IPaymentMethod {
 }
 
 export interface Order {
-  id: string;
+  id: number;
   client: IClient;
   deliveryAddress: IDeliveryAddress;
   products: ProductsInOrderProps[];
@@ -101,68 +116,7 @@ export interface Order {
 const OrdersTable = () => {
   const [date, setDate] = useState<DateRange>();
 
-  const [data, setData] = useState<Order[]>([
-    {
-      orderId: 1,
-      client: {
-        id: "1",
-        name: "Lucas Seidel",
-        email: "lsilva@multipoint.com.br",
-        phone: "11994217053",
-      },
-      createdAt: "14/04/2025",
-      deliveryAddress: {
-        cep: "09230600",
-        city: "Santo André",
-        ibge: "1234567",
-        neighborhood: "Vila Alzira",
-        number: "303",
-        state: "SP",
-        street: "São Camilo",
-      },
-      id: "2",
-      orderStatus: 1,
-      products: [
-        {
-          productId: 33001,
-          productName: "Produto para Teste Mock",
-          price: 265.9,
-          quantity: 2,
-        },
-      ],
-      totalValue: 531.8,
-    },
-    {
-      orderId: 2,
-      client: {
-        id: "1",
-        name: "Rodinei",
-        email: "rodinei@multipoint.com.br",
-        phone: "11994217053",
-      },
-      createdAt: "14/04/2025",
-      deliveryAddress: {
-        cep: "09230600",
-        city: "Santo André",
-        ibge: "1234567",
-        neighborhood: "Vila Alzira",
-        number: "303",
-        state: "SP",
-        street: "São Camilo",
-      },
-      id: "2",
-      orderStatus: 2,
-      products: [
-        {
-          productId: 33001,
-          productName: "Produto para Teste Mock",
-          price: 265.9,
-          quantity: 2,
-        },
-      ],
-      totalValue: 531.8,
-    },
-  ]);
+  const [data, setData] = useState<Order[]>([]);
   const [filteredData, setFilteredData] = useState<Order[]>(data);
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -263,10 +217,10 @@ const OrdersTable = () => {
     { id: 9, option: "Cancelado", value: 9 },
   ];
   async function handleStatusChange(id: number, newStatus: number) {
-    console.log(newStatus);
-    console.log(id);
-    /*  try {
-      const collectionRef = collection(db, "orders");
+    console.log("Novo status => ", newStatus);
+    console.log("Id do orçamento => ", id);
+    try {
+      const collectionRef = collection(db, "budgets");
       const q = query(collectionRef, where("orderId", "==", id));
       const orderData = await getDocs(q);
 
@@ -279,7 +233,7 @@ const OrdersTable = () => {
       let orderDocRef = null;
 
       orderData.forEach((docSnap) => {
-        orderDocRef = doc(db, "orders", docSnap.id);
+        orderDocRef = doc(db, "budgets", docSnap.id);
       });
 
       if (!orderDocRef) return;
@@ -296,26 +250,64 @@ const OrdersTable = () => {
     } catch (error) {
       console.log("Ocorreu um erro ao tentar atualizar o pedido", error);
       toast.error("Ocorreu um erro ao tentar atualizar o pedido");
-    } */
+    }
+  }
+
+  async function handlePushProposal(orderId: number) {
+    try {
+      const collectionRef = collection(db, "budgets");
+      const q = query(collectionRef, where("orderId", "==", orderId));
+      const orderData = await getDocs(q);
+
+      if (orderData.empty) {
+        console.log("Pedido não encontrado!");
+        toast.error("Pedido não encontrado.");
+        return;
+      }
+
+      let orderDocRef = null;
+
+      orderData.forEach((docSnap) => {
+        orderDocRef = doc(db, "budgets", docSnap.id);
+      });
+
+      if (!orderDocRef) return;
+
+      await updateDoc(orderDocRef, {
+        orderStatus: 2,
+      });
+
+      setData((prevData) =>
+        prevData.map((order) =>
+          order.orderId === orderId ? { ...order, status: 2 } : order
+        )
+      );
+
+      toast.success("Proposta enviada com sucesso!");
+    } catch (error) {
+      console.log("Ocorreu um erro ao tentar atualizar o pedido", error);
+      toast.error("Ocorreu um erro ao tentar atualizar o pedido");
+    }
   }
 
   function handleShowCard(orderId: number) {
     setShowCardOrder(orderId);
   }
 
-  /* useEffect(() => {
-    const collectionRef = collection(db, "orders");
+  useEffect(() => {
+    const collectionRef = collection(db, "budgets");
     const q = query(collectionRef);
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const updatedData = snapshot.docs.map((doc) => ({
         ...(doc.data() as Order),
       }));
+      console.log("Dados atualizados:", updatedData);
       setData(updatedData);
     });
 
     return () => unsubscribe(); // Para evitar vazamento de memória
-  }, []); */
+  }, []);
 
   return (
     <div className="space-y-2 py-2 md:p-4 bg-white rounded-lg shadow w-full h-full">
@@ -517,54 +509,76 @@ const OrdersTable = () => {
                             <div className="font-semibold text-lg">
                               Produtos do orçamento
                             </div>
-                            <div className="p-2 rounded-lg bg-gray-200 max-h-40 w-1/2 overflow-y-scroll  ">
+                            <div className="p-2 max-h-40 w-1/2 overflow-y-scroll  ">
                               {order.products &&
                                 order.products.map((item) => {
                                   return (
-                                    <div
-                                      key={item.productId}
-                                      className="flex flex-col  w-full justify-around"
-                                    >
-                                      <div className="flex   w-full">
-                                        <span className="flex-1 text-lg text-gray-700">
-                                          {item.productName}
-                                        </span>
-                                        <div className="flex gap-2 w-[9rem] items-center">
-                                          <div className="border-r border-gray-700 h-4" />
-                                          <span className="text-lg text-gray-700">
-                                            {item.quantity} x{" "}
-                                            {item.price.toLocaleString(
-                                              "pt-BR",
-                                              {
-                                                style: "currency",
-                                                currency: "BRL",
-                                              }
-                                            )}
-                                          </span>
+                                    <>
+                                      <div
+                                        key={item.id}
+                                        className="flex flex-col  rounded-lg bg-gray-200 w-full justify-around"
+                                      >
+                                        <div className="flex p-2  w-full">
+                                          <div className="">
+                                            <span className="flex-1 text-lg text-gray-700">
+                                              {item.nome}
+                                            </span>
+                                            <div className="text-sm text-gray-500 flex gap-2">
+                                              <span>Altura: {item.altura}</span>
+                                              <span>
+                                                Largura: {item.altura}
+                                              </span>
+                                              <span>
+                                                Comprimento: {item.altura}
+                                              </span>
+                                            </div>
+                                          </div>
+                                          <div className="flex gap-2 w-[9rem] items-center">
+                                            <div className="border-r border-gray-700 h-4" />
+                                            <span className="text-lg text-gray-700">
+                                              {item.quantidade} x{" "}
+                                              {item.preco?.toLocaleString(
+                                                "pt-BR",
+                                                {
+                                                  style: "currency",
+                                                  currency: "BRL",
+                                                }
+                                              )}
+                                            </span>
+                                          </div>
                                         </div>
                                       </div>
-                                    </div>
+                                    </>
                                   );
                                 })}
                             </div>
                           </div>
+
                           <div className="flex gap-2 items-center">
-                            {/* Sketches */}
                             <div className="flex flex-col gap-2">
-                              <h1 className="font-semibold">
-                                Imagens fornecidas
+                              <h1 className="font-semibold text-lg">
+                                Imagens do produto
                               </h1>
                               <div className="flex gap-2 items-center">
-                                <img
-                                  src="https://images.unsplash.com/photo-1503898362-59e068e7f9d8?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                                  alt="Sketch"
-                                  className="size-32 rounded-lg hover:scale-105 transition-all duration-300"
-                                />
-                                <img
-                                  src="https://images.unsplash.com/photo-1536160885591-301854e2ed04?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                                  alt="Sketch"
-                                  className="size-32 rounded-lg hover:scale-105 transition-all duration-300"
-                                />
+                                {order.products.map((item) => {
+                                  return (
+                                    <div
+                                      key={item.id}
+                                      className="flex gap-2 items-center"
+                                    >
+                                      {item.listImages.map((image, index) => {
+                                        return (
+                                          <img
+                                            key={index}
+                                            src={image.imagem}
+                                            alt="Imagem do produto"
+                                            className="size-32 rounded-lg hover:scale-105 transition-all duration-300"
+                                          />
+                                        );
+                                      })}
+                                    </div>
+                                  );
+                                })}
                               </div>
                             </div>
                           </div>
@@ -667,7 +681,12 @@ const OrdersTable = () => {
                               total={Number(total)}
                             />
                           </div>
-                          <Button>Enviar proposta</Button>
+                          <Button
+                            className={`${order.orderStatus >= 2 && "hidden"}`}
+                            onClick={() => handlePushProposal(order.orderId)}
+                          >
+                            Enviar proposta
+                          </Button>
                         </DialogContent>
                       </Dialog>
                     ))}
