@@ -3,21 +3,23 @@ import ProductCard from "./product-card";
 import { useEffect, useState } from "react";
 import { Product } from "@/interfaces/Product";
 import Loader from "@/_components/Loader/loader";
+import { useSearchParams } from "react-router-dom";
 
 const Home = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [searchParams, setSearchParams] = useSearchParams();
+  const categoria = searchParams.get("c") || "";
 
-  const getProducts = async () => {
+  const getProducts = async (paramCategory: string) => {
     try {
       setIsLoading(true);
-      const categoriaCodificada = encodeURIComponent(
-        "Assoalhos, Deck, Escada e Forro"
-      );
-      const getProducts = await api.get(
-        `/get-products?category=${categoriaCodificada}`
-      );
-      const products = getProducts.data.products.produtos;
+      const url = paramCategory
+        ? `/get-products?category=${encodeURIComponent(paramCategory)}`
+        : "/get-products";
+      const response = await api.get(url);
+      const products = response.data.products.produtos;
       setProducts(products);
     } catch (error) {
       console.log(error);
@@ -27,8 +29,8 @@ const Home = () => {
   };
 
   useEffect(() => {
-    getProducts();
-  }, []);
+    getProducts(categoria);
+  }, [categoria]);
 
   return (
     <>

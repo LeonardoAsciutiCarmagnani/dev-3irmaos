@@ -39,7 +39,7 @@ const Header = () => {
             onClick={() => setOpen(!open)}
           >
             <FileBoxIcon color="darkred" />
-            <span className="font-semibold text-red-900 text-lg">
+            <span className="font-semibold text-gray-900 text-lg">
               {productsInCart.length}
             </span>
           </PopoverTrigger>
@@ -92,22 +92,22 @@ const Header = () => {
               onClick={() => setOpenUser(true)}
               onMouseEnter={() => setOpenUser(true)}
             >
-              <CircleUserIcon size={35} className="text-gray-800" />
+              <CircleUserIcon size={35} className="text-red-900" />
             </PopoverTrigger>
             <PopoverContent className="w-[300px] flex flex-col space-y-2 rounded-xs p-3">
               {user ? (
                 <div className="flex flex-col items-start">
                   <div className="flex items-center justify-between w-full">
-                    <div className="flex flex-col gap-y-1">
+                    <div className="flex flex-col gap-y-0.5">
                       <div className="flex items-center gap-x-3">
-                        <h1 className="font-semibold text-gray-900">
+                        <h1 className="font-semibold text-gray-900 text-md">
                           {user.displayName}
                         </h1>
                         {user.role === "admin" && (
                           <Badge className="bg-red-900">ADM</Badge>
                         )}
                       </div>
-                      <h1 className="text-xs">{user.email}</h1>
+                      <h1 className="text-xs text-gray-400">{user.email}</h1>
                     </div>
                     <Button className="rounded-xs py-2 px-3">Sair</Button>
                   </div>
@@ -148,11 +148,7 @@ const Header = () => {
             </PopoverContent>
           </Popover>
           {user && user.displayName ? (
-            <div
-              className={`${
-                user.role === "admin" && "text-red-900 font-bold"
-              } hidden md:flex text-nowrap text-sm font-semibold text-gray-600 hover:cursor-default`}
-            >
+            <div className="hidden md:flex text-nowrap text-sm font-semibold text-gray-600 hover:cursor-default">
               {user.displayName.split(" ")[0]}
             </div>
           ) : null}
