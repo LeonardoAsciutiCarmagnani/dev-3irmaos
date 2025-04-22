@@ -57,7 +57,7 @@ const Home = () => {
             .map((product: Product) => (
               <div
                 key={product.id}
-                className="flex items-center justify-center  w-full"
+                className="flex items-center justify-center w-full h-fit"
               >
                 <ProductCard {...product} />
               </div>

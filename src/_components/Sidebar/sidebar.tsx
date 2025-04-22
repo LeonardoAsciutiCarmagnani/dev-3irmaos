@@ -5,7 +5,7 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import { useAuthStore } from "@/context/authContext";
-import { ArrowRight, CircleIcon, FileBoxIcon, Home } from "lucide-react";
+import { ArrowRight, CircleIcon, Home, PackageSearchIcon } from "lucide-react";
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 
@@ -20,11 +20,6 @@ const Sidebar = () => {
 
   const clientMenuItems = [
     { label: "Tela inicial", path: "/", icon: <Home className="size-6" /> },
-    {
-      label: "Orçamentos",
-      path: "/pedidos-e-orçamentos",
-      icon: <FileBoxIcon className="size-6" />,
-    },
   ];
 
   const categorias = [
@@ -88,7 +83,7 @@ const Sidebar = () => {
                 rounded-none
               "
             >
-              <FileBoxIcon className="size-6 transform data-[state=open]:rotate-none" />
+              <PackageSearchIcon className="size-6 transform data-[state=open]:rotate-none" />
               {open && (
                 <span className="text-[0.97rem] font-normal">Produtos</span>
               )}

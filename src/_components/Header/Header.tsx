@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -6,9 +7,15 @@ import {
 } from "@/components/ui/popover";
 import { useAuthStore } from "@/context/authContext";
 import { productsContext } from "@/context/productsContext";
-import { CircleUserIcon, FileBoxIcon, MenuIcon, Trash2 } from "lucide-react";
+import {
+  CircleUserIcon,
+  FileBoxIcon,
+  MenuIcon,
+  ScrollTextIcon,
+  Trash2,
+} from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Header = () => {
   const { productsInCart, handleRemoveProduct } = productsContext();
@@ -24,7 +31,7 @@ const Header = () => {
         <MenuIcon className="hover:cursor-pointer md:hidden flex" size={30} />
         <img src="/src/assets/logo.png" alt="3 Irmãos" className="w-[60%]" />
       </div>
-      <div className="flex items-end justify-evenly gap-x-2 p-1 w-[8rem]">
+      <div className="flex items-end justify-evenly gap-x-8 p-1 w-[8rem]">
         <Popover onOpenChange={() => setOpen(!open)} open={open}>
           <PopoverTrigger
             className="flex hover:cursor-pointer"
@@ -36,10 +43,10 @@ const Header = () => {
               {productsInCart.length}
             </span>
           </PopoverTrigger>
-          <PopoverContent className="w-[300px] flex flex-col space-y-2 ">
+          <PopoverContent className="w-[300px] flex flex-col space-y-2 rounded-xs">
             {productsInCart.length === 0 ? (
-              <span className="text-center text-gray-700 font-semibold">
-                Nenhum produto adicionado ao seu orçamento
+              <span className="text-center text-sm text-gray-700 font-semibold">
+                Nenhum produto adicionado ao seu orçamento.
               </span>
             ) : (
               <>
@@ -72,25 +79,49 @@ const Header = () => {
                 navigate("/orçamento");
                 setOpen(false);
               }}
+              className="rounded-xs"
             >
               Prosseguir com orçamento
             </Button>
           </PopoverContent>
         </Popover>
-        <div>
+        <div className="flex items-center gap-x-2">
           <Popover onOpenChange={() => setOpenUser(!openUser)} open={openUser}>
             <PopoverTrigger
               className="flex hover:cursor-pointer"
               onClick={() => setOpenUser(true)}
               onMouseEnter={() => setOpenUser(true)}
             >
-              <CircleUserIcon size={35} className="text-gray-900" />
+              <CircleUserIcon size={35} className="text-gray-800" />
             </PopoverTrigger>
-            <PopoverContent className="w-[300px] flex flex-col space-y-2">
+            <PopoverContent className="w-[300px] flex flex-col space-y-2 rounded-xs p-3">
               {user ? (
-                <div>
-                  <h1>{`Olá ${user.displayName} !`}</h1>
-                  <h2>{user.email}</h2>
+                <div className="flex flex-col items-start">
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex flex-col gap-y-1">
+                      <div className="flex items-center gap-x-3">
+                        <h1 className="font-semibold text-gray-900">
+                          {user.displayName}
+                        </h1>
+                        {user.role === "admin" && (
+                          <Badge className="bg-red-900">ADM</Badge>
+                        )}
+                      </div>
+                      <h1>
+                        <h2 className="text-xs">{user.email}</h2>
+                      </h1>
+                    </div>
+                    <Button className="rounded-xs py-2 px-3">Sair</Button>
+                  </div>
+                  <div className="flex items-center gap-x-2 mt-4">
+                    <ScrollTextIcon className="text-red-900" size={25} />
+                    <Link
+                      to="/pedidos-e-orçamentos"
+                      className="text-sm md:text-md text-gray-900 font-semibold hover:underline hover:cursor-pointer hover:text-red-900"
+                    >
+                      Orçamentos
+                    </Link>
+                  </div>
                 </div>
               ) : (
                 <div>
@@ -118,6 +149,15 @@ const Header = () => {
               )}
             </PopoverContent>
           </Popover>
+          {user && user.displayName ? (
+            <div
+              className={`${
+                user.role === "admin" && "text-red-900 font-bold"
+              } hidden md:flex text-nowrap text-sm font-semibold text-gray-600 hover:cursor-default`}
+            >
+              {user.displayName.split(" ")[0]}
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

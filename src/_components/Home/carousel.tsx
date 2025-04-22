@@ -28,7 +28,7 @@ export function ImageCarousel({ images }: ImageCarouselProps) {
         {validImages.length > 0 ? (
           validImages.map((img, index) => (
             <CarouselItem key={index}>
-              <Card className="rounded-none h-[10.5rem] flex items-center justify-center">
+              <Card className="rounded-none h-[13rem] flex items-center justify-center">
                 <CardContent className="p-0 m-0 w-full h-full">
                   <img
                     src={img.imagem}
