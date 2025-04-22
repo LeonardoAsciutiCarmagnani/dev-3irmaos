@@ -48,17 +48,14 @@ interface ApiResponse {
   message: string | null;
 }
 
-// Constants
-const API_CONFIG = {
-  baseURL: env.HIPER_API_URL,
-  timeout: 10000,
-} as const;
-
 class ProductService {
   private axiosInstance: AxiosInstance;
 
   constructor() {
-    this.axiosInstance = axios.create(API_CONFIG);
+    this.axiosInstance = axios.create({
+      baseURL: env.HIPER_API_URL,
+      timeout: 5000,
+    });
     this.setupInterceptors();
   }
 
@@ -75,15 +72,12 @@ class ProductService {
     );
   }
 
-  public async fetchProducts(
-    pontoDeSincronizacao: number = 0
-  ): Promise<ApiResponse> {
+  public async fetchProducts(): Promise<ApiResponse> {
     try {
+      const pontoDeSincronizacao = 0;
       const response = await this.axiosInstance.get<ApiResponse>(
-        `/produtos/pontoDeSincronizacao`,
-        {
-          params: { pontoDeSincronizacao },
-        }
+        `/produtos/pontoDeSincronizacao?pontoDeSincronizacao=${pontoDeSincronizacao}`,
+        {}
       );
       return response.data;
     } catch (error) {
