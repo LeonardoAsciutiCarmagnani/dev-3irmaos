@@ -28,7 +28,7 @@ type FormSchema = z.infer<typeof formSchema>;
 const Login = () => {
   const { login } = useAuthStore();
   const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),

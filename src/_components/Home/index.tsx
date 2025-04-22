@@ -11,7 +11,12 @@ const Home = () => {
   const getProducts = async () => {
     try {
       setIsLoading(true);
-      const getProducts = await api.get("/get-products");
+      const categoriaCodificada = encodeURIComponent(
+        "Assoalhos, Deck, Escada e Forro"
+      );
+      const getProducts = await api.get(
+        `/get-products?category=${categoriaCodificada}`
+      );
       const products = getProducts.data.products.produtos;
       setProducts(products);
     } catch (error) {

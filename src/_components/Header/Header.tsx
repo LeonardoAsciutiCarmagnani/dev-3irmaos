@@ -4,79 +4,122 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useAuthStore } from "@/context/authContext";
 import { productsContext } from "@/context/productsContext";
-import { PopoverClose } from "@radix-ui/react-popover";
-import { FileBoxIcon, Trash2 } from "lucide-react";
+import { CircleUserIcon, FileBoxIcon, MenuIcon, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const { productsInCart, handleRemoveProduct } = productsContext();
+  const { user } = useAuthStore();
   const navigate = useNavigate();
 
   const [open, setOpen] = useState(false);
+  const [openUser, setOpenUser] = useState(false);
 
   return (
-    <div className="flex justify-around items-center border-b border-gray-200">
-      <div>
-        <img src="/src/assets/logo.png" alt="3 Irmãos" className="w-[70%]" />
+    <div className="flex justify-between md:justify-around px-2 items-center border-b border-gray-200">
+      <div className="flex items-center justify-around">
+        <MenuIcon className="hover:cursor-pointer md:hidden flex" size={30} />
+        <img src="/src/assets/logo.png" alt="3 Irmãos" className="w-[60%]" />
       </div>
-      <Popover onOpenChange={() => setOpen(!open)} open={open}>
-        <PopoverTrigger
-          className="flex hover:cursor-pointer"
-          onMouseEnter={() => setOpen(true)}
-        >
-          <FileBoxIcon color="darkred" />
-          <span className="font-semibold text-red-900 text-lg">
-            {productsInCart.length}
-          </span>
-        </PopoverTrigger>
-        <PopoverContent className="w-[600px] flex flex-col space-y-2  border-red-900">
-          <div className=" flex items-center justify-end">
-            <PopoverClose className=" text-end text-lg font-bold text-red-900 hover:cursor-pointer">
-              X
-            </PopoverClose>
-          </div>
-          {productsInCart.length === 0 ? (
-            <span className="text-center text-gray-700 font-semibold">
-              Nenhum produto adicionado ao seu orçamento
+      <div className="flex items-end justify-evenly gap-x-2 p-1 w-[8rem]">
+        <Popover onOpenChange={() => setOpen(!open)} open={open}>
+          <PopoverTrigger
+            className="flex hover:cursor-pointer"
+            onMouseEnter={() => setOpen(true)}
+            onClick={() => setOpen(!open)}
+          >
+            <FileBoxIcon color="darkred" />
+            <span className="font-semibold text-red-900 text-lg">
+              {productsInCart.length}
             </span>
-          ) : (
-            <>
-              {productsInCart.map((product) => (
-                <div className="flex flex-col gap-2 items-center justify-around w-full border-b p-2  border-red-900">
-                  <span className="font-semibold text-gray-700">
-                    {product.nome}
-                  </span>
-                  <div className=" w-3/5 flex items-center p-2">
-                    <span className="text-gray-700 flex-1 text-center">
-                      <strong>Qtd:</strong> {product.quantidade}
+          </PopoverTrigger>
+          <PopoverContent className="w-[300px] flex flex-col space-y-2 ">
+            {productsInCart.length === 0 ? (
+              <span className="text-center text-gray-700 font-semibold">
+                Nenhum produto adicionado ao seu orçamento
+              </span>
+            ) : (
+              <>
+                {productsInCart.map((product) => (
+                  <div className="flex flex-col gap-2 items-center justify-around w-full border-b p-2 border-red-900">
+                    <span className="font-semibold text-gray-700 text-sm">
+                      {product.nome}
                     </span>
-                    <Button onClick={() => handleRemoveProduct(product.id)}>
-                      {product.quantidade === 1 ? (
-                        <Trash2 className="size-4" />
-                      ) : (
-                        <span className="font-semibold text-xs">
-                          Remover Un.
-                        </span>
-                      )}
-                    </Button>
+                    <div className="w-full flex items-center justify-around">
+                      <span className="text-gray-700 flex-1 text-sm">
+                        <strong>Quantidade:</strong> {product.quantidade}
+                      </span>
+                      <Button onClick={() => handleRemoveProduct(product.id)}>
+                        {product.quantidade === 1 ? (
+                          <Trash2 className="size-4" />
+                        ) : (
+                          <span className="font-semibold text-xs">
+                            Remover Un.
+                          </span>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
+            <Button
+              disabled={productsInCart.length === 0}
+              onClick={() => {
+                navigate("/orçamento");
+                setOpen(false);
+              }}
+            >
+              Prosseguir com orçamento
+            </Button>
+          </PopoverContent>
+        </Popover>
+        <div>
+          <Popover onOpenChange={() => setOpenUser(!openUser)} open={openUser}>
+            <PopoverTrigger
+              className="flex hover:cursor-pointer"
+              onClick={() => setOpenUser(true)}
+              onMouseEnter={() => setOpenUser(true)}
+            >
+              <CircleUserIcon size={35} className="text-gray-900" />
+            </PopoverTrigger>
+            <PopoverContent className="w-[300px] flex flex-col space-y-2">
+              {user ? (
+                <div>
+                  <h1>{`Olá ${user.displayName} !`}</h1>
+                  <h2>{user.email}</h2>
+                </div>
+              ) : (
+                <div>
+                  <h1 className="text-lg md:text-xl font-semibold text-gray-900">
+                    Olá, seja bem‑vindo!
+                  </h1>
+                  <p className="text-sm md:text-base text-gray-600 mb-4">
+                    Acesse sua conta ou crie uma nova.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <button
+                      className="w-full sm:w-auto flex-1 border-gray-300 border-2 p-2 rounded-xs hover:cursor-pointer "
+                      onClick={() => navigate("/login")}
+                    >
+                      Login
+                    </button>
+                    <button
+                      className="w-full sm:w-auto flex-1 border bg-red-900 p-2 rounded-xs text-white hover:cursor-pointer"
+                      onClick={() => navigate("/login")}
+                    >
+                      Criar Conta
+                    </button>
                   </div>
                 </div>
-              ))}
-            </>
-          )}
-          <Button
-            disabled={productsInCart.length === 0}
-            onClick={() => {
-              navigate("/orçamento");
-              setOpen(false);
-            }}
-          >
-            Prosseguir com orçamento
-          </Button>
-        </PopoverContent>
-      </Popover>
+              )}
+            </PopoverContent>
+          </Popover>
+        </div>
+      </div>
     </div>
   );
 };
