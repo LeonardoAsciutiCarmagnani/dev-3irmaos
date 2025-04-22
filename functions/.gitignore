@@ -13,3 +13,6 @@ credentials.jsonfe
 # Node.js dependency directory
 node_modules/
 *.local
+
+functions/firebase-debug.log
+firebase-debug.log

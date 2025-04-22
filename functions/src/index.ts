@@ -7,6 +7,7 @@ import morgan from "morgan";
 import env from "./config/env";
 import { ProductController } from "./controllers/Product/productController";
 import { UserController } from "./controllers/User/UserController";
+import { OrderController } from "./controllers/Order/OrderController";
 
 const errorHandler = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -73,7 +74,7 @@ class App {
     // router.post("/create-prices-list", PricesListsController.createPriceList);
     // router.post("/check-email", UserController.checkEmail);
     // router.post("/post-order", OrderController.postOrderSale);
-    // router.post("/post-budget", OrderController.postBudget);
+    router.post("/post-budget", OrderController.createBudget);
     // router.post("/find-CEP", CEPController.getCEP);
     // //PUT ROUTES
     // router.put("/prices-lists/:id", PricesListsController.putPriceListById);
