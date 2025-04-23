@@ -11,7 +11,7 @@ export class CreateBudgetService {
         .get();
       let lastId = 0;
       validateLastId.forEach((doc) => {
-        lastId = doc.data().id;
+        lastId = doc.data().orderId;
       });
       const newId = lastId + 1;
 
@@ -25,7 +25,6 @@ export class CreateBudgetService {
         totalValue: data.totalValue,
       });
 
-      console.log("Budget created successfully:", budgetCreated);
       return budgetCreated;
     } catch (error) {
       console.error("Error in CreateBudgetService:", error);

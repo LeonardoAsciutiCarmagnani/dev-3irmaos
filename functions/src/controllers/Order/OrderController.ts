@@ -66,7 +66,6 @@ export class OrderController {
         res.status(409).json(createdOrder);
       }
 
-      console.log("Order Controller - Finishing and sending...:", createdOrder);
       res.status(201).json(createdOrder);
     } catch (error) {
       next(error);
