@@ -6,6 +6,7 @@ import { CheckoutPage } from "./pages/Checkout";
 import Orders from "./pages/Orders";
 import AuthenticatedRoute from "./_components/ProtectedRoutes/AuthenticatedRoute";
 import LoginPage from "./pages/Login";
+import { PDFPedido } from "./_components/OrderPDF/OrderPDF";
 
 export const routes = createBrowserRouter([
   {
@@ -42,6 +43,16 @@ export const routes = createBrowserRouter([
       <AuthenticatedRoute>
         <LayoutPage>
           <Orders />
+        </LayoutPage>
+      </AuthenticatedRoute>
+    ),
+  },
+  {
+    path: "/imprimir",
+    element: (
+      <AuthenticatedRoute>
+        <LayoutPage>
+          <PDFPedido />
         </LayoutPage>
       </AuthenticatedRoute>
     ),
