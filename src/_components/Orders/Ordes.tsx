@@ -36,15 +36,7 @@ import { api } from "@/lib/axios";
 // } from "firebase/firestore";
 
 import Dropzone from "../DropzoneImage/DropzoneImage";
-import { Input } from "@/components/ui/input";
-import DetaisOrder from "../DetailsOrder/DetailsOrder";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Textarea } from "@/components/ui/textarea";
+
 import {
   collection,
   doc,
@@ -54,8 +46,10 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { db } from "../Utils/FirebaseConfig";
+import { db, storage } from "../Utils/FirebaseConfig";
 import { toast } from "sonner";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import DetailsOrder from "./DetailsOrder/DetailsOrder";
 
 export interface ProductsInOrderProps {
   id: number;
@@ -66,6 +60,7 @@ export interface ProductsInOrderProps {
   largura: number;
   comprimento: number;
   listImages: { imagem: string }[];
+  selectedVariation: { id: string; nomeVariacao: string };
 }
 
 export interface SellerProps {
@@ -105,6 +100,7 @@ export interface Order {
   totalValue: number;
   createdAt: string;
   paymentMethod?: IPaymentMethod;
+  imagesUrls: string[];
 }
 
 /* 
@@ -122,11 +118,7 @@ const OrdersTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState(0); // zero igual a todos os status
   const [showCardOrder, setShowCardOrder] = useState<number | null>(null);
-  const [observacoes, setObservacoes] = useState("");
-  const [formaDePagamento, setformaDePagamento] = useState("");
-  const [entrega, setEntrega] = useState("");
-  const [frete, setFrete] = useState("");
-  const [total, setTotal] = useState("");
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
 
   const navigate = useNavigate();
 
@@ -216,6 +208,11 @@ const OrdersTable = () => {
     { id: 8, option: "Pedido Concluído", value: 8 },
     { id: 9, option: "Cancelado", value: 9 },
   ];
+
+  function handleTotalPropostal(total: number) {
+    return total;
+  }
+
   async function handleStatusChange(id: number, newStatus: number) {
     console.log("Novo status => ", newStatus);
     console.log("Id do orçamento => ", id);
@@ -253,10 +250,81 @@ const OrdersTable = () => {
     }
   }
 
-  async function handlePushProposal(orderId: number) {
+  function handleChangePrice(
+    orderId: number,
+    productId: string,
+    newPrice: number
+  ) {
+    setData((prevData) => {
+      // Atualiza os produtos com novo preço e recalcula totalValue por produto
+      const updatedData = prevData.map((order) => {
+        if (order.orderId !== orderId) return order;
+
+        const updatedProducts = order.products.map((product) => {
+          if (product.selectedVariation.id === productId) {
+            const quantidade = product.quantidade || 1;
+            return {
+              ...product,
+              preco: newPrice,
+              totalValue: newPrice * quantidade,
+            };
+          }
+
+          // Garante que totalValue seja sempre coerente
+          const preco = product.preco || 0;
+          const quantidade = product.quantidade || 1;
+          return {
+            ...product,
+            totalValue: preco * quantidade,
+          };
+        });
+
+        // Calcula o total do pedido com base nos totalValue dos produtos
+        const orderTotal = updatedProducts.reduce((sum, product) => {
+          return sum + (product.totalValue || 0);
+        }, 0);
+
+        return {
+          ...order,
+          products: updatedProducts,
+          totalValue: orderTotal,
+        };
+      });
+
+      return updatedData;
+    });
+  }
+
+  function handleImagesSelected(files: File[]) {
+    setSelectedImages(Array.from(files));
+  }
+
+  async function UploadImagesForStorage(
+    images: FileList | File[],
+    orderId: number
+  ): Promise<string[]> {
+    if (!images || images.length === 0) return [];
+
+    const uploadPromises = Array.from(images).map(async (file) => {
+      const uniqueFileName = `${Date.now()}_${file.name}_order_${orderId}`;
+      const storagePath = `imagens/${uniqueFileName}`;
+      const storageRef = ref(storage, storagePath);
+
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+      return downloadURL;
+    });
+
+    return Promise.all(uploadPromises); // retorna todas as URLs das imagens
+  }
+
+  async function handlePushProposal(orderToPush: Order) {
     try {
       const collectionRef = collection(db, "budgets");
-      const q = query(collectionRef, where("orderId", "==", orderId));
+      const q = query(
+        collectionRef,
+        where("orderId", "==", orderToPush.orderId)
+      );
       const orderData = await getDocs(q);
 
       if (orderData.empty) {
@@ -273,13 +341,22 @@ const OrdersTable = () => {
 
       if (!orderDocRef) return;
 
+      const imagesUrls = await UploadImagesForStorage(
+        selectedImages,
+        orderToPush.orderId
+      );
+
       await updateDoc(orderDocRef, {
         orderStatus: 2,
+        imagesUrls: imagesUrls,
+        totalValue: orderToPush.totalValue,
       });
 
       setData((prevData) =>
         prevData.map((order) =>
-          order.orderId === orderId ? { ...order, status: 2 } : order
+          order.orderId === orderToPush.orderId
+            ? { ...order, status: 2 }
+            : order
         )
       );
 
@@ -509,7 +586,7 @@ const OrdersTable = () => {
                             <div className="font-semibold text-lg">
                               Produtos do orçamento
                             </div>
-                            <div className="p-2 max-h-40 w-1/2 overflow-y-scroll  ">
+                            <div className="p-2 max-h-50 w-1/2 overflow-y-scroll space-y-2">
                               {order.products &&
                                 order.products.map((item) => {
                                   return (
@@ -518,18 +595,18 @@ const OrdersTable = () => {
                                         key={item.id}
                                         className="flex flex-col  rounded-lg bg-gray-200 w-full justify-around"
                                       >
-                                        <div className="flex p-2  w-full">
-                                          <div className="">
+                                        <div className="flex p-2 gap-2 w-full">
+                                          <div className="flex-1">
                                             <span className="flex-1 text-lg text-gray-700">
                                               {item.nome}
                                             </span>
                                             <div className="text-sm text-gray-500 flex gap-2">
                                               <span>Altura: {item.altura}</span>
                                               <span>
-                                                Largura: {item.altura}
+                                                Largura: {item.largura}
                                               </span>
                                               <span>
-                                                Comprimento: {item.altura}
+                                                Comprimento: {item.comprimento}
                                               </span>
                                             </div>
                                           </div>
@@ -537,13 +614,20 @@ const OrdersTable = () => {
                                             <div className="border-r border-gray-700 h-4" />
                                             <span className="text-lg text-gray-700">
                                               {item.quantidade} x{" "}
-                                              {item.preco?.toLocaleString(
-                                                "pt-BR",
-                                                {
-                                                  style: "currency",
-                                                  currency: "BRL",
+                                              <input
+                                                type="number"
+                                                value={item.preco}
+                                                onChange={(e) =>
+                                                  handleChangePrice(
+                                                    order.orderId,
+                                                    item.selectedVariation.id,
+                                                    parseFloat(e.target.value)
+                                                  )
                                                 }
-                                              )}
+                                                className="border rounded px-2 py-1 w-[6rem] text-right"
+                                                min={0}
+                                                step={0.01}
+                                              />
                                             </span>
                                           </div>
                                         </div>
@@ -559,23 +643,28 @@ const OrdersTable = () => {
                               <h1 className="font-semibold text-lg">
                                 Imagens do produto
                               </h1>
-                              <div className="flex gap-2 items-center">
+                              <div className="flex flex-col gap-2 items-start">
                                 {order.products.map((item) => {
                                   return (
                                     <div
                                       key={item.id}
-                                      className="flex gap-2 items-center"
+                                      className="flex flex-col gap-2 items-start"
                                     >
-                                      {item.listImages.map((image, index) => {
-                                        return (
-                                          <img
-                                            key={index}
-                                            src={image.imagem}
-                                            alt="Imagem do produto"
-                                            className="size-32 rounded-lg hover:scale-105 transition-all duration-300"
-                                          />
-                                        );
-                                      })}
+                                      <span className="text-lg text-gray-700">
+                                        {item.nome}
+                                      </span>
+                                      <div className="flex gap-2 ">
+                                        {item.listImages.map((image, index) => {
+                                          return (
+                                            <img
+                                              key={index}
+                                              src={image.imagem}
+                                              alt="Imagem do produto"
+                                              className="size-32 rounded-lg hover:scale-105 transition-all duration-300"
+                                            />
+                                          );
+                                        })}
+                                      </div>
                                     </div>
                                   );
                                 })}
@@ -587,103 +676,40 @@ const OrdersTable = () => {
                             <h1 className="font-semibold text-lg">
                               Projeto (imagens ilustrativas)
                             </h1>
-                            <Dropzone />
+                            {order.orderStatus > 1 ? (
+                              <>
+                                {order.imagesUrls &&
+                                order.imagesUrls.length > 0 ? (
+                                  order.imagesUrls.map((url, index) => (
+                                    <img
+                                      key={index}
+                                      src={url}
+                                      alt="Imagem fornecida pela 3 irmãos"
+                                      className="size-32 rounded-lg hover:scale-105 transition-all duration-300"
+                                    />
+                                  ))
+                                ) : (
+                                  <span>Nenhuma imagem fornecida</span>
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                <Dropzone onFileSelect={handleImagesSelected} />
+                              </>
+                            )}
                           </div>
 
                           <div>
                             {/* Inputs para alteração das informações dinâmicas da proposta */}
-                            <Accordion type="single" collapsible>
-                              <AccordionItem value="item-1">
-                                <AccordionTrigger className="text-lg">
-                                  Informar detalhes da proposta
-                                </AccordionTrigger>
-                                <AccordionContent className="flex flex-col space-y-2">
-                                  <div className="flex flex-col gap-2 w-1/2">
-                                    <label
-                                      htmlFor="observacoes"
-                                      className="font-semibold"
-                                    >
-                                      Observações:
-                                    </label>
-                                    <Textarea
-                                      placeholder="Observações da proposta"
-                                      id="observacoes"
-                                      onChange={(e) => {
-                                        setObservacoes(e.target.value);
-                                      }}
-                                    />
-                                  </div>
-                                  <div className="flex flex-col gap-2 w-1/2">
-                                    <label
-                                      htmlFor="pagamento"
-                                      className="font-semibold"
-                                    >
-                                      Forma de pagamento:
-                                    </label>
-                                    <Input
-                                      placeholder="Forma de pagamento"
-                                      id="pagamento"
-                                      onChange={(e) => {
-                                        setformaDePagamento(e.target.value);
-                                      }}
-                                    />
-                                  </div>
-                                  <div className="flex flex-col gap-2 w-1/2">
-                                    <label
-                                      htmlFor="prazo"
-                                      className="font-semibold"
-                                    >
-                                      Prazo de entrega:
-                                    </label>
-                                    <Input
-                                      placeholder="Prazo de entrega"
-                                      id="prazo"
-                                      onChange={(e) => {
-                                        setEntrega(e.target.value);
-                                      }}
-                                    />
-                                  </div>
-                                  <div className="flex flex-col gap-2 w-1/2">
-                                    <label
-                                      htmlFor="prazo"
-                                      className="font-semibold"
-                                    >
-                                      Frete:
-                                    </label>
-                                    <Input
-                                      placeholder="Prazo de entrega"
-                                      id="prazo"
-                                      onChange={(e) => setFrete(e.target.value)}
-                                    />
-                                  </div>
-                                  <div className="flex flex-col gap-2 w-1/2">
-                                    <label
-                                      htmlFor="prazo"
-                                      className="font-semibold"
-                                    >
-                                      Valor final da proposta:
-                                    </label>
-                                    <Input
-                                      placeholder="Prazo de entrega"
-                                      id="prazo"
-                                      onChange={(e) => setTotal(e.target.value)}
-                                    />
-                                  </div>
-                                </AccordionContent>
-                              </AccordionItem>
-                            </Accordion>
 
-                            <DetaisOrder
-                              observacoes={observacoes}
-                              formaDePagamento={formaDePagamento}
-                              prazoEntrega={entrega}
-                              frete={Number(frete)}
-                              total={Number(total)}
+                            <DetailsOrder
+                              getTotalValue={handleTotalPropostal}
+                              propostalValue={order?.totalValue}
                             />
                           </div>
                           <Button
                             className={`${order.orderStatus >= 2 && "hidden"}`}
-                            onClick={() => handlePushProposal(order.orderId)}
+                            onClick={() => handlePushProposal(order)}
                           >
                             Enviar proposta
                           </Button>
