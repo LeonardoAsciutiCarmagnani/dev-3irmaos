@@ -12,28 +12,27 @@ import {
   PackageSearchIcon,
   ScrollTextIcon,
 } from "lucide-react";
-import React, { useEffect } from "react";
+import React from "react";
 import { useState } from "react";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 
 const Sidebar = () => {
   const [open, setOpen] = useState(true);
-  const navigate = useNavigate();
   const { user } = useAuthStore();
-  const location = useLocation();
   const { search } = useLocation();
+
   const currentCat = new URLSearchParams(search).get("c") || "";
 
   const defaultMenuItems = [
-    { label: "Tela inicial", path: "/", icon: <Home className="size-6" /> },
+    { label: "Home", path: "/", icon: <Home className="size-6" /> },
   ];
 
   const clientMenuItems = [
-    { label: "Tela inicial", path: "/", icon: <Home className="size-6" /> },
+    { label: "Home", path: "/", icon: <Home className="size-6" /> },
   ];
 
   const adminMenuItems = [
-    { label: "Tela inicial", path: "/", icon: <Home className="size-6" /> },
+    { label: "Home", path: "/", icon: <Home className="size-6" /> },
     {
       label: "Orçamentos",
       path: "/adm/pedidos-e-orçamentos",
@@ -49,10 +48,6 @@ const Sidebar = () => {
     return user.role === "admin" ? adminMenuItems : clientMenuItems;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
-
-  useEffect(() => {
-    setOpen(false);
-  }, [location]);
 
   const categorias = [
     "Portas, Vitrais e Grades Antigas",
@@ -88,14 +83,21 @@ const Sidebar = () => {
 
         <div className="flex flex-col">
           {menuItems.map((item) => (
-            <div
+            <NavLink
               key={item.label}
-              className="flex font-semibold items-center p-2 hover:bg-[#c9c6c6] hover:text-white cursor-pointer text-[0.97rem] text-slate-700"
-              onClick={() => navigate(item.path)}
+              to={item.path}
+              end={item.path === "/"}
+              className={({ isActive }) =>
+                `flex items-center p-2 text-[0.97rem] transition-colors ${
+                  isActive
+                    ? "bg-red-900 text-white font-semibold"
+                    : "text-slate-700 hover:bg-red-900 hover:text-white"
+                }`
+              }
             >
               {item.icon}
               {open && <span className="ml-2">{item.label}</span>}
-            </div>
+            </NavLink>
           ))}
         </div>
 
@@ -131,7 +133,7 @@ const Sidebar = () => {
                       <NavLink
                         key={cat}
                         to={{
-                          pathname: "/",
+                          pathname: "/produtos",
                           search: `?c=${encodeURIComponent(catKey)}`,
                         }}
                         className={() =>
