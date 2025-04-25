@@ -64,7 +64,7 @@ const DetailsOrder = ({
 
   return (
     <div>
-      {user?.role !== "client" && (
+      {user?.role === "client" && (
         <Accordion type="single" collapsible>
           <AccordionItem value="item-1">
             <AccordionTrigger className="text-lg">
@@ -137,10 +137,9 @@ const DetailsOrder = ({
         <div className="flex flex-col space-y-4">
           <div className="flex flex-col items-center justify-between  max-w-full  text-wrap">
             <span className="text-gray-700 font-semibold">Observações:</span>
-            <span className="w-2/3 text-gray-700 text-wrap break-words text-center">
-              {" "}
+            <p className="w-2/4 text-gray-700 text-start whitespace-pre-wrap break-words">
               {description === "" ? "Sem observações" : description}
-            </span>
+            </p>
           </div>
           <div className="flex flex-col items-center justify-between">
             <div className="flex flex-col">

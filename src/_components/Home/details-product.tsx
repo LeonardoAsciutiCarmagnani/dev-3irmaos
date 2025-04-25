@@ -120,7 +120,7 @@ export const DetailsProduct = () => {
 
   return (
     <div className="h-screen ">
-      <div className="flex flex-col  justify-center  items-start p-4 md:p-10 space-y-4 ">
+      <div className="flex flex-col   justify-center  items-start p-4 md:p-10 space-y-4 ">
         <h1 className="font-bold text-xl text-gray-800">Detalhes do produto</h1>
         <div className="flex flex-col md:flex-row gap-4 w-full ">
           <div className="md:w-2/5 ">
@@ -140,7 +140,7 @@ export const DetailsProduct = () => {
             </Carousel>
           </div>
           {/* Responsável por alinhar todos os elementos do lado direito da tela  */}
-          <div className="flex flex-col space-y-4  w-full">
+          <div className="flex flex-col space-y-4  w-full ">
             <div className="flex flex-col">
               <span className="text-xl font-semibold text-gray-700">
                 {product.nome}
@@ -214,7 +214,7 @@ export const DetailsProduct = () => {
               </div>
             </div>
             <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="flex h-24 flex-col items-center md:flex-row md:justify-around space-y-2 ">
+              <div className="flex md:h-24  flex-col items-center md:flex-row md:justify-around space-y-2 ">
                 <div>
                   <label htmlFor="altura">Altura</label>
                   <Input

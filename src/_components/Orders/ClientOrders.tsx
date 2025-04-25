@@ -23,7 +23,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Download, InfoIcon, LoaderCircle } from "lucide-react";
-import Dropzone from "../DropzoneImage/DropzoneImage";
 import {
   collection,
   doc,
@@ -33,9 +32,8 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { db, storage } from "../Utils/FirebaseConfig";
+import { db } from "../Utils/FirebaseConfig";
 import { toast } from "sonner";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import DetailsOrder from "./DetailsOrder/DetailsOrder";
 import { IMaskInput } from "react-imask";
 import { useAuthStore } from "@/context/authContext";
@@ -79,7 +77,7 @@ interface IPaymentMethod {
   id: string;
   name: string;
 }
-interface DetailsPropostalProps {
+export interface DetailsPropostalProps {
   obs: string;
   payment: string;
   time: string;
@@ -99,7 +97,7 @@ export interface Order {
   imagesUrls: string[];
 }
 
-type OrderStatusType = 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+type OrderStatusType = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 
 const ClientOrdersTable = () => {
   const { user } = useAuthStore();
@@ -112,7 +110,6 @@ const ClientOrdersTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState(0); // zero igual a todos os status
   const [showCardOrder, setShowCardOrder] = useState<number | null>(null);
-  const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [sendPropostal, setSendPropostal] = useState(false);
 
   /* Detalhes do orçamento */
@@ -190,74 +187,6 @@ const ClientOrdersTable = () => {
     return { obs, payment, time, delivery };
   }
 
-  function handleChangePrice(
-    orderId: number,
-    productId: string,
-    newPrice: number
-  ) {
-    setData((prevData) => {
-      // Atualiza os produtos com novo preço e recalcula totalValue por produto
-      const updatedData = prevData.map((order) => {
-        if (order.orderId !== orderId) return order;
-
-        const updatedProducts = order.products.map((product) => {
-          if (product.selectedVariation.id === productId) {
-            const quantidade = product.quantidade || 1;
-            return {
-              ...product,
-              preco: newPrice,
-              totalValue: newPrice * quantidade,
-            };
-          }
-
-          // Garante que totalValue seja sempre coerente
-          const preco = product.preco || 0;
-          const quantidade = product.quantidade || 1;
-          return {
-            ...product,
-            totalValue: preco * quantidade,
-          };
-        });
-
-        // Calcula o total do pedido com base nos totalValue dos produtos
-        const orderTotal = updatedProducts.reduce((sum, product) => {
-          return sum + (product.totalValue || 0);
-        }, 0);
-
-        return {
-          ...order,
-          products: updatedProducts,
-          totalValue: orderTotal,
-        };
-      });
-
-      return updatedData;
-    });
-  }
-
-  function handleImagesSelected(files: File[]) {
-    setSelectedImages(Array.from(files));
-  }
-
-  async function UploadImagesForStorage(
-    images: FileList | File[],
-    orderId: number
-  ): Promise<string[]> {
-    if (!images || images.length === 0) return [];
-
-    const uploadPromises = Array.from(images).map(async (file) => {
-      const uniqueFileName = `${Date.now()}_${file.name}_order_${orderId}`;
-      const storagePath = `imagens/${uniqueFileName}`;
-      const storageRef = ref(storage, storagePath);
-
-      await uploadBytes(storageRef, file);
-      const downloadURL = await getDownloadURL(storageRef);
-      return downloadURL;
-    });
-
-    return Promise.all(uploadPromises); // retorna todas as URLs das imagens
-  }
-
   async function handleUpdatedStatusOrder(
     orderToPush: Order,
     newOrderStatus: number
@@ -286,11 +215,6 @@ const ClientOrdersTable = () => {
 
       if (!orderDocRef) return;
 
-      const imagesUrls = await UploadImagesForStorage(
-        selectedImages,
-        orderToPush.orderId
-      );
-
       const updatedPriceInProduct = orderToPush.products.map((product) => ({
         ...product,
         preco: product.preco,
@@ -299,7 +223,6 @@ const ClientOrdersTable = () => {
       await updateDoc(orderDocRef, {
         orderStatus: newOrderStatus,
         products: updatedPriceInProduct,
-        imagesUrls: imagesUrls,
         detailsPropostal: { obs, payment, time, delivery },
         totalValue: orderToPush.totalValue,
       });
@@ -331,7 +254,7 @@ const ClientOrdersTable = () => {
 
   const selectedOptions = [
     { id: 1, option: "Orçamento", value: 1 },
-    { id: 2, option: "Proposta enviada", value: 2 },
+    { id: 2, option: "Proposta recebida", value: 2 },
     { id: 3, option: "Proposta recusada", value: 3 },
     { id: 4, option: "Aprovado", value: 4 },
     { id: 5, option: "Pedido em produção", value: 5 },
@@ -342,6 +265,7 @@ const ClientOrdersTable = () => {
   ];
 
   const statusMap: Record<OrderStatusType, { label: string; color: string }> = {
+    1: { label: "Orçamento enviado", color: "bg-orange-300" },
     2: { label: "Proposta recebida", color: "bg-amber-500" },
     3: { label: "Proposta recusada", color: "bg-red-500" },
     4: { label: "Proposta aceita", color: "bg-emerald-500" },
@@ -481,7 +405,7 @@ const ClientOrdersTable = () => {
                               <td className="px-4 py-3">{order.client.name}</td>
                               <td className="px-4 py-3">
                                 <div
-                                  className={`w-fit rounded-full p-1 text-white font-semibold text-xs hover:cursor-pointer ${
+                                  className={`w-fit rounded-lg p-2 text-white font-semibold text-xs hover:cursor-pointer ${
                                     status?.color || "bg-zinc-300"
                                   }`}
                                 >
@@ -491,10 +415,10 @@ const ClientOrdersTable = () => {
                             </tr>
                           </DialogTrigger>
 
-                          <DialogContent className="flex flex-col border bg-gray-100 w-2/3 h-[80vh] overflow-y-scroll">
+                          <DialogContent className="flex flex-col border bg-gray-100 md:w-2/3 h-[80vh] overflow-y-scroll">
                             <DialogHeader>
                               <div className="flex justify-between items-center">
-                                <DialogTitle>Detalhes do pedido</DialogTitle>
+                                <DialogTitle>Detalhes</DialogTitle>
                               </div>
                               <div className="flex justify-between w-full bg-gray-200 p-2 rounded-xl items-center shadow-md">
                                 <div className="flex flex-col w-full">
@@ -510,8 +434,9 @@ const ClientOrdersTable = () => {
                                         client: order.client,
                                         products: order.products,
                                         imagesUrls: order.imagesUrls,
-                                        details: order.detailsPropostal,
-                                        address: order.deliveryAddress,
+                                        detailsPropostal:
+                                          order.detailsPropostal,
+                                        deliveryAddress: order.deliveryAddress,
                                         totalValue: order.totalValue,
                                       }}
                                     >
@@ -524,38 +449,91 @@ const ClientOrdersTable = () => {
                                       </Button>
                                     </Link>
                                   </div>
-                                  <div className=" flex flex-col justify-between">
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        Cliente:
-                                      </span>
-                                      <span className="text-lg text-gray-700 ">
-                                        {order.client.name}
-                                      </span>
+                                  <div className="flex justify-around items-start ">
+                                    <div className=" flex flex-col justify-between">
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Cliente:
+                                        </span>
+                                        <span className="text-lg text-gray-700 ">
+                                          {order.client.name}
+                                        </span>
+                                      </div>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Email:
+                                        </span>
+                                        <span className="text-lg text-gray-700 truncate">
+                                          {order.client.email}
+                                        </span>
+                                      </div>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Telefone:
+                                        </span>
+                                        <span className="text-lg  text-gray-700 ">
+                                          {order.client.phone}
+                                        </span>
+                                      </div>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Data:{" "}
+                                        </span>
+                                        <span className="  text-gray-700">
+                                          {order.createdAt}
+                                        </span>
+                                      </div>
                                     </div>
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        Email:
-                                      </span>
-                                      <span className="text-lg text-gray-700 ">
-                                        {order.client.email}
-                                      </span>
-                                    </div>
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        Telefone:
-                                      </span>
-                                      <span className="text-lg  text-gray-700 ">
-                                        {order.client.phone}
-                                      </span>
-                                    </div>
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        Data:{" "}
-                                      </span>
-                                      <span className="  text-gray-700">
-                                        {order.createdAt}
-                                      </span>
+                                    <div className=" flex flex-col justify-between">
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Rua:
+                                        </span>
+                                        <span className="text-lg text-gray-700 ">
+                                          {order.deliveryAddress.street}
+                                        </span>
+                                      </div>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Numero:
+                                        </span>
+                                        <span className="text-lg text-gray-700 ">
+                                          {order.deliveryAddress.number}
+                                        </span>
+                                      </div>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Bairro:
+                                        </span>
+                                        <span className="text-lg text-gray-700 truncate">
+                                          {order.deliveryAddress.neighborhood}
+                                        </span>
+                                      </div>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Cidade:
+                                        </span>
+                                        <span className="text-lg  text-gray-700 ">
+                                          {order.deliveryAddress.city}
+                                        </span>
+                                      </div>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Estado:{" "}
+                                        </span>
+                                        <span className="  text-gray-700">
+                                          {" "}
+                                          {order.deliveryAddress.state}
+                                        </span>
+                                      </div>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          CEP:
+                                        </span>
+                                        <span className="text-gray-700 text-lg">
+                                          {order.deliveryAddress.cep}
+                                        </span>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
@@ -565,7 +543,7 @@ const ClientOrdersTable = () => {
                               <div className="font-semibold text-lg">
                                 Produtos do orçamento
                               </div>
-                              <div className="p-2 max-h-50 w-2/3 overflow-y-scroll space-y-2">
+                              <div className="p-2 max-h-50 md:w-2/3 overflow-y-scroll space-y-2">
                                 {order.products &&
                                   order.products.map((item) => {
                                     return (
@@ -574,7 +552,7 @@ const ClientOrdersTable = () => {
                                           key={item.id}
                                           className="flex flex-col  rounded-lg bg-gray-200 w-full justify-around"
                                         >
-                                          <div className="flex p-2 gap-2 w-full">
+                                          <div className="flex flex-col md:flex-row p-2 gap-2 w-full">
                                             <div className="flex-1">
                                               <span className="flex-1 text-lg text-gray-700">
                                                 {item.nome}
@@ -613,19 +591,8 @@ const ClientOrdersTable = () => {
                                                   }}
                                                   value={String(item.preco)}
                                                   unmask={true} // isso faz com que o valor passado seja numérico
-                                                  disabled={
-                                                    order.orderStatus > 1
-                                                  }
-                                                  onAccept={(value: string) => {
-                                                    const precoFloat =
-                                                      parseFloat(value);
-                                                    handleChangePrice(
-                                                      order.orderId,
-                                                      item.selectedVariation.id,
-                                                      precoFloat
-                                                    );
-                                                  }}
-                                                  className="border rounded px-2 py-1 w-[8rem] text-right"
+                                                  disabled
+                                                  className=" rounded px-2 py-1 w-[8rem] text-right"
                                                 />
                                               </div>
                                             </div>
@@ -642,7 +609,7 @@ const ClientOrdersTable = () => {
                                 <h1 className="font-semibold text-lg">
                                   Imagens do produto
                                 </h1>
-                                <div className="flex flex-col gap-2 items-start">
+                                <div className="flex flex-col gap-2 items-start overflow-x-auto">
                                   {order.products.map((item) => {
                                     return (
                                       <div
@@ -677,32 +644,24 @@ const ClientOrdersTable = () => {
                               <h1 className="font-semibold text-lg">
                                 Projeto (imagens ilustrativas)
                               </h1>
-                              {order.orderStatus > 1 ? (
-                                <div className="flex gap-2 overflow-x-scroll py-2">
-                                  {order.imagesUrls &&
-                                  order.imagesUrls.length > 0 ? (
-                                    order.imagesUrls
-                                      .map((image, index) => ({ image, index }))
-                                      .sort((a, b) => b.index - a.index)
-                                      .map(({ image, index }) => (
-                                        <img
-                                          key={index}
-                                          src={image}
-                                          alt="Imagem fornecida pela 3 irmãos"
-                                          className="size-40 rounded-lg hover:scale-105 transition-all duration-300"
-                                        />
-                                      ))
-                                  ) : (
-                                    <span>Nenhuma imagem fornecida</span>
-                                  )}
-                                </div>
-                              ) : (
-                                <>
-                                  <Dropzone
-                                    onFileSelect={handleImagesSelected}
-                                  />
-                                </>
-                              )}
+                              <div className="flex gap-2 overflow-x-auto py-2">
+                                {order.imagesUrls &&
+                                order.imagesUrls.length > 0 ? (
+                                  order.imagesUrls
+                                    .map((image, index) => ({ image, index }))
+                                    .sort((a, b) => b.index - a.index)
+                                    .map(({ image, index }) => (
+                                      <img
+                                        key={index}
+                                        src={image}
+                                        alt="Imagem fornecida pela 3 irmãos"
+                                        className="size-40 rounded-lg hover:scale-105 transition-all duration-300"
+                                      />
+                                    ))
+                                ) : (
+                                  <span>Nenhuma imagem fornecida</span>
+                                )}
+                              </div>
                             </div>
 
                             <div>
@@ -718,10 +677,11 @@ const ClientOrdersTable = () => {
                             <div className="flex items-center justify-center gap-10">
                               <Button
                                 className={`bg-emerald-500 hover:bg-emerald-600 ${
-                                  order.orderStatus >= 3 &&
-                                  order.orderStatus === 4 &&
-                                  "hidden"
-                                } `}
+                                  (order.orderStatus >= 3 &&
+                                    order.orderStatus === 4) ||
+                                  order.orderStatus === 10 ||
+                                  (order.orderStatus === 1 && "hidden")
+                                }  `}
                                 disabled={sendPropostal}
                                 onClick={() =>
                                   handleUpdatedStatusOrder(order, 4)
@@ -738,9 +698,10 @@ const ClientOrdersTable = () => {
                               </Button>
                               <Button
                                 className={`bg-red-500 hover:bg-red-600 ${
-                                  order.orderStatus >= 3 &&
-                                  order.orderStatus === 4 &&
-                                  "hidden"
+                                  (order.orderStatus >= 3 &&
+                                    order.orderStatus === 4) ||
+                                  order.orderStatus === 10 ||
+                                  (order.orderStatus === 1 && "hidden")
                                 } `}
                                 disabled={sendPropostal}
                                 onClick={() =>

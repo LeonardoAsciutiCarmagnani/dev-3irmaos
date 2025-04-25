@@ -336,37 +336,29 @@ const OrdersTable = () => {
 
   async function handlePushProposal(orderToPush: Order) {
     try {
-      setSendPropostal(true);
       console.log("Order to push =>", orderToPush);
-      const collectionRef = collection(db, "budgets");
+      setSendPropostal(true);
+
       const q = query(
-        collectionRef,
+        collection(db, "budgets"),
         where("orderId", "==", orderToPush.orderId)
       );
       const orderData = await getDocs(q);
 
-      if (orderData.empty) {
-        console.log("Pedido não encontrado!");
+      const [firstDoc] = orderData.docs;
+      if (!firstDoc) {
         toast.error("Pedido não encontrado.");
         return;
       }
 
-      let orderDocRef = null;
+      const orderDocRef = doc(db, "budgets", firstDoc.id);
 
-      orderData.forEach((docSnap) => {
-        orderDocRef = doc(db, "budgets", docSnap.id);
-      });
-
-      if (!orderDocRef) return;
-
-      const imagesUrls = await UploadImagesForStorage(
+      const uploadedImages = await UploadImagesForStorage(
         selectedImages,
         orderToPush.orderId
       );
 
-      orderToPush.imagesUrls.map((image) => {
-        imagesUrls.push(image);
-      });
+      const allImages = [...uploadedImages, ...(orderToPush.imagesUrls || [])];
 
       const updatedPriceInProduct = orderToPush.products.map((product) => ({
         ...product,
@@ -376,7 +368,7 @@ const OrdersTable = () => {
       await updateDoc(orderDocRef, {
         orderStatus: 2,
         products: updatedPriceInProduct,
-        imagesUrls: imagesUrls,
+        imagesUrls: allImages,
         detailsPropostal: { obs, payment, time, delivery },
         totalValue: orderToPush.totalValue,
       });
@@ -388,12 +380,13 @@ const OrdersTable = () => {
             : order
         )
       );
-      setSendPropostal(false);
+
       toast.success("Proposta enviada com sucesso!");
     } catch (error) {
-      setSendPropostal(false);
-      console.log("Ocorreu um erro ao tentar atualizar o pedido", error);
+      console.error("Erro ao tentar atualizar o pedido:", error);
       toast.error("Ocorreu um erro ao tentar atualizar o pedido");
+    } finally {
+      setSendPropostal(false);
     }
   }
 
@@ -548,11 +541,15 @@ const OrdersTable = () => {
                             onDoubleClick={() => handleShowCard(order.orderId)}
                           >
                             <td className="px-4 py-3">{order.orderId}</td>
-                            <td className="px-4 py-3">{order.createdAt}</td>
-                            <td className="px-4 py-3">{order.client.name}</td>
+                            <td className="px-2 py-3 text-xs md:text-base">
+                              {order.createdAt}
+                            </td>
+                            <td className="px-4 py-3 text-xs md:text-base">
+                              {order.client.name}
+                            </td>
                             <td className="px-4 py-3">
                               <select
-                                className={`w-fit rounded-full p-1 text-white font-semibold text-xs hover:cursor-pointer ${
+                                className={`w-32  rounded-full p-1 text-white font-semibold text-xs hover:cursor-pointer ${
                                   order.orderStatus === 1
                                     ? "bg-amber-500"
                                     : order.orderStatus === 2
@@ -586,6 +583,7 @@ const OrdersTable = () => {
                                     <option
                                       key={option.id}
                                       value={option.value}
+                                      className="w-fit"
                                     >
                                       {option.option}
                                     </option>
@@ -601,42 +599,97 @@ const OrdersTable = () => {
                               <DialogTitle>Detalhes do pedido</DialogTitle>
                             </div>
                             <div className="flex justify-between w-full bg-gray-200 p-2 rounded-xl items-center shadow-md">
-                              <div>
-                                <span className="text-xl font-bold text-gray-700">
-                                  Pedido {order.orderId}
-                                </span>
-                                <div className=" flex flex-col justify-between">
-                                  <div className="flex gap-2 items-center">
-                                    <span className="font-semibold  text-gray-700">
-                                      Cliente:
-                                    </span>
-                                    <span className="text-lg text-gray-700 ">
-                                      {order.client.name}
-                                    </span>
+                              <div className="flex flex-col w-full">
+                                <div className="flex justify-between  w-full">
+                                  <span className="text-xl font-bold text-gray-700">
+                                    Pedido {order.orderId}
+                                  </span>
+                                </div>
+                                <div className="flex justify-around items-start ">
+                                  <div className=" flex flex-col justify-between">
+                                    <div className="flex gap-2 items-center">
+                                      <span className="font-semibold  text-gray-700">
+                                        Cliente:
+                                      </span>
+                                      <span className="text-lg text-gray-700 ">
+                                        {order.client.name}
+                                      </span>
+                                    </div>
+                                    <div className="flex gap-2 items-center">
+                                      <span className="font-semibold  text-gray-700">
+                                        Email:
+                                      </span>
+                                      <span className="text-lg text-gray-700 truncate">
+                                        {order.client.email}
+                                      </span>
+                                    </div>
+                                    <div className="flex gap-2 items-center">
+                                      <span className="font-semibold  text-gray-700">
+                                        Telefone:
+                                      </span>
+                                      <span className="text-lg  text-gray-700 ">
+                                        {order.client.phone}
+                                      </span>
+                                    </div>
+                                    <div className="flex gap-2 items-center">
+                                      <span className="font-semibold  text-gray-700">
+                                        Data:{" "}
+                                      </span>
+                                      <span className="  text-gray-700">
+                                        {order.createdAt}
+                                      </span>
+                                    </div>
                                   </div>
-                                  <div className="flex gap-2 items-center">
-                                    <span className="font-semibold  text-gray-700">
-                                      Email:
-                                    </span>
-                                    <span className="text-lg text-gray-700 ">
-                                      {order.client.email}
-                                    </span>
-                                  </div>
-                                  <div className="flex gap-2 items-center">
-                                    <span className="font-semibold  text-gray-700">
-                                      Telefone:
-                                    </span>
-                                    <span className="text-lg  text-gray-700 ">
-                                      {order.client.phone}
-                                    </span>
-                                  </div>
-                                  <div className="flex gap-2 items-center">
-                                    <span className="font-semibold  text-gray-700">
-                                      Data:{" "}
-                                    </span>
-                                    <span className="  text-gray-700">
-                                      {order.createdAt}
-                                    </span>
+                                  <div className=" flex flex-col justify-between">
+                                    <div className="flex gap-2 items-center">
+                                      <span className="font-semibold  text-gray-700">
+                                        Rua:
+                                      </span>
+                                      <span className="text-lg text-gray-700 ">
+                                        {order.deliveryAddress.street}
+                                      </span>
+                                    </div>
+                                    <div className="flex gap-2 items-center">
+                                      <span className="font-semibold  text-gray-700">
+                                        Numero:
+                                      </span>
+                                      <span className="text-lg text-gray-700 ">
+                                        {order.deliveryAddress.number}
+                                      </span>
+                                    </div>
+                                    <div className="flex gap-2 items-center">
+                                      <span className="font-semibold  text-gray-700">
+                                        Bairro:
+                                      </span>
+                                      <span className="text-lg text-gray-700 truncate">
+                                        {order.deliveryAddress.neighborhood}
+                                      </span>
+                                    </div>
+                                    <div className="flex gap-2 items-center">
+                                      <span className="font-semibold  text-gray-700">
+                                        Cidade:
+                                      </span>
+                                      <span className="text-lg  text-gray-700 ">
+                                        {order.deliveryAddress.city}
+                                      </span>
+                                    </div>
+                                    <div className="flex gap-2 items-center">
+                                      <span className="font-semibold  text-gray-700">
+                                        Estado:{" "}
+                                      </span>
+                                      <span className="  text-gray-700">
+                                        {" "}
+                                        {order.deliveryAddress.state}
+                                      </span>
+                                    </div>
+                                    <div className="flex gap-2 items-center">
+                                      <span className="font-semibold  text-gray-700">
+                                        CEP:
+                                      </span>
+                                      <span className="text-gray-700 text-lg">
+                                        {order.deliveryAddress.cep}
+                                      </span>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
