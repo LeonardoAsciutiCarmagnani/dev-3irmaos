@@ -21,22 +21,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { InfoIcon, PlusIcon } from "lucide-react";
+import { InfoIcon, LoaderCircle, PlusIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { api } from "@/lib/axios";
-// import { toast } from "sonner";
-// import {
-//   collection,
-//   doc,
-//   getDocs,
-//   onSnapshot,
-//   query,
-//   updateDoc,
-//   where,
-// } from "firebase/firestore";
-
 import Dropzone from "../DropzoneImage/DropzoneImage";
-
 import {
   collection,
   doc,
@@ -50,6 +37,7 @@ import { db, storage } from "../Utils/FirebaseConfig";
 import { toast } from "sonner";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import DetailsOrder from "./DetailsOrder/DetailsOrder";
+import { IMaskInput } from "react-imask";
 
 export interface ProductsInOrderProps {
   id: number;
@@ -89,7 +77,12 @@ interface IPaymentMethod {
   id: string;
   name: string;
 }
-
+interface DetailsPropostalProps {
+  obs: string;
+  payment: string;
+  time: string;
+  delivery: number;
+}
 export interface Order {
   id: number;
   client: IClient;
@@ -100,6 +93,7 @@ export interface Order {
   totalValue: number;
   createdAt: string;
   paymentMethod?: IPaymentMethod;
+  detailsPropostal: DetailsPropostalProps;
   imagesUrls: string[];
 }
 
@@ -119,22 +113,17 @@ const OrdersTable = () => {
   const [statusFilter, setStatusFilter] = useState(0); // zero igual a todos os status
   const [showCardOrder, setShowCardOrder] = useState<number | null>(null);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const [sendPropostal, setSendPropostal] = useState(false);
+
+  /* Detalhes do orçamento */
+  const [obs, setObs] = useState("");
+  const [payment, setPayment] = useState("");
+  const [time, setTime] = useState("");
+  const [delivery, setDelivery] = useState(0);
 
   const navigate = useNavigate();
 
   const lisToUse = filteredData.length > 0 ? filteredData : data;
-
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const response = await api.get("/getOrders");
-        setData(response.data);
-      } catch (error) {
-        console.error("Erro ao buscar pedidos:", error);
-      }
-    };
-    fetchOrders();
-  }, []);
 
   const filterOrders = () => {
     const filtered = data.filter((order) => {
@@ -190,27 +179,17 @@ const OrdersTable = () => {
     getCoreRowModel: getCoreRowModel(),
   });
 
-  // const typeUser = "commom";
-
-  const formattedFrom = date?.from
-    ? format(date.from, "dd/MM/yyyy")
-    : "--/--/----";
-  const formattedTo = date?.to ? format(date.to, "dd/MM/yyyy") : "--/--/----";
-
-  const selectedOptions = [
-    { id: 1, option: "Orçamento", value: 1 },
-    { id: 2, option: "Proposta enviada", value: 2 },
-    { id: 3, option: "Proposta recusada", value: 3 },
-    { id: 4, option: "Aprovado", value: 4 },
-    { id: 5, option: "Pedido em produção", value: 5 },
-    { id: 6, option: "Faturado", value: 6 },
-    { id: 7, option: "Despachado", value: 7 },
-    { id: 8, option: "Pedido Concluído", value: 8 },
-    { id: 9, option: "Cancelado", value: 9 },
-  ];
-
-  function handleTotalPropostal(total: number) {
-    return total;
+  function handleAllData(
+    obs: string,
+    payment: string,
+    time: string,
+    delivery: number
+  ) {
+    setObs(obs);
+    setPayment(payment);
+    setTime(time);
+    setDelivery(delivery);
+    return { obs, payment, time, delivery };
   }
 
   async function handleStatusChange(id: number, newStatus: number) {
@@ -320,6 +299,8 @@ const OrdersTable = () => {
 
   async function handlePushProposal(orderToPush: Order) {
     try {
+      setSendPropostal(true);
+      console.log("Order to push =>", orderToPush);
       const collectionRef = collection(db, "budgets");
       const q = query(
         collectionRef,
@@ -346,9 +327,16 @@ const OrdersTable = () => {
         orderToPush.orderId
       );
 
+      const updatedPriceInProduct = orderToPush.products.map((product) => ({
+        ...product,
+        preco: product.preco,
+      }));
+
       await updateDoc(orderDocRef, {
         orderStatus: 2,
+        products: updatedPriceInProduct,
         imagesUrls: imagesUrls,
+        detailsPropostal: { obs, payment, time, delivery },
         totalValue: orderToPush.totalValue,
       });
 
@@ -359,9 +347,10 @@ const OrdersTable = () => {
             : order
         )
       );
-
+      setSendPropostal(false);
       toast.success("Proposta enviada com sucesso!");
     } catch (error) {
+      setSendPropostal(false);
       console.log("Ocorreu um erro ao tentar atualizar o pedido", error);
       toast.error("Ocorreu um erro ao tentar atualizar o pedido");
     }
@@ -370,6 +359,24 @@ const OrdersTable = () => {
   function handleShowCard(orderId: number) {
     setShowCardOrder(orderId);
   }
+
+  const formattedFrom = date?.from
+    ? format(date.from, "dd/MM/yyyy")
+    : "--/--/----";
+  const formattedTo = date?.to ? format(date.to, "dd/MM/yyyy") : "--/--/----";
+
+  const selectedOptions = [
+    { id: 1, option: "Orçamento", value: 1 },
+    { id: 2, option: "Proposta enviada", value: 2 },
+    { id: 3, option: "Proposta recusada", value: 3 },
+    { id: 4, option: "Proposta aceita", value: 4 },
+    { id: 5, option: "Aprovado", value: 5 },
+    { id: 6, option: "Pedido em produção", value: 6 },
+    { id: 7, option: "Faturado", value: 7 },
+    { id: 8, option: "Despachado", value: 8 },
+    { id: 9, option: "Pedido Concluído", value: 9 },
+    { id: 10, option: "Cancelado", value: 10 },
+  ];
 
   useEffect(() => {
     const collectionRef = collection(db, "budgets");
@@ -506,12 +513,24 @@ const OrdersTable = () => {
                               <select
                                 className={`w-fit rounded-full p-1 text-white font-semibold text-xs hover:cursor-pointer ${
                                   order.orderStatus === 1
-                                    ? "bg-orange-500"
+                                    ? "bg-amber-500"
                                     : order.orderStatus === 2
-                                    ? "bg-green-500"
+                                    ? "bg-amber-500"
                                     : order.orderStatus === 3
-                                    ? "bg-gray-500"
-                                    : ""
+                                    ? "bg-red-500"
+                                    : order.orderStatus === 4
+                                    ? "bg-emerald-500"
+                                    : order.orderStatus === 5
+                                    ? "bg-emerald-500"
+                                    : order.orderStatus === 6
+                                    ? "bg-yellow-500"
+                                    : order.orderStatus === 7
+                                    ? "bg-blue-500"
+                                    : order.orderStatus === 8
+                                    ? "bg-purple-500"
+                                    : order.orderStatus === 9
+                                    ? "bg-green-600"
+                                    : order.orderStatus === 10 && "bg-gray-500"
                                 }`}
                                 value={order.orderStatus}
                                 onChange={(e) =>
@@ -586,7 +605,7 @@ const OrdersTable = () => {
                             <div className="font-semibold text-lg">
                               Produtos do orçamento
                             </div>
-                            <div className="p-2 max-h-50 w-1/2 overflow-y-scroll space-y-2">
+                            <div className="p-2 max-h-50 w-2/3 overflow-y-scroll space-y-2">
                               {order.products &&
                                 order.products.map((item) => {
                                   return (
@@ -610,25 +629,40 @@ const OrdersTable = () => {
                                               </span>
                                             </div>
                                           </div>
-                                          <div className="flex gap-2 w-[9rem] items-center">
+                                          <div className="flex gap-2 w-[12rem] items-center">
                                             <div className="border-r border-gray-700 h-4" />
-                                            <span className="text-lg text-gray-700">
-                                              {item.quantidade} x{" "}
-                                              <input
-                                                type="number"
-                                                value={item.preco}
-                                                onChange={(e) =>
+                                            <div className="flex  items-center">
+                                              <span className="text-lg text-gray-700">
+                                                {item.quantidade} x{" "}
+                                              </span>
+                                              <IMaskInput
+                                                mask="R$ num"
+                                                blocks={{
+                                                  num: {
+                                                    mask: Number,
+                                                    scale: 2,
+                                                    thousandsSeparator: ".",
+                                                    padFractionalZeros: true,
+                                                    normalizeZeros: true,
+                                                    radix: ",",
+                                                    mapToRadix: ["."],
+                                                  },
+                                                }}
+                                                value={String(item.preco)}
+                                                unmask={true} // isso faz com que o valor passado seja numérico
+                                                disabled={order.orderStatus > 1}
+                                                onAccept={(value: string) => {
+                                                  const precoFloat =
+                                                    parseFloat(value);
                                                   handleChangePrice(
                                                     order.orderId,
                                                     item.selectedVariation.id,
-                                                    parseFloat(e.target.value)
-                                                  )
-                                                }
-                                                className="border rounded px-2 py-1 w-[6rem] text-right"
-                                                min={0}
-                                                step={0.01}
+                                                    precoFloat
+                                                  );
+                                                }}
+                                                className="border rounded px-2 py-1 w-[8rem] text-right"
                                               />
-                                            </span>
+                                            </div>
                                           </div>
                                         </div>
                                       </div>
@@ -703,15 +737,25 @@ const OrdersTable = () => {
                             {/* Inputs para alteração das informações dinâmicas da proposta */}
 
                             <DetailsOrder
-                              getTotalValue={handleTotalPropostal}
+                              statusOrder={order.orderStatus}
+                              detailsPropostal={order.detailsPropostal}
+                              getAllData={handleAllData}
                               propostalValue={order?.totalValue}
                             />
                           </div>
                           <Button
-                            className={`${order.orderStatus >= 2 && "hidden"}`}
+                            className={`${order.orderStatus >= 2 && "hidden"} `}
+                            disabled={sendPropostal}
                             onClick={() => handlePushProposal(order)}
                           >
-                            Enviar proposta
+                            {sendPropostal ? (
+                              <>
+                                <LoaderCircle className={`animate-spin`} />
+                                Enviando...
+                              </>
+                            ) : (
+                              "Enviar proposta"
+                            )}
                           </Button>
                         </DialogContent>
                       </Dialog>
@@ -719,9 +763,16 @@ const OrdersTable = () => {
               </tbody>
             </>
           ) : (
-            <span className="p-2 font-semibold text-gray-700">
-              Nenhum pedido encontrado
-            </span>
+            <tbody>
+              <tr>
+                <td
+                  colSpan={999}
+                  className="p-2 text-center font-semibold text-gray-700"
+                >
+                  Nenhum pedido encontrado
+                </td>
+              </tr>
+            </tbody>
           )}
         </table>
       </div>
