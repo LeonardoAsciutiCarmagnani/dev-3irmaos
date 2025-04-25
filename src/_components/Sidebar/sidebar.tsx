@@ -14,25 +14,25 @@ import {
 } from "lucide-react";
 import React from "react";
 import { useState } from "react";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 
 const Sidebar = () => {
   const [open, setOpen] = useState(true);
-  const navigate = useNavigate();
   const { user } = useAuthStore();
   const { search } = useLocation();
+
   const currentCat = new URLSearchParams(search).get("c") || "";
 
   const defaultMenuItems = [
-    { label: "Tela inicial", path: "/", icon: <Home className="size-6" /> },
+    { label: "Home", path: "/", icon: <Home className="size-6" /> },
   ];
 
   const clientMenuItems = [
-    { label: "Tela inicial", path: "/", icon: <Home className="size-6" /> },
+    { label: "Home", path: "/", icon: <Home className="size-6" /> },
   ];
 
   const adminMenuItems = [
-    { label: "Tela inicial", path: "/", icon: <Home className="size-6" /> },
+    { label: "Home", path: "/", icon: <Home className="size-6" /> },
     {
       label: "Orçamentos",
       path: "/adm/pedidos-e-orçamentos",
@@ -83,14 +83,21 @@ const Sidebar = () => {
 
         <div className="flex flex-col">
           {menuItems.map((item) => (
-            <div
+            <NavLink
               key={item.label}
-              className="flex font-bold items-center p-2 hover:bg-red-900 hover:text-white cursor-pointer text-[0.97rem] text-gray-700"
-              onClick={() => navigate(item.path)}
+              to={item.path}
+              end={item.path === "/"}
+              className={({ isActive }) =>
+                `flex items-center p-2 text-[0.97rem] transition-colors ${
+                  isActive
+                    ? "bg-red-900 text-white font-semibold"
+                    : "text-slate-700 hover:bg-red-900 hover:text-white"
+                }`
+              }
             >
               {item.icon}
               {open && <span className="ml-2">{item.label}</span>}
-            </div>
+            </NavLink>
           ))}
         </div>
 
@@ -104,19 +111,19 @@ const Sidebar = () => {
           <AccordionItem value="produtos" className="rounded-none">
             <AccordionTrigger
               className="
-                flex items-center p-2 cursor-pointer
+                flex items-center p-1.5 cursor-pointer
                 hover:bg-red-900 hover:text-white
-                data-[state=open]:bg-red-900 data-[state=open]:shadow-sm shadow-gray-900 data-[state=open]:text-white
+                data-[state=open]:bg-red-900 text-slate-700 data-[state=open]:text-white data-[state=open]:shadow-sm shadow-gray-500 
                 rounded-none
               "
             >
               <PackageSearchIcon className="size-6 transform data-[state=open]:rotate-none" />
               {open && (
-                <span className="text-[0.97rem] font-bold">Produtos</span>
+                <span className="text-[0.97rem] font-semibold">Produtos</span>
               )}
             </AccordionTrigger>
             {open && (
-              <AccordionContent className="pt-1 pb-2 text-xs border-b-3">
+              <AccordionContent className="pt-1 pb-2 text-xs border-b-5 border-outset">
                 <ul className="space-y-0.5">
                   {categorias.map((cat) => {
                     const catKey = cat.toLowerCase();
@@ -126,14 +133,14 @@ const Sidebar = () => {
                       <NavLink
                         key={cat}
                         to={{
-                          pathname: "/",
+                          pathname: "/produtos",
                           search: `?c=${encodeURIComponent(catKey)}`,
                         }}
                         className={() =>
                           `block px-2 py-1 transition-colors pl-2 text-gray-700 ${
                             isCatActive
-                              ? "bg-[#D3D3D3] text-gray-700 font-bold"
-                              : "hover:bg-[#D3D3D3] hover:text-gray-700 hover:underline font-semibold"
+                              ? "bg-gray-200 text-red-900 font-bold"
+                              : "hover:bg-gray-200 hover:text-slate-800 hover:underline font-semibold"
                           }`
                         }
                       >

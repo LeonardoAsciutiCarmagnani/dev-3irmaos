@@ -10,7 +10,7 @@ import { productsContext } from "@/context/productsContext";
 import {
   CircleUserIcon,
   FileBoxIcon,
-  MenuIcon,
+  HomeIcon,
   ScrollTextIcon,
   Trash2,
 } from "lucide-react";
@@ -27,8 +27,10 @@ const Header = () => {
 
   return (
     <div className="flex justify-between md:justify-around px-2 items-center border-b border-gray-200">
-      <div className="flex items-center justify-around">
-        <MenuIcon className="hover:cursor-pointer md:hidden flex" size={30} />
+      <div className="flex items-center justify-evenly">
+        <Link to="/" className="flex md:hidden">
+          <HomeIcon className="font-bold text-red-900" />
+        </Link>
         <img src="/src/assets/logo.png" alt="3 Irmãos" className="w-[60%]" />
       </div>
       <div className="flex items-end justify-evenly gap-x-8 p-1 w-[8rem]">

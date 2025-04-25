@@ -7,7 +7,7 @@ const Loader = () => {
         visible={true}
         height="80"
         width="80"
-        color="oklch(27.9% 0.041 260.031)"
+        color="oklch(39.6% 0.141 25.723)"
         ariaLabel="puff-loading"
         wrapperStyle={{}}
         wrapperClass=""

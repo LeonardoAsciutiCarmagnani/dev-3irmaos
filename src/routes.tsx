@@ -1,11 +1,12 @@
 import { createBrowserRouter } from "react-router-dom";
 import LayoutPage from "./_components/Layout/layout";
-import HomePage from "./pages/home";
+import ProductsPage from "./pages/Products";
 import DetailsProduct from "./_components/Home/details-product";
 import { CheckoutPage } from "./pages/Checkout";
 import Orders from "./pages/Orders";
 import AuthenticatedRoute from "./_components/ProtectedRoutes/AuthenticatedRoute";
 import LoginPage from "./pages/Login";
+import HomePage from "./_components/Home/index";
 import { PDFPedido } from "./_components/OrderPDF/OrderPDF";
 
 export const routes = createBrowserRouter([
@@ -18,6 +19,14 @@ export const routes = createBrowserRouter([
     element: (
       <LayoutPage>
         <HomePage />
+      </LayoutPage>
+    ),
+  },
+  {
+    path: "/produtos",
+    element: (
+      <LayoutPage>
+        <ProductsPage />
       </LayoutPage>
     ),
   },
