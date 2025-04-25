@@ -8,7 +8,7 @@ const OrdersPage = () => {
   console.log(user);
   return (
     <div className="h-full w-full bg-gray-50 items-center justify-center md:p-2">
-      {user?.role !== "client" ? <Orders /> : <ClientOrdersTable />}
+      {user?.role === "client" ? <Orders /> : <ClientOrdersTable />}
     </div>
   );
 };

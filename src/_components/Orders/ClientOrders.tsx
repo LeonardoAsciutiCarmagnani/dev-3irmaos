@@ -22,7 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { InfoIcon, LoaderCircle } from "lucide-react";
+import { Download, InfoIcon, LoaderCircle } from "lucide-react";
 import Dropzone from "../DropzoneImage/DropzoneImage";
 import {
   collection,
@@ -495,27 +495,35 @@ const ClientOrdersTable = () => {
                             <DialogHeader>
                               <div className="flex justify-between items-center">
                                 <DialogTitle>Detalhes do pedido</DialogTitle>
-                                <Link
-                                  to={"/imprimir"}
-                                  state={{
-                                    id: order.orderId,
-                                    createdAt: order.createdAt,
-                                    client: order.client,
-                                    products: order.products,
-                                    imagesUrls: order.imagesUrls,
-                                    details: order.detailsPropostal,
-                                    address: order.deliveryAddress,
-                                    totalValue: order.totalValue,
-                                  }}
-                                >
-                                  <Button>Imprimir</Button>
-                                </Link>
                               </div>
                               <div className="flex justify-between w-full bg-gray-200 p-2 rounded-xl items-center shadow-md">
-                                <div>
-                                  <span className="text-xl font-bold text-gray-700">
-                                    Pedido {order.orderId}
-                                  </span>
+                                <div className="flex flex-col w-full">
+                                  <div className="flex justify-between  w-full">
+                                    <span className="text-xl font-bold text-gray-700">
+                                      Pedido {order.orderId}
+                                    </span>
+                                    <Link
+                                      to={"/imprimir"}
+                                      state={{
+                                        id: order.orderId,
+                                        createdAt: order.createdAt,
+                                        client: order.client,
+                                        products: order.products,
+                                        imagesUrls: order.imagesUrls,
+                                        details: order.detailsPropostal,
+                                        address: order.deliveryAddress,
+                                        totalValue: order.totalValue,
+                                      }}
+                                    >
+                                      <Button
+                                        variant={"ghost"}
+                                        className="font-semibold text-red-800 hover:text-red-900"
+                                      >
+                                        Imprimir PDF
+                                        <Download className="size-5" />
+                                      </Button>
+                                    </Link>
+                                  </div>
                                   <div className=" flex flex-col justify-between">
                                     <div className="flex gap-2 items-center">
                                       <span className="font-semibold  text-gray-700">
@@ -670,21 +678,24 @@ const ClientOrdersTable = () => {
                                 Projeto (imagens ilustrativas)
                               </h1>
                               {order.orderStatus > 1 ? (
-                                <>
+                                <div className="flex gap-2 overflow-x-scroll py-2">
                                   {order.imagesUrls &&
                                   order.imagesUrls.length > 0 ? (
-                                    order.imagesUrls.map((url, index) => (
-                                      <img
-                                        key={index}
-                                        src={url}
-                                        alt="Imagem fornecida pela 3 irmãos"
-                                        className="size-40 rounded-lg hover:scale-105 transition-all duration-300"
-                                      />
-                                    ))
+                                    order.imagesUrls
+                                      .map((image, index) => ({ image, index }))
+                                      .sort((a, b) => b.index - a.index)
+                                      .map(({ image, index }) => (
+                                        <img
+                                          key={index}
+                                          src={image}
+                                          alt="Imagem fornecida pela 3 irmãos"
+                                          className="size-40 rounded-lg hover:scale-105 transition-all duration-300"
+                                        />
+                                      ))
                                   ) : (
                                     <span>Nenhuma imagem fornecida</span>
                                   )}
-                                </>
+                                </div>
                               ) : (
                                 <>
                                   <Dropzone

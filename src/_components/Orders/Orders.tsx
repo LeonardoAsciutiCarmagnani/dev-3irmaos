@@ -35,7 +35,13 @@ import {
 } from "firebase/firestore";
 import { db, storage } from "../Utils/FirebaseConfig";
 import { toast } from "sonner";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import {
+  deleteObject,
+  getDownloadURL,
+  listAll,
+  ref,
+  uploadBytes,
+} from "firebase/storage";
 import DetailsOrder from "./DetailsOrder/DetailsOrder";
 import { IMaskInput } from "react-imask";
 
@@ -195,6 +201,7 @@ const OrdersTable = () => {
   async function handleStatusChange(id: number, newStatus: number) {
     console.log("Novo status => ", newStatus);
     console.log("Id do orçamento => ", id);
+
     try {
       const collectionRef = collection(db, "budgets");
       const q = query(collectionRef, where("orderId", "==", id));
@@ -213,6 +220,36 @@ const OrdersTable = () => {
       });
 
       if (!orderDocRef) return;
+
+      if (newStatus === 10) {
+        const listRef = ref(storage, "imagens/");
+
+        try {
+          const response = await listAll(listRef);
+
+          const imagesToDelete = response.items.filter((item) =>
+            item.name.endsWith(`order_${id}`)
+          );
+
+          console.log("Imagens para exclusão => ", imagesToDelete);
+
+          await Promise.all(
+            imagesToDelete.map(async (item) => {
+              await deleteObject(item);
+              console.log(`Imagem deletada: ${item.fullPath}`);
+            })
+          );
+
+          await updateDoc(orderDocRef, {
+            imagesUrls: [],
+          });
+
+          console.log(`Todas as imagens do orçamento ${id} foram deletadas.`);
+        } catch (error) {
+          console.log("Erro ao excluir imagens do storage:", error);
+          toast.error("Erro ao excluir imagens do storage.");
+        }
+      }
 
       await updateDoc(orderDocRef, {
         orderStatus: newStatus,
@@ -326,6 +363,10 @@ const OrdersTable = () => {
         selectedImages,
         orderToPush.orderId
       );
+
+      orderToPush.imagesUrls.map((image) => {
+        imagesUrls.push(image);
+      });
 
       const updatedPriceInProduct = orderToPush.products.map((product) => ({
         ...product,
@@ -714,22 +755,35 @@ const OrdersTable = () => {
                               <>
                                 {order.imagesUrls &&
                                 order.imagesUrls.length > 0 ? (
-                                  order.imagesUrls.map((url, index) => (
-                                    <img
-                                      key={index}
-                                      src={url}
-                                      alt="Imagem fornecida pela 3 irmãos"
-                                      className="size-32 rounded-lg hover:scale-105 transition-all duration-300"
-                                    />
-                                  ))
+                                  <div className="flex gap-2">
+                                    {order.imagesUrls.map((url, index) => (
+                                      <img
+                                        key={index}
+                                        src={url}
+                                        alt="Imagem fornecida pela 3 irmãos"
+                                        className="size-32 rounded-lg hover:scale-105 transition-all duration-300"
+                                      />
+                                    ))}
+                                  </div>
                                 ) : (
                                   <span>Nenhuma imagem fornecida</span>
                                 )}
                               </>
                             ) : (
-                              <>
+                              <div className="flex flex-col space-y-3">
+                                <div className="flex gap-2">
+                                  {order.imagesUrls &&
+                                    order.imagesUrls.map((image, index) => (
+                                      <img
+                                        key={index}
+                                        src={image}
+                                        alt="Imagem fornecida pela 3 irmãos"
+                                        className="size-32 rounded-lg hover:scale-105 transition-all duration-300"
+                                      />
+                                    ))}
+                                </div>
                                 <Dropzone onFileSelect={handleImagesSelected} />
-                              </>
+                              </div>
                             )}
                           </div>
 
