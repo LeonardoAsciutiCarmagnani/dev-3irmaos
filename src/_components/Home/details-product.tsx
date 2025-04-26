@@ -55,9 +55,9 @@ export const DetailsProduct = () => {
           quantidade: 1,
         }
       : {
-          altura: 0,
-          comprimento: 0,
-          largura: 0,
+          altura: undefined,
+          comprimento: undefined,
+          largura: undefined,
           quantidade: 1,
         },
   });
@@ -72,9 +72,9 @@ export const DetailsProduct = () => {
       });
     } else {
       reset({
-        altura: 0,
-        comprimento: 0,
-        largura: 0,
+        altura: undefined,
+        comprimento: undefined,
+        largura: undefined,
         quantidade: 1,
       });
     }

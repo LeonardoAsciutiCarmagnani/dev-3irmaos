@@ -422,10 +422,7 @@ const ClientOrdersTable = () => {
                               </div>
                               <div className="flex justify-between w-full bg-gray-200 p-2 rounded-xl items-center shadow-md">
                                 <div className="flex flex-col w-full">
-                                  <div className="flex justify-between  w-full">
-                                    <span className="text-xl font-bold text-gray-700">
-                                      Pedido {order.orderId}
-                                    </span>
+                                  <div className="flex justify-end  w-full">
                                     <Link
                                       to={"/imprimir"}
                                       state={{
@@ -451,6 +448,9 @@ const ClientOrdersTable = () => {
                                   </div>
                                   <div className="flex justify-around items-start ">
                                     <div className=" flex flex-col justify-between">
+                                      <span className="text-xl font-bold text-gray-700">
+                                        Pedido {order.orderId}
+                                      </span>
                                       <div className="flex gap-2 items-center">
                                         <span className="font-semibold  text-gray-700">
                                           Cliente:
@@ -609,7 +609,7 @@ const ClientOrdersTable = () => {
                                 <h1 className="font-semibold text-lg">
                                   Imagens do produto
                                 </h1>
-                                <div className="flex flex-col gap-2 items-start overflow-x-auto">
+                                <div className="flex flex-col gap-2 items-start overflow-x-auto overflow-y-hidden">
                                   {order.products.map((item) => {
                                     return (
                                       <div

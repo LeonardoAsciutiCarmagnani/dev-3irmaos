@@ -593,20 +593,18 @@ const OrdersTable = () => {
                           </tr>
                         </DialogTrigger>
 
-                        <DialogContent className="flex flex-col border bg-gray-100 w-2/3 h-[80vh] overflow-y-scroll">
+                        <DialogContent className="flex flex-col border bg-gray-100 w-[90vw] h-[80vh] overflow-y-scroll">
                           <DialogHeader>
                             <div className="flex justify-between items-center">
                               <DialogTitle>Detalhes do pedido</DialogTitle>
                             </div>
-                            <div className="flex justify-between w-full bg-gray-200 p-2 rounded-xl items-center shadow-md">
+                            <div className="flex justify-around w-4/5 bg-gray-200 p-2 rounded-xl items-center shadow-md">
                               <div className="flex flex-col w-full">
-                                <div className="flex justify-between  w-full">
-                                  <span className="text-xl font-bold text-gray-700">
-                                    Pedido {order.orderId}
-                                  </span>
-                                </div>
                                 <div className="flex justify-around items-start ">
                                   <div className=" flex flex-col justify-between">
+                                    <span className="text-xl font-bold text-gray-700">
+                                      Pedido {order.orderId}
+                                    </span>
                                     <div className="flex gap-2 items-center">
                                       <span className="font-semibold  text-gray-700">
                                         Cliente:

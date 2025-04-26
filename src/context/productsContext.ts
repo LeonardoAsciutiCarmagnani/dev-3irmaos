@@ -53,13 +53,15 @@ export const productsContext = create<IProductsContext>((set) => ({
     }),
   handlingClearCart: () =>
     set(({ productsInCart }) => {
-      const clearPropsProducts = productsInCart.map((product) => ({
-        ...product,
-        quantity: 0,
-      }));
+      const filteredProducts = productsInCart
+        .map((product) => ({
+          ...product,
+          quantity: 0,
+        }))
+        .filter((product) => product.quantity !== 0); // nesse caso, removeria os de quantity 0
 
       return {
-        productsInCart: clearPropsProducts,
+        productsInCart: filteredProducts,
       };
     }),
 }));

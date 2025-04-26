@@ -345,14 +345,19 @@ export const Checkout = () => {
                 </SelectContent>
               </Select> */}
 
-              <div className="flex items-center justify-between p-2">
-                <span className="text-lg font-semibold">Total</span>
-                <span className="font-bold text-gray-900 text-xl">
-                  {total.toLocaleString("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  })}
-                </span>
+              <div className="flex flex-col items-center justify-between p-2">
+                <div className="flex items-center justify-between p-2 w-full">
+                  <span className="text-lg font-semibold">A partir de: </span>
+                  <span className="font-bold text-gray-900 text-xl">
+                    {total.toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })}
+                  </span>
+                </div>
+                <p className="text-xs font-semibold text-red-900">
+                  Valor sujeito a alteração !
+                </p>
               </div>
 
               <Button
