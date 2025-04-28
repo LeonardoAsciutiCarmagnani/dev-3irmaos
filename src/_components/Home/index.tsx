@@ -1,66 +1,75 @@
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Link } from "react-router-dom";
-import { RouteSelect } from "./route-select";
 
 const Home = () => {
+  // const categorias = [
+  //   "Portas, Vitrais e Grades Antigas",
+  //   "Janelas e Esquadrias",
+  //   "Assoalhos, Deck, Escada e Forro",
+  //   "Portas Duplas, Pivotantes e Internas",
+  //   "Portas Pronta Entrega",
+  //   "Moveis, Painéis e Bancadas",
+  // ];
+
   const categorias = [
-    "Portas, Vitrais e Grades Antigas",
-    "Janelas e Esquadrias",
-    "Assoalhos, Deck, Escada e Forro",
-    "Portas Duplas, Pivotantes e Internas",
-    "Portas Pronta Entrega",
-    "Moveis, Painéis e Bancadas",
+    {
+      label: "Portas, Vitrais e Grades Antigas",
+      imageUrl:
+        "https://hiper-gestao.s3.amazonaws.com/88f64a86-0b27-41c2-beba-076650f8ee25/imagem-de-produto/70dc2c26-abd4-4bae-bf11-b4cb9a57a0c9/original.jpeg",
+    },
+    {
+      label: "Janelas e Esquadrias",
+      imageUrl:
+        "https://hiper-gestao.s3.amazonaws.com/88f64a86-0b27-41c2-beba-076650f8ee25/imagem-de-produto/ba20adcb-37a3-4eb7-8c84-35146f5878a1/original.jpeg",
+    },
+    {
+      label: "Assoalhos, Deck, Escada e Forro",
+      imageUrl:
+        "https://hiper-gestao.s3.amazonaws.com/88f64a86-0b27-41c2-beba-076650f8ee25/imagem-de-produto/3b63fefb-d27b-4c6b-b847-40bcb805a6c3/original.jpeg",
+    },
+    {
+      label: "Portas Duplas, Pivotantes e Internas",
+      imageUrl:
+        "https://hiper-gestao.s3.amazonaws.com/88f64a86-0b27-41c2-beba-076650f8ee25/imagem-de-produto/4e2eb499-669a-4703-aaaa-4f954b5ec039/original.jpeg",
+    },
+    {
+      label: "Portas Pronta Entrega ",
+      imageUrl:
+        "https://hiper-gestao.s3.amazonaws.com/88f64a86-0b27-41c2-beba-076650f8ee25/imagem-de-produto/ecf0a448-f699-43d6-8a3c-a3c4c4cd2e0a/original.jpeg",
+    },
+    {
+      label: "Moveis, Painéis e Bancadas",
+      imageUrl:
+        "https://hiper-gestao.s3.amazonaws.com/88f64a86-0b27-41c2-beba-076650f8ee25/imagem-de-produto/b8611f73-46eb-493e-b576-b4b97f2ef0f9/original.jpeg",
+    },
   ];
 
   return (
-    <div className="md:h-[40rem] h-full w-full px-4 py-2 overflow-y-auto">
-      <div className="mb-2 flex items-center justify-center w-full">
-        {/* <Select>
-          <SelectTrigger className="w-full max-w-xs rounded-xs bg-white shadow-sm shadow-gray-200 ">
-            <SelectValue placeholder="Selecione uma categoria" />
-          </SelectTrigger>
-          <SelectContent>
-            {categorias.map((categoria) => (
-              <SelectItem key={categoria} value={categoria}>
-                {categoria}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select> */}
-        {/* <RouteSelect /> */}
-      </div>
-      <div className="h-full w-full grid grid-cols-2 md:grid-cols-4 gap-x-2 gap-y-1 md:gap-y-4">
-        {categorias.map((categoria) => {
-          return (
-            <div
-              key={categoria}
-              className="h-full w-full shadow-sm shadow-gray-200 border-1 border-gray-800"
+    <div className="h-full w-full px-2 overflow-y-auto md:h-[calc(100vh-54px)] pt-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 md:gap-1">
+        {categorias.map((categoria) => (
+          <div
+            key={categoria.label}
+            className="relative group overflow-hidden rounded-xs shadow-md hover:shadow-xl transition-shadow duration-300"
+          >
+            <Link
+              to={`/produtos?c=${categoria}`}
+              className="block w-full h-full text-center text-gray-800 hover:text-white"
             >
-              <Link
-                to={`/produtos?c=${categoria}`}
-                className="text-gray-700 font-semibold bg-white antialiased text-sm md:text-md line-clamp-2 text-center italic flex flex-col h-full hover:cursor-pointer hover:text-white hover:bg-red-900"
-              >
-                <div className="relative w-full h-full">
-                  <img
-                    className="absolute inset-0 w-full h-full object-cover"
-                    src="https://hiper-gestao.s3.amazonaws.com/88f64a86-0b27-41c2-beba-076650f8ee25/imagem-de-produto/ecf0a448-f699-43d6-8a3c-a3c4c4cd2e0a/original.jpeg"
-                  ></img>
-                </div>
-                <div className="w-full relative z-[200] flex items-center justify-center border-t-1 border-gray-800">
-                  <h1 className="p-1 text-center text-xs md:text-lg line-clamp-1">
-                    {categoria}
-                  </h1>
-                </div>
-              </Link>
-            </div>
-          );
-        })}
+              <div className="relative w-full aspect-square">
+                <img
+                  src={categoria.imageUrl}
+                  alt={categoria.label}
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-800"
+                />
+              </div>
+              <div className="absolute bottom-0 w-full bg-gradient-to-t from-black/80 to-transparent p-2">
+                <h1 className="text-xs md:text-sm lg:text-base font-semibold line-clamp-1 text-white">
+                  {categoria.label}
+                </h1>
+              </div>
+            </Link>
+          </div>
+        ))}
       </div>
     </div>
   );

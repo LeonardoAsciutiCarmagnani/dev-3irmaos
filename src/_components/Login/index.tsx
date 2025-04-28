@@ -1,4 +1,4 @@
-import logo from "@/assets/logo.png";
+// import logo from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -14,7 +14,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -27,7 +26,6 @@ type FormSchema = z.infer<typeof formSchema>;
 
 const Login = () => {
   const { login } = useAuthStore();
-  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<FormSchema>({
@@ -41,7 +39,6 @@ const Login = () => {
   const handleUserLogin = async (data: FormSchema) => {
     try {
       await login(data.email.trim(), data.password.trim());
-      navigate("/");
     } catch (error) {
       console.error("Erro de autenticação:", error);
       toast.error("Login ou senha incorretos.");
@@ -56,11 +53,8 @@ const Login = () => {
         duration={5000}
         closeButton={false}
       />
-      <div className="flex flex-col items-center justify-center h-[60vh] md:w-[45rem] w-fit bg-white border py-4 px-16 shadow-xl">
-        <div>
-          <img src={logo} alt="Logo" />
-        </div>
-        <div className="p-4">
+      <div className="flex flex-col items-center justify-center h-[28vh] w-full">
+        <div className="p-2">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleUserLogin)}>
               <div className="flex flex-col gap-y-4">
@@ -73,7 +67,7 @@ const Login = () => {
                       <FormControl>
                         <Input
                           {...field}
-                          className="border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm"
+                          className="border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm w-full"
                         />
                       </FormControl>
                     </FormItem>
@@ -115,7 +109,7 @@ const Login = () => {
             </form>
           </Form>
         </div>
-        <div className="flex flex-col items-center justify-center">
+        {/* <div className="flex flex-col items-center justify-center">
           <h1 className="font-semibold text-sm">Não possui uma conta?</h1>
           <Link
             to={"/cadastro"}
@@ -123,7 +117,7 @@ const Login = () => {
           >
             Criar agora
           </Link>
-        </div>
+        </div> */}
       </div>
     </>
   );

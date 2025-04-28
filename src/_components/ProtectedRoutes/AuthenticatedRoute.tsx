@@ -1,6 +1,7 @@
 import { useAuthStore } from "@/context/authContext";
-import { Navigate } from "react-router-dom";
 import Loader from "@/_components/Loader/loader";
+import RegisterModal from "../Checkout/register-modal";
+import { useState } from "react";
 
 interface AuthenticatedRouteProps {
   children: React.ReactNode;
@@ -10,13 +11,22 @@ const AuthenticatedRoute: React.FC<AuthenticatedRouteProps> = ({
   children,
 }) => {
   const { user, loading } = useAuthStore();
+  const [showRegister, setShowRegister] = useState(true);
 
   if (loading) {
     return <Loader />;
   }
 
   if (!user) {
-    return <Navigate to="/" replace />;
+    return (
+      <>
+        <RegisterModal
+          open={showRegister && !user}
+          setIsOpen={setShowRegister}
+        />
+        {children}
+      </>
+    );
   }
 
   return <>{children}</>;

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Product } from "@/interfaces/Product";
 import Loader from "@/_components/Loader/loader";
 import { useSearchParams } from "react-router-dom";
-import { PackageSearchIcon } from "lucide-react";
 import { RouteSelect } from "./route-select";
 
 const OutletProducts = () => {

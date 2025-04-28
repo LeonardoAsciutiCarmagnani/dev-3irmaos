@@ -149,16 +149,18 @@ export const DetailsProduct = () => {
                 Categoria: {product.categoria}
               </span>
             </div>
-            <div className="flex flex-col ">
-              <span className="text-lg">Descrição:</span>
-              <span className=" rounded-sm p-2 bg-gray-100 w-full text-gray-700">
-                {product.descricao === null ? (
-                  <>Produto sem descrição</>
-                ) : (
-                  <>{product.descricao}</>
-                )}
-              </span>
-            </div>
+            {product.descricao && (
+              <div className="flex flex-col ">
+                <span className="text-lg">Descrição:</span>
+                <span className=" rounded-sm p-2 bg-gray-100 w-full text-gray-700">
+                  {product.descricao === null ? (
+                    <>Produto sem descrição</>
+                  ) : (
+                    <>{product.descricao}</>
+                  )}
+                </span>
+              </div>
+            )}
             <div className="flex  md:justify-end gap-4">
               <div className="flex items-center gap-2">
                 <input

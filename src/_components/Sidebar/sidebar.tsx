@@ -17,7 +17,7 @@ import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 
 const Sidebar = () => {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const { user } = useAuthStore();
   const { search } = useLocation();
 
@@ -90,8 +90,8 @@ const Sidebar = () => {
               className={({ isActive }) =>
                 `flex items-center p-2 text-[0.97rem] transition-colors ${
                   isActive
-                    ? "bg-red-900 text-white font-semibold"
-                    : "text-slate-700 hover:bg-red-900 hover:text-white"
+                    ? "bg-red-900 text-white"
+                    : "text-gray-800 hover:bg-red-900 hover:text-white"
                 }`
               }
             >
@@ -113,13 +113,13 @@ const Sidebar = () => {
               className="
                 flex items-center p-1.5 cursor-pointer
                 hover:bg-red-900 hover:text-white
-                data-[state=open]:bg-red-900 text-slate-700 data-[state=open]:text-white data-[state=open]:shadow-sm shadow-gray-500 
+                data-[state=open]:bg-red-900 text-gray-800 data-[state=open]:text-white data-[state=open]:shadow-sm shadow-gray-500 
                 rounded-none
               "
             >
               <PackageSearchIcon className="size-6 transform data-[state=open]:rotate-none" />
               {open && (
-                <span className="text-[0.97rem] font-semibold">Produtos</span>
+                <span className="text-[0.97rem] font-normal">Produtos</span>
               )}
             </AccordionTrigger>
             {open && (
@@ -139,8 +139,8 @@ const Sidebar = () => {
                         className={() =>
                           `block px-2 py-1 transition-colors pl-2 text-gray-700 ${
                             isCatActive
-                              ? "bg-gray-200 text-red-900 font-bold"
-                              : "hover:bg-gray-200 hover:text-slate-800 hover:underline font-semibold"
+                              ? "bg-gray-200 text-red-900"
+                              : "hover:bg-gray-200 hover:text-slate-800 hover:underline "
                           }`
                         }
                       >

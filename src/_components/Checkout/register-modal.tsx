@@ -33,6 +33,7 @@ import {
 } from "firebase/auth";
 import { auth } from "../Utils/FirebaseConfig";
 import { api } from "@/lib/axios";
+import Login from "../Login";
 
 const formSchema = z.object({
   Name: z.string().min(3, "Nome deve ter pelo menos 3 caracteres."),
@@ -68,6 +69,7 @@ const RegisterModal = ({ open, setIsOpen }: Props) => {
   const [isIndividual, setIsIndividual] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isLogin, setIsLogin] = useState(false);
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
@@ -166,128 +168,98 @@ const RegisterModal = ({ open, setIsOpen }: Props) => {
   return (
     <div>
       <Dialog open={open} onOpenChange={setIsOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Crie sua conta</DialogTitle>
-            <DialogDescription>
-              Para continuar com seu orçamento, precisamos que crie uma conta ou
-              faça login.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex items-center justify-center gap-x-2">
-            <Badge
-              variant={"secondary"}
-              onClick={() => setIsIndividual(true)}
-              className={`hover:cursor-pointer ${
-                isIndividual ? "bg-red-500 text-white" : ""
-              } rounded-xs`}
-            >
-              Pessoa Física
-            </Badge>
-            <Badge
-              variant={"secondary"}
-              onClick={() => setIsIndividual(false)}
-              className={`hover:cursor-pointer ${
-                !isIndividual ? "bg-red-500 text-white" : ""
-              } rounded-xs`}
-            >
-              Pessoa Jurídica
-            </Badge>
-          </div>
-          <div>
-            <Form {...form}>
-              <form
-                className="space-y-3 max-h-[60vh] overflow-y-auto"
-                onSubmit={form.handleSubmit(onSubmit)}
-              >
-                <FormField
-                  control={form.control}
-                  name="Name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        {isIndividual ? "Nome Completo *" : "Razão Social *"}
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          className="border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="Email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>E-mail</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          className="border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="Phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Telefone *</FormLabel>
-                      <FormControl>
-                        <IMaskInput
-                          mask="(00) 00000-0000"
-                          placeholder="(00) 00000-0000"
-                          value={field.value}
-                          onAccept={(value) => field.onChange(value)}
-                          className="input border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm px-2.5 py-1.5 rounded-sm"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="Document"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{isIndividual ? "CPF *" : "CNPJ *"}</FormLabel>
-                      <FormControl>
-                        <IMaskInput
-                          mask={
-                            isIndividual
-                              ? "000.000.000-00"
-                              : "00.000.000/0000-00"
-                          }
-                          placeholder={
-                            isIndividual
-                              ? "000.000.000-00"
-                              : "00.000.000/0000-00"
-                          }
-                          value={field.value}
-                          onAccept={(value) => field.onChange(value)}
-                          className="input border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm px-2.5 py-1.5 rounded-sm"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                {!isIndividual && (
+        <DialogContent className="bg-white max-w-[45rem] rounded-xs">
+          <>
+            <DialogHeader>
+              <DialogTitle>
+                {isLogin ? (
+                  <h1>Entre com sua conta</h1>
+                ) : (
+                  <h1>Crie sua conta</h1>
+                )}
+              </DialogTitle>
+              <DialogDescription>
+                {isLogin ? (
                   <>
+                    <div className="flex flex-col items-start justify-between">
+                      <div>
+                        Para continuar com seu orçamento, precisamos que entre
+                        com sua conta
+                      </div>
+                      <div className="flex items-center gap-x-1 w-full justify-start">
+                        <h1>Ainda não possui uma conta?</h1>
+                        <Button
+                          variant="link"
+                          className="px-1 py-0 text-red-900 font-bold"
+                          onClick={() => setIsLogin(false)}
+                        >
+                          Criar
+                        </Button>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-start justify-between">
+                    <div>
+                      Para continuar com seu orçamento, precisamos que crie sua
+                      conta.
+                    </div>
+                    <div className="flex items-center gap-x-1 w-full justify-start font-semibold">
+                      <h1>Já possui uma conta?</h1>
+                      <Button
+                        variant="link"
+                        className="px-1 py-0 text-red-900 font-bold"
+                        onClick={() => setIsLogin(true)}
+                      >
+                        Login
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </DialogDescription>
+            </DialogHeader>
+
+            {!isLogin && (
+              <div className="flex items-center justify-center gap-x-2">
+                <Badge
+                  variant={"secondary"}
+                  onClick={() => setIsIndividual(true)}
+                  className={`hover:cursor-pointer ${
+                    isIndividual ? "bg-red-900 text-white" : ""
+                  } rounded-xs`}
+                >
+                  Pessoa Física
+                </Badge>
+                <Badge
+                  variant={"secondary"}
+                  onClick={() => setIsIndividual(false)}
+                  className={`hover:cursor-pointer ${
+                    !isIndividual ? "bg-red-900 text-white" : ""
+                  } rounded-xs`}
+                >
+                  Pessoa Jurídica
+                </Badge>
+              </div>
+            )}
+            {isLogin ? (
+              <Login />
+            ) : (
+              <div>
+                <Form {...form}>
+                  <form
+                    className="space-y-3 max-h-[60vh] overflow-y-auto"
+                    onSubmit={form.handleSubmit(onSubmit)}
+                  >
                     <FormField
                       control={form.control}
-                      name="IE"
+                      name="Name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Inscrição estadual</FormLabel>
+                          <FormLabel>
+                            {isIndividual
+                              ? "Nome Completo *"
+                              : "Razão Social *"}
+                          </FormLabel>
                           <FormControl>
                             <Input
                               {...field}
@@ -300,227 +272,312 @@ const RegisterModal = ({ open, setIsOpen }: Props) => {
                     />
                     <FormField
                       control={form.control}
-                      name="FantasyName"
+                      name="Email"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Nome Fantasia *</FormLabel>
+                          <FormLabel>E-mail</FormLabel>
                           <FormControl>
                             <Input
                               {...field}
                               className="border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm"
-                              required
                             />
                           </FormControl>
-                          <FormMessage className="mt-0 pt-2" />
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
-                  </>
-                )}
-                <div className="flex flex-col space-y-4">
-                  <h2 className="text-lg font-semibold text-gray-900">
-                    Endereço
-                  </h2>
-                  <div className="bg-white rounded-lg">
                     <FormField
                       control={form.control}
-                      name="Address.Cep"
+                      name="Phone"
                       render={({ field }) => (
                         <FormItem>
-                          <div className="flex flex-col space-y-2">
-                            <FormLabel>CEP *</FormLabel>
-                            <div className="flex items-center space-x-2">
-                              <IMaskInput
-                                mask="00000-000"
-                                placeholder="00000-000"
-                                value={field.value}
-                                onAccept={(value) => field.onChange(value)}
-                                className="border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm w-fit rounded p-2"
-                              />
-                              <Badge
-                                onClick={() => {
-                                  const cleaned = field.value.replace(
-                                    /\D/g,
-                                    ""
-                                  );
-                                  if (cleaned.length === 8) {
-                                    fetchAddress(field.value);
-                                  }
-                                }}
-                                className="bg-red-500 text-white cursor-pointer text-xs rounded-xs"
-                              >
-                                Buscar
-                              </Badge>
-                            </div>
-                            <FormMessage />
-                          </div>
-
-                          <div className="mt-4 space-y-3">
-                            <FormField
-                              control={form.control}
-                              name="Address.City"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Cidade</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      readOnly
-                                      {...field}
-                                      className="border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm w-full rounded p-2"
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
+                          <FormLabel>Telefone *</FormLabel>
+                          <FormControl>
+                            <IMaskInput
+                              mask="(00) 00000-0000"
+                              placeholder="(00) 00000-0000"
+                              value={field.value}
+                              onAccept={(value) => field.onChange(value)}
+                              className="input border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm px-2.5 py-1.5 rounded-sm"
                             />
-
-                            <FormField
-                              control={form.control}
-                              name="Address.Neighborhood"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Bairro</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      readOnly
-                                      {...field}
-                                      className="border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm w-full rounded p-2"
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-
-                            <FormField
-                              control={form.control}
-                              name="Address.Street"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Logradouro</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      readOnly
-                                      {...field}
-                                      className="border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm w-full rounded p-2"
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-
-                            <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-3 sm:space-y-0">
-                              <FormField
-                                control={form.control}
-                                name="Address.Number"
-                                render={({ field }) => (
-                                  <FormItem className="flex-1">
-                                    <FormLabel>Número</FormLabel>
-                                    <FormControl>
-                                      <Input
-                                        {...field}
-                                        type="number"
-                                        className="border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm w-full rounded p-2"
-                                      />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-
-                              <FormField
-                                control={form.control}
-                                name="Address.State"
-                                render={({ field }) => (
-                                  <FormItem className="w-full sm:w-1/4">
-                                    <FormLabel>UF</FormLabel>
-                                    <FormControl>
-                                      <Input
-                                        readOnly
-                                        {...field}
-                                        maxLength={2}
-                                        className="border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm w-full rounded p-2"
-                                      />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            </div>
-                          </div>
+                          </FormControl>
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
-                  </div>
-                </div>
-                <div className="flex flex-col space-y-4">
-                  {/* Campo de Senha */}
-                  <FormField
-                    control={form.control}
-                    name="Password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Senha</FormLabel>
-                        <div className="relative">
+                    <FormField
+                      control={form.control}
+                      name="Document"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            {isIndividual ? "CPF *" : "CNPJ *"}
+                          </FormLabel>
                           <FormControl>
-                            <Input
-                              {...field}
-                              type={showPassword ? "text" : "password"}
-                              maxLength={20}
-                              className="border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm w-full rounded p-2"
+                            <IMaskInput
+                              mask={
+                                isIndividual
+                                  ? "000.000.000-00"
+                                  : "00.000.000/0000-00"
+                              }
+                              placeholder={
+                                isIndividual
+                                  ? "000.000.000-00"
+                                  : "00.000.000/0000-00"
+                              }
+                              value={field.value}
+                              onAccept={(value) => field.onChange(value)}
+                              className="input border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm px-2.5 py-1.5 rounded-sm"
                             />
                           </FormControl>
-                          <button
-                            type="button"
-                            onClick={togglePasswordVisibility}
-                            className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                          >
-                            {showPassword ? (
-                              <EyeOffIcon className="h-5 w-5 text-gray-500" />
-                            ) : (
-                              <EyeIcon className="h-5 w-5 text-gray-500" />
-                            )}
-                          </button>
-                        </div>
-                        <FormMessage />
-                      </FormItem>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    {!isIndividual && (
+                      <>
+                        <FormField
+                          control={form.control}
+                          name="IE"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Inscrição estadual</FormLabel>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  className="border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="FantasyName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Nome Fantasia *</FormLabel>
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  className="border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm"
+                                  required
+                                />
+                              </FormControl>
+                              <FormMessage className="mt-0 pt-2" />
+                            </FormItem>
+                          )}
+                        />
+                      </>
                     )}
-                  />
+                    <div className="flex flex-col space-y-4">
+                      <h2 className="text-lg font-semibold text-gray-900">
+                        Endereço
+                      </h2>
+                      <div className="bg-white rounded-lg">
+                        <FormField
+                          control={form.control}
+                          name="Address.Cep"
+                          render={({ field }) => (
+                            <FormItem>
+                              <div className="flex flex-col space-y-2">
+                                <FormLabel>CEP *</FormLabel>
+                                <div className="flex items-center space-x-2">
+                                  <IMaskInput
+                                    mask="00000-000"
+                                    placeholder="00000-000"
+                                    value={field.value}
+                                    onAccept={(value) => field.onChange(value)}
+                                    className="border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm w-fit rounded p-2"
+                                  />
+                                  <Badge
+                                    onClick={() => {
+                                      const cleaned = field.value.replace(
+                                        /\D/g,
+                                        ""
+                                      );
+                                      if (cleaned.length === 8) {
+                                        fetchAddress(field.value);
+                                      }
+                                    }}
+                                    className="bg-red-900 text-white cursor-pointer text-xs rounded-xs"
+                                  >
+                                    Buscar
+                                  </Badge>
+                                </div>
+                                <FormMessage />
+                              </div>
 
-                  {/* Campo de Confirmação da Senha */}
-                  <FormField
-                    control={form.control}
-                    name="ConfirmPassword"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Confirmar Senha</FormLabel>
-                        <div className="relative">
-                          <FormControl>
-                            <Input
-                              {...field}
-                              type={showPassword ? "text" : "password"}
-                              maxLength={20}
-                              className="border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm w-full rounded p-2"
-                            />
-                          </FormControl>
-                          <button
-                            type="button"
-                            onClick={togglePasswordVisibility}
-                            className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                          ></button>
-                        </div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div>
-                  <Button type="submit">Cria conta</Button>
-                </div>
-              </form>
-            </Form>
-          </div>
+                              <div className="mt-4 space-y-3">
+                                <FormField
+                                  control={form.control}
+                                  name="Address.City"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Cidade</FormLabel>
+                                      <FormControl>
+                                        <Input
+                                          readOnly
+                                          {...field}
+                                          className="border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm w-full rounded p-2"
+                                        />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+
+                                <FormField
+                                  control={form.control}
+                                  name="Address.Neighborhood"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Bairro</FormLabel>
+                                      <FormControl>
+                                        <Input
+                                          readOnly
+                                          {...field}
+                                          className="border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm w-full rounded p-2"
+                                        />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+
+                                <FormField
+                                  control={form.control}
+                                  name="Address.Street"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Logradouro</FormLabel>
+                                      <FormControl>
+                                        <Input
+                                          readOnly
+                                          {...field}
+                                          className="border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm w-full rounded p-2"
+                                        />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+
+                                <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-3 sm:space-y-0">
+                                  <FormField
+                                    control={form.control}
+                                    name="Address.Number"
+                                    render={({ field }) => (
+                                      <FormItem className="flex-1">
+                                        <FormLabel>Número</FormLabel>
+                                        <FormControl>
+                                          <Input
+                                            {...field}
+                                            type="number"
+                                            className="border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm w-full rounded p-2"
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+
+                                  <FormField
+                                    control={form.control}
+                                    name="Address.State"
+                                    render={({ field }) => (
+                                      <FormItem className="w-full sm:w-1/4">
+                                        <FormLabel>UF</FormLabel>
+                                        <FormControl>
+                                          <Input
+                                            readOnly
+                                            {...field}
+                                            maxLength={2}
+                                            className="border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm w-full rounded p-2"
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                </div>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex flex-col space-y-4">
+                      {/* Campo de Senha */}
+                      <FormField
+                        control={form.control}
+                        name="Password"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Senha</FormLabel>
+                            <div className="relative">
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  type={showPassword ? "text" : "password"}
+                                  maxLength={20}
+                                  className="border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm w-full rounded p-2"
+                                />
+                              </FormControl>
+                              <button
+                                type="button"
+                                onClick={togglePasswordVisibility}
+                                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                              >
+                                {showPassword ? (
+                                  <EyeOffIcon className="h-5 w-5 text-gray-500" />
+                                ) : (
+                                  <EyeIcon className="h-5 w-5 text-gray-500" />
+                                )}
+                              </button>
+                            </div>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Campo de Confirmação da Senha */}
+                      <FormField
+                        control={form.control}
+                        name="ConfirmPassword"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Confirmar Senha</FormLabel>
+                            <div className="relative">
+                              <FormControl>
+                                <Input
+                                  {...field}
+                                  type={showPassword ? "text" : "password"}
+                                  maxLength={20}
+                                  className="border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm w-full rounded p-2"
+                                />
+                              </FormControl>
+                              <button
+                                type="button"
+                                onClick={togglePasswordVisibility}
+                                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                              ></button>
+                            </div>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="w-full flex justify-end pr-4">
+                      <Button type="submit">Cria conta</Button>
+                    </div>
+                  </form>
+                </Form>
+              </div>
+            )}
+          </>
+
           {isSubmitting && <Loader />}
         </DialogContent>
       </Dialog>

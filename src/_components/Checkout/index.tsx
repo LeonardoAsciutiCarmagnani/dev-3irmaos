@@ -168,18 +168,18 @@ export const Checkout = () => {
   }, []);
 
   return (
-    <div className="flex border-gray-300 p-4 rounded-lg">
+    <div className="flex border-gray-300 p-4 rounded-lg text-sm md:text-md overflow-y-auto">
       {productsInCart.length !== 0 ? (
-        <div className="flex flex-col w-full md:flex-row gap-4  md:justify-around">
+        <div className="flex flex-col w-full md:flex-row gap-4 md:justify-around">
           <div className="flex flex-col space-y-4 w-full md:w-2/5 ">
-            <div className="space-y-4 w-full  h-72 overflow-y-scroll">
+            <div className="space-y-2 w-full overflow-y-scroll p-2">
               {productsInCart.map((product, index) => (
                 <div
                   key={index}
-                  className={`flex items-center justify-between p-3 border border-gray-500 rounded-lg bg-gray-100 shadow-md shadow-gray-200`}
+                  className={`flex items-center justify-between p-3 border-[0.12rem] border-gray-200 border-outset rounded-xs bg-gray-50 shadow-md shadow-gray-300`}
                 >
-                  <div className="flex flex-col items-start h-[6rem] md:h-auto">
-                    <span className="font-semibold text-sm md:text-lg text-gray-700">
+                  <div className="flex flex-col items-start h-[3.8rem] md:h-auto">
+                    <span className="font-semibold text-sm md:text-md text-gray-700">
                       {product.nome}
                     </span>
                     {/*   <span className="text-gray-700 text-sm md:text-base font-semibold">
@@ -208,17 +208,22 @@ export const Checkout = () => {
                     )}
                   </div>
 
-                  <div className="flex w-[9rem] justify-around items-center">
-                    <Button onClick={() => handleRemoveProduct(product.id)}>
+                  <div className="flex w-[9rem] justify-end items-center gap-x-3">
+                    <span className="text-gray-600 font-bold text-md">
+                      {product.quantidade}
+                      {"x"}{" "}
+                    </span>
+
+                    <Button
+                      onClick={() => handleRemoveProduct(product.id)}
+                      className="rounded-xs"
+                    >
                       {product.quantidade === 1 ? (
                         <Trash2 className="size-4" />
                       ) : (
                         <span className="font-bold text-lg">-</span>
                       )}
                     </Button>
-                    <span className="text-gray-600">
-                      <strong>Qtd:</strong> {product.quantidade}{" "}
-                    </span>
                   </div>
                 </div>
               ))}
@@ -226,15 +231,15 @@ export const Checkout = () => {
             <Link to={"/"}>
               <Button
                 variant={"default"}
-                className="bg-red-900 hover:bg-red-950 hover:cursor-pointer w-full"
+                className="bg-red-900 hover:bg-red-950 hover:cursor-pointer w-full rounded-xs"
               >
                 Continuar comprando
               </Button>
             </Link>
           </div>
           <div className="flex flex-col gap-2 ">
-            <div className="flex flex-col max-h-96 p-2 md:p-4 justify-between border border-gray-200 bg-gray-100 rounded-lg  w-full md:w-lg">
-              <span className="text-lg font-semibold">Endereço de entrega</span>
+            <div className="flex flex-col max-h-96 p-2 md:p-4 justify-between border border-gray-200 bg-gray-50 rounded-xs w-full md:w-lg">
+              <span className="font-semibold">Endereço de entrega</span>
               <div className="flex flex-col space-y-2 ">
                 {address?.cep ? (
                   <>
@@ -326,7 +331,7 @@ export const Checkout = () => {
               </div>
             </div>
 
-            <div className="flex flex-col space-y-2 justify-between border border-gray-200 bg-gray-100 rounded-lg p-4 w-full md:w-lg">
+            <div className="flex flex-col space-y-2 justify-between border border-gray-200 bg-gray-50 rounded-xs p-4 w-full md:w-lg">
               {/*  <Select
                 onValueChange={(e) => setpaymentMethodSelected(JSON.parse(e))}
               >
@@ -355,14 +360,13 @@ export const Checkout = () => {
                     })}
                   </span>
                 </div>
-                <p className="text-xs font-semibold text-red-900">
-                  Valor sujeito a alteração !
+                <p className="text-xs font-semibold text-gray-500 italic">
+                  *Valor sujeito a alteração.*
                 </p>
               </div>
 
               <Button
-                variant={"default"}
-                className={`bg-red-900 hover:bg-red-950 hover:cursor-pointer w-full `}
+                className="bg-green-700 hover:bg-green-800 hover:cursor-pointer w-full rounded-xs"
                 onClick={() => handleSubmitBudget()}
                 disabled={sendOrder}
               >
@@ -371,7 +375,7 @@ export const Checkout = () => {
                     <LoaderCircle className="animate-spin" /> Enviando...
                   </>
                 ) : (
-                  "Confirmar"
+                  "Finalizar"
                 )}
               </Button>
             </div>
@@ -384,7 +388,7 @@ export const Checkout = () => {
               Seu orçamento está vazio
             </span>
             <span className="text-center text-sm   text-gray-600">
-              Volte para a tela inicial para continuar comprando !
+              Volte para a tela inicial para continuar comprando.
             </span>
             <Link to={"/"}>
               <Button variant={"default"} className="w-fit ">

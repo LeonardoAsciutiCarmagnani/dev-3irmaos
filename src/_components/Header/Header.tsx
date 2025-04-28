@@ -10,7 +10,7 @@ import { productsContext } from "@/context/productsContext";
 import {
   CircleUserIcon,
   FileBoxIcon,
-  HomeIcon,
+  // HomeIcon,
   ScrollTextIcon,
   Trash2,
 } from "lucide-react";
@@ -19,31 +19,33 @@ import { Link, useNavigate } from "react-router-dom";
 
 const Header = () => {
   const { productsInCart, handleRemoveProduct } = productsContext();
-  const { user } = useAuthStore();
+  const { user, logout } = useAuthStore();
   const navigate = useNavigate();
 
   const [open, setOpen] = useState(false);
   const [openUser, setOpenUser] = useState(false);
 
   return (
-    <div className="flex justify-between md:justify-around px-2 items-center border-b border-gray-200">
+    <div className="flex justify-start md:justify-around px-2 items-center border-b border-gray-200">
       <div className="flex items-center justify-evenly">
-        <Link to="/" className="flex md:hidden">
-          <HomeIcon className="font-bold text-red-900" />
-        </Link>
+        {/* <Link to="/" className="flex md:hidden">
+          <HomeIcon className="font-bold text-gray-800" />
+        </Link> */}
         <img src="/src/assets/logo.png" alt="3 Irmãos" className="w-[60%]" />
       </div>
-      <div className="flex items-end justify-evenly gap-x-8 p-1 w-[8rem]">
+      <div className="flex items-center justify-center gap-x-6 p-1 w-[8rem]">
         <Popover onOpenChange={() => setOpen(!open)} open={open}>
           <PopoverTrigger
             className="flex hover:cursor-pointer"
             onMouseEnter={() => setOpen(true)}
             onClick={() => setOpen(!open)}
           >
-            <FileBoxIcon color="darkred" />
-            <span className="font-semibold text-gray-900 text-lg">
-              {productsInCart.length}
-            </span>
+            <div className="flex items-center justify-center gap-x-1">
+              <FileBoxIcon className="text-gray-800" size={30} />
+              <span className="font-semibold text-red-900 text-lg md:text-xl">
+                {productsInCart.length}
+              </span>
+            </div>
           </PopoverTrigger>
           <PopoverContent className="w-[300px] flex flex-col space-y-2 rounded-xs">
             {productsInCart.length === 0 ? (
@@ -53,7 +55,7 @@ const Header = () => {
             ) : (
               <>
                 {productsInCart.map((product) => (
-                  <div className="flex flex-col gap-2 items-center justify-around w-full border-b p-2 border-red-900">
+                  <div className="flex flex-col gap-2 items-center justify-around w-full border-b p-2 border-gray-300">
                     <span className="font-semibold text-gray-700 text-sm">
                       {product.nome}
                     </span>
@@ -61,7 +63,10 @@ const Header = () => {
                       <span className="text-gray-700 flex-1 text-sm">
                         <strong>Quantidade:</strong> {product.quantidade}
                       </span>
-                      <Button onClick={() => handleRemoveProduct(product.id)}>
+                      <Button
+                        onClick={() => handleRemoveProduct(product.id)}
+                        className="rounded-xs"
+                      >
                         {product.quantidade === 1 ? (
                           <Trash2 className="size-4" />
                         ) : (
@@ -81,7 +86,7 @@ const Header = () => {
                 navigate("/orçamento");
                 setOpen(false);
               }}
-              className="rounded-xs"
+              className="rounded-xs bg-gray-700 hover:bg-gray-800"
             >
               Prosseguir com orçamento
             </Button>
@@ -94,7 +99,7 @@ const Header = () => {
               onClick={() => setOpenUser(true)}
               onMouseEnter={() => setOpenUser(true)}
             >
-              <CircleUserIcon size={35} className="text-red-900" />
+              <CircleUserIcon size={35} className="text-gray-800" />
             </PopoverTrigger>
             <PopoverContent className="w-[300px] flex flex-col space-y-2 rounded-xs p-3">
               {user ? (
@@ -111,7 +116,9 @@ const Header = () => {
                       </div>
                       <h1 className="text-xs text-gray-400">{user.email}</h1>
                     </div>
-                    <Button className="rounded-xs py-2 px-3">Sair</Button>
+                    <Button className="rounded-xs py-2 px-3" onClick={logout}>
+                      Sair
+                    </Button>
                   </div>
                   <div className="flex items-center gap-x-2 mt-4">
                     <ScrollTextIcon className="text-red-900" size={25} />
@@ -125,10 +132,10 @@ const Header = () => {
                 </div>
               ) : (
                 <div>
-                  <h1 className="text-lg md:text-xl font-semibold text-gray-900">
+                  <h1 className="text-lg md:text-lg font-semibold text-gray-900">
                     Olá, seja bem‑vindo!
                   </h1>
-                  <p className="text-sm md:text-base text-gray-600 mb-4">
+                  <p className="text-sm md:text-md text-gray-600 mb-4">
                     Acesse sua conta ou crie uma nova.
                   </p>
                   <div className="flex flex-col sm:flex-row gap-2">
