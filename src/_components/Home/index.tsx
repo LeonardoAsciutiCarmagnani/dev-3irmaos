@@ -44,8 +44,8 @@ const Home = () => {
   ];
 
   return (
-    <div className="h-full w-full px-2 overflow-y-auto md:h-[calc(100vh-54px)] pt-2">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 md:gap-1">
+    <div className="h-full w-full px-2 overflow-y-auto md:h-[calc(100vh-64px)] pt-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 md:gap-1 h-full">
         {categorias.map((categoria) => (
           <div
             key={categoria.label}
@@ -62,7 +62,7 @@ const Home = () => {
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-800"
                 />
               </div>
-              <div className="absolute bottom-0 w-full bg-gradient-to-t from-black/80 to-transparent p-2">
+              <div className="absolute bottom-0 w-full bg-gradient-to-t from-black/60 to-transparent p-2 flex items-center justify-center">
                 <h1 className="text-xs md:text-sm lg:text-base font-semibold line-clamp-1 text-white">
                   {categoria.label}
                 </h1>

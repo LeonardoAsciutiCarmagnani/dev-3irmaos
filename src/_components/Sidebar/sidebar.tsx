@@ -14,12 +14,13 @@ import {
 } from "lucide-react";
 import React from "react";
 import { useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
   const [open, setOpen] = useState(false);
   const { user } = useAuthStore();
-  const { search } = useLocation();
+  const { search, pathname } = useLocation();
+  const navigate = useNavigate();
 
   const currentCat = new URLSearchParams(search).get("c") || "";
 
@@ -104,7 +105,11 @@ const Sidebar = () => {
         <Accordion
           type="single"
           collapsible
-          onValueChange={() => {
+          value={pathname === "/produtos" ? "produtos" : ""}
+          onValueChange={(value) => {
+            if (value === "produtos" && pathname !== "/produtos") {
+              navigate("/produtos");
+            }
             setOpen(true);
           }}
         >

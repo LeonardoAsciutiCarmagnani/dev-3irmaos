@@ -31,7 +31,11 @@ const Header = () => {
         {/* <Link to="/" className="flex md:hidden">
           <HomeIcon className="font-bold text-gray-800" />
         </Link> */}
-        <img src="/src/assets/logo.png" alt="3 Irmãos" className="w-[60%]" />
+        <img
+          src="/src/assets/logo_3irmaos.png"
+          alt="3 Irmãos"
+          className="w-[60%]"
+        />
       </div>
       <div className="flex items-center justify-center gap-x-6 p-1 w-[8rem]">
         <Popover onOpenChange={() => setOpen(!open)} open={open}>
@@ -41,7 +45,7 @@ const Header = () => {
             onClick={() => setOpen(!open)}
           >
             <div className="flex items-center justify-center gap-x-1">
-              <FileBoxIcon className="text-gray-800" size={30} />
+              <FileBoxIcon className="text-gray-700" size={30} />
               <span className="font-semibold text-red-900 text-lg md:text-xl">
                 {productsInCart.length}
               </span>
@@ -99,7 +103,7 @@ const Header = () => {
               onClick={() => setOpenUser(true)}
               onMouseEnter={() => setOpenUser(true)}
             >
-              <CircleUserIcon size={35} className="text-gray-800" />
+              <CircleUserIcon size={35} className="text-gray-700" />
             </PopoverTrigger>
             <PopoverContent className="w-[300px] flex flex-col space-y-2 rounded-xs p-3">
               {user ? (
