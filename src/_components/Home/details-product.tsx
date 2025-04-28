@@ -32,6 +32,13 @@ export const DetailsProduct = () => {
 
   const { productsInCart, handleAddProduct } = productsContext();
   const [product, setProduct] = useState<Product>(state);
+  const [testVariationSelectedId, setTesteVariationSelectedId] = useState({
+    id: "",
+    name: "",
+  });
+
+  console.log(product);
+
   const [typeProduct, setTypeProduct] = useState({
     typeProduct: true,
     productVariationSelected: {
@@ -121,9 +128,6 @@ export const DetailsProduct = () => {
   return (
     <div className="h-screen w-full bg-gray-50 overflow-auto">
       <div className="flex flex-col justify-start items-start p-4 md:p-10 space-y-4 ">
-        {/* <h1 className="font-bold text-md md:text-xl text-gray-800">
-          Detalhes do produto
-        </h1> */}
         <div className="flex flex-col md:flex-row gap-y-3 w-full gap-x-6">
           <div className="md:w-3/5 w-full h-fit rounded-xs overflow-hidden transition-shadow duration-300 hover:shadow-2xl flex flex-col gap-y-1 border-[0.12rem] border-gray-200 shadow-sm">
             <Carousel plugins={[Autoplay({ delay: 2500 }), Fade()]}>
@@ -199,9 +203,8 @@ export const DetailsProduct = () => {
                     setTypeProduct(() => ({
                       typeProduct: true,
                       productVariationSelected: {
-                        id: product.variacao?.[0]?.id || "",
-                        nomeVariacao:
-                          product.variacao?.[0]?.nomeVariacaoA || "",
+                        id: "",
+                        nomeVariacao: "",
                       },
                     }))
                   }
@@ -214,6 +217,93 @@ export const DetailsProduct = () => {
                 </label>
               </div>
             </div>
+            <div className="flex flex-col space-y-1">
+              <h1 className="text-lg font-semibold text-red-900">Variações:</h1>
+              <div className="flex gap-2">
+                {product.variacao?.map((variation) => {
+                  const isMedidaPadrao =
+                    variation.nomeVariacaoA === "Medida Padrao";
+                  const isSobMedida = variation.nomeVariacaoA === "Sob Medida";
+
+                  return (
+                    <div key={variation.id}>
+                      {typeProduct.typeProduct
+                        ? isMedidaPadrao && (
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="radio"
+                                id={variation.id}
+                                value={variation.id || ""}
+                                checked={
+                                  variation.id === testVariationSelectedId.id
+                                }
+                                onChange={(e) => {
+                                  setTesteVariationSelectedId({
+                                    id: e.target.value,
+                                    name: "",
+                                  });
+                                  setTypeProduct((prev) => {
+                                    return {
+                                      ...prev,
+                                      productVariationSelected: {
+                                        id: variation.id,
+                                        nomeVariacao:
+                                          variation.nomeVariacaoB || "",
+                                      },
+                                    };
+                                  });
+                                }}
+                                className="h-5 w-5 text-red-900 focus:ring-2 focus:ring-red-600 rounded-xs"
+                              />
+                              <label
+                                htmlFor={variation.id}
+                                className="cursor-pointer text-sm md:text-lg font-semibold text-red-900"
+                              >
+                                {variation.nomeVariacaoB}
+                              </label>
+                            </div>
+                          )
+                        : isSobMedida && (
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="radio"
+                                id={variation.id}
+                                value={variation.id || ""}
+                                checked={
+                                  variation.id === testVariationSelectedId.id
+                                }
+                                onChange={(e) => {
+                                  setTesteVariationSelectedId({
+                                    id: e.target.value,
+                                    name: "",
+                                  });
+                                  setTypeProduct((prev) => {
+                                    return {
+                                      ...prev,
+                                      productVariationSelected: {
+                                        id: variation.id,
+                                        nomeVariacao:
+                                          variation.nomeVariacaoB || "",
+                                      },
+                                    };
+                                  });
+                                }}
+                                className="h-5 w-5 text-red-900 focus:ring-2 focus:ring-red-600 rounded-xs"
+                              />
+                              <label
+                                htmlFor={variation.id}
+                                className="cursor-pointer text-sm md:text-lg font-semibold text-red-900"
+                              >
+                                {variation.nomeVariacaoB}
+                              </label>
+                            </div>
+                          )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="flex md:h-24 flex-col items-center md:flex-row md:justify-around space-y-2 md:space-y-0">
                 <div>

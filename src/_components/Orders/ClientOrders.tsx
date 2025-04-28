@@ -553,7 +553,7 @@ const ClientOrdersTable = () => {
                                           className="flex flex-col  rounded-lg bg-gray-200 w-full justify-around"
                                         >
                                           <div className="flex flex-col md:flex-row p-2 gap-2 w-full">
-                                            <div className="flex-1">
+                                            <div className="flex-1 flex flex-col">
                                               <span className="flex-1 text-lg text-gray-700">
                                                 {item.nome}
                                               </span>
@@ -568,6 +568,15 @@ const ClientOrdersTable = () => {
                                                   Comprimento:{" "}
                                                   {item.comprimento}
                                                 </span>
+                                              </div>
+                                              <div className="flex-1 text-lg ">
+                                                {item.selectedVariation
+                                                  .nomeVariacao ===
+                                                  "Medida Padrao" && (
+                                                  <span className="text-sm text-red-900">
+                                                    Pronta Entrega
+                                                  </span>
+                                                )}
                                               </div>
                                             </div>
                                             <div className="flex gap-2 w-[12rem] items-center">
