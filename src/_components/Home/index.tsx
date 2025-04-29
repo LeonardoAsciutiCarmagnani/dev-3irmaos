@@ -52,7 +52,7 @@ const Home = () => {
             className="relative group overflow-hidden rounded-xs shadow-md hover:shadow-xl transition-shadow duration-300"
           >
             <Link
-              to={`/produtos?c=${categoria}`}
+              to={`/produtos?c=${categoria.label}`}
               className="block w-full h-full text-center text-gray-800 hover:text-white"
             >
               <div className="relative w-full aspect-square">
