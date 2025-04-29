@@ -557,6 +557,12 @@ const ClientOrdersTable = () => {
                                               <span className="flex-1 text-lg text-gray-700">
                                                 {item.nome}
                                               </span>
+                                              <span className="flex-1 text-md text-gray-700">
+                                                {
+                                                  item.selectedVariation
+                                                    .nomeVariacao
+                                                }
+                                              </span>
                                               <div className="text-sm text-gray-500 flex gap-2">
                                                 <span>
                                                   Altura: {item.altura}

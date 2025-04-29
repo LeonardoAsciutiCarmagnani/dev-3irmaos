@@ -32,7 +32,7 @@ export const DetailsProduct = () => {
 
   const { productsInCart, handleAddProduct } = productsContext();
   const [product, setProduct] = useState<Product>(state);
-  const [testVariationSelectedId, setTesteVariationSelectedId] = useState({
+  const [variationSelectedId, setVariationSelectedId] = useState({
     id: "",
     name: "",
   });
@@ -180,6 +180,7 @@ export const DetailsProduct = () => {
                         id: product.variacao?.[1]?.id || "",
                         nomeVariacao:
                           product.variacao?.[1]?.nomeVariacaoA || "",
+                        variationName: "",
                       },
                     }))
                   }
@@ -205,6 +206,7 @@ export const DetailsProduct = () => {
                       productVariationSelected: {
                         id: "",
                         nomeVariacao: "",
+                        variationName: "",
                       },
                     }))
                   }
@@ -235,10 +237,10 @@ export const DetailsProduct = () => {
                                 id={variation.id}
                                 value={variation.id || ""}
                                 checked={
-                                  variation.id === testVariationSelectedId.id
+                                  variation.id === variationSelectedId.id
                                 }
                                 onChange={(e) => {
-                                  setTesteVariationSelectedId({
+                                  setVariationSelectedId({
                                     id: e.target.value,
                                     name: "",
                                   });
@@ -270,10 +272,10 @@ export const DetailsProduct = () => {
                                 id={variation.id}
                                 value={variation.id || ""}
                                 checked={
-                                  variation.id === testVariationSelectedId.id
+                                  variation.id === variationSelectedId.id
                                 }
                                 onChange={(e) => {
-                                  setTesteVariationSelectedId({
+                                  setVariationSelectedId({
                                     id: e.target.value,
                                     name: "",
                                   });
