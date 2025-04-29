@@ -593,12 +593,12 @@ const OrdersTable = () => {
                           </tr>
                         </DialogTrigger>
 
-                        <DialogContent className="flex flex-col border bg-gray-100 w-[90vw] h-[80vh] overflow-y-scroll">
+                        <DialogContent className="flex flex-col border rounded-xs bg-gray-100 md:w-2/3 h-[80vh] overflow-y-scroll">
                           <DialogHeader>
                             <div className="flex justify-between items-center">
                               <DialogTitle>Detalhes do pedido</DialogTitle>
                             </div>
-                            <div className="flex justify-around w-4/5 bg-gray-200 p-2 rounded-xl items-center shadow-md">
+                            <div className="flex justify-around w-full bg-gray-200 p-2 rounded-xs items-center shadow-md">
                               <div className="flex flex-col w-full">
                                 <div className="flex justify-around items-start ">
                                   <div className=" flex flex-col justify-between">
@@ -695,7 +695,7 @@ const OrdersTable = () => {
                           </DialogHeader>
                           <div>
                             <div className="font-semibold text-lg">
-                              Produtos do orçamento
+                              Produtos
                             </div>
                             <div className="p-2 max-h-50 w-2/3 overflow-y-scroll space-y-2">
                               {order.products &&
@@ -704,20 +704,26 @@ const OrdersTable = () => {
                                     <>
                                       <div
                                         key={item.id}
-                                        className="flex flex-col  rounded-lg bg-gray-200 w-full justify-around"
+                                        className="flex flex-col  rounded-xs bg-gray-200 w-full justify-around"
                                       >
                                         <div className="flex p-2 gap-2 w-full">
-                                          <div className="flex-1">
-                                            <span className="flex-1 text-lg text-gray-700">
+                                          <div className="flex-1 flex flex-col">
+                                            <span className=" text-lg text-gray-700">
                                               {item.nome}
+                                            </span>
+                                            <span className=" text-md text-gray-700">
+                                              {
+                                                item.selectedVariation
+                                                  .nomeVariacao
+                                              }
                                             </span>
                                             <div className="text-sm text-gray-500 flex gap-2">
                                               <span>Altura: {item.altura}</span>
                                               <span>
-                                                Largura: {item.largura}
+                                                Comprimento: {item.comprimento}
                                               </span>
                                               <span>
-                                                Comprimento: {item.comprimento}
+                                                Largura: {item.largura}
                                               </span>
                                             </div>
                                           </div>

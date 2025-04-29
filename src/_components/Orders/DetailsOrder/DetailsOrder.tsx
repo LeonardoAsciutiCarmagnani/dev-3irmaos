@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuthStore } from "@/context/authContext";
 import { useEffect, useState } from "react";
+import { IMaskInput } from "react-imask";
 
 interface DetailsPropostalProps {
   obs: string;
@@ -117,13 +118,24 @@ const DetailsOrder = ({
                 <label htmlFor="frete" className="font-semibold">
                   Frete:
                 </label>
-                <Input
-                  placeholder="insira o valor de frete"
-                  id="frete"
+                <IMaskInput
+                  mask="R$ num"
+                  blocks={{
+                    num: {
+                      mask: Number,
+                      scale: 2,
+                      thousandsSeparator: ".",
+                      padFractionalZeros: true,
+                      normalizeZeros: true,
+                      radix: ",",
+                      mapToRadix: ["."],
+                    },
+                  }}
+                  value={String(deliveryValue)}
+                  unmask={true} // isso faz com que o valor passado seja numérico
                   disabled={statusOrder > 1}
-                  value={deliveryValue}
-                  onChange={(e) => setDeliveryValue(Number(e.target.value))}
-                  className="bg-white"
+                  onAccept={(value) => setDeliveryValue(Number(value))}
+                  className="border rounded px-2 py-1 w-[8rem] text-right"
                 />
               </div>
             </AccordionContent>
@@ -131,9 +143,6 @@ const DetailsOrder = ({
         </Accordion>
       )}
       <div className="flex flex-col w-full h-full bg-white rounded-lg shadow-lg p-4">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold">Detalhes do Pedido</h2>
-        </div>
         <div className="flex flex-col space-y-4">
           <div className="flex flex-col items-center justify-between  max-w-full  text-wrap">
             <span className="text-gray-700 font-semibold">Observações:</span>

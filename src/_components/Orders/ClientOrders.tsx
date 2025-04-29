@@ -433,12 +433,12 @@ const ClientOrdersTable = () => {
                             </tr>
                           </DialogTrigger>
 
-                          <DialogContent className="flex flex-col border bg-gray-100 md:w-2/3 h-[80vh] overflow-y-scroll">
+                          <DialogContent className="flex flex-col border rounded-xs bg-gray-100 md:w-2/3 h-[80vh] overflow-y-scroll">
                             <DialogHeader>
                               <div className="flex justify-between items-center">
                                 <DialogTitle>Detalhes</DialogTitle>
                               </div>
-                              <div className="flex justify-between w-full bg-gray-200 p-2 rounded-xl items-center shadow-md">
+                              <div className="flex justify-between w-full bg-gray-200 p-2 rounded-xs items-center shadow-md">
                                 <div className="flex flex-col w-full">
                                   <div className="flex justify-end  w-full">
                                     <Link
@@ -464,7 +464,7 @@ const ClientOrdersTable = () => {
                                       </Button>
                                     </Link>
                                   </div>
-                                  <div className="flex justify-around items-start ">
+                                  <div className="flex justify-around items-start">
                                     <div className=" flex flex-col justify-between">
                                       <span className="text-xl font-bold text-gray-700">
                                         Pedido {order.orderId}
@@ -559,7 +559,7 @@ const ClientOrdersTable = () => {
                             </DialogHeader>
                             <div>
                               <div className="font-semibold text-lg">
-                                Produtos do orçamento
+                                Produtos
                               </div>
                               <div className="p-2 max-h-50 md:w-2/3 overflow-y-scroll space-y-2">
                                 {order.products &&
@@ -568,7 +568,7 @@ const ClientOrdersTable = () => {
                                       <>
                                         <div
                                           key={item.id}
-                                          className="flex flex-col  rounded-lg bg-gray-200 w-full justify-around"
+                                          className="flex flex-col  rounded-xs bg-gray-200 w-full justify-around"
                                         >
                                           <div className="flex flex-col md:flex-row p-2 gap-2 w-full">
                                             <div className="flex-1 flex flex-col">
@@ -586,11 +586,11 @@ const ClientOrdersTable = () => {
                                                   Altura: {item.altura}
                                                 </span>
                                                 <span>
-                                                  Largura: {item.largura}
-                                                </span>
-                                                <span>
                                                   Comprimento:{" "}
                                                   {item.comprimento}
+                                                </span>
+                                                <span>
+                                                  Largura: {item.largura}
                                                 </span>
                                               </div>
                                               <div className="flex-1 text-lg ">
@@ -646,7 +646,7 @@ const ClientOrdersTable = () => {
                                 <h1 className="font-semibold text-lg">
                                   Imagens do produto
                                 </h1>
-                                <div className="flex flex-col gap-2 items-start overflow-x-auto overflow-y-hidden">
+                                <div className="flex flex-col gap-2 p-4 items-start overflow-x-auto overflow-y-hidden">
                                   {order.products.map((item) => {
                                     return (
                                       <div

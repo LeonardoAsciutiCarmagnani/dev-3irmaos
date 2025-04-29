@@ -85,11 +85,11 @@ export const PDFPedido = () => {
         >
           {/* Dados do cliente */}
           <div className="flex flex-col text-start bg-gray-200 p-2 rounded-lg print:w-full">
-            <span className="font-semibold text-xl text-gray-700">
-              Pedido {id}
-            </span>
             <div className="flex justify-around">
               <div className=" flex flex-col  ">
+                <span className="font-semibold text-xl text-gray-700">
+                  Pedido {id}
+                </span>
                 <div className="flex gap-2 items-center ">
                   <span className="font-semibold  text-gray-700">Cliente:</span>
                   <span className="text-lg text-gray-700 ">{client.name}</span>
@@ -114,43 +114,55 @@ export const PDFPedido = () => {
                 </div>
               </div>
               {/* Endereço */}
-              <div className=" flex flex-col justify-between break-before-all">
-                <div className="flex gap-2 items-center">
-                  <span className="font-semibold  text-gray-700">Rua:</span>
-                  <span className="text-lg text-gray-700 ">
-                    {deliveryAddress.street}
-                  </span>
+              <div className="flex gap-10 justify-between break-before-all">
+                <div>
+                  <div className="flex gap-2 items-center">
+                    <span className="font-semibold  text-gray-700">Rua:</span>
+                    <span className="text-lg text-gray-700 ">
+                      {deliveryAddress.street}
+                    </span>
+                  </div>
+                  <div className="flex gap-2 items-center">
+                    <span className="font-semibold  text-gray-700">
+                      Numero:
+                    </span>
+                    <span className="text-lg text-gray-700 ">
+                      {deliveryAddress.number}
+                    </span>
+                  </div>
+                  <div className="flex gap-2 items-center">
+                    <span className="font-semibold  text-gray-700">
+                      Bairro:
+                    </span>
+                    <span className="text-lg text-gray-700 truncate">
+                      {deliveryAddress.neighborhood}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex gap-2 items-center">
-                  <span className="font-semibold  text-gray-700">Numero:</span>
-                  <span className="text-lg text-gray-700 ">
-                    {deliveryAddress.number}
-                  </span>
-                </div>
-                <div className="flex gap-2 items-center">
-                  <span className="font-semibold  text-gray-700">Bairro:</span>
-                  <span className="text-lg text-gray-700 truncate">
-                    {deliveryAddress.neighborhood}
-                  </span>
-                </div>
-                <div className="flex gap-2 items-center">
-                  <span className="font-semibold  text-gray-700">Cidade:</span>
-                  <span className="text-lg  text-gray-700 ">
-                    {deliveryAddress.city}
-                  </span>
-                </div>
-                <div className="flex gap-2 items-center">
-                  <span className="font-semibold  text-gray-700">Estado: </span>
-                  <span className="  text-gray-700">
-                    {" "}
-                    {deliveryAddress.state}
-                  </span>
-                </div>
-                <div className="flex gap-2 items-center">
-                  <span className="font-semibold  text-gray-700">CEP:</span>
-                  <span className="text-gray-700 text-lg">
-                    {deliveryAddress.cep}
-                  </span>
+                <div>
+                  <div className="flex gap-2 items-center">
+                    <span className="font-semibold  text-gray-700">
+                      Cidade:
+                    </span>
+                    <span className="text-lg  text-gray-700 ">
+                      {deliveryAddress.city}
+                    </span>
+                  </div>
+                  <div className="flex gap-2 items-center">
+                    <span className="font-semibold  text-gray-700">
+                      Estado:{" "}
+                    </span>
+                    <span className="  text-gray-700">
+                      {" "}
+                      {deliveryAddress.state}
+                    </span>
+                  </div>
+                  <div className="flex gap-2 items-center">
+                    <span className="font-semibold  text-gray-700">CEP:</span>
+                    <span className="text-gray-700 text-lg">
+                      {deliveryAddress.cep}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
