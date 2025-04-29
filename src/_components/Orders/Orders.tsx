@@ -21,8 +21,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { InfoIcon, LoaderCircle, PlusIcon } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { InfoIcon, LoaderCircle } from "lucide-react";
 import Dropzone from "../DropzoneImage/DropzoneImage";
 import {
   collection,
@@ -126,8 +125,6 @@ const OrdersTable = () => {
   const [payment, setPayment] = useState("");
   const [time, setTime] = useState("");
   const [delivery, setDelivery] = useState(0);
-
-  const navigate = useNavigate();
 
   const lisToUse = filteredData.length > 0 ? filteredData : data;
 
@@ -484,17 +481,6 @@ const OrdersTable = () => {
             Para visualizar os detalhes do pedido, clique duas vezes sobre ele.
           </h2>
         </div>
-        <button
-          onClick={() => {
-            navigate("/criacao-de-pedido");
-          }}
-          className="flex gap-x-1 items-center text-[0.7rem] w-fit py-[0.45rem] px-2 bg-green-600 text-white rounded-sm font-semibold uppercase tracking-wide hover:shadow-lg hover:scale-[1.015] transition-all duration-300 hover:cursor-pointer"
-        >
-          <span>
-            <PlusIcon size={19} />
-          </span>
-          Novo pedido
-        </button>
       </div>
 
       {/* Tabela */}
@@ -540,11 +526,25 @@ const OrdersTable = () => {
                             className="hover:bg-gray-50 cursor-pointer text-sm"
                             onDoubleClick={() => handleShowCard(order.orderId)}
                           >
-                            <td className="px-4 py-3">{order.orderId}</td>
-                            <td className="px-2 py-3 text-xs md:text-base">
+                            <td
+                              className={`px-4 py-3 ${
+                                order.orderStatus === 10 && "line-through"
+                              }`}
+                            >
+                              {order.orderId}
+                            </td>
+                            <td
+                              className={`px-4 py-3 ${
+                                order.orderStatus === 10 && "line-through"
+                              }`}
+                            >
                               {order.createdAt}
                             </td>
-                            <td className="px-4 py-3 text-xs md:text-base">
+                            <td
+                              className={`px-4 py-3 ${
+                                order.orderStatus === 10 && "line-through"
+                              }`}
+                            >
                               {order.client.name}
                             </td>
                             <td className="px-4 py-3">

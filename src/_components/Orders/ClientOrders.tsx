@@ -395,17 +395,35 @@ const ClientOrdersTable = () => {
                           <DialogTrigger asChild>
                             <tr
                               key={order.orderId}
-                              className="hover:bg-gray-50 cursor-pointer text-sm"
+                              className={`hover:bg-gray-50 cursor-pointer text-sm `}
                               onDoubleClick={() =>
                                 handleShowCard(order.orderId)
                               }
                             >
-                              <td className="px-4 py-3">{order.orderId}</td>
-                              <td className="px-4 py-3">{order.createdAt}</td>
-                              <td className="px-4 py-3">{order.client.name}</td>
-                              <td className="px-4 py-3">
+                              <td
+                                className={`px-4 py-3 ${
+                                  order.orderStatus === 10 && "line-through"
+                                }`}
+                              >
+                                {order.orderId}
+                              </td>
+                              <td
+                                className={`px-4 py-3 ${
+                                  order.orderStatus === 10 && "line-through"
+                                }`}
+                              >
+                                {order.createdAt}
+                              </td>
+                              <td
+                                className={`px-4 py-3 ${
+                                  order.orderStatus === 10 && "line-through"
+                                }`}
+                              >
+                                {order.client.name}
+                              </td>
+                              <td className={`px-4 py-3 `}>
                                 <div
-                                  className={`w-fit rounded-lg p-2 text-white font-semibold text-xs hover:cursor-pointer ${
+                                  className={`w-fit rounded-lg p-2 text-white font-semibold text-xs hover:cursor-pointer  ${
                                     status?.color || "bg-zinc-300"
                                   }`}
                                 >
@@ -578,9 +596,13 @@ const ClientOrdersTable = () => {
                                               <div className="flex-1 text-lg ">
                                                 {item.selectedVariation
                                                   .nomeVariacao ===
-                                                  "Medida Padrao" && (
+                                                "Medida Padrao" ? (
                                                   <span className="text-sm text-red-900">
                                                     Pronta Entrega
+                                                  </span>
+                                                ) : (
+                                                  <span className="text-sm text-red-900">
+                                                    Sob Medida
                                                   </span>
                                                 )}
                                               </div>
@@ -691,11 +713,8 @@ const ClientOrdersTable = () => {
                             </div>
                             <div className="flex items-center justify-center gap-10">
                               <Button
-                                className={`bg-emerald-500 hover:bg-emerald-600 ${
-                                  (order.orderStatus >= 3 &&
-                                    order.orderStatus === 4) ||
-                                  order.orderStatus === 10 ||
-                                  (order.orderStatus === 1 && "hidden")
+                                className={`bg-emerald-500 hover:bg-emerald-600 hidden ${
+                                  order.orderStatus === 2 && "flex"
                                 }  `}
                                 disabled={sendPropostal}
                                 onClick={() =>
@@ -712,12 +731,9 @@ const ClientOrdersTable = () => {
                                 )}
                               </Button>
                               <Button
-                                className={`bg-red-500 hover:bg-red-600 ${
-                                  (order.orderStatus >= 3 &&
-                                    order.orderStatus === 4) ||
-                                  order.orderStatus === 10 ||
-                                  (order.orderStatus === 1 && "hidden")
-                                } `}
+                                className={`bg-red-500 hover:bg-red-600 hidden ${
+                                  order.orderStatus === 2 && "flex"
+                                }  `}
                                 disabled={sendPropostal}
                                 onClick={() =>
                                   handleUpdatedStatusOrder(order, 3)

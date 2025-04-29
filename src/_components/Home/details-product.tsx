@@ -220,7 +220,9 @@ export const DetailsProduct = () => {
               </div>
             </div>
             <div className="flex flex-col space-y-1">
-              <h1 className="text-lg font-semibold text-red-900">Variações:</h1>
+              <h1 className="text-lg font-semibold text-red-900">
+                {product.variacao?.[0].tipoVariacaoB}:
+              </h1>
               <div className="flex gap-2">
                 {product.variacao?.map((variation) => {
                   const isMedidaPadrao =
@@ -239,6 +241,7 @@ export const DetailsProduct = () => {
                                 checked={
                                   variation.id === variationSelectedId.id
                                 }
+                                disabled={variation.quantidadeEmEstoque <= 0}
                                 onChange={(e) => {
                                   setVariationSelectedId({
                                     id: e.target.value,
@@ -259,9 +262,9 @@ export const DetailsProduct = () => {
                               />
                               <label
                                 htmlFor={variation.id}
-                                className="cursor-pointer text-sm md:text-lg font-semibold text-red-900"
+                                className="cursor-pointer text-sm md:text-lg font-semibold text-red-900 line-through"
                               >
-                                {variation.nomeVariacaoB}
+                                {variation.nomeVariacaoB}{" "}
                               </label>
                             </div>
                           )

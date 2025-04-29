@@ -64,7 +64,7 @@ const DetailsOrder = ({
 
   return (
     <div>
-      {user?.role !== "client" && (
+      {user?.role === "client" && (
         <Accordion type="single" collapsible>
           <AccordionItem value="item-1">
             <AccordionTrigger className="text-lg">
