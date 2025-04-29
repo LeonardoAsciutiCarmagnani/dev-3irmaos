@@ -211,7 +211,7 @@ export const PDFPedido = () => {
                 })}
             </div>
           </div>
-          {/* Imagens */}
+          {/* Imagens do produto */}
           <div className="flex gap-2 items-center">
             <div className="flex flex-col gap-4 mb-6">
               <div className="flex flex-col gap-2 items-start ">
