@@ -1,9 +1,9 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { Order } from "../Orders/ClientOrders";
 import { useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 import { Button } from "@/components/ui/button";
 import { LoaderCircle } from "lucide-react";
+import { Order } from "@/interfaces/Order";
 
 export const PDFPedido = () => {
   const { state } = useLocation();
@@ -15,6 +15,7 @@ export const PDFPedido = () => {
     deliveryAddress,
     createdAt,
     detailsPropostal,
+    clientImages,
     imagesUrls,
     products,
     totalValue,
@@ -241,12 +242,32 @@ export const PDFPedido = () => {
               </div>
             </div>
           </div>
+          {/* Imagens de referência */}
+          <div className="flex gap-2 items-center">
+            <div className="flex flex-col gap-4 mb-6">
+              <div className="flex flex-col gap-2 items-start ">
+                <h1 className="font-semibold text-lg">Imagens de referência</h1>
+                <div className="flex gap-2 py-2  flex-wrap">
+                  {clientImages && clientImages.length > 0 ? (
+                    clientImages.map((image, index) => (
+                      <img
+                        key={index}
+                        src={image}
+                        alt="Imagem fornecida pela 3 irmãos"
+                        className="size-40 rounded-lg hover:scale-105 transition-all duration-300"
+                      />
+                    ))
+                  ) : (
+                    <span>Nenhuma imagem fornecida</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
           {/* Sketches informados pela 3 irmãos */}
           <div className="flex flex-col gap-4 mb-6">
             {/* Upload de imagens */}
-            <h1 className="font-semibold text-lg">
-              Projeto (imagens ilustrativas)
-            </h1>
+            <h1 className="font-semibold text-lg">Sketches</h1>
             <div className="flex gap-2 py-2  flex-wrap">
               {imagesUrls && imagesUrls.length > 0 ? (
                 imagesUrls
@@ -275,13 +296,19 @@ export const PDFPedido = () => {
                 <span className="text-gray-700 font-semibold">
                   Observações:
                 </span>
-                <p className="w-2/4 text-gray-700 text-start whitespace-pre-wrap break-words">
-                  {detailsPropostal.obs === ""
-                    ? "Sem observações"
-                    : detailsPropostal.obs}
+                <p className="flex w-2/4  items-center text-center ">
+                  {detailsPropostal.obs === "" ? (
+                    <span className=" w-full  flex text-center items-center">
+                      Sem observações
+                    </span>
+                  ) : (
+                    <p className="text-gray-700  whitespace-pre-wrap break-words">
+                      {detailsPropostal.obs}
+                    </p>
+                  )}
                 </p>
               </div>
-              <div className="flex flex-col items-start justify-between ">
+              <div className="flex flex-col items-center justify-between">
                 <div className="flex flex-col">
                   <span className="text-gray-700 font-semibold">
                     Facilidade no pagamento e agilidade na entrega:
@@ -308,7 +335,7 @@ export const PDFPedido = () => {
                   </span>
                 </div>
               </div>
-              <div className="flex flex-col items-start justify-between">
+              <div className="flex flex-col items-center justify-between ">
                 <span className="text-gray-700 font-bold text-lg">
                   Por que escolher a 3 Irmãos Arte em Madeira de Demolição ?
                 </span>

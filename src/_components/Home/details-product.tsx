@@ -241,7 +241,7 @@ export const DetailsProduct = () => {
                                 checked={
                                   variation.id === variationSelectedId.id
                                 }
-                                disabled={variation.quantidadeEmEstoque <= 0}
+                                // disabled={variation.quantidadeEmEstoque <= 0}
                                 onChange={(e) => {
                                   setVariationSelectedId({
                                     id: e.target.value,
@@ -262,7 +262,10 @@ export const DetailsProduct = () => {
                               />
                               <label
                                 htmlFor={variation.id}
-                                className="cursor-pointer text-sm md:text-lg font-semibold text-red-900 line-through"
+                                className={`cursor-pointer text-sm md:text-lg font-semibold text-red-900 ${
+                                  variation.quantidadeEmEstoque <= 0 &&
+                                  "line-through"
+                                }`}
                               >
                                 {variation.nomeVariacaoB}{" "}
                               </label>

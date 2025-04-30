@@ -43,64 +43,7 @@ import {
 } from "firebase/storage";
 import DetailsOrder from "./DetailsOrder/DetailsOrder";
 import { IMaskInput } from "react-imask";
-
-export interface ProductsInOrderProps {
-  id: number;
-  nome: string;
-  quantidade: number;
-  preco: number;
-  altura: number;
-  largura: number;
-  comprimento: number;
-  listImages: { imagem: string }[];
-  selectedVariation: { id: string; nomeVariacao: string };
-}
-
-export interface SellerProps {
-  id: number;
-  name: string;
-}
-
-export interface IClient {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-}
-
-export interface IDeliveryAddress {
-  cep: string;
-  street: string;
-  number: string;
-  neighborhood: string;
-  city: string;
-  state: string;
-  ibge: string;
-}
-
-interface IPaymentMethod {
-  id: string;
-  name: string;
-}
-interface DetailsPropostalProps {
-  obs: string;
-  payment: string;
-  time: string;
-  delivery: number;
-}
-export interface Order {
-  id: number;
-  client: IClient;
-  deliveryAddress: IDeliveryAddress;
-  products: ProductsInOrderProps[];
-  orderId: number;
-  orderStatus: number;
-  totalValue: number;
-  createdAt: string;
-  paymentMethod?: IPaymentMethod;
-  detailsPropostal: DetailsPropostalProps;
-  imagesUrls: string[];
-}
+import { Order } from "@/interfaces/Order";
 
 /* 
 [] Incluir nas props do produto as medidas informadas
@@ -803,11 +746,32 @@ const OrdersTable = () => {
                               </div>
                             </div>
                           </div>
+
+                          <div className="flex flex-col gap-2">
+                            <h1 className="font-semibold text-lg">
+                              Imagens de referência
+                            </h1>
+                            <>
+                              {order.clientImages &&
+                              order.clientImages.length > 0 ? (
+                                <div className="flex gap-2">
+                                  {order.clientImages.map((url, index) => (
+                                    <img
+                                      key={index}
+                                      src={url}
+                                      alt="Imagem fornecida pela 3 irmãos"
+                                      className="size-32 rounded-lg hover:scale-105 transition-all duration-300"
+                                    />
+                                  ))}
+                                </div>
+                              ) : (
+                                <span>Nenhuma imagem fornecida</span>
+                              )}
+                            </>
+                          </div>
                           <div className="flex flex-col gap-4">
                             {/* Upload de imagens */}
-                            <h1 className="font-semibold text-lg">
-                              Projeto (imagens ilustrativas)
-                            </h1>
+                            <h1 className="font-semibold text-lg">Sketches</h1>
                             {order.orderStatus > 1 ? (
                               <>
                                 {order.imagesUrls &&
