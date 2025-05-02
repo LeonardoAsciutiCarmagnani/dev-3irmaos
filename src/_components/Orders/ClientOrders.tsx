@@ -32,70 +32,15 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { db } from "../Utils/FirebaseConfig";
+import { db, storage } from "../Utils/FirebaseConfig";
 import { toast } from "sonner";
 import DetailsOrder from "./DetailsOrder/DetailsOrder";
 import { IMaskInput } from "react-imask";
 import { useAuthStore } from "@/context/authContext";
 import { Link } from "react-router-dom";
-
-export interface ProductsInOrderProps {
-  id: number;
-  nome: string;
-  quantidade: number;
-  preco: number;
-  altura: number;
-  largura: number;
-  comprimento: number;
-  listImages: { imagem: string }[];
-  selectedVariation: { id: string; nomeVariacao: string };
-}
-
-export interface SellerProps {
-  id: number;
-  name: string;
-}
-
-export interface IClient {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-}
-
-export interface IDeliveryAddress {
-  cep: string;
-  street: string;
-  number: string;
-  neighborhood: string;
-  city: string;
-  state: string;
-  ibge: string;
-}
-
-interface IPaymentMethod {
-  id: string;
-  name: string;
-}
-export interface DetailsPropostalProps {
-  obs: string;
-  payment: string;
-  time: string;
-  delivery: number;
-}
-export interface Order {
-  id: number;
-  client: IClient;
-  deliveryAddress: IDeliveryAddress;
-  products: ProductsInOrderProps[];
-  orderId: number;
-  orderStatus: number;
-  totalValue: number;
-  createdAt: string;
-  paymentMethod?: IPaymentMethod;
-  detailsPropostal: DetailsPropostalProps;
-  imagesUrls: string[];
-}
+import Dropzone from "../DropzoneImage/DropzoneImage";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { Order } from "@/interfaces/Order";
 
 type OrderStatusType = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 
@@ -111,6 +56,8 @@ const ClientOrdersTable = () => {
   const [statusFilter, setStatusFilter] = useState(0); // zero igual a todos os status
   const [showCardOrder, setShowCardOrder] = useState<number | null>(null);
   const [sendPropostal, setSendPropostal] = useState(false);
+
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
 
   /* Detalhes do orçamento */
   const [obs, setObs] = useState("");
@@ -245,6 +192,69 @@ const ClientOrdersTable = () => {
 
   function handleShowCard(orderId: number) {
     setShowCardOrder(orderId);
+  }
+
+  function handleImagesSelected(files: File[]) {
+    setSelectedImages(Array.from(files));
+  }
+
+  async function UploadImagesForStorage(
+    images: FileList | File[],
+    orderId: number
+  ): Promise<string[]> {
+    if (!images || images.length === 0) return [];
+
+    const uploadPromises = Array.from(images).map(async (file) => {
+      const uniqueFileName = `${Date.now()}_${file.name}_order_${orderId}`;
+      const storagePath = `imagens/${uniqueFileName}`;
+      const storageRef = ref(storage, storagePath);
+
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+      return downloadURL;
+    });
+
+    return Promise.all(uploadPromises); // retorna todas as URLs das imagens
+  }
+
+  async function handlePushNewImages(orderToPush: Order) {
+    try {
+      console.log("Order to include new images =>", orderToPush);
+      setSendPropostal(true);
+
+      const q = query(
+        collection(db, "budgets"),
+        where("orderId", "==", orderToPush.orderId)
+      );
+      const orderData = await getDocs(q);
+
+      const [firstDoc] = orderData.docs;
+      if (!firstDoc) {
+        toast.error("Pedido não encontrado.");
+        return;
+      }
+
+      const orderDocRef = doc(db, "budgets", firstDoc.id);
+
+      const uploadedImages = await UploadImagesForStorage(
+        selectedImages,
+        orderToPush.orderId
+      );
+
+      const allImages = [...uploadedImages, ...(orderToPush.imagesUrls || [])];
+
+      await updateDoc(orderDocRef, {
+        clientImages: allImages,
+      });
+
+      setSelectedImages([]);
+      toast.success("Imagens enviadas com sucesso.");
+    } catch (error) {
+      console.error("Erro ao tentar salvar as imagens:", error);
+      toast.error("Ocorreu um erro ao tentar salvar as imagens");
+    } finally {
+      setSendPropostal(false);
+    }
   }
 
   const formattedFrom = date?.from
@@ -448,6 +458,7 @@ const ClientOrdersTable = () => {
                                         createdAt: order.createdAt,
                                         client: order.client,
                                         products: order.products,
+                                        clientImages: order.clientImages,
                                         imagesUrls: order.imagesUrls,
                                         detailsPropostal:
                                           order.detailsPropostal,
@@ -467,7 +478,17 @@ const ClientOrdersTable = () => {
                                   <div className="flex justify-around items-start">
                                     <div className=" flex flex-col justify-between">
                                       <span className="text-xl font-bold text-gray-700">
-                                        Pedido {order.orderId}
+                                        {order.orderStatus === 1
+                                          ? "Orçamento"
+                                          : order.orderStatus === 2
+                                          ? "Proposta"
+                                          : order.orderStatus === 3
+                                          ? "Proposta"
+                                          : order.orderStatus === 4
+                                          ? "Proposta"
+                                          : order.orderStatus > 4 &&
+                                            "Pedido"}{" "}
+                                        {order.orderId}
                                       </span>
                                       <div className="flex gap-2 items-center">
                                         <span className="font-semibold  text-gray-700">
@@ -679,9 +700,65 @@ const ClientOrdersTable = () => {
                             <div className="flex flex-col gap-4">
                               {/* Upload de imagens */}
                               <h1 className="font-semibold text-lg">
-                                Projeto (imagens ilustrativas)
+                                Imagens de referência
                               </h1>
-                              <div className="flex gap-2 overflow-x-auto py-2">
+                              {order.orderStatus > 1 ? (
+                                /* Caso o status seja maior que orçamento exibe somente as imagens fornecidas */
+                                <>
+                                  {order.clientImages &&
+                                  order.clientImages.length > 0 ? (
+                                    <div className="flex gap-2">
+                                      {order.clientImages.map((url, index) => (
+                                        <img
+                                          key={index}
+                                          src={url}
+                                          alt="Imagem fornecida pela 3 irmãos"
+                                          className="size-32 rounded-lg hover:scale-105 transition-all duration-300"
+                                        />
+                                      ))}
+                                    </div>
+                                  ) : (
+                                    <span>Nenhuma imagem fornecida</span>
+                                  )}
+                                </>
+                              ) : (
+                                <div className="flex flex-col space-y-3">
+                                  <div className="flex gap-2">
+                                    {order.clientImages &&
+                                      order.clientImages.map((image, index) => (
+                                        <img
+                                          key={index}
+                                          src={image}
+                                          alt="Imagem fornecida pela 3 irmãos"
+                                          className="size-32 rounded-lg hover:scale-105 transition-all duration-300"
+                                        />
+                                      ))}
+                                  </div>
+                                  <Dropzone
+                                    onFileSelect={handleImagesSelected}
+                                  />
+                                  <Button
+                                    disabled={sendPropostal}
+                                    onClick={() => handlePushNewImages(order)}
+                                  >
+                                    {sendPropostal ? (
+                                      <>
+                                        <LoaderCircle className="animate-spin" />
+                                        Salvando...
+                                      </>
+                                    ) : (
+                                      "Salvar"
+                                    )}
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
+                            {/* Imagens fornecidas pela 3 irmãos */}
+                            <div className="flex flex-col gap-4">
+                              <h1 className="font-semibold text-lg">
+                                Sketches
+                              </h1>
+                              <div className="flex gap-2 overflow-x-auto p-2">
                                 {order.imagesUrls &&
                                 order.imagesUrls.length > 0 ? (
                                   order.imagesUrls
@@ -701,16 +778,16 @@ const ClientOrdersTable = () => {
                               </div>
                             </div>
 
-                            <div>
-                              {/* Inputs para alteração das informações dinâmicas da proposta */}
-
-                              <DetailsOrder
-                                statusOrder={order.orderStatus}
-                                detailsPropostal={order.detailsPropostal}
-                                getAllData={handleAllData}
-                                propostalValue={order?.totalValue}
-                              />
-                            </div>
+                            {order.orderStatus !== 1 && (
+                              <div>
+                                <DetailsOrder
+                                  statusOrder={order.orderStatus}
+                                  detailsPropostal={order.detailsPropostal}
+                                  getAllData={handleAllData}
+                                  propostalValue={order?.totalValue}
+                                />
+                              </div>
+                            )}
                             <div className="flex items-center justify-center gap-10">
                               <Button
                                 className={`bg-emerald-500 hover:bg-emerald-600 hidden ${
