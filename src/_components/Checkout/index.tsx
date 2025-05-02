@@ -7,7 +7,7 @@ import { api } from "@/lib/axios";
 import { LoaderCircle, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+import { toast, Toaster } from "sonner";
 import RegisterModal from "./register-modal";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../Utils/FirebaseConfig";
@@ -162,13 +162,14 @@ export const Checkout = () => {
   }, [user]);
 
   useEffect(() => {
-    console.log("Chamou", address.cep, "oi");
+    // console.log("Chamou", address.cep, "oi");
     getUserAddress();
     fetchAddress(address.cep);
   }, []);
 
   return (
-    <div className="flex border-gray-300 p-4 rounded-lg text-sm md:text-md overflow-y-auto">
+    <div className="flex  border-gray-300 p-4 rounded-lg text-sm md:text-md overflow-y-auto">
+      <Toaster richColors />
       {productsInCart.length !== 0 ? (
         <div className="flex flex-col w-full md:flex-row gap-4 md:justify-around">
           <div className="flex flex-col space-y-4 w-full md:w-2/5 ">
@@ -398,9 +399,7 @@ export const Checkout = () => {
           </div>
         </>
       )}
-      {modalIsOpen && (
-        <RegisterModal open={modalIsOpen} setIsOpen={setModalIsOpen} />
-      )}
+      {modalIsOpen && <RegisterModal open={modalIsOpen} />}
     </div>
   );
 };

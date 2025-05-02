@@ -447,37 +447,40 @@ const ClientOrdersTable = () => {
 
                           <DialogContent className="flex flex-col border rounded-xs bg-gray-100 md:w-2/3 h-[80vh] overflow-y-scroll">
                             <DialogHeader>
-                              <div className="flex justify-between items-center">
+                              <div className="flex items-center">
                                 <DialogTitle>Detalhes</DialogTitle>
                               </div>
-                              <div className="flex justify-between w-full bg-gray-200 p-2 rounded-xs items-center shadow-md">
+                              <div className="flex w-full bg-gray-200 p-2 rounded-xs items-center shadow-md">
                                 <div className="flex flex-col w-full">
-                                  <div className="flex justify-end  w-full">
-                                    <Link
-                                      to={"/imprimir"}
-                                      state={{
-                                        id: order.orderId,
-                                        createdAt: order.createdAt,
-                                        client: order.client,
-                                        products: order.products,
-                                        clientImages: order.clientImages,
-                                        imagesUrls: order.imagesUrls,
-                                        detailsPropostal:
-                                          order.detailsPropostal,
-                                        deliveryAddress: order.deliveryAddress,
-                                        totalValue: order.totalValue,
-                                      }}
-                                    >
-                                      <Button
-                                        variant={"ghost"}
-                                        className="font-semibold text-red-800 hover:text-red-900"
+                                  {order.orderStatus !== 1 && (
+                                    <div className="flex justify-end  w-full">
+                                      <Link
+                                        to={"/imprimir"}
+                                        state={{
+                                          id: order.orderId,
+                                          createdAt: order.createdAt,
+                                          client: order.client,
+                                          products: order.products,
+                                          clientImages: order.clientImages,
+                                          imagesUrls: order.imagesUrls,
+                                          detailsPropostal:
+                                            order.detailsPropostal,
+                                          deliveryAddress:
+                                            order.deliveryAddress,
+                                          totalValue: order.totalValue,
+                                        }}
                                       >
-                                        Imprimir PDF
-                                        <Download className="size-5" />
-                                      </Button>
-                                    </Link>
-                                  </div>
-                                  <div className="flex justify-around items-start">
+                                        <Button
+                                          variant={"ghost"}
+                                          className="font-semibold text-red-800 hover:text-red-900"
+                                        >
+                                          Imprimir PDF
+                                          <Download className="size-5" />
+                                        </Button>
+                                      </Link>
+                                    </div>
+                                  )}
+                                  <div className="flex space-x-32 items-start">
                                     <div className=" flex flex-col justify-between">
                                       <span className="text-xl font-bold text-gray-700">
                                         {order.orderStatus === 1
@@ -608,10 +611,10 @@ const ClientOrdersTable = () => {
                                                 <span>
                                                   Altura: {item.altura}
                                                 </span>
-                                                <span>
+                                                {/*   <span>
                                                   Comprimento:{" "}
                                                   {item.comprimento}
-                                                </span>
+                                                </span> */}
                                                 <span>
                                                   Largura: {item.largura}
                                                 </span>

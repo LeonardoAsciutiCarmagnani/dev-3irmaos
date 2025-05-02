@@ -544,9 +544,10 @@ const OrdersTable = () => {
                               <DialogTitle>Detalhes do pedido</DialogTitle>
                             </div>
                             <div className="flex justify-around w-full bg-gray-200 p-2 rounded-xs items-center shadow-md">
-                              <div className="flex flex-col w-full">
-                                <div className="flex justify-around items-start ">
-                                  <div className=" flex flex-col justify-between">
+                              <div className="flex flex-col w-full ">
+                                <div className="flex flex-col md:flex-row space-x-32 items-start ">
+                                  {/* Dados do cliente */}
+                                  <div className=" flex flex-col  ">
                                     <span className="text-xl font-bold text-gray-700">
                                       Pedido {order.orderId}
                                     </span>
@@ -583,6 +584,7 @@ const OrdersTable = () => {
                                       </span>
                                     </div>
                                   </div>
+                                  {/* Endereço */}
                                   <div className=" flex flex-col justify-between">
                                     <div className="flex gap-2 items-center">
                                       <span className="font-semibold  text-gray-700">
@@ -642,7 +644,7 @@ const OrdersTable = () => {
                             <div className="font-semibold text-lg">
                               Produtos
                             </div>
-                            <div className="p-2 max-h-50 w-2/3 overflow-y-scroll space-y-2">
+                            <div className="p-2 max-h-50 w-full md:w-2/3 overflow-y-scroll space-y-2">
                               {order.products &&
                                 order.products.map((item) => {
                                   return (
@@ -664,9 +666,9 @@ const OrdersTable = () => {
                                             </span>
                                             <div className="text-sm text-gray-500 flex gap-2">
                                               <span>Altura: {item.altura}</span>
-                                              <span>
+                                              {/*     <span>
                                                 Comprimento: {item.comprimento}
-                                              </span>
+                                              </span> */}
                                               <span>
                                                 Largura: {item.largura}
                                               </span>
@@ -725,7 +727,7 @@ const OrdersTable = () => {
                                   return (
                                     <div
                                       key={item.id}
-                                      className="flex flex-col gap-2 items-start"
+                                      className="flex flex-col gap-2 items- overflow-x-auto"
                                     >
                                       <span className="text-lg text-gray-700">
                                         {item.nome}
