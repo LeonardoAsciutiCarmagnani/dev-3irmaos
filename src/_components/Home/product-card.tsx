@@ -12,7 +12,10 @@ const ProductCard = (Product: Product) => {
   ];
 
   return (
-    <div className="flex flex-col items-center justify-start h-[17.5rem] bg-gray-50 w-full hover:cursor-pointer hover:shadow-sm transition-all duration-300 ease-in-out shadow-sm">
+    <div
+      onClick={() => navigate(`/detalhes/${Product.id}`, { state: Product })}
+      className="hover:cursor-pointer flex flex-col items-center justify-start h-[17.5rem] bg-gray-50 w-full hover:cursor-pointer hover:shadow-sm transition-all duration-300 ease-in-out shadow-sm "
+    >
       <div className="flex flex-col items-center justify-center w-full space-y-2">
         <div className="relative inline-block ">
           <ImageCarousel images={CarouselImages} />

@@ -12,15 +12,15 @@ import {
   PackageSearchIcon,
   ScrollTextIcon,
 } from "lucide-react";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 
 const Sidebar = () => {
   const [open, setOpen] = useState(false);
   const { user } = useAuthStore();
   const { search, pathname } = useLocation();
-  const navigate = useNavigate();
+  const [accordionValue, setAccordionValue] = useState("");
 
   const currentCat = new URLSearchParams(search).get("c") || "";
 
@@ -59,6 +59,10 @@ const Sidebar = () => {
     "Moveis, Painéis e Bancadas",
     "Outros",
   ];
+
+  useEffect(() => {
+    setAccordionValue(pathname === "/produtos" ? "produtos" : "");
+  }, [pathname]);
 
   return (
     <div
@@ -105,28 +109,26 @@ const Sidebar = () => {
         <Accordion
           type="single"
           collapsible
-          value={pathname === "/produtos" ? "produtos" : ""}
-          onValueChange={(value) => {
-            if (value === "produtos" && pathname !== "/produtos") {
-              navigate("/produtos");
-            }
-            setOpen(true);
-          }}
+          value={accordionValue}
+          onValueChange={setAccordionValue}
         >
           <AccordionItem value="produtos" className="rounded-none">
             <AccordionTrigger
-              className="
-                flex items-center p-1.5 cursor-pointer
-                hover:bg-red-900 hover:text-white
-                data-[state=open]:bg-red-900 text-gray-800 data-[state=open]:text-white data-[state=open]:shadow-sm shadow-gray-500 
-                rounded-none
-              "
+              className={`
+              flex items-center p-1.5 cursor-pointer
+              hover:bg-red-900 hover:text-white
+              data-[state=open]:bg-red-900 text-gray-800 
+              data-[state=open]:text-white data-[state=open]:shadow-sm 
+              shadow-gray-500 rounded-none
+            `}
+              onClick={() => setOpen(true)}
             >
               <PackageSearchIcon className="size-6 transform data-[state=open]:rotate-none" />
               {open && (
                 <span className="text-[0.97rem] font-normal">Produtos</span>
               )}
             </AccordionTrigger>
+
             {open && (
               <AccordionContent className="pt-1 pb-2 text-xs border-b-5 border-outset">
                 <ul className="space-y-0.5">
