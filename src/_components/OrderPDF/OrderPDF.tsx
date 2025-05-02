@@ -267,7 +267,9 @@ export const PDFPedido = () => {
           {/* Sketches informados pela 3 irmãos */}
           <div className="flex flex-col gap-4 mb-6">
             {/* Upload de imagens */}
-            <h1 className="font-semibold text-lg">Sketches</h1>
+            <h1 className="font-semibold text-lg">
+              Projeto (imagens ilustrativas)
+            </h1>
             <div className="flex gap-2 py-2  flex-wrap">
               {imagesUrls && imagesUrls.length > 0 ? (
                 imagesUrls
