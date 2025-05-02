@@ -5,6 +5,7 @@ import {
   signOut,
   getIdTokenResult,
 } from "firebase/auth";
+import { toast } from "sonner";
 
 interface AuthState {
   uid: string;
@@ -45,7 +46,6 @@ export const useAuthStore = create<AuthStore>((set) => ({
             : "";
         const accessToken = await user.getIdToken();
 
-        console.log("Acesso do usuário:", role);
         set({
           user: {
             uid: user.uid,
@@ -55,6 +55,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
             role,
           },
         });
+        toast.success("Login realizado com sucesso!");
       }
     } catch (error) {
       let errorMessage = "Erro ao fazer login.";
@@ -85,6 +86,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
       await signOut(auth);
       localStorage.clear();
       set({ user: null });
+      toast.success("Logout realizado com sucesso!");
     } catch (error) {
       set({
         error: error instanceof Error ? error.message : "Erro ao deslogar",

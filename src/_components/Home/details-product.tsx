@@ -20,7 +20,7 @@ import { Badge } from "@/components/ui/badge";
 
 const productSchema = z.object({
   altura: z.coerce.number().min(1, "Altura obrigatória"),
-  comprimento: z.coerce.number().min(1, "Comprimento obrigatório"),
+  // comprimento: z.coerce.number().min(1, "Comprimento obrigatório"),
   largura: z.coerce.number().min(1, "Largura obrigatória"),
   quantidade: z.coerce.number().min(1, "Quantidade obrigatória"),
 });
@@ -58,13 +58,13 @@ export const DetailsProduct = () => {
     defaultValues: typeProduct.typeProduct
       ? {
           altura: product.altura,
-          comprimento: product.comprimento,
+          // comprimento: product.comprimento,
           largura: product.largura,
           quantidade: 1,
         }
       : {
           altura: undefined,
-          comprimento: undefined,
+          // comprimento: undefined,
           largura: undefined,
           quantidade: 1,
         },
@@ -74,14 +74,14 @@ export const DetailsProduct = () => {
     if (typeProduct.typeProduct) {
       reset({
         altura: product.altura,
-        comprimento: product.comprimento,
+        // comprimento: product.comprimento,
         largura: product.largura,
         quantidade: 1,
       });
     } else {
       reset({
         altura: undefined,
-        comprimento: undefined,
+        // comprimento: undefined,
         largura: undefined,
         quantidade: 1,
       });
@@ -110,7 +110,7 @@ export const DetailsProduct = () => {
       ...product,
       selectedVariation: typeProduct.productVariationSelected,
       altura: data.altura,
-      comprimento: data.comprimento,
+      // comprimento: data.comprimento,
       largura: data.largura,
       quantidade: data.quantidade,
       listImages: listImages,
@@ -127,10 +127,10 @@ export const DetailsProduct = () => {
   };
 
   return (
-    <div className="h-screen w-full bg-gray-50 overflow-auto">
+    <div className="h-screen w-full overflow-auto">
       <div className="flex flex-col justify-start items-start p-4 md:p-10 space-y-4 ">
-        <div className="flex flex-col md:flex-row gap-y-3 w-full gap-x-6">
-          <div className="md:w-3/5 w-full h-fit rounded-xs overflow-hidden transition-shadow duration-300 hover:shadow-2xl flex flex-col gap-y-1 border-[0.12rem] border-gray-200 shadow-sm">
+        <div className="flex flex-col md:flex-row gap-y-3 w-full gap-x-6 p-1 md:items-center">
+          <div className="md:w-3/5 w-full rounded-xs overflow-hidden transition-shadow duration-300 shadow-md flex flex-col gap-y-1 ">
             <Carousel plugins={[Autoplay({ delay: 2500 }), Fade()]}>
               <CarouselContent className="w-full">
                 {CarouselImages.map((imagem, index) => (
@@ -141,7 +141,7 @@ export const DetailsProduct = () => {
                     <img
                       src={imagem.imagem}
                       alt={`Imagens do produto ${product.nome}`}
-                      className="w-full h-40 md:h-80 object-cover"
+                      className="w-full h-[15rem] md:h-[40vh] object-cover"
                     />
                   </CarouselItem>
                 ))}
@@ -155,17 +155,13 @@ export const DetailsProduct = () => {
           </div>
           {/* Responsável por alinhar todos os elementos do lado direito da tela  */}
           <div className="flex flex-col space-y-4 w-full">
-            {product.descricao !== null && (
-              <div className="flex flex-col md:max-w-[55rem] bg-gray-50 p-2 rounded-xs shadow-sm">
-                <span className="text-md md:text-lg font-medium text-gray-800 text-center">
-                  Descrição
-                </span>
-                <span className="rounded-xs p-3 text-gray-700  text-[0.77rem] md:text-md font-normal antialiased">
-                  {product.descricao}
-                </span>
-              </div>
-            )}
-            <div className="p-2 bg-gray-50 rounded-xs shadow-sm">
+            <div className="flex flex-col w-full p-2 rounded-xs shadow-sm">
+              <span className="rounded-xs p-3 text-gray-700 text-[0.77rem] md:text-sm font-normal antialiased">
+                {product.descricao ?? "Descrição não disponível"}
+              </span>
+            </div>
+
+            <div className="p-6 rounded-xs shadow-sm ">
               <div className="flex justify-center md:justify-end gap-4 p-1">
                 <div className="flex items-center gap-2">
                   <input
@@ -200,7 +196,7 @@ export const DetailsProduct = () => {
                     name="typeProduct"
                     id="prontaentrega"
                     value={product.variacao?.[0]?.nomeVariacaoA || ""}
-                    className="h-5 w-5 text-red-900 focus:ring-2 focus:ring-red-600 rounded-xs accent-red-900"
+                    className="h-5 w-5 text-gray-900 focus:ring-2 focus:ring-red-600 rounded-xs accent-red-900"
                     checked={typeProduct.typeProduct === true}
                     onChange={() =>
                       setTypeProduct(() => ({
@@ -223,224 +219,232 @@ export const DetailsProduct = () => {
               </div>
 
               {product.variacao?.[0].tipoVariacaoB && (
-                <div className="flex flex-col space-y-1">
-                  <h1 className="text-sm md:text-md font-semibold text-gray-900">
+                <div className="flex flex-col space-y-1 place-items-center md:place-items-stretch mt-4 md:mt-0">
+                  <h1 className="text-sm md:text-md font-semibold text-red-900">
                     Escolha o tipo de madeira:
                   </h1>
-                  <div className="flex flex-col gap-y-1">
+                  <div className="flex gap-x-4 items-center justify-center w-full">
                     {product.variacao?.map((variation) => {
                       const isMedidaPadrao =
                         variation.nomeVariacaoA === "Medida Padrao";
                       const isSobMedida =
                         variation.nomeVariacaoA === "Sob Medida";
 
-                  return (
-                    <div key={variation.id}>
-                      {typeProduct.typeProduct
-                        ? isMedidaPadrao && (
-                            <div className="flex items-center gap-2">
-                              <input
-                                type="radio"
-                                id={variation.id}
-                                value={variation.id || ""}
-                                checked={
-                                  variation.id === variationSelectedId.id
-                                }
-                                // disabled={variation.quantidadeEmEstoque <= 0}
-                                onChange={(e) => {
-                                  setVariationSelectedId({
-                                    id: e.target.value,
-                                    name: "",
-                                  });
-                                  setTypeProduct((prev) => {
-                                    return {
-                                      ...prev,
-                                      productVariationSelected: {
-                                        id: variation.id,
-                                        nomeVariacao:
-                                          variation.nomeVariacaoB || "",
-                                      },
-                                    };
-                                  });
-                                }}
-                                className="h-5 w-5 text-red-900 focus:ring-2 focus:ring-red-600 rounded-xs"
-                              />
-                              <label
-                                htmlFor={variation.id}
-                                className={`cursor-pointer text-sm md:text-lg font-semibold text-red-900 ${
-                                  variation.quantidadeEmEstoque <= 0 &&
-                                  "line-through"
-                                }`}
-                              >
-                                {variation.nomeVariacaoB}{" "}
-                              </label>
-                            </div>
-                          )
-                        : isSobMedida && (
-                            <div className="flex items-center gap-2">
-                              <input
-                                type="radio"
-                                id={variation.id}
-                                value={variation.id || ""}
-                                checked={
-                                  variation.id === variationSelectedId.id
-                                }
-                                onChange={(e) => {
-                                  setVariationSelectedId({
-                                    id: e.target.value,
-                                    name: "",
-                                  });
-                                  setTypeProduct((prev) => {
-                                    return {
-                                      ...prev,
-                                      productVariationSelected: {
-                                        id: variation.id,
-                                        nomeVariacao:
-                                          variation.nomeVariacaoB || "",
-                                      },
-                                    };
-                                  });
-                                }}
-                                className="h-5 w-5 text-red-900 focus:ring-2 focus:ring-red-600 rounded-xs"
-                              />
-                              <label
-                                htmlFor={variation.id}
-                                className="cursor-pointer text-sm md:text-lg font-semibold text-red-900"
-                              >
-                                {variation.nomeVariacaoB}
-                              </label>
-                            </div>
+                      return (
+                        <div key={variation.id}>
+                          {typeProduct.typeProduct
+                            ? isMedidaPadrao && (
+                                <div className="flex items-center gap-2">
+                                  <input
+                                    type="radio"
+                                    id={variation.id}
+                                    value={variation.id || ""}
+                                    checked={
+                                      variation.id === variationSelectedId.id
+                                    }
+                                    // disabled={variation.quantidadeEmEstoque <= 0}
+                                    onChange={(e) => {
+                                      setVariationSelectedId({
+                                        id: e.target.value,
+                                        name: "",
+                                      });
+                                      setTypeProduct((prev) => {
+                                        return {
+                                          ...prev,
+                                          productVariationSelected: {
+                                            id: variation.id,
+                                            nomeVariacao:
+                                              variation.nomeVariacaoB || "",
+                                          },
+                                        };
+                                      });
+                                    }}
+                                    className="h-5 w-5 text-gray-900 focus:ring-2 focus:ring-red-600 rounded-xs"
+                                  />
+                                  <div className="flex flex-col items-center">
+                                    <label
+                                      htmlFor={variation.id}
+                                      className={`cursor-pointer text-sm md:text-lg font-semibold text-gray-900 ${
+                                        variation.quantidadeEmEstoque <= 0 &&
+                                        "line-through"
+                                      }`}
+                                    >
+                                      {variation.nomeVariacaoB}{" "}
+                                    </label>
+                                    {variation.quantidadeEmEstoque <= 0 && (
+                                      <Badge>Sem estoque</Badge>
+                                    )}
+                                  </div>
+                                </div>
+                              )
+                            : isSobMedida && (
+                                <div className="flex items-center gap-2">
+                                  <input
+                                    type="radio"
+                                    id={variation.id}
+                                    value={variation.id || ""}
+                                    checked={
+                                      variation.id === variationSelectedId.id
+                                    }
+                                    onChange={(e) => {
+                                      setVariationSelectedId({
+                                        id: e.target.value,
+                                        name: "",
+                                      });
+                                      setTypeProduct((prev) => {
+                                        return {
+                                          ...prev,
+                                          productVariationSelected: {
+                                            id: variation.id,
+                                            nomeVariacao:
+                                              variation.nomeVariacaoB || "",
+                                          },
+                                        };
+                                      });
+                                    }}
+                                    className="h-5 w-5 text-gray-900 focus:ring-2 focus:ring-red-600 rounded-xs"
+                                  />
+                                  <label
+                                    htmlFor={variation.id}
+                                    className="cursor-pointer text-sm md:text-lg font-semibold text-gray-900"
+                                  >
+                                    {variation.nomeVariacaoB}
+                                  </label>
+                                </div>
+                              )}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="p-2">
+                    <form onSubmit={handleSubmit(onSubmit)}>
+                      <div className="flex md:h-24 flex-col items-center md:flex-row md:justify-around space-y-2 gap-x-2 md:space-y-0">
+                        <div className="flex gap-x-6 items-center justify-center">
+                          <div>
+                            <label
+                              htmlFor="altura"
+                              className="text-sm font-medium text-gray-700"
+                            >
+                              Altura (cm)
+                            </label>
+                            <Input
+                              id="altura"
+                              type="number"
+                              step={"0.01"}
+                              {...register("altura")}
+                              disabled={typeProduct.typeProduct}
+                              className="w-[4rem] border border-gray-300 rounded-xs p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
+                            />
+                            {errors.altura && (
+                              <span className="text-red-500 text-sm">
+                                {errors.altura.message}
+                              </span>
+                            )}
+                          </div>
+
+                          {/* <div>
+                          <label
+                            htmlFor="comprimento"
+                            className="text-sm font-medium text-gray-700"
+                          >
+                            Comprimento
+                          </label>
+                          <Input
+                            id="comprimento"
+                            type="number"
+                            step={"0.01"}
+                            placeholder="Comprimento"
+                            {...register("comprimento")}
+                            disabled={typeProduct.typeProduct}
+                            className="w-[4rem] border border-gray-300 rounded-xs p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
+                          />
+                          {errors.comprimento && (
+                            <span className="text-red-500 text-sm">
+                              {errors.comprimento.message}
+                            </span>
                           )}
+                        </div> */}
+
+                          <div>
+                            <label
+                              htmlFor="largura"
+                              className="text-sm font-medium text-gray-700"
+                            >
+                              Largura (cm)
+                            </label>
+                            <Input
+                              id="largura"
+                              type="number"
+                              step={"0.01"}
+                              {...register("largura")}
+                              disabled={typeProduct.typeProduct}
+                              className="w-[4rem] border border-gray-300 rounded-xs p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
+                            />
+                            {errors.largura && (
+                              <span className="text-red-500 text-sm">
+                                {errors.largura.message}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div>
+                          <label
+                            htmlFor="quantidade"
+                            className="text-sm font-medium text-gray-700"
+                          >
+                            Quantidade
+                          </label>
+                          <Input
+                            id="quantidade"
+                            type="number"
+                            {...register("quantidade")}
+                            className="w-[4.3rem] border border-gray-300 rounded-xs p-2 focus:outline-none focus:ring-2 focus:ring-red-600"
+                          />
+                          {errors.quantidade && (
+                            <span className="text-red-500 text-sm">
+                              {errors.quantidade.message}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      {typeProduct.typeProduct === true && (
+                        <div className="flex items-center justify-end gap-1 text-end">
+                          <span className="font-semibold text-red-900 text-lg">
+                            Preço:
+                          </span>
+                          <span className="text-gray-700">{product.preco}</span>
+                        </div>
+                      )}
+                      <div className="flex md:justify-end mt-4 mb-4">
+                        <Button
+                          type="submit"
+                          className="w-fit bg-red-900 text-white rounded-xs py-2 hover:bg-red-700 transition-colors"
+                        >
+                          Adicionar produto
+                        </Button>
+                      </div>
+                    </form>
+
+                    <div className="flex justify-end gap-x-4">
+                      <Button
+                        onClick={() => navigate("/")}
+                        className="text-xs md:text-sm bg-gray-200 text-gray-700 rounded-xs py-2 hover:bg-gray-300 transition-colors"
+                      >
+                        Adicionar outros produtos
+                      </Button>
+                      <Button
+                        onClick={() => navigate("/orçamento")}
+                        className="text-xs md:text-sm bg-green-700 text-white rounded-xs py-2 hover:bg-green-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={productsInCart.length === 0}
+                      >
+                        Prosseguir com a cotação
+                      </Button>
                     </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="flex md:h-24 flex-col items-center md:flex-row md:justify-around space-y-2 gap-x-2 md:space-y-0">
-                <div>
-                  <label
-                    htmlFor="altura"
-                    className="text-sm font-medium text-gray-700"
-                  >
-                    Altura
-                  </label>
-                  <Input
-                    id="altura"
-                    type="number"
-                    step={"0.01"}
-                    placeholder="Altura"
-                    {...register("altura")}
-                    disabled={typeProduct.typeProduct}
-                    className="w-fit border border-gray-300 rounded-xs p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
-                  />
-                  {errors.altura && (
-                    <span className="text-red-500 text-sm">
-                      {errors.altura.message}
-                    </span>
-                  )}
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="comprimento"
-                    className="text-sm font-medium text-gray-700"
-                  >
-                    Comprimento
-                  </label>
-                  <Input
-                    id="comprimento"
-                    type="number"
-                    step={"0.01"}
-                    placeholder="Comprimento"
-                    {...register("comprimento")}
-                    disabled={typeProduct.typeProduct}
-                    className="w-fit border border-gray-300 rounded-xs p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
-                  />
-                  {errors.comprimento && (
-                    <span className="text-red-500 text-sm">
-                      {errors.comprimento.message}
-                    </span>
-                  )}
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="largura"
-                    className="text-sm font-medium text-gray-700"
-                  >
-                    Largura
-                  </label>
-                  <Input
-                    id="largura"
-                    type="number"
-                    step={"0.01"}
-                    placeholder="Largura"
-                    {...register("largura")}
-                    disabled={typeProduct.typeProduct}
-                    className="w-fit border border-gray-300 rounded-xs p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
-                  />
-                  {errors.largura && (
-                    <span className="text-red-500 text-sm">
-                      {errors.largura.message}
-                    </span>
-                  )}
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="quantidade"
-                    className="text-sm font-medium text-gray-700"
-                  >
-                    Quantidade
-                  </label>
-                  <Input
-                    id="quantidade"
-                    type="number"
-                    placeholder="Quantidade"
-                    {...register("quantidade")}
-                    className="w-fit border border-gray-300 rounded-xs p-2 focus:outline-none focus:ring-2 focus:ring-red-600"
-                  />
-                  {errors.quantidade && (
-                    <span className="text-red-500 text-sm">
-                      {errors.quantidade.message}
-                    </span>
-                  )}
-                </div>
-              </div>
-              {typeProduct.typeProduct === true && (
-                <div className="flex items-center justify-end gap-1 text-end">
-                  <span className="font-semibold text-red-900 text-lg">
-                    Preço:
-                  </span>
-                  <span className="text-gray-700">{product.preco}</span>
+                  </div>
                 </div>
               )}
-              <div className="flex md:justify-center mt-4 px-6">
-                <Button
-                  type="submit"
-                  className="w-full md:w-[20rem] bg-red-900 text-white rounded-xs py-2 hover:bg-red-700 transition-colors"
-                >
-                  Adicionar produto
-                </Button>
-              </div>
-            </form>
-
-            <div className="flex justify-around">
-              <Button
-                onClick={() => navigate("/")}
-                className="text-xs md:text-sm bg-gray-200 text-gray-700 rounded-xs py-2 hover:bg-gray-300 transition-colors"
-              >
-                Adicionar novos produtos
-              </Button>
-              <Button
-                onClick={() => navigate("/orçamento")}
-                className="text-xs md:text-sm bg-red-900 text-white rounded-xs py-2 hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={productsInCart.length === 0}
-              >
-                Prosseguir com a cotação
-              </Button>
             </div>
           </div>
         </div>

@@ -1,4 +1,4 @@
-// import logo from "@/assets/logo.png";
+// src/components/Login.tsx
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -17,23 +17,25 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
+// Schema de validação de formulário
 const formSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
+  email: z.string().email("E-mail inválido"),
+  password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
 });
 
 type FormSchema = z.infer<typeof formSchema>;
 
-const Login = () => {
+type LoginProps = {
+  onSwitchToRegister: () => void;
+};
+
+const Login: React.FC<LoginProps> = () => {
   const { login } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
+    defaultValues: { email: "", password: "" },
   });
 
   const handleUserLogin = async (data: FormSchema) => {
@@ -53,71 +55,74 @@ const Login = () => {
         duration={5000}
         closeButton={false}
       />
-      <div className="flex flex-col items-center justify-center h-[28vh] w-full">
-        <div className="p-2">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleUserLogin)}>
-              <div className="flex flex-col gap-y-4">
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>E-mail</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          className="border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm w-full"
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Senha</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Input
-                            type={showPassword ? "text" : "password"}
-                            {...field}
-                            className="pr-10 border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm"
-                          />
-                          {showPassword ? (
-                            <EyeOffIcon
-                              className="absolute right-3 top-1.5 cursor-pointer"
-                              onClick={() => setShowPassword(false)}
-                              color="darkred"
-                            />
-                          ) : (
-                            <EyeIcon
-                              className="absolute right-3 top-1.5 cursor-pointer"
-                              onClick={() => setShowPassword(true)}
-                              color="darkred"
-                            />
-                          )}
-                        </div>
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit">Entrar</Button>
-              </div>
-            </form>
-          </Form>
-        </div>
-        {/* <div className="flex flex-col items-center justify-center">
-          <h1 className="font-semibold text-sm">Não possui uma conta?</h1>
-          <Link
-            to={"/cadastro"}
-            className="text-blue-400 hover:underline hover:cursor-pointer text-sm"
+      <div className="flex flex-col items-center justify-center w-full p-4">
+        {/* Formulário de login */}
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(handleUserLogin)}
+            className="space-y-4"
           >
-            Criar agora
-          </Link>
-        </div> */}
+            {/* Campo E-mail */}
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>E-mail</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="seu@exemplo.com"
+                      className="w-full text-sm"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            {/* Campo Senha com toggle de visibilidade */}
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Senha</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Input
+                        type={showPassword ? "text" : "password"}
+                        {...field}
+                        placeholder="••••••••"
+                        className="w-full pr-10 text-sm"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((prev) => !prev)}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                        aria-label={
+                          showPassword ? "Ocultar senha" : "Mostrar senha"
+                        }
+                      >
+                        {showPassword ? (
+                          <EyeOffIcon className="h-5 w-5" />
+                        ) : (
+                          <EyeIcon className="h-5 w-5" />
+                        )}
+                      </button>
+                    </div>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            {/* Botões de ação */}
+            <div className="flex flex-col space-y-2">
+              <Button type="submit" className="w-full">
+                Entrar
+              </Button>
+            </div>
+          </form>
+        </Form>
       </div>
     </>
   );

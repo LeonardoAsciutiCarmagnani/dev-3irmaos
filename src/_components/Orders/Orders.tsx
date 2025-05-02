@@ -368,7 +368,7 @@ const OrdersTable = () => {
   }, []);
 
   return (
-    <div className="space-y-2 py-2 md:p-4 bg-white rounded-lg shadow w-full h-full">
+    <div className="space-y-2 py-2 md:p-4 bg-white rounded-xs shadow w-full h-full">
       {/* Filtros */}
       <div className="flex flex-col md:flex-row items-start md:items-center p-2 gap-4">
         <input
@@ -376,13 +376,13 @@ const OrdersTable = () => {
           placeholder="Buscar cliente..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="border p-2 rounded-sm md:w-1/3"
+          className="border p-2 rounded-xs md:w-1/3"
         />
 
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(Number(e.target.value))}
-          className="border p-2 rounded w-fit hover:cursor-pointer"
+          className="border p-2 rounded-xs w-fit hover:cursor-pointer"
         >
           <option value={0}>Todos os status</option>
           {selectedOptions.map((option) => (
@@ -392,7 +392,7 @@ const OrdersTable = () => {
           ))}
         </select>
         <Popover>
-          <PopoverTrigger className="flex items-center border p-2 w-52 rounded-sm hover:cursor-pointer">
+          <PopoverTrigger className="flex items-center border p-2 w-52 rounded-xs hover:cursor-pointer">
             {date?.from || date?.to ? (
               <div className="flex gap-1 items-center  text-center ">
                 <span>{formattedFrom}</span>
@@ -409,12 +409,14 @@ const OrdersTable = () => {
               mode="range"
               selected={date}
               onSelect={setDate}
-              className="border p-2 rounded "
+              className="border p-2 rounded-xs"
               lang={"pt-BR"}
             />
           </PopoverContent>
         </Popover>
-        <Button onClick={() => filterOrders()}>Filtrar</Button>
+        <Button onClick={() => filterOrders()} className="rounded-xs">
+          Filtrar
+        </Button>
       </div>
 
       <div className="flex flex-col md:flex-row justify-between px-2">
@@ -428,8 +430,8 @@ const OrdersTable = () => {
 
       {/* Tabela */}
 
-      <div className="flex w-full border rounded-lg overflow-y-auto max-h-[72vh]">
-        <table className="w-full overflow-y-scroll max-h-[73vh]">
+      <div className="flex w-full border rounded-xs overflow-y-auto">
+        <table className="w-full overflow-y-scroll h-[80vh]">
           <thead className="bg-gray-50">
             {table
               ? table.getHeaderGroups().map((headerGroup) => (
@@ -492,7 +494,7 @@ const OrdersTable = () => {
                             </td>
                             <td className="px-4 py-3">
                               <select
-                                className={`w-32  rounded-full p-1 text-white font-semibold text-xs hover:cursor-pointer ${
+                                className={`w-40 rounded-xs p-1 text-white font-semibold text-xs md:text-sm hover:cursor-pointer ${
                                   order.orderStatus === 1
                                     ? "bg-amber-500"
                                     : order.orderStatus === 2
@@ -536,7 +538,7 @@ const OrdersTable = () => {
                           </tr>
                         </DialogTrigger>
 
-                        <DialogContent className="flex flex-col border rounded-xs bg-gray-100 md:w-2/3 h-[80vh] overflow-y-scroll">
+                        <DialogContent className="flex flex-col border rounded-xs bg-gray-100 md:w-2/3 h-[86vh] overflow-y-scroll">
                           <DialogHeader>
                             <div className="flex justify-between items-center">
                               <DialogTitle>Detalhes do pedido</DialogTitle>
@@ -701,7 +703,7 @@ const OrdersTable = () => {
                                                     precoFloat
                                                   );
                                                 }}
-                                                className="border rounded px-2 py-1 w-[8rem] text-right"
+                                                className="border rounded-xs px-2 py-1 w-[8rem] text-right"
                                               />
                                             </div>
                                           </div>
@@ -735,7 +737,7 @@ const OrdersTable = () => {
                                               key={index}
                                               src={image.imagem}
                                               alt="Imagem do produto"
-                                              className="size-32 rounded-lg hover:scale-105 transition-all duration-300"
+                                              className="size-32 rounded-xs hover:scale-105 transition-all duration-300"
                                             />
                                           );
                                         })}
@@ -760,7 +762,7 @@ const OrdersTable = () => {
                                       key={index}
                                       src={url}
                                       alt="Imagem fornecida pela 3 irmãos"
-                                      className="size-32 rounded-lg hover:scale-105 transition-all duration-300"
+                                      className="size-32 rounded-xs hover:scale-105 transition-all duration-300"
                                     />
                                   ))}
                                 </div>
@@ -782,7 +784,7 @@ const OrdersTable = () => {
                                         key={index}
                                         src={url}
                                         alt="Imagem fornecida pela 3 irmãos"
-                                        className="size-32 rounded-lg hover:scale-105 transition-all duration-300"
+                                        className="size-32 rounded-xs hover:scale-105 transition-all duration-300"
                                       />
                                     ))}
                                   </div>
@@ -799,7 +801,7 @@ const OrdersTable = () => {
                                         key={index}
                                         src={image}
                                         alt="Imagem fornecida pela 3 irmãos"
-                                        className="size-32 rounded-lg hover:scale-105 transition-all duration-300"
+                                        className="size-32 rounded-xs hover:scale-105 transition-all duration-300"
                                       />
                                     ))}
                                 </div>

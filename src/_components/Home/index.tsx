@@ -55,15 +55,15 @@ const Home = () => {
               to={`/produtos?c=${categoria.label}`}
               className="block w-full h-full text-center text-gray-800 hover:text-white"
             >
-              <div className="relative w-full aspect-square">
+              <div className="relative w-full aspect-square h-full">
                 <img
                   src={categoria.imageUrl}
                   alt={categoria.label}
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-800"
                 />
               </div>
-              <div className="absolute bottom-0 w-full bg-gradient-to-t from-black/60 to-transparent p-2 flex items-center justify-center">
-                <h1 className="text-xs md:text-sm lg:text-base font-semibold line-clamp-1 text-white">
+              <div className="absolute bottom-0 w-full bg-gradient-to-t from-gray-400/60 via-gray-400/40 to-transparent backdrop-blur-sm p-3">
+                <h1 className="text-xs md:text-sm lg:text-base font-semibold text-white/90 line-clamp-1">
                   {categoria.label}
                 </h1>
               </div>

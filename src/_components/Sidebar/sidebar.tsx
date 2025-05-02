@@ -130,7 +130,7 @@ const Sidebar = () => {
             </AccordionTrigger>
 
             {open && (
-              <AccordionContent className="pt-1 pb-2 text-xs border-b-5 border-outset">
+              <AccordionContent className="pt-1 pb-2 text-xs">
                 <ul className="space-y-0.5">
                   {categorias.map((cat) => {
                     const catKey = cat.toLowerCase();

@@ -5,6 +5,7 @@ import { Product } from "@/interfaces/Product";
 import Loader from "@/_components/Loader/loader";
 import { useSearchParams } from "react-router-dom";
 import { RouteSelect } from "./route-select";
+import { AlertCircleIcon } from "lucide-react";
 
 const OutletProducts = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -37,16 +38,23 @@ const OutletProducts = () => {
       <RouteSelect />
 
       {products.length === 0 && !isLoading && (
-        <div>
-          <div className="flex justify-center items-center h-[20vh] w-full ">
-            <span className="text-gray-800 font-semibold antialiased text-sm md:text-md line-clamp-2 text-center italic ">
-              Nenhum produto encontrado!
+        <div className="w-full h-full flex items-center justify-center">
+          <div className="flex flex-col justify-center gap-y-4 items-center h-full w-full ">
+            <span>
+              <AlertCircleIcon
+                className="text-gray-800"
+                size={50}
+                color="darkred"
+              />
+            </span>
+            <span className="text-gray-800 font-semibold antialiased text-md md:text-md line-clamp-2 text-center italic ">
+              Nenhum produto encontrado.
             </span>
           </div>
         </div>
       )}
 
-      <div className="grid grid-cols-2 xl:grid-cols-2 2xl:grid-cols-4 2xl:grid-rows-3 gap-[0.35rem] bg-gray-100 plac-items-start h-screen overflow-y-auto overflow-x-hidden">
+      <div className="grid grid-cols-2 xl:grid-cols-2 2xl:grid-cols-4 2xl:grid-rows-3 gap-[0.35rem] bg-gray-100 place-items-start max-h-screen overflow-y-auto overflow-x-hidden">
         {isLoading ? (
           <div className="flex justify-center items-center h-full w-full">
             <Loader />

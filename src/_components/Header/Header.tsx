@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -10,7 +9,7 @@ import { productsContext } from "@/context/productsContext";
 import {
   CircleUserIcon,
   FileBoxIcon,
-  // HomeIcon,
+  HomeIcon,
   ScrollTextIcon,
   Trash2,
 } from "lucide-react";
@@ -26,17 +25,16 @@ const Header = () => {
   const [openUser, setOpenUser] = useState(false);
 
   return (
-    <div className="flex justify-start md:justify-around px-2 items-center border-b border-gray-200">
-      <div className="flex items-center justify-evenly">
-        {/* <Link to="/" className="flex md:hidden">
-          <HomeIcon className="font-bold text-gray-800" />
-        </Link> */}
-        <img
-          src="/src/assets/logo_3irmaos.png"
-          alt="3 Irmãos"
-          className="w-[60%]"
-        />
-      </div>
+    <div className="flex justify-around items-center border-b border-gray-200 w-screen ">
+      <Link to="/" className="flex md:hidden">
+        <HomeIcon className="font-bold text-gray-800" />
+      </Link>
+      <img
+        src="/src/assets/logo_3irmaos.png"
+        alt="3 Irmãos"
+        className="w-[8rem]"
+      />
+
       <div className="flex items-center justify-center gap-x-6 p-1 w-[8rem]">
         <Popover onOpenChange={() => setOpen(!open)} open={open}>
           <PopoverTrigger
@@ -111,16 +109,22 @@ const Header = () => {
                   <div className="flex items-center justify-between w-full">
                     <div className="flex flex-col gap-y-0.5">
                       <div className="flex items-center gap-x-3">
-                        <h1 className="font-semibold text-gray-900 text-md">
+                        <h1
+                          className={`font-semibold text-gray-900 text-md ${
+                            user.role === "admin" ? "text-red-900" : ""
+                          }`}
+                        >
                           {user.displayName}
                         </h1>
-                        {user.role === "admin" && (
-                          <Badge className="bg-red-900">ADM</Badge>
-                        )}
                       </div>
                       <h1 className="text-xs text-gray-400">{user.email}</h1>
                     </div>
-                    <Button className="rounded-xs py-2 px-3" onClick={logout}>
+                    <Button
+                      className="rounded-xs py-2 px-3"
+                      onClick={() => {
+                        logout();
+                      }}
+                    >
                       Sair
                     </Button>
                   </div>
@@ -137,10 +141,10 @@ const Header = () => {
               ) : (
                 <div>
                   <h1 className="text-lg md:text-lg font-semibold text-gray-900">
-                    Olá, seja bem‑vindo!
+                    Bem‑vindo!
                   </h1>
                   <p className="text-sm md:text-md text-gray-600 mb-4">
-                    Acesse sua conta ou crie uma nova.
+                    Acesse sua conta ou crie uma agora mesmo.
                   </p>
                   <div className="flex flex-col sm:flex-row gap-2">
                     <button
