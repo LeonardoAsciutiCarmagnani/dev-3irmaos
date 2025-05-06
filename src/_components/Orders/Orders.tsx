@@ -44,6 +44,7 @@ import {
 import DetailsOrder from "./DetailsOrder/DetailsOrder";
 import { IMaskInput } from "react-imask";
 import { Order } from "@/interfaces/Order";
+import { api } from "@/lib/axios";
 
 /* 
 [] Incluir nas props do produto as medidas informadas
@@ -160,6 +161,19 @@ const OrdersTable = () => {
       });
 
       if (!orderDocRef) return;
+
+      if (newStatus === 5) {
+        try {
+          const doc = orderData.docs[0].data();
+
+          if (doc) {
+            const data = doc as Order;
+            await api.post("/post-order", data);
+          }
+        } catch {
+          console.error("Ocorreu um erro ao enviar o pedido para Hiper !");
+        }
+      }
 
       if (newStatus === 10) {
         const listRef = ref(storage, "imagens/");
