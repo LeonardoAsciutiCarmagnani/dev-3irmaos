@@ -73,7 +73,7 @@ class App {
     router.post("/create-client", UserController.createClient);
     // router.post("/create-prices-list", PricesListsController.createPriceList);
     // router.post("/check-email", UserController.checkEmail);
-    // router.post("/post-order", OrderController.postOrderSale);
+    router.post("/post-order", OrderController.postOrderInHiper);
     router.post("/post-budget", OrderController.createBudget);
     // router.post("/find-CEP", CEPController.getCEP);
     // //PUT ROUTES

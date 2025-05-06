@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { z } from "zod";
 import { CreateBudgetService } from "../../services/Order/createBudget";
+import { PostOrderService } from "../../services/hiper/postOrder";
+import { parse } from "path";
 
 const createBudgetSchema = z.object({
   client: z.object({
@@ -10,6 +12,8 @@ const createBudgetSchema = z.object({
       .min(3, "Nome do cliente deve ter pelo menos 3 caracteres."),
     email: z.string().email("E-mail inválido").trim().toLowerCase(),
     phone: z.string({ message: "Telefone obrigatório." }),
+    document: z.string({ message: "Documento obrigatório." }),
+    ie: z.string().optional(),
   }),
   deliveryAddress: z.object({
     cep: z.string().length(9, "CEP deve ter 8 dígitos."),
@@ -18,6 +22,16 @@ const createBudgetSchema = z.object({
     number: z.number().min(1, "Número obrigatório."),
     city: z.string({ message: "Cidade obrigatória." }),
     state: z.string({ message: "Estado obrigatório." }),
+    ibge: z.string().optional(),
+  }),
+  paymentAddress: z.object({
+    cep: z.string().length(9, "CEP deve ter 8 dígitos."),
+    neighborhood: z.string({ message: "Bairro obrigatório." }),
+    street: z.string({ message: "Logradouro obrigatório." }),
+    number: z.number().min(1, "Número obrigatório."),
+    city: z.string({ message: "Cidade obrigatória." }),
+    state: z.string({ message: "Estado obrigatório." }),
+    ibge: z.string().optional(),
   }),
   products: z.array(
     z.object({
@@ -61,6 +75,34 @@ export class OrderController {
 
       console.log("Order Controller (CREATE) - Creating Order:", parsedBody);
       const createdOrder = await CreateBudgetService.execute(parsedBody);
+
+      if (createdOrder.success === false) {
+        res.status(409).json(createdOrder);
+      }
+
+      res.status(201).json(createdOrder);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public static async postOrderInHiper(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      console.log("Dados Recebidos:", req.body);
+
+      const parsedBody = createBudgetSchema.parse(req.body);
+
+      console.log("Order Controller (CREATE) - Body received:", req.body);
+
+      console.log("Order Controller (CREATE) - Creating Order:", parsedBody);
+      const createdOrder = await PostOrderService.postOrder(
+        parsedBody,
+        "userId"
+      );
 
       if (createdOrder.success === false) {
         res.status(409).json(createdOrder);
