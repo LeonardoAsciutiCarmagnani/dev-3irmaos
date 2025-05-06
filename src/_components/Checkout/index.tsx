@@ -14,6 +14,7 @@ import { db } from "../Utils/FirebaseConfig";
 import { format } from "date-fns";
 
 interface IFireStoreProps {
+  document: string;
   clientPhone: string;
   clientAddress?: {
     cep: string;
@@ -24,6 +25,7 @@ interface IFireStoreProps {
     state: string;
     street: string;
   };
+  ie?: string;
 }
 
 export const Checkout = () => {
@@ -33,7 +35,7 @@ export const Checkout = () => {
   const { user } = useAuthStore();
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [sendOrder, setSendOrder] = useState(false);
-  const [clientPhone, setClientPhone] = useState("");
+  const [userData, setUserData] = useState<IFireStoreProps | null>(null);
   const [address, setAddress] = useState({
     cep: "",
     neighborhood: "",
@@ -41,6 +43,16 @@ export const Checkout = () => {
     number: 0,
     city: "",
     state: "",
+    ibge: "",
+  });
+  const [paymentAddress, setPaymentAddress] = useState({
+    cep: "",
+    neighborhood: "",
+    street: "",
+    number: 0,
+    city: "",
+    state: "",
+    ibge: "",
   });
 
   console.log("Produtos no carrinho", productsInCart);
@@ -63,9 +75,13 @@ export const Checkout = () => {
       if (!data || !data.phone) {
         return toast.error("Dados do cliente incompletos.");
       }
+
+      console.log("Dados do usuário vindos do fireStore =>", data);
       const fireStoreData: IFireStoreProps = {
+        document: data.document,
         clientPhone: data.phone,
         clientAddress: data.address,
+        ie: data.ie,
       };
 
       // console.log("Dados do Firestore => ", fireStoreData);
@@ -73,8 +89,13 @@ export const Checkout = () => {
       if (!fireStoreData?.clientAddress) {
         return toast.error("Endereço não cadastrado.");
       }
-      setAddress({ ...fireStoreData.clientAddress, number: 0 });
-      setClientPhone(fireStoreData.clientPhone);
+
+      setUserData({
+        document: fireStoreData.document,
+        clientPhone: fireStoreData.clientPhone,
+        ie: fireStoreData.ie,
+      });
+      setPaymentAddress(fireStoreData.clientAddress);
     } catch (error) {
       console.error("Erro ao buscar endereço:", error);
       toast.error("Erro ao buscar endereço do usuário.");
@@ -118,9 +139,12 @@ export const Checkout = () => {
           id: user.uid,
           name: user.displayName,
           email: user.email,
-          phone: clientPhone,
+          phone: userData?.clientPhone,
+          document: userData?.document,
+          ie: userData?.ie,
         },
         deliveryAddress: address,
+        paymentAddress,
         products: productsInCart,
         createdAt: dateOrder,
         orderStatus: 1,

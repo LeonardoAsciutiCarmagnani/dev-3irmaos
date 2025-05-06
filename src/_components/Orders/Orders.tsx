@@ -21,7 +21,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { InfoIcon, LoaderCircle } from "lucide-react";
+import { CircleCheckBig, InfoIcon, LoaderCircle } from "lucide-react";
 import Dropzone from "../DropzoneImage/DropzoneImage";
 import {
   collection,
@@ -44,6 +44,8 @@ import {
 import DetailsOrder from "./DetailsOrder/DetailsOrder";
 import { IMaskInput } from "react-imask";
 import { Order } from "@/interfaces/Order";
+import { api } from "@/lib/axios";
+import hiperLogo from "@/assets/hiper_logo.svg";
 
 /* 
 [] Incluir nas props do produto as medidas informadas
@@ -62,6 +64,9 @@ const OrdersTable = () => {
   const [showCardOrder, setShowCardOrder] = useState<number | null>(null);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [sendPropostal, setSendPropostal] = useState(false);
+  const [loadingSendOrderForHiper, setLoadingSendOrderForHiper] = useState<
+    number | null
+  >(null);
 
   /* Detalhes do orçamento */
   const [obs, setObs] = useState("");
@@ -115,6 +120,11 @@ const OrdersTable = () => {
         accessorKey: "status",
         cell: ({ row }) => row.getValue("status"),
       },
+      {
+        header: "",
+        accessorKey: "hiper",
+        cell: ({ row }) => row.getValue("hiper"),
+      },
     ],
     []
   );
@@ -136,6 +146,58 @@ const OrdersTable = () => {
     setTime(time);
     setDelivery(delivery);
     return { obs, payment, time, delivery };
+  }
+
+  async function handleStatusChangeForHiper(id: number, newStatus: number) {
+    setLoadingSendOrderForHiper(id);
+    try {
+      const collectionRef = collection(db, "budgets");
+      const q = query(collectionRef, where("orderId", "==", id));
+      const orderData = await getDocs(q);
+
+      if (orderData.empty) {
+        console.log("Pedido não encontrado!");
+        toast.error("Pedido não encontrado.");
+        return;
+      }
+
+      let orderDocRef = null;
+
+      orderData.forEach((docSnap) => {
+        orderDocRef = doc(db, "budgets", docSnap.id);
+      });
+
+      if (!orderDocRef) return;
+
+      try {
+        const doc = orderData.docs[0].data();
+
+        if (doc) {
+          const data = doc as Order;
+          await api.post("/post-order", data);
+        }
+      } catch {
+        console.error("Ocorreu um erro ao enviar o pedido para Hiper !");
+      }
+
+      await updateDoc(orderDocRef, {
+        orderStatus: newStatus,
+      });
+
+      setData((prevData) =>
+        prevData.map((order) =>
+          order.orderId === id ? { ...order, status: newStatus } : order
+        )
+      );
+      setLoadingSendOrderForHiper(null);
+    } catch (error) {
+      setLoadingSendOrderForHiper(null);
+      console.log(
+        "Ocorreu um erro ao tentar enviar o pedido para hiper !",
+        error
+      );
+      toast.error("Ocorreu um erro ao tentar enviar o pedido para hiper !");
+    }
   }
 
   async function handleStatusChange(id: number, newStatus: number) {
@@ -423,15 +485,16 @@ const OrdersTable = () => {
         <div className="flex items-center gap-x-2">
           <InfoIcon className="w-4 h-4 text-blue-500" />
           <h2 className="text-[0.67rem] text-gray-500">
-            Para visualizar os detalhes do pedido, clique duas vezes sobre ele.
+            Para visualizar os detalhes do pedido, clique duas vezes sobre o
+            nome do cliente.
           </h2>
         </div>
       </div>
 
       {/* Tabela */}
 
-      <div className="flex w-full border rounded-xs overflow-y-auto">
-        <table className="w-full overflow-y-scroll h-[80vh]">
+      <div className="flex w-full border rounded-xs h-[80vh] overflow-y-scroll">
+        <table className="w-full">
           <thead className="bg-gray-50">
             {table
               ? table.getHeaderGroups().map((headerGroup) => (
@@ -469,7 +532,6 @@ const OrdersTable = () => {
                           <tr
                             key={order.orderId}
                             className="hover:bg-gray-50 cursor-pointer text-sm"
-                            onDoubleClick={() => handleShowCard(order.orderId)}
                           >
                             <td
                               className={`px-4 py-3 ${
@@ -486,11 +548,17 @@ const OrdersTable = () => {
                               {order.createdAt}
                             </td>
                             <td
-                              className={`px-4 py-3 ${
+                              className={`px-4 py-3 hover:underline ${
                                 order.orderStatus === 10 && "line-through"
                               }`}
                             >
-                              {order.client.name}
+                              <span
+                                onDoubleClick={() =>
+                                  handleShowCard(order.orderId)
+                                }
+                              >
+                                {order.client.name}
+                              </span>
                             </td>
                             <td className="px-4 py-3">
                               <select
@@ -524,16 +592,59 @@ const OrdersTable = () => {
                                 }
                               >
                                 {selectedOptions &&
-                                  selectedOptions.map((option) => (
-                                    <option
-                                      key={option.id}
-                                      value={option.value}
-                                      className="w-fit"
-                                    >
-                                      {option.option}
-                                    </option>
-                                  ))}
+                                  selectedOptions.map((option) => {
+                                    return (
+                                      <option
+                                        disabled={
+                                          order.orderStatus >= 5 &&
+                                          order.orderStatus !== 10 &&
+                                          option.value < 5
+                                        }
+                                        key={option.id}
+                                        value={option.value}
+                                        className="w-fit"
+                                      >
+                                        {option.option}
+                                      </option>
+                                    );
+                                  })}
                               </select>
+                            </td>
+                            <td
+                              onDoubleClick={() =>
+                                handleShowCard(order.orderId)
+                              }
+                              className={`px-4 py-3 hover:underline`}
+                            >
+                              {order.orderStatus !== 1 &&
+                                order.orderStatus !== 10 && (
+                                  <Button
+                                    onClick={() =>
+                                      handleStatusChangeForHiper(
+                                        order.orderId,
+                                        5
+                                      )
+                                    }
+                                    disabled={order.orderStatus >= 5}
+                                    className={`w-[8rem] bg-purple-300 hover:bg-purple-500 rounded-xs ${
+                                      order.orderStatus >= 5 &&
+                                      "bg-blue-200 hover:bg-blue-300 disabled:opacity-100 disabled:cursor-not-allowed"
+                                    }`}
+                                  >
+                                    <img
+                                      src={hiperLogo}
+                                      alt=""
+                                      className="w-1/2"
+                                    />{" "}
+                                    {order.orderStatus >= 5 && (
+                                      <CircleCheckBig color="green" />
+                                    )}
+                                    {loadingSendOrderForHiper ===
+                                      order.orderId && (
+                                      <LoaderCircle className="text-white animate-spin" />
+                                    )}
+                                  </Button>
+                                )}
                             </td>
                           </tr>
                         </DialogTrigger>
