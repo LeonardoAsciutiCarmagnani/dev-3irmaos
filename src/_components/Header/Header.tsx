@@ -10,6 +10,7 @@ import {
   CircleUserIcon,
   FileBoxIcon,
   HomeIcon,
+  Minus,
   ScrollTextIcon,
   Trash2,
 } from "lucide-react";
@@ -73,7 +74,7 @@ const Header = () => {
                           <Trash2 className="size-4" />
                         ) : (
                           <span className="font-semibold text-xs">
-                            Remover Un.
+                            <Minus className="size-4" />
                           </span>
                         )}
                       </Button>
