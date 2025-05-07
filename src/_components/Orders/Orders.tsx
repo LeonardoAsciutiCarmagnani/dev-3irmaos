@@ -148,11 +148,17 @@ const OrdersTable = () => {
     return { obs, payment, time, delivery };
   }
 
-  async function handleStatusChangeForHiper(id: number, newStatus: number) {
-    setLoadingSendOrderForHiper(id);
+  async function handleStatusChangeForHiper(
+    orderToHiper: Order,
+    newStatus: number
+  ) {
+    setLoadingSendOrderForHiper(orderToHiper.orderId);
     try {
       const collectionRef = collection(db, "budgets");
-      const q = query(collectionRef, where("orderId", "==", id));
+      const q = query(
+        collectionRef,
+        where("orderId", "==", orderToHiper.orderId)
+      );
       const orderData = await getDocs(q);
 
       if (orderData.empty) {
@@ -182,7 +188,9 @@ const OrdersTable = () => {
 
       setData((prevData) =>
         prevData.map((order) =>
-          order.orderId === id ? { ...order, status: newStatus } : order
+          order.orderId === orderToHiper.orderId
+            ? { ...order, status: newStatus }
+            : order
         )
       );
       setLoadingSendOrderForHiper(null);
@@ -489,8 +497,8 @@ const OrdersTable = () => {
 
       {/* Tabela */}
 
-      <div className="flex w-full border rounded-xs h-[80vh] overflow-y-scroll">
-        <table className="w-full">
+      <div className="flex w-full border rounded-xs overflow-y-auto max-h-[72vh]">
+        <table className="w-full overflow-y-scroll max-h-[73vh]">
           <thead className="bg-gray-50">
             {table
               ? table.getHeaderGroups().map((headerGroup) => (
@@ -527,7 +535,7 @@ const OrdersTable = () => {
                         <DialogTrigger asChild>
                           <tr
                             key={order.orderId}
-                            className="hover:bg-gray-50 cursor-pointer text-sm"
+                            className=" hover:bg-gray-50 cursor-pointer text-sm "
                           >
                             <td
                               className={`px-4 py-3 ${
@@ -619,10 +627,7 @@ const OrdersTable = () => {
                                 order.orderStatus !== 10 && (
                                   <Button
                                     onClick={() =>
-                                      handleStatusChangeForHiper(
-                                        order.orderId,
-                                        5
-                                      )
+                                      handleStatusChangeForHiper(order, 5)
                                     }
                                     disabled={order.orderStatus >= 5}
                                     className={`w-[8rem] bg-purple-300 hover:bg-purple-500 rounded-xs ${
