@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/sonner";
 
 const LayoutPage = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="bg-white flex flex-col h-full w-full">
+    <div className="bg-white flex flex-col h-full w-full overflow-x-hidden overflow-y-auto">
       <Header />
       <div className="flex flex-1 max-h-[calc(100vh-54px)]">
         <div className="hidden md:flex">

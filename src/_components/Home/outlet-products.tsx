@@ -54,7 +54,7 @@ const OutletProducts = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-2 xl:grid-cols-2 2xl:grid-cols-4 2xl:grid-rows-3 gap-[0.35rem] bg-gray-100 place-items-start max-h-screen overflow-y-auto overflow-x-hidden">
+      <div className="grid grid-cols-2 xl:grid-cols-2 2xl:grid-cols-4 2xl:grid-rows-3 gap-[0.35rem] bg-white place-items-start max-h-screen overflow-y-auto overflow-x-hidden">
         {isLoading ? (
           <div className="flex justify-center items-center h-full w-full">
             <Loader />
