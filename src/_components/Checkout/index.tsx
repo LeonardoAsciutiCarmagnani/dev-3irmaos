@@ -45,7 +45,7 @@ export const Checkout = () => {
     state: "",
     ibge: "",
   });
-  const [paymentAddress, setPaymentAddress] = useState({
+  const [billingAddress, setBillingAddress] = useState({
     cep: "",
     neighborhood: "",
     street: "",
@@ -95,7 +95,7 @@ export const Checkout = () => {
         clientPhone: fireStoreData.clientPhone,
         ie: fireStoreData.ie,
       });
-      setPaymentAddress(fireStoreData.clientAddress);
+      setBillingAddress(fireStoreData.clientAddress);
     } catch (error) {
       console.error("Erro ao buscar endereço:", error);
       toast.error("Erro ao buscar endereço do usuário.");
@@ -144,7 +144,7 @@ export const Checkout = () => {
           ie: userData?.ie,
         },
         deliveryAddress: address,
-        paymentAddress,
+        billingAddress,
         products: productsInCart,
         createdAt: dateOrder,
         orderStatus: 1,

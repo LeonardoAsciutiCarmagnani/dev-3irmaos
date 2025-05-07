@@ -169,15 +169,11 @@ const OrdersTable = () => {
 
       if (!orderDocRef) return;
 
-      try {
-        const doc = orderData.docs[0].data();
+      const orderDocData = orderData.docs[0].data();
 
-        if (doc) {
-          const data = doc as Order;
-          await api.post("/post-order", data);
-        }
-      } catch {
-        console.error("Ocorreu um erro ao enviar o pedido para Hiper !");
+      if (orderDocData) {
+        const data = orderDocData as Order;
+        await api.post("/post-order", data);
       }
 
       await updateDoc(orderDocRef, {
@@ -581,7 +577,7 @@ const OrdersTable = () => {
                                     ? "bg-purple-500"
                                     : order.orderStatus === 9
                                     ? "bg-green-600"
-                                    : order.orderStatus === 10 && "bg-gray-500"
+                                    : order.orderStatus === 10 && "bg-gray-400"
                                 }`}
                                 value={order.orderStatus}
                                 onChange={(e) =>
@@ -597,8 +593,10 @@ const OrdersTable = () => {
                                       <option
                                         disabled={
                                           order.orderStatus >= 5 &&
-                                          order.orderStatus !== 10 &&
-                                          option.value < 5
+                                          order.orderStatus !== 10
+                                            ? option.value <= 5
+                                            : option.value >= 5 &&
+                                              option.value !== 10
                                         }
                                         key={option.id}
                                         value={option.value}
@@ -617,6 +615,7 @@ const OrdersTable = () => {
                               className={`px-4 py-3 hover:underline`}
                             >
                               {order.orderStatus !== 1 &&
+                                order.orderStatus !== 3 &&
                                 order.orderStatus !== 10 && (
                                   <Button
                                     onClick={() =>
