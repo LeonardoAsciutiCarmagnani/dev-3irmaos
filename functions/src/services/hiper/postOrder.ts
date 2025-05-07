@@ -1,15 +1,28 @@
 import axios from "axios";
 import { firestore } from "../../firebaseConfig";
 import { fetchToken } from "./fetchToken";
-import { BudgetType } from "../../controllers/Order/OrderController";
+import { BudgetType, OrderType } from "../../controllers/Order/OrderController";
+
+interface OrderProductsProps {
+  nome: string;
+  quantidade: number;
+  altura: number;
+  largura: number;
+  categoria: string | null;
+  preco: number;
+  selectedVariation: {
+    id: string;
+    nomeVariacao: string;
+  };
+}
 
 export class PostOrderService {
   public static async getLastOrderCode() {
-    const collectionRef = firestore.collection("sales_orders");
+    const collectionRef = firestore.collection("budgets");
 
     // Consulta ordenada e limitada ao último documento
     const querySnapshot = await collectionRef
-      .orderBy("order_code", "desc")
+      .orderBy("orderId", "desc")
       .limit(1)
       .get();
 
@@ -30,21 +43,31 @@ export class PostOrderService {
   }
 
   public static async storeOrderInFirestore(
+    orderId: number,
     order: any,
     codeHiper: string,
-    userId: string,
-    installments: any
+    idOrderHiper: string,
+    userId: string
   ) {
-    const orderWithClientId = {
-      ...order,
-      IdClient: userId,
-      order_code: codeHiper,
-      status_order: 2,
-      installments: installments !== undefined ? installments : null,
-    };
+    const budgetsRef = firestore.collection("budgets");
 
-    const docRef = firestore.collection("sales_orders").doc();
-    await docRef.set(orderWithClientId);
+    const snapshot = await budgetsRef.where("orderId", "==", orderId).get();
+
+    if (snapshot.empty) {
+      console.warn(`Nenhum pedido com orderId ${orderId} encontrado.`);
+      return;
+    }
+
+    snapshot.forEach(async (doc) => {
+      await doc.ref.update({
+        ...order,
+        idOrderHiper: idOrderHiper,
+        codeHiper: codeHiper,
+        IdClient: userId,
+      });
+
+      console.log(`Documento ${doc.id} atualizado com codeHiper.`);
+    });
   }
 
   public static async fetchOrderSaleData(generatedId: string) {
@@ -71,22 +94,24 @@ export class PostOrderService {
     }
   }
 
-  public static async postOrder(
-    data: BudgetType,
-    userId: string
-  ): Promise<any> {
+  public static async postOrder(data: OrderType, userId: string): Promise<any> {
     let token = await fetchToken();
 
-    const installments = 0;
+    const {
+      orderId,
+      client,
+      deliveryAddress,
+      billingAddress,
+      detailsPropostal,
+      products,
+      totalValue,
+    } = data;
 
-    const { client, deliveryAddress, paymentAddress, products, totalValue } =
-      data;
-
-    const adjustedItens = products.map((item: any) => ({
-      produtoId: item.produtoId,
+    const adjustedItens = products.map((item) => ({
+      produtoId: item.selectedVariation.id,
       quantidade: item.quantidade,
-      precoUnitarioBruto: item.precoUnitarioBruto,
-      precoUnitarioLiquido: item.precoUnitarioLiquido,
+      precoUnitarioBruto: item.preco,
+      precoUnitarioLiquido: item.preco,
     }));
 
     const dataForHiper = {
@@ -98,12 +123,12 @@ export class PostOrderService {
         nomeFantasia: client.name || "",
       },
       enderecoDeCobranca: {
-        bairro: paymentAddress.neighborhood,
-        cep: paymentAddress.cep,
-        codigoIbge: paymentAddress.ibge || "",
+        bairro: billingAddress.neighborhood,
+        cep: billingAddress.cep,
+        codigoIbge: billingAddress.ibge || "",
         complemento: "",
-        logradouro: paymentAddress.street,
-        numero: paymentAddress.number,
+        logradouro: billingAddress.street,
+        numero: String(billingAddress.number),
       },
       enderecoDeEntrega: {
         bairro: deliveryAddress.neighborhood,
@@ -111,13 +136,19 @@ export class PostOrderService {
         codigoIbge: deliveryAddress.ibge || "",
         complemento: "",
         logradouro: deliveryAddress.street,
-        numero: deliveryAddress.number,
+        numero: String(deliveryAddress.number),
       },
       itens: adjustedItens,
-      // meiosDePagamento,
-      // numeroPedidoDeVenda: numeroPedidoDeVenda || "",
-      // observacaoDoPedidoDeVenda: observacaoDoPedidoDeVenda || "",
-      // valorDoFrete: valorDoFrete || 0,
+      meiosDePagamento: [
+        {
+          idMeioDePagamento: 1,
+          parcelas: 1,
+          valor: totalValue,
+        },
+      ],
+      numeroPedidoDeVenda: String(orderId) || "",
+      observacaoDoPedidoDeVenda: detailsPropostal?.obs || "",
+      valorDoFrete: detailsPropostal?.delivery || 0,
     };
 
     const delay = (ms: number) =>
@@ -141,6 +172,7 @@ export class PostOrderService {
 
       // Tentativa de buscar o código da venda até que ele não esteja em branco, com limite de 3 tentativas
       let codeOrderHiper = "";
+      let idOrderHiper = ""; // Pedido de venda ID
       let attempts = 0;
       const maxAttempts = 10; // Limite de tentativas
 
@@ -151,6 +183,7 @@ export class PostOrderService {
         const orderSaleData = await this.fetchOrderSaleData(generatedId);
         console.log("Retorno do objeto: ", orderSaleData);
         codeOrderHiper = orderSaleData?.codigoDoPedidoDeVenda || ""; // Garante que pegamos o código ou uma string vazia
+        idOrderHiper = orderSaleData?.pedidoDeVendaId || ""; // Garante que pegamos o código ou uma string vazia
 
         if (codeOrderHiper === "" || codeOrderHiper.trim() === "") {
           attempts++;
@@ -174,13 +207,14 @@ export class PostOrderService {
       );
 
       await this.storeOrderInFirestore(
+        orderId,
         updatedData,
         codeOrderHiper,
-        userId,
-        installments
+        idOrderHiper,
+        userId
       );
       return {
-        generatedId: generatedId,
+        generatedId,
         codeOrderHiper: codeOrderHiper,
       };
     } catch (error) {

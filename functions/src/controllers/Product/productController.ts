@@ -29,7 +29,7 @@ export class ProductController {
       const apiResponse = await productService.fetchProducts();
 
       const filteredProducts = apiResponse.produtos.filter(
-        (produto) => produto.categoria.toLowerCase() === category.toLowerCase()
+        (produto) => produto.categoria?.toLowerCase() === category.toLowerCase()
       );
 
       console.log("Produtos encontrados na categoria: ", filteredProducts);
