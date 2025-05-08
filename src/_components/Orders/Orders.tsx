@@ -67,6 +67,9 @@ const OrdersTable = () => {
   const [loadingSendOrderForHiper, setLoadingSendOrderForHiper] = useState<
     number | null
   >(null);
+  const [popoverHiperController, setPopoverHiperController] = useState<
+    number | null
+  >(null);
 
   /* Detalhes do orçamento */
   const [obs, setObs] = useState("");
@@ -103,6 +106,11 @@ const OrdersTable = () => {
         header: "ID",
         accessorKey: "orderId",
         cell: ({ row }) => row.getValue("orderId"),
+      },
+      {
+        header: "código Hiper",
+        accessorKey: "codeHiper",
+        cell: ({ row }) => row.getValue("codeHiper"),
       },
       {
         header: "Data",
@@ -154,6 +162,7 @@ const OrdersTable = () => {
   ) {
     setLoadingSendOrderForHiper(orderToHiper.orderId);
     try {
+      console.log("The new status received => ", newStatus);
       const collectionRef = collection(db, "budgets");
       const q = query(
         collectionRef,
@@ -177,14 +186,11 @@ const OrdersTable = () => {
 
       const orderDocData = orderData.docs[0].data();
 
-      if (orderDocData) {
-        const data = orderDocData as Order;
-        await api.post("/post-order", data);
-      }
+      if (!orderDocData)
+        return toast.error("Ocorreu um erro ao enviar o pedido para Hiper !");
 
-      await updateDoc(orderDocRef, {
-        orderStatus: newStatus,
-      });
+      const data = orderDocData as Order;
+      await api.post("/post-order", data);
 
       setData((prevData) =>
         prevData.map((order) =>
@@ -549,6 +555,13 @@ const OrdersTable = () => {
                                 order.orderStatus === 10 && "line-through"
                               }`}
                             >
+                              {order.codeHiper ? order.codeHiper : "---"}
+                            </td>
+                            <td
+                              className={`px-4 py-3 ${
+                                order.orderStatus === 10 && "line-through"
+                              }`}
+                            >
                               {order.createdAt}
                             </td>
                             <td
@@ -616,38 +629,75 @@ const OrdersTable = () => {
                                   })}
                               </select>
                             </td>
-                            <td
-                              onDoubleClick={() =>
-                                handleShowCard(order.orderId)
-                              }
-                              className={`px-4 py-3 hover:underline`}
-                            >
+                            <td className={`px-4 py-3 hover:underline`}>
                               {order.orderStatus !== 1 &&
                                 order.orderStatus !== 3 &&
                                 order.orderStatus !== 10 && (
-                                  <Button
-                                    onClick={() =>
-                                      handleStatusChangeForHiper(order, 5)
+                                  <Popover
+                                    open={
+                                      popoverHiperController === order.orderId
                                     }
-                                    disabled={order.orderStatus >= 5}
-                                    className={`w-[8rem] bg-purple-300 hover:bg-purple-500 rounded-xs ${
-                                      order.orderStatus >= 5 &&
-                                      "bg-blue-200 hover:bg-blue-300 disabled:opacity-100 disabled:cursor-not-allowed"
-                                    }`}
+                                    onOpenChange={(open) => {
+                                      setPopoverHiperController(
+                                        open ? order.orderId : null
+                                      );
+                                    }}
                                   >
-                                    <img
-                                      src={hiperLogo}
-                                      alt=""
-                                      className="w-1/2"
-                                    />{" "}
-                                    {order.orderStatus >= 5 && (
-                                      <CircleCheckBig color="green" />
-                                    )}
-                                    {loadingSendOrderForHiper ===
-                                      order.orderId && (
-                                      <LoaderCircle className="text-white animate-spin" />
-                                    )}
-                                  </Button>
+                                    <PopoverTrigger asChild>
+                                      <Button
+                                        onClick={() =>
+                                          setPopoverHiperController(
+                                            order.orderId
+                                          )
+                                        }
+                                        disabled={order.orderStatus >= 5}
+                                        className={`w-[8rem] bg-purple-300 hover:bg-purple-500 rounded-xs ${
+                                          order.orderStatus >= 5 &&
+                                          "bg-blue-200 hover:bg-blue-300 disabled:opacity-100 disabled:cursor-not-allowed"
+                                        }`}
+                                      >
+                                        <img
+                                          src={hiperLogo}
+                                          alt=""
+                                          className="w-1/2"
+                                        />{" "}
+                                        {order.orderStatus >= 5 && (
+                                          <CircleCheckBig color="green" />
+                                        )}
+                                        {loadingSendOrderForHiper ===
+                                          order.orderId && (
+                                          <LoaderCircle className="text-white animate-spin" />
+                                        )}
+                                      </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="flex flex-col space-y-2 justify-center">
+                                      <span>
+                                        Deseja confirmar o envio para a Hiper ?
+                                      </span>
+                                      <div className="flex items-center justify-between">
+                                        <Button
+                                          onClick={() =>
+                                            setPopoverHiperController(null)
+                                          }
+                                          className=" bg-red-500 hover:bg-red-600"
+                                        >
+                                          Cancelar
+                                        </Button>
+                                        <Button
+                                          onClick={() => {
+                                            handleStatusChangeForHiper(
+                                              order,
+                                              5
+                                            );
+                                            setPopoverHiperController(null);
+                                          }}
+                                          className="bg-emerald-500 hover:bg-emerald-600"
+                                        >
+                                          Confirmar
+                                        </Button>
+                                      </div>
+                                    </PopoverContent>
+                                  </Popover>
                                 )}
                             </td>
                           </tr>
@@ -763,70 +813,66 @@ const OrdersTable = () => {
                               {order.products &&
                                 order.products.map((item) => {
                                   return (
-                                    <>
-                                      <div
-                                        key={item.id}
-                                        className="flex flex-col  rounded-xs bg-gray-200 w-full justify-around"
-                                      >
-                                        <div className="flex p-2 gap-2 w-full">
-                                          <div className="flex-1 flex flex-col">
-                                            <span className=" text-lg text-gray-700">
-                                              {item.nome}
-                                            </span>
-                                            <span className=" text-md text-gray-700">
-                                              {
-                                                item.selectedVariation
-                                                  .nomeVariacao
-                                              }
-                                            </span>
-                                            <div className="text-sm text-gray-500 flex gap-2">
-                                              <span>Altura: {item.altura}</span>
-                                              {/*     <span>
+                                    <div
+                                      key={item.id}
+                                      className="flex flex-col  rounded-xs bg-gray-200 w-full justify-around"
+                                    >
+                                      <div className="flex p-2 gap-2 w-full">
+                                        <div className="flex-1 flex flex-col">
+                                          <span className=" text-lg text-gray-700">
+                                            {item.nome}
+                                          </span>
+                                          <span className=" text-md text-gray-700">
+                                            {
+                                              item.selectedVariation
+                                                .nomeVariacao
+                                            }
+                                          </span>
+                                          <div className="text-sm text-gray-500 flex gap-2">
+                                            <span>Altura: {item.altura}</span>
+                                            {/*     <span>
                                                 Comprimento: {item.comprimento}
                                               </span> */}
-                                              <span>
-                                                Largura: {item.largura}
-                                              </span>
-                                            </div>
+                                            <span>Largura: {item.largura}</span>
                                           </div>
-                                          <div className="flex gap-2 w-[12rem] items-center">
-                                            <div className="border-r border-gray-700 h-4" />
-                                            <div className="flex  items-center">
-                                              <span className="text-lg text-gray-700">
-                                                {item.quantidade} x{" "}
-                                              </span>
-                                              <IMaskInput
-                                                mask="R$ num"
-                                                blocks={{
-                                                  num: {
-                                                    mask: Number,
-                                                    scale: 2,
-                                                    thousandsSeparator: ".",
-                                                    padFractionalZeros: true,
-                                                    normalizeZeros: true,
-                                                    radix: ",",
-                                                    mapToRadix: ["."],
-                                                  },
-                                                }}
-                                                value={String(item.preco)}
-                                                unmask={true} // isso faz com que o valor passado seja numérico
-                                                disabled={order.orderStatus > 1}
-                                                onAccept={(value: string) => {
-                                                  const precoFloat =
-                                                    parseFloat(value);
-                                                  handleChangePrice(
-                                                    order.orderId,
-                                                    item.selectedVariation.id,
-                                                    precoFloat
-                                                  );
-                                                }}
-                                                className="border rounded-xs px-2 py-1 w-[8rem] text-right"
-                                              />
-                                            </div>
+                                        </div>
+                                        <div className="flex gap-2 w-[12rem] items-center">
+                                          <div className="border-r border-gray-700 h-4" />
+                                          <div className="flex  items-center">
+                                            <span className="text-lg text-gray-700">
+                                              {item.quantidade} x{" "}
+                                            </span>
+                                            <IMaskInput
+                                              mask="R$ num"
+                                              blocks={{
+                                                num: {
+                                                  mask: Number,
+                                                  scale: 2,
+                                                  thousandsSeparator: ".",
+                                                  padFractionalZeros: true,
+                                                  normalizeZeros: true,
+                                                  radix: ",",
+                                                  mapToRadix: ["."],
+                                                },
+                                              }}
+                                              value={String(item.preco)}
+                                              unmask={true} // isso faz com que o valor passado seja numérico
+                                              disabled={order.orderStatus > 1}
+                                              onAccept={(value: string) => {
+                                                const precoFloat =
+                                                  parseFloat(value);
+                                                handleChangePrice(
+                                                  order.orderId,
+                                                  item.selectedVariation.id,
+                                                  precoFloat
+                                                );
+                                              }}
+                                              className="border rounded-xs px-2 py-1 w-[8rem] text-right"
+                                            />
                                           </div>
                                         </div>
                                       </div>
-                                    </>
+                                    </div>
                                   );
                                 })}
                             </div>

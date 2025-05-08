@@ -48,6 +48,8 @@ export interface Order {
   deliveryAddress: IDeliveryAddress;
   products: ProductsInOrderProps[];
   orderId: number;
+  codeHiper: string;
+  idOrderHiper: string;
   orderStatus: number;
   totalValue: number;
   createdAt: string;
