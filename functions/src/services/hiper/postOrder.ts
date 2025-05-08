@@ -46,8 +46,7 @@ export class PostOrderService {
     orderId: number,
     order: any,
     codeHiper: string,
-    idOrderHiper: string,
-    userId: string
+    newOrderStatus: number
   ) {
     const budgetsRef = firestore.collection("budgets");
 
@@ -61,9 +60,8 @@ export class PostOrderService {
     snapshot.forEach(async (doc) => {
       await doc.ref.update({
         ...order,
-        idOrderHiper: idOrderHiper,
         codeHiper: codeHiper,
-        IdClient: userId,
+        orderStatus: newOrderStatus,
       });
 
       console.log(`Documento ${doc.id} atualizado com codeHiper.`);
@@ -168,11 +166,10 @@ export class PostOrderService {
       );
 
       const generatedId = response.data.id;
-      const updatedData = { ...data, id: generatedId };
+      const updatedData = { ...data, idOrderHiper: generatedId };
 
       // Tentativa de buscar o código da venda até que ele não esteja em branco, com limite de 3 tentativas
       let codeOrderHiper = "";
-      let idOrderHiper = ""; // Pedido de venda ID
       let attempts = 0;
       const maxAttempts = 10; // Limite de tentativas
 
@@ -183,7 +180,6 @@ export class PostOrderService {
         const orderSaleData = await this.fetchOrderSaleData(generatedId);
         console.log("Retorno do objeto: ", orderSaleData);
         codeOrderHiper = orderSaleData?.codigoDoPedidoDeVenda || ""; // Garante que pegamos o código ou uma string vazia
-        idOrderHiper = orderSaleData?.pedidoDeVendaId || ""; // Garante que pegamos o código ou uma string vazia
 
         if (codeOrderHiper === "" || codeOrderHiper.trim() === "") {
           attempts++;
@@ -206,12 +202,13 @@ export class PostOrderService {
         codeOrderHiper
       );
 
+      const newOrderStatus = 5;
+
       await this.storeOrderInFirestore(
         orderId,
         updatedData,
         codeOrderHiper,
-        idOrderHiper,
-        userId
+        newOrderStatus
       );
       return {
         generatedId,
