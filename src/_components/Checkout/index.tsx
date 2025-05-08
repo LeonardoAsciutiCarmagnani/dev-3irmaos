@@ -7,7 +7,7 @@ import { api } from "@/lib/axios";
 import { LoaderCircle, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 import RegisterModal from "./register-modal";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../Utils/FirebaseConfig";
@@ -193,7 +193,6 @@ export const Checkout = () => {
 
   return (
     <div className="flex  border-gray-300 p-4 rounded-lg text-sm md:text-md overflow-y-auto">
-      <Toaster richColors />
       {productsInCart.length !== 0 ? (
         <div className="flex flex-col w-full md:flex-row gap-4 md:justify-around">
           <div className="flex flex-col space-y-4 w-full md:w-2/5 ">
@@ -234,10 +233,12 @@ export const Checkout = () => {
                   </div>
 
                   <div className="flex w-[9rem] justify-end items-center gap-x-3">
-                    <span className="text-gray-600 font-bold text-md">
-                      {product.quantidade}
-                      {"x"}{" "}
-                    </span>
+                    <div className="flex items-center gap-x-1 text-sm md:text-base">
+                      <span className="text-gray-600 font-bold text-md">
+                        {product.quantidade}
+                      </span>
+                      <span>{`(${product.unidade})`}</span>
+                    </div>
 
                     <Button
                       onClick={() => handleRemoveProduct(product.id)}

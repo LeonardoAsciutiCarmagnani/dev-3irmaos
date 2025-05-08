@@ -62,7 +62,7 @@ const Home = () => {
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-800"
                 />
               </div>
-              <div className="absolute bottom-0 w-full bg-gradient-to-t from-red-900 via-red-900/80 to-red-900/10 backdrop-blur-xs p-3">
+              <div className="absolute bottom-0 w-full bg-gradient-to-t from-red-900 via-red-900/80 to-red-900/10 backdrop-blur-xs p-1">
                 <h1 className="text-sm md:text-lg lg:text-lg font-semibold text-white/90 line-clamp-1">
                   {categoria.label}
                 </h1>
