@@ -18,15 +18,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 
-const productSchema = z.object({
-  altura: z.coerce.number().min(1, "Altura obrigatória"),
-  // comprimento: z.coerce.number().min(1, "Comprimento obrigatório"),
-  largura: z.coerce.number().min(1, "Largura obrigatória"),
-  quantidade: z.coerce.number().min(1, "Quantidade obrigatória"),
-});
-
-export type ProductFormData = z.infer<typeof productSchema>;
-
 export const DetailsProduct = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
@@ -37,6 +28,28 @@ export const DetailsProduct = () => {
     id: "",
     name: "",
   });
+  const [isSquareMeter, setIsSquareMeter] = useState(false);
+  const [isSobMedida, setIsSobMedida] = useState(false);
+
+  const productSchema = z.object({
+    comprimento:
+      isSobMedida && !isSquareMeter
+        ? z.coerce.number().min(1, "Comprimento obrigatório")
+        : z.coerce.number(),
+    altura:
+      isSobMedida && !isSquareMeter
+        ? z.coerce.number().min(1, "Altura obrigatória")
+        : z.coerce.number(),
+    largura:
+      isSobMedida && !isSquareMeter
+        ? z.coerce.number().min(1, "Largura obrigatória")
+        : z.coerce.number(),
+    quantidade: isSquareMeter
+      ? z.coerce.number().min(1, "Quantidade obrigatória")
+      : z.coerce.number().min(1, "Quantidade obrigatória"),
+  });
+
+  type ProductFormData = z.infer<typeof productSchema>;
 
   // Verificar se o produto tem variações
   const hasVariations = product.variacao && product.variacao.length > 0;
@@ -63,31 +76,38 @@ export const DetailsProduct = () => {
     defaultValues: typeProduct.typeProduct
       ? {
           altura: product.altura,
-          // comprimento: product.comprimento,
+          comprimento: product.comprimento,
           largura: product.largura,
           quantidade: 1,
         }
       : {
           altura: undefined,
-          // comprimento: undefined,
+          comprimento: undefined,
           largura: undefined,
           quantidade: 1,
         },
   });
 
   useEffect(() => {
+    console.log("Product:", product);
+    if (product.unidade === "m²") {
+      setIsSquareMeter(true);
+    }
+
+    setIsSobMedida(!typeProduct.typeProduct);
+
     if (typeProduct.typeProduct) {
       reset({
         altura: product.altura,
-        // comprimento: product.comprimento,
+        comprimento: product.comprimento,
         largura: product.largura,
         quantidade: 1,
       });
     } else {
       reset({
-        altura: undefined,
-        // comprimento: undefined,
-        largura: undefined,
+        altura: 0,
+        comprimento: 0,
+        largura: 0,
         quantidade: 1,
       });
     }
@@ -110,7 +130,7 @@ export const DetailsProduct = () => {
       ...product,
       selectedVariation: typeProduct.productVariationSelected,
       altura: data.altura,
-      // comprimento: data.comprimento,
+      comprimento: data.comprimento,
       largura: data.largura,
       quantidade: data.quantidade,
       listImages: listImages,
@@ -128,8 +148,9 @@ export const DetailsProduct = () => {
 
   return (
     <div className="h-screen w-full overflow-auto">
-      <div className="flex flex-col justify-start items-start p-4 md:p-10 space-y-4">
+      <div className="flex flex-col justify-start items-start p-3 md:p-10 space-y-3 md:space-y-4">
         <div className="flex flex-col md:flex-row gap-y-3 w-full gap-x-6 p-1 md:items-center">
+          {/* Imagem do produto - Ajustado para mobile */}
           <div className="md:w-3/5 w-full rounded-xs overflow-hidden transition-shadow duration-300 shadow-md flex flex-col gap-y-1">
             <Carousel plugins={[Autoplay({ delay: 2500 }), Fade()]}>
               <CarouselContent className="w-full">
@@ -140,7 +161,7 @@ export const DetailsProduct = () => {
                   >
                     <img
                       src={imagem.imagem}
-                      alt={`Imagens do produto ${product.nome}`}
+                      alt={product.nome}
                       className="w-full h-40 md:h-[72vh] object-cover"
                     />
                   </CarouselItem>
@@ -148,33 +169,34 @@ export const DetailsProduct = () => {
               </CarouselContent>
             </Carousel>
             <div className="text-center line-clamp-2 p-2 bg-white rounded-xs px-4">
-              <span className="text-md font-semibold text-gray-800">
+              <span className="text-sm md:text-md font-semibold text-gray-800">
                 {product.nome}
               </span>
             </div>
           </div>
-          {/* Responsável por alinhar todos os elementos do lado direito da tela  */}
-          <div className="flex flex-col space-y-4 w-full">
+
+          {/* Informações do produto - Ajustado para mobile */}
+          <div className="flex flex-col space-y-3 md:space-y-4 w-full">
             <div className="flex flex-col w-full p-2 rounded-xs shadow-sm">
               <div className="flex justify-center items-center">
                 <h1 className="text-red-900 text-md md:text-xl font-bold">
                   Descrição do produto
                 </h1>
               </div>
-              <span className="rounded-xs p-3 text-gray-700 text-[0.77rem] md:text-sm font-normal antialiased">
+              <span className="rounded-xs p-2 md:p-3 text-gray-700 text-xs md:text-sm font-normal antialiased">
                 {product.descricao ?? "Descrição não disponível"}
               </span>
             </div>
 
-            <div className="p-2.5 rounded-xs shadow-sm ">
-              <div className="flex-col space-y-3 justify-center md:justify-end gap-4 p-1 ">
-                <div className="flex justify-between items-center ">
-                  <h2 className="text-sm md:text-md font-semibold text-red-900">
+            <div className="p-2 md:p-2.5 rounded-xs shadow-sm">
+              <div className="flex-col space-y-2 md:space-y-3 justify-center md:justify-end gap-3 md:gap-4 p-1">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-sm md:text-lg font-semibold text-red-900">
                     Disponibilidade
                   </h2>
                   {typeProduct.typeProduct === true && (
                     <div className="flex items-center justify-end gap-1 text-end">
-                      <Badge className="text-green-700 font-bold text-lg md:text-2xl bg-white border-b-green-700 border-3 rounded-none border-double">
+                      <Badge className="text-green-700 font-bold text-base md:text-2xl bg-white border-b-green-700 border-3 rounded-none border-double">
                         {product.preco.toLocaleString("pt-BR", {
                           style: "currency",
                           currency: "BRL",
@@ -184,7 +206,7 @@ export const DetailsProduct = () => {
                   )}
                 </div>
 
-                {/* Exibe opções de tipo de produto apenas se houver variações */}
+                {/* Opções de tipo de produto */}
                 {hasVariations && (
                   <>
                     <div className="flex items-center gap-2">
@@ -197,7 +219,7 @@ export const DetailsProduct = () => {
                             (v) => v.nomeVariacaoA === "Sob Medida"
                           )?.nomeVariacaoA || ""
                         }
-                        className="h-5 w-5 text-red-900 focus:ring-2 focus:ring-transparent rounded-xs accent-red-900"
+                        className="h-4 md:h-5 w-4 md:w-5 text-red-900 focus:ring-2 focus:ring-transparent rounded-xs accent-red-900"
                         checked={typeProduct.typeProduct === false}
                         onChange={() =>
                           setTypeProduct(() => ({
@@ -214,7 +236,7 @@ export const DetailsProduct = () => {
                       />
                       <label
                         htmlFor="sobmedida"
-                        className="cursor-pointer text-sm md:text-md font-semibold text-gray-900"
+                        className="cursor-pointer text-xs md:text-sm font-semibold text-gray-900"
                       >
                         Sob medida
                       </label>
@@ -229,7 +251,7 @@ export const DetailsProduct = () => {
                             (v) => v.nomeVariacaoA === "Medida Padrao"
                           )?.nomeVariacaoA || ""
                         }
-                        className="h-5 w-5 text-gray-900 focus:ring-2 focus:ring-transparent rounded-xs accent-red-900"
+                        className="h-4 md:h-5 w-4 md:w-5 text-gray-900 focus:ring-2 focus:ring-transparent rounded-xs accent-red-900"
                         checked={typeProduct.typeProduct === true}
                         onChange={() =>
                           setTypeProduct(() => ({
@@ -243,7 +265,7 @@ export const DetailsProduct = () => {
                       />
                       <label
                         htmlFor="prontaentrega"
-                        className="cursor-pointer text-sm md:text-md font-semibold text-gray-900"
+                        className="cursor-pointer text-xs md:text-sm font-semibold text-gray-900"
                       >
                         Pronta entrega
                       </label>
@@ -252,16 +274,16 @@ export const DetailsProduct = () => {
                 )}
               </div>
 
-              {/* Seção de variações exibida apenas se tivermos variações */}
+              {/* Seção de variações */}
               {hasVariations && (
-                <div className="flex flex-col space-y-2 place-items-stretch mt-4">
-                  {/* Exibe seleção de variação B apenas se tivermos variação B */}
+                <div className="flex flex-col space-y-2 place-items-stretch mt-3 md:mt-4">
+                  {/* Seleção de variação B */}
                   {hasVariationB && (
                     <>
-                      <h1 className="text-sm md:text-md font-semibold text-red-900">
+                      <h1 className="text-sm md:text-lg font-semibold text-red-900">
                         Escolha a variação:
                       </h1>
-                      <div className="flex items-center justify-start w-full gap-x-2 ">
+                      <div className="flex flex-wrap items-center justify-start w-full gap-x-2 gap-y-2">
                         {product.variacao?.map((variation) => {
                           const isMedidaPadrao =
                             variation.nomeVariacaoA === "Medida Padrao";
@@ -300,12 +322,12 @@ export const DetailsProduct = () => {
                                             };
                                           });
                                         }}
-                                        className="h-5 w-5 text-gray-900 focus:ring-2 focus:ring-transparent rounded-xs text-sm accent-red-900"
+                                        className="h-4 md:h-5 w-4 md:w-5 text-gray-900 focus:ring-2 focus:ring-transparent rounded-xs text-xs md:text-sm accent-red-900"
                                       />
                                       <div className="flex flex-col items-center">
                                         <label
                                           htmlFor={variation.id}
-                                          className={`cursor-pointer text-sm md:text-sm font-semibold text-gray-900 ${
+                                          className={`cursor-pointer text-xs md:text-sm font-semibold text-gray-900 ${
                                             variation.quantidadeEmEstoque <=
                                               0 && "line-through"
                                           }`}
@@ -313,7 +335,9 @@ export const DetailsProduct = () => {
                                           {variation.nomeVariacaoB}{" "}
                                         </label>
                                         {variation.quantidadeEmEstoque <= 0 && (
-                                          <Badge>Sem estoque</Badge>
+                                          <Badge className="text-xs">
+                                            Sem estoque
+                                          </Badge>
                                         )}
                                       </div>
                                     </div>
@@ -344,11 +368,11 @@ export const DetailsProduct = () => {
                                             };
                                           });
                                         }}
-                                        className="h-5 w-5 text-gray-900 focus:ring-2 focus:ring-transparent rounded-xs accent-red-900"
+                                        className="h-4 md:h-5 w-4 md:w-5 text-gray-900 focus:ring-2 focus:ring-transparent rounded-xs accent-red-900"
                                       />
                                       <label
                                         htmlFor={variation.id}
-                                        className="cursor-pointer text-sm md:text-md font-semibold text-gray-900"
+                                        className="cursor-pointer text-xs md:text-md font-semibold text-gray-900"
                                       >
                                         {variation.nomeVariacaoB}
                                       </label>
@@ -361,101 +385,157 @@ export const DetailsProduct = () => {
                     </>
                   )}
 
-                  {/* Formulário sempre exibido */}
+                  {/* Formulário */}
                   <div>
                     <form onSubmit={handleSubmit(onSubmit)}>
-                      <div className="flex md:h-18 items-start md:justify-start space-y-2 gap-x-8 md:space-y-0">
-                        <div className="flex gap-x-6 items-center justify-center ">
-                          <div>
+                      <div className="flex flex-col md:flex-row md:h-18 items-start md:justify-start space-y-2 gap-x-4 md:gap-x-8 md:space-y-0">
+                        {!isSquareMeter ? (
+                          <div className="flex flex-wrap gap-2 md:gap-x-6 items-center justify-start">
+                            <div>
+                              <label
+                                htmlFor="altura"
+                                className="text-xs md:text-sm font-medium text-gray-700 text-nowrap"
+                              >
+                                Altura (cm)
+                              </label>
+                              <Input
+                                id="altura"
+                                type="number"
+                                step={"0.01"}
+                                {...register("altura")}
+                                disabled={
+                                  hasVariations
+                                    ? typeProduct.typeProduct
+                                    : false
+                                }
+                                className="w-[4.5rem] md:w-[5rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
+                              />
+                              {errors.altura && (
+                                <span className="text-red-500 text-xs md:text-sm">
+                                  {errors.altura.message}
+                                </span>
+                              )}
+                            </div>
+
+                            <div>
+                              <label
+                                htmlFor="largura"
+                                className="text-xs md:text-sm font-medium text-gray-700 text-nowrap"
+                              >
+                                Largura (cm)
+                              </label>
+                              <Input
+                                id="largura"
+                                type="number"
+                                step={"0.01"}
+                                {...register("largura")}
+                                disabled={
+                                  hasVariations
+                                    ? typeProduct.typeProduct
+                                    : false
+                                }
+                                className="w-[4.5rem] md:w-[5rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
+                              />
+                              {errors.largura && (
+                                <span className="text-red-500 text-xs md:text-sm">
+                                  {errors.largura.message}
+                                </span>
+                              )}
+                            </div>
+
+                            <div>
+                              <label
+                                htmlFor="comprimento"
+                                className="text-xs md:text-sm font-medium text-gray-700 text-nowrap"
+                              >
+                                Profundidade (cm)
+                              </label>
+                              <Input
+                                id="comprimento"
+                                type="number"
+                                step={"0.01"}
+                                {...register("comprimento")}
+                                disabled={
+                                  hasVariations
+                                    ? typeProduct.typeProduct
+                                    : false
+                                }
+                                className="w-[4.5rem] md:w-[4rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
+                              />
+                              {errors.comprimento && (
+                                <span className="text-red-500 text-xs md:text-sm">
+                                  {errors.comprimento.message}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex gap-x-6 items-center justify-center">
+                            <div>
+                              <label
+                                htmlFor="metroQuadrado"
+                                className="text-xs md:text-sm font-medium text-gray-700"
+                              >
+                                Quantidade (m²)
+                              </label>
+                              <Input
+                                id="metroQuadrado"
+                                type="number"
+                                step={"0.01"}
+                                {...register("quantidade")}
+                                className="w-[4.5rem] md:w-[4rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
+                              />
+                              {errors.quantidade && (
+                                <span className="text-red-500 text-xs md:text-sm">
+                                  {errors.quantidade.message}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                        {!isSquareMeter && (
+                          <div className="mt-2 md:mt-0">
                             <label
-                              htmlFor="altura"
-                              className="text-sm font-medium text-gray-700"
+                              htmlFor="quantidade"
+                              className="text-xs md:text-sm font-medium text-gray-700"
                             >
-                              Altura (cm)
+                              Quantidade
                             </label>
                             <Input
-                              id="altura"
+                              id="quantidade"
                               type="number"
-                              step={"0.01"}
-                              {...register("altura")}
-                              disabled={
-                                hasVariations ? typeProduct.typeProduct : false
-                              }
-                              className="w-[4rem] border border-gray-300 rounded-xs p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
+                              {...register("quantidade")}
+                              className="w-[4.5rem] md:w-[4.3rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600"
                             />
-                            {errors.altura && (
-                              <span className="text-red-500 text-sm">
-                                {errors.altura.message}
+                            {errors.quantidade && (
+                              <span className="text-red-500 text-xs md:text-sm">
+                                {errors.quantidade.message}
                               </span>
                             )}
                           </div>
-
-                          <div>
-                            <label
-                              htmlFor="largura"
-                              className="text-sm font-medium text-gray-700"
-                            >
-                              Largura (cm)
-                            </label>
-                            <Input
-                              id="largura"
-                              type="number"
-                              step={"0.01"}
-                              {...register("largura")}
-                              disabled={
-                                hasVariations ? typeProduct.typeProduct : false
-                              }
-                              className="w-[4rem] border border-gray-300 rounded-xs p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
-                            />
-                            {errors.largura && (
-                              <span className="text-red-500 text-sm">
-                                {errors.largura.message}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-
-                        <div>
-                          <label
-                            htmlFor="quantidade"
-                            className="text-sm font-medium text-gray-700"
-                          >
-                            Quantidade
-                          </label>
-                          <Input
-                            id="quantidade"
-                            type="number"
-                            {...register("quantidade")}
-                            className="w-[4.3rem] border border-gray-300 rounded-xs p-2 focus:outline-none focus:ring-2 focus:ring-red-600"
-                          />
-                          {errors.quantidade && (
-                            <span className="text-red-500 text-sm">
-                              {errors.quantidade.message}
-                            </span>
-                          )}
-                        </div>
+                        )}
                       </div>
 
-                      <div className="flex justify-end mt-4 mb-4">
+                      <div className="flex justify-end mt-3 md:mt-4 mb-3 md:mb-4">
                         <Button
                           type="submit"
-                          className="w-fit bg-red-900 text-white rounded-xs py-2 hover:bg-red-700 transition-colors"
+                          className="w-fit text-xs md:text-sm bg-red-900 text-white rounded-xs py-1 md:py-2 px-2 md:px-4 hover:bg-red-700 transition-colors"
                         >
                           Adicionar produto
                         </Button>
                       </div>
                     </form>
 
-                    <div className="flex justify-end gap-x-4">
+                    <div className="flex justify-end gap-x-2 md:gap-x-4">
                       <Button
                         onClick={() => navigate("/")}
-                        className="text-xs md:text-sm bg-gray-200 text-gray-700 rounded-xs py-2 hover:bg-gray-300 transition-colors"
+                        className="text-xs md:text-sm bg-gray-200 text-gray-700 rounded-xs py-1 md:py-2 px-2 md:px-3 hover:bg-gray-300 transition-colors"
                       >
                         Adicionar outros produtos
                       </Button>
                       <Button
                         onClick={() => navigate("/orçamento")}
-                        className="text-xs md:text-sm bg-green-700 text-white rounded-xs py-2 hover:bg-green-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="text-xs md:text-sm bg-green-700 text-white rounded-xs py-1 md:py-2 px-2 md:px-3 hover:bg-green-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled={productsInCart.length === 0}
                       >
                         Prosseguir com a cotação

@@ -66,8 +66,12 @@ const Header = () => {
                       {product.nome}
                     </span>
                     <div className="w-full flex items-center justify-around">
-                      <span className="text-gray-700 flex-1 text-sm">
-                        <strong>Quantidade:</strong> {product.quantidade}
+                      <span className="text-gray-700 flex-1 text-sm flex items-center gap-x-2">
+                        <strong>Quantidade:</strong>
+                        <div className="flex items-center gap-x-2">
+                          <span>{product.quantidade}</span>
+                          <span>{`(${product.unidade})`}</span>
+                        </div>
                       </span>
                       <Button
                         onClick={() => handleRemoveProduct(product.id)}

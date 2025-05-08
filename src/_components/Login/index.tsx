@@ -8,7 +8,6 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Toaster } from "@/components/ui/sonner";
 import { useAuthStore } from "@/context/authContext";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
@@ -43,18 +42,14 @@ const Login: React.FC<LoginProps> = () => {
       await login(data.email.trim(), data.password.trim());
     } catch (error) {
       console.error("Erro de autenticação:", error);
-      toast.error("Login ou senha incorretos.");
+      toast.error("Login ou senha incorretos.", {
+        id: "login-error",
+      });
     }
   };
 
   return (
     <>
-      <Toaster
-        richColors
-        position="top-right"
-        duration={5000}
-        closeButton={false}
-      />
       <div className="flex flex-col items-center justify-center w-full p-4">
         {/* Formulário de login */}
         <Form {...form}>
