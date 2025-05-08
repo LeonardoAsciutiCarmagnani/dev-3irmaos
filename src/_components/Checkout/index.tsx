@@ -45,7 +45,7 @@ export const Checkout = () => {
     state: "",
     ibge: "",
   });
-  const [paymentAddress, setPaymentAddress] = useState({
+  const [billingAddress, setBillingAddress] = useState({
     cep: "",
     neighborhood: "",
     street: "",
@@ -54,8 +54,6 @@ export const Checkout = () => {
     state: "",
     ibge: "",
   });
-
-  console.log("Produtos no carrinho", productsInCart);
 
   const getUserAddress = async () => {
     if (!user?.uid) {
@@ -95,7 +93,8 @@ export const Checkout = () => {
         clientPhone: fireStoreData.clientPhone,
         ie: fireStoreData.ie,
       });
-      setPaymentAddress(fireStoreData.clientAddress);
+      setAddress(fireStoreData.clientAddress);
+      setBillingAddress(fireStoreData.clientAddress);
     } catch (error) {
       console.error("Erro ao buscar endereço:", error);
       toast.error("Erro ao buscar endereço do usuário.");
@@ -110,8 +109,9 @@ export const Checkout = () => {
       // console.log("Response data", data);
       if (data.erro) throw new Error("CEP não encontrado");
 
-      setAddress((prev) => ({
+      setBillingAddress((prev) => ({
         ...prev,
+        cep: data.cep,
         street: data.logradouro,
         neighborhood: data.bairro,
         city: data.localidade,
@@ -144,7 +144,7 @@ export const Checkout = () => {
           ie: userData?.ie,
         },
         deliveryAddress: address,
-        paymentAddress,
+        billingAddress,
         products: productsInCart,
         createdAt: dateOrder,
         orderStatus: 1,
@@ -186,7 +186,7 @@ export const Checkout = () => {
   }, [user]);
 
   useEffect(() => {
-    // console.log("Chamou", address.cep, "oi");
+    console.log("Chamou", address.cep);
     getUserAddress();
     fetchAddress(address.cep);
   }, []);
@@ -267,16 +267,16 @@ export const Checkout = () => {
             <div className="flex flex-col max-h-96 p-2 md:p-4 justify-between border border-gray-200 bg-gray-50 rounded-xs w-full md:w-lg">
               <span className="font-semibold">Endereço de entrega</span>
               <div className="flex flex-col space-y-2 ">
-                {address?.cep ? (
+                {address.cep ? (
                   <>
                     <div className="flex items-center gap-2">
                       <strong className="w-20">CEP:</strong>
                       <Input
                         className="text-gray-700 w-fit bg-gray-50"
-                        value={address.cep}
+                        value={billingAddress.cep}
                         onBlur={(e) => fetchAddress(e.target.value)}
                         onChange={(e) =>
-                          setAddress((prev) => ({
+                          setBillingAddress((prev) => ({
                             ...prev,
                             cep: e.target.value,
                           }))
@@ -287,9 +287,9 @@ export const Checkout = () => {
                       <strong className="w-20">Bairro:</strong>
                       <Input
                         className="text-gray-700 w-fit bg-gray-50"
-                        value={address.neighborhood}
+                        value={billingAddress.neighborhood}
                         onChange={(e) =>
-                          setAddress((prev) => ({
+                          setBillingAddress((prev) => ({
                             ...prev,
                             neighborhood: e.target.value,
                           }))
@@ -300,9 +300,9 @@ export const Checkout = () => {
                       <strong className="w-20">Rua:</strong>
                       <Input
                         className="text-gray-700 w-fit bg-gray-50"
-                        value={address.street}
+                        value={billingAddress.street}
                         onChange={(e) =>
-                          setAddress((prev) => ({
+                          setBillingAddress((prev) => ({
                             ...prev,
                             street: e.target.value,
                           }))
@@ -313,9 +313,9 @@ export const Checkout = () => {
                       <strong className="w-20">Número:</strong>
                       <Input
                         className="text-gray-700 w-fit bg-gray-50"
-                        value={address.number}
+                        value={billingAddress.number}
                         onChange={(e) =>
-                          setAddress((prev) => ({
+                          setBillingAddress((prev) => ({
                             ...prev,
                             number: Number(e.target.value) || 0,
                           }))
@@ -326,9 +326,9 @@ export const Checkout = () => {
                       <strong className="w-20">Cidade:</strong>
                       <Input
                         className="text-gray-700 w-fit bg-gray-50"
-                        value={address.city}
+                        value={billingAddress.city}
                         onChange={(e) =>
-                          setAddress((prev) => ({
+                          setBillingAddress((prev) => ({
                             ...prev,
                             city: e.target.value,
                           }))
@@ -339,9 +339,9 @@ export const Checkout = () => {
                       <strong className="w-20">Estado:</strong>
                       <Input
                         className="text-gray-700 w-fit bg-gray-50"
-                        value={address.state}
+                        value={billingAddress.state}
                         onChange={(e) =>
-                          setAddress((prev) => ({
+                          setBillingAddress((prev) => ({
                             ...prev,
                             state: e.target.value,
                           }))

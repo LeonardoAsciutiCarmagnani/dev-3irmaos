@@ -48,6 +48,7 @@ export const routes = createBrowserRouter([
       </AuthenticatedRoute>
     ),
   },
+
   {
     path: "/pedidos-e-orçamentos",
     element: (

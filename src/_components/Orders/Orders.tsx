@@ -46,12 +46,8 @@ import { IMaskInput } from "react-imask";
 import { Order } from "@/interfaces/Order";
 import { api } from "@/lib/axios";
 import hiperLogo from "@/assets/hiper_logo.svg";
-
-/* 
-[] Incluir nas props do produto as medidas informadas
-[] Receber os sketches que o cliente informar
-[] Poder subir novas imagens para o envio da proposta comercial
-*/
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 const OrdersTable = () => {
   const [date, setDate] = useState<DateRange>();
@@ -65,6 +61,9 @@ const OrdersTable = () => {
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [sendPropostal, setSendPropostal] = useState(false);
   const [loadingSendOrderForHiper, setLoadingSendOrderForHiper] = useState<
+    number | null
+  >(null);
+  const [popoverHiperController, setPopoverHiperController] = useState<
     number | null
   >(null);
 
@@ -103,6 +102,11 @@ const OrdersTable = () => {
         header: "ID",
         accessorKey: "orderId",
         cell: ({ row }) => row.getValue("orderId"),
+      },
+      {
+        header: "código Hiper",
+        accessorKey: "codeHiper",
+        cell: ({ row }) => row.getValue("codeHiper"),
       },
       {
         header: "Data",
@@ -148,11 +152,18 @@ const OrdersTable = () => {
     return { obs, payment, time, delivery };
   }
 
-  async function handleStatusChangeForHiper(id: number, newStatus: number) {
-    setLoadingSendOrderForHiper(id);
+  async function handleStatusChangeForHiper(
+    orderToHiper: Order,
+    newStatus: number
+  ) {
+    setLoadingSendOrderForHiper(orderToHiper.orderId);
     try {
+      console.log("The new status received => ", newStatus);
       const collectionRef = collection(db, "budgets");
-      const q = query(collectionRef, where("orderId", "==", id));
+      const q = query(
+        collectionRef,
+        where("orderId", "==", orderToHiper.orderId)
+      );
       const orderData = await getDocs(q);
 
       if (orderData.empty) {
@@ -169,24 +180,19 @@ const OrdersTable = () => {
 
       if (!orderDocRef) return;
 
-      try {
-        const doc = orderData.docs[0].data();
+      const orderDocData = orderData.docs[0].data();
 
-        if (doc) {
-          const data = doc as Order;
-          await api.post("/post-order", data);
-        }
-      } catch {
-        console.error("Ocorreu um erro ao enviar o pedido para Hiper !");
-      }
+      if (!orderDocData)
+        return toast.error("Ocorreu um erro ao enviar o pedido para Hiper !");
 
-      await updateDoc(orderDocRef, {
-        orderStatus: newStatus,
-      });
+      const data = orderDocData as Order;
+      await api.post("/post-order", data);
 
       setData((prevData) =>
         prevData.map((order) =>
-          order.orderId === id ? { ...order, status: newStatus } : order
+          order.orderId === orderToHiper.orderId
+            ? { ...order, status: newStatus }
+            : order
         )
       );
       setLoadingSendOrderForHiper(null);
@@ -396,6 +402,22 @@ const OrdersTable = () => {
     setShowCardOrder(orderId);
   }
 
+  const exportPDF = async () => {
+    const element = document.getElementById("content-to-print");
+    if (!element) return;
+
+    const canvas = await html2canvas(element);
+    const imgData = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF();
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+    pdf.save("meu-pdf.pdf");
+  };
+
   const formattedFrom = date?.from
     ? format(date.from, "dd/MM/yyyy")
     : "--/--/----";
@@ -493,8 +515,8 @@ const OrdersTable = () => {
 
       {/* Tabela */}
 
-      <div className="flex w-full border rounded-xs h-[80vh] overflow-y-scroll">
-        <table className="w-full">
+      <div className="flex w-full border rounded-xs overflow-y-auto max-h-[72vh]">
+        <table className="w-full overflow-y-scroll max-h-[73vh]">
           <thead className="bg-gray-50">
             {table
               ? table.getHeaderGroups().map((headerGroup) => (
@@ -531,7 +553,7 @@ const OrdersTable = () => {
                         <DialogTrigger asChild>
                           <tr
                             key={order.orderId}
-                            className="hover:bg-gray-50 cursor-pointer text-sm"
+                            className=" hover:bg-gray-50 cursor-pointer text-sm "
                           >
                             <td
                               className={`px-4 py-3 ${
@@ -539,6 +561,13 @@ const OrdersTable = () => {
                               }`}
                             >
                               {order.orderId}
+                            </td>
+                            <td
+                              className={`px-4 py-3 ${
+                                order.orderStatus === 10 && "line-through"
+                              }`}
+                            >
+                              {order.codeHiper ? order.codeHiper : "---"}
                             </td>
                             <td
                               className={`px-4 py-3 ${
@@ -581,7 +610,7 @@ const OrdersTable = () => {
                                     ? "bg-purple-500"
                                     : order.orderStatus === 9
                                     ? "bg-green-600"
-                                    : order.orderStatus === 10 && "bg-gray-500"
+                                    : order.orderStatus === 10 && "bg-gray-400"
                                 }`}
                                 value={order.orderStatus}
                                 onChange={(e) =>
@@ -597,8 +626,10 @@ const OrdersTable = () => {
                                       <option
                                         disabled={
                                           order.orderStatus >= 5 &&
-                                          order.orderStatus !== 10 &&
-                                          option.value < 5
+                                          order.orderStatus !== 10
+                                            ? option.value <= 5
+                                            : option.value >= 5 &&
+                                              option.value !== 10
                                         }
                                         key={option.id}
                                         value={option.value}
@@ -610,156 +641,191 @@ const OrdersTable = () => {
                                   })}
                               </select>
                             </td>
-                            <td
-                              onDoubleClick={() =>
-                                handleShowCard(order.orderId)
-                              }
-                              className={`px-4 py-3 hover:underline`}
-                            >
+                            <td className={`px-4 py-3 hover:underline`}>
                               {order.orderStatus !== 1 &&
+                                order.orderStatus !== 3 &&
                                 order.orderStatus !== 10 && (
-                                  <Button
-                                    onClick={() =>
-                                      handleStatusChangeForHiper(
-                                        order.orderId,
-                                        5
-                                      )
+                                  <Popover
+                                    open={
+                                      popoverHiperController === order.orderId
                                     }
-                                    disabled={order.orderStatus >= 5}
-                                    className={`w-[8rem] bg-purple-300 hover:bg-purple-500 rounded-xs ${
-                                      order.orderStatus >= 5 &&
-                                      "bg-blue-200 hover:bg-blue-300 disabled:opacity-100 disabled:cursor-not-allowed"
-                                    }`}
+                                    onOpenChange={(open) => {
+                                      setPopoverHiperController(
+                                        open ? order.orderId : null
+                                      );
+                                    }}
                                   >
-                                    <img
-                                      src={hiperLogo}
-                                      alt=""
-                                      className="w-1/2"
-                                    />{" "}
-                                    {order.orderStatus >= 5 && (
-                                      <CircleCheckBig color="green" />
-                                    )}
-                                    {loadingSendOrderForHiper ===
-                                      order.orderId && (
-                                      <LoaderCircle className="text-white animate-spin" />
-                                    )}
-                                  </Button>
+                                    <PopoverTrigger asChild>
+                                      <Button
+                                        onClick={() =>
+                                          setPopoverHiperController(
+                                            order.orderId
+                                          )
+                                        }
+                                        disabled={order.orderStatus >= 5}
+                                        className={`w-[8rem] bg-purple-300 hover:bg-purple-500 rounded-xs ${
+                                          order.orderStatus >= 5 &&
+                                          "bg-blue-200 hover:bg-blue-300 disabled:opacity-100 disabled:cursor-not-allowed"
+                                        }`}
+                                      >
+                                        <img
+                                          src={hiperLogo}
+                                          alt=""
+                                          className="w-1/2"
+                                        />{" "}
+                                        {order.orderStatus >= 5 && (
+                                          <CircleCheckBig color="green" />
+                                        )}
+                                        {loadingSendOrderForHiper ===
+                                          order.orderId && (
+                                          <LoaderCircle className="text-white animate-spin" />
+                                        )}
+                                      </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="flex flex-col space-y-2 justify-center">
+                                      <span>
+                                        Deseja confirmar o envio para a Hiper ?
+                                      </span>
+                                      <div className="flex items-center justify-between">
+                                        <Button
+                                          onClick={() =>
+                                            setPopoverHiperController(null)
+                                          }
+                                          className=" bg-red-500 hover:bg-red-600"
+                                        >
+                                          Cancelar
+                                        </Button>
+                                        <Button
+                                          onClick={() => {
+                                            handleStatusChangeForHiper(
+                                              order,
+                                              5
+                                            );
+                                            setPopoverHiperController(null);
+                                          }}
+                                          className="bg-emerald-500 hover:bg-emerald-600"
+                                        >
+                                          Confirmar
+                                        </Button>
+                                      </div>
+                                    </PopoverContent>
+                                  </Popover>
                                 )}
                             </td>
                           </tr>
                         </DialogTrigger>
 
                         <DialogContent className="flex flex-col border rounded-xs bg-gray-100 md:w-2/3 h-[86vh] overflow-y-scroll">
-                          <DialogHeader>
-                            <div className="flex justify-between items-center">
-                              <DialogTitle>Detalhes do pedido</DialogTitle>
-                            </div>
-                            <div className="flex justify-around w-full bg-gray-200 p-2 rounded-xs items-center shadow-md">
-                              <div className="flex flex-col w-full ">
-                                <div className="flex flex-col md:flex-row space-x-32 items-start ">
-                                  {/* Dados do cliente */}
-                                  <div className=" flex flex-col  ">
-                                    <span className="text-xl font-bold text-gray-700">
-                                      Pedido {order.orderId}
-                                    </span>
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        Cliente:
+                          <div id="content-to-print">
+                            <DialogHeader>
+                              <div className="flex justify-between items-center">
+                                <DialogTitle>Detalhes do pedido</DialogTitle>
+                              </div>
+                              <div className="flex justify-around w-full bg-gray-200 p-2 rounded-xs items-center shadow-md">
+                                <div className="flex flex-col w-full ">
+                                  <div className="flex flex-col md:flex-row space-x-32 items-start ">
+                                    {/* Dados do cliente */}
+                                    <div className=" flex flex-col  ">
+                                      <span className="text-xl font-bold text-gray-700">
+                                        Pedido {order.orderId}
                                       </span>
-                                      <span className="text-lg text-gray-700 ">
-                                        {order.client.name}
-                                      </span>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Cliente:
+                                        </span>
+                                        <span className="text-lg text-gray-700 ">
+                                          {order.client.name}
+                                        </span>
+                                      </div>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Email:
+                                        </span>
+                                        <span className="text-lg text-gray-700 truncate">
+                                          {order.client.email}
+                                        </span>
+                                      </div>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Telefone:
+                                        </span>
+                                        <span className="text-lg  text-gray-700 ">
+                                          {order.client.phone}
+                                        </span>
+                                      </div>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Data:{" "}
+                                        </span>
+                                        <span className="  text-gray-700">
+                                          {order.createdAt}
+                                        </span>
+                                      </div>
                                     </div>
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        Email:
-                                      </span>
-                                      <span className="text-lg text-gray-700 truncate">
-                                        {order.client.email}
-                                      </span>
-                                    </div>
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        Telefone:
-                                      </span>
-                                      <span className="text-lg  text-gray-700 ">
-                                        {order.client.phone}
-                                      </span>
-                                    </div>
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        Data:{" "}
-                                      </span>
-                                      <span className="  text-gray-700">
-                                        {order.createdAt}
-                                      </span>
-                                    </div>
-                                  </div>
-                                  {/* Endereço */}
-                                  <div className=" flex flex-col justify-between">
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        Rua:
-                                      </span>
-                                      <span className="text-lg text-gray-700 ">
-                                        {order.deliveryAddress.street}
-                                      </span>
-                                    </div>
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        Numero:
-                                      </span>
-                                      <span className="text-lg text-gray-700 ">
-                                        {order.deliveryAddress.number}
-                                      </span>
-                                    </div>
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        Bairro:
-                                      </span>
-                                      <span className="text-lg text-gray-700 truncate">
-                                        {order.deliveryAddress.neighborhood}
-                                      </span>
-                                    </div>
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        Cidade:
-                                      </span>
-                                      <span className="text-lg  text-gray-700 ">
-                                        {order.deliveryAddress.city}
-                                      </span>
-                                    </div>
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        Estado:{" "}
-                                      </span>
-                                      <span className="  text-gray-700">
-                                        {" "}
-                                        {order.deliveryAddress.state}
-                                      </span>
-                                    </div>
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        CEP:
-                                      </span>
-                                      <span className="text-gray-700 text-lg">
-                                        {order.deliveryAddress.cep}
-                                      </span>
+                                    {/* Endereço */}
+                                    <div className=" flex flex-col justify-between">
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Rua:
+                                        </span>
+                                        <span className="text-lg text-gray-700 ">
+                                          {order.deliveryAddress.street}
+                                        </span>
+                                      </div>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Numero:
+                                        </span>
+                                        <span className="text-lg text-gray-700 ">
+                                          {order.deliveryAddress.number}
+                                        </span>
+                                      </div>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Bairro:
+                                        </span>
+                                        <span className="text-lg text-gray-700 truncate">
+                                          {order.deliveryAddress.neighborhood}
+                                        </span>
+                                      </div>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Cidade:
+                                        </span>
+                                        <span className="text-lg  text-gray-700 ">
+                                          {order.deliveryAddress.city}
+                                        </span>
+                                      </div>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Estado:{" "}
+                                        </span>
+                                        <span className="  text-gray-700">
+                                          {" "}
+                                          {order.deliveryAddress.state}
+                                        </span>
+                                      </div>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          CEP:
+                                        </span>
+                                        <span className="text-gray-700 text-lg">
+                                          {order.deliveryAddress.cep}
+                                        </span>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                          </DialogHeader>
-                          <div>
-                            <div className="font-semibold text-lg">
-                              Produtos
-                            </div>
-                            <div className="p-2 max-h-50 w-full md:w-2/3 overflow-y-scroll space-y-2">
-                              {order.products &&
-                                order.products.map((item) => {
-                                  return (
-                                    <>
+                            </DialogHeader>
+                            <div>
+                              <div className="font-semibold text-lg">
+                                Produtos
+                              </div>
+                              <div className="p-2 max-h-50 w-full md:w-2/3 overflow-y-scroll space-y-2">
+                                {order.products &&
+                                  order.products.map((item) => {
+                                    return (
                                       <div
                                         key={item.id}
                                         className="flex flex-col  rounded-xs bg-gray-200 w-full justify-around"
@@ -822,77 +888,56 @@ const OrdersTable = () => {
                                           </div>
                                         </div>
                                       </div>
-                                    </>
-                                  );
-                                })}
-                            </div>
-                          </div>
-
-                          <div className="flex gap-2 items-center">
-                            <div className="flex flex-col gap-2">
-                              <h1 className="font-semibold text-lg">
-                                Imagens do produto
-                              </h1>
-                              <div className="flex flex-col gap-2 items-start">
-                                {order.products.map((item) => {
-                                  return (
-                                    <div
-                                      key={item.id}
-                                      className="flex flex-col gap-2 items- overflow-x-auto"
-                                    >
-                                      <span className="text-lg text-gray-700">
-                                        {item.nome}
-                                      </span>
-                                      <div className="flex gap-2 ">
-                                        {item.listImages.map((image, index) => {
-                                          return (
-                                            <img
-                                              key={index}
-                                              src={image.imagem}
-                                              alt="Imagem do produto"
-                                              className="size-32 rounded-xs hover:scale-105 transition-all duration-300"
-                                            />
-                                          );
-                                        })}
-                                      </div>
-                                    </div>
-                                  );
-                                })}
+                                    );
+                                  })}
                               </div>
                             </div>
-                          </div>
 
-                          <div className="flex flex-col gap-2">
-                            <h1 className="font-semibold text-lg">
-                              Imagens de referência
-                            </h1>
-                            <>
-                              {order.clientImages &&
-                              order.clientImages.length > 0 ? (
-                                <div className="flex gap-2">
-                                  {order.clientImages.map((url, index) => (
-                                    <img
-                                      key={index}
-                                      src={url}
-                                      alt="Imagem fornecida pela 3 irmãos"
-                                      className="size-32 rounded-xs hover:scale-105 transition-all duration-300"
-                                    />
-                                  ))}
+                            <div className="flex gap-2 items-center">
+                              <div className="flex flex-col gap-2">
+                                <h1 className="font-semibold text-lg">
+                                  Imagens do produto
+                                </h1>
+                                <div className="flex flex-col gap-2 items-start">
+                                  {order.products.map((item) => {
+                                    return (
+                                      <div
+                                        key={item.id}
+                                        className="flex flex-col gap-2 items- overflow-x-auto"
+                                      >
+                                        <span className="text-lg text-gray-700">
+                                          {item.nome}
+                                        </span>
+                                        <div className="flex gap-2 ">
+                                          {item.listImages.map(
+                                            (image, index) => {
+                                              return (
+                                                <img
+                                                  key={index}
+                                                  src={image.imagem}
+                                                  alt="Imagem do produto"
+                                                  className="size-32 rounded-xs hover:scale-105 transition-all duration-300"
+                                                />
+                                              );
+                                            }
+                                          )}
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
                                 </div>
-                              ) : (
-                                <span>Nenhuma imagem fornecida</span>
-                              )}
-                            </>
-                          </div>
-                          <div className="flex flex-col gap-4">
-                            {/* Upload de imagens */}
-                            <h1 className="font-semibold text-lg">Sketches</h1>
-                            {order.orderStatus > 1 ? (
+                              </div>
+                            </div>
+
+                            <div className="flex flex-col gap-2">
+                              <h1 className="font-semibold text-lg">
+                                Imagens de referência
+                              </h1>
                               <>
-                                {order.imagesUrls &&
-                                order.imagesUrls.length > 0 ? (
+                                {order.clientImages &&
+                                order.clientImages.length > 0 ? (
                                   <div className="flex gap-2">
-                                    {order.imagesUrls.map((url, index) => (
+                                    {order.clientImages.map((url, index) => (
                                       <img
                                         key={index}
                                         src={url}
@@ -905,48 +950,78 @@ const OrdersTable = () => {
                                   <span>Nenhuma imagem fornecida</span>
                                 )}
                               </>
-                            ) : (
-                              <div className="flex flex-col space-y-3">
-                                <div className="flex gap-2">
+                            </div>
+                            <div className="flex flex-col gap-4">
+                              {/* Upload de imagens */}
+                              <h1 className="font-semibold text-lg">
+                                Sketches
+                              </h1>
+                              {order.orderStatus > 1 ? (
+                                <>
                                   {order.imagesUrls &&
-                                    order.imagesUrls.map((image, index) => (
-                                      <img
-                                        key={index}
-                                        src={image}
-                                        alt="Imagem fornecida pela 3 irmãos"
-                                        className="size-32 rounded-xs hover:scale-105 transition-all duration-300"
-                                      />
-                                    ))}
+                                  order.imagesUrls.length > 0 ? (
+                                    <div className="flex gap-2">
+                                      {order.imagesUrls.map((url, index) => (
+                                        <img
+                                          key={index}
+                                          src={url}
+                                          alt="Imagem fornecida pela 3 irmãos"
+                                          className="size-32 rounded-xs hover:scale-105 transition-all duration-300"
+                                        />
+                                      ))}
+                                    </div>
+                                  ) : (
+                                    <span>Nenhuma imagem fornecida</span>
+                                  )}
+                                </>
+                              ) : (
+                                <div className="flex flex-col space-y-3">
+                                  <div className="flex gap-2">
+                                    {order.imagesUrls &&
+                                      order.imagesUrls.map((image, index) => (
+                                        <img
+                                          key={index}
+                                          src={image}
+                                          alt="Imagem fornecida pela 3 irmãos"
+                                          className="size-32 rounded-xs hover:scale-105 transition-all duration-300"
+                                        />
+                                      ))}
+                                  </div>
+                                  <Dropzone
+                                    onFileSelect={handleImagesSelected}
+                                  />
                                 </div>
-                                <Dropzone onFileSelect={handleImagesSelected} />
-                              </div>
-                            )}
-                          </div>
+                              )}
+                            </div>
 
-                          <div>
-                            {/* Inputs para alteração das informações dinâmicas da proposta */}
+                            <div>
+                              {/* Inputs para alteração das informações dinâmicas da proposta */}
 
-                            <DetailsOrder
-                              statusOrder={order.orderStatus}
-                              detailsPropostal={order.detailsPropostal}
-                              getAllData={handleAllData}
-                              propostalValue={order?.totalValue}
-                            />
+                              <DetailsOrder
+                                statusOrder={order.orderStatus}
+                                detailsPropostal={order.detailsPropostal}
+                                getAllData={handleAllData}
+                                propostalValue={order?.totalValue}
+                              />
+                            </div>
+                            <Button
+                              className={`${
+                                order.orderStatus >= 2 && "hidden"
+                              } `}
+                              disabled={sendPropostal}
+                              onClick={() => handlePushProposal(order)}
+                            >
+                              {sendPropostal ? (
+                                <>
+                                  <LoaderCircle className={`animate-spin`} />
+                                  Enviando...
+                                </>
+                              ) : (
+                                "Enviar proposta"
+                              )}
+                            </Button>
                           </div>
-                          <Button
-                            className={`${order.orderStatus >= 2 && "hidden"} `}
-                            disabled={sendPropostal}
-                            onClick={() => handlePushProposal(order)}
-                          >
-                            {sendPropostal ? (
-                              <>
-                                <LoaderCircle className={`animate-spin`} />
-                                Enviando...
-                              </>
-                            ) : (
-                              "Enviar proposta"
-                            )}
-                          </Button>
+                          <button onClick={exportPDF}>Gerar PDF</button>
                         </DialogContent>
                       </Dialog>
                     ))}

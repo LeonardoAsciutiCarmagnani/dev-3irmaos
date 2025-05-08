@@ -58,7 +58,10 @@ const Header = () => {
             ) : (
               <>
                 {productsInCart.map((product) => (
-                  <div className="flex flex-col gap-2 items-center justify-around w-full border-b p-2 border-gray-300">
+                  <div
+                    key={product.id}
+                    className="flex flex-col gap-2 items-center justify-around w-full border-b p-2 border-gray-300"
+                  >
                     <span className="font-semibold text-gray-700 text-sm">
                       {product.nome}
                     </span>

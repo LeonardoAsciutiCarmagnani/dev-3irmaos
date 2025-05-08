@@ -25,6 +25,9 @@ export const PDFPedido = () => {
   const contentToPrint = useReactToPrint({
     contentRef,
     documentTitle: `Pedido ${id} - 3 Irmãos`,
+    onBeforePrint: async () => {
+      setLoading(true);
+    },
     pageStyle: `
     @page {
       size: A4;
@@ -51,7 +54,6 @@ export const PDFPedido = () => {
   });
 
   function handlingPrintPage() {
-    setLoading(true);
     contentToPrint();
     setLoading(false);
   }
@@ -299,7 +301,8 @@ export const PDFPedido = () => {
                   Observações:
                 </span>
                 <p className="flex w-2/4  items-center text-center ">
-                  {detailsPropostal.obs === "" ? (
+                  {detailsPropostal.obs === "" ||
+                  detailsPropostal.obs === undefined ? (
                     <span className=" w-full  flex text-center items-center">
                       Sem observações
                     </span>
