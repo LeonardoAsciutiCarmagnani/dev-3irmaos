@@ -1,195 +1,226 @@
 import axios from "axios";
 import { firestore } from "../../firebaseConfig";
 import { fetchToken } from "./fetchToken";
+import { BudgetType, OrderType } from "../../controllers/Order/OrderController";
 
-const getLastOrderCode = async () => {
-  const collectionRef = firestore.collection("sales_orders");
-
-  // Consulta ordenada e limitada ao último documento
-  const querySnapshot = await collectionRef
-    .orderBy("order_code", "desc")
-    .limit(1)
-    .get();
-
-  let lastOrderNumber = 0;
-
-  if (!querySnapshot.empty) {
-    const lastOrder = querySnapshot.docs[0].data();
-    const lastOrderCode = lastOrder.order_code || "LV0";
-
-    // Extraindo o número do código (assumindo formato "LV<number>")
-    const match = lastOrderCode.match(/LV(\d+)/);
-    lastOrderNumber = match ? parseInt(match[1], 10) : 0;
-  }
-
-  // Incrementa o número para gerar o próximo código
-  const nextOrderCode = `LV${lastOrderNumber + 1}`;
-  return nextOrderCode;
-};
-
-const storeOrderInFirestore = async (
-  order: any,
-  codeHiper: string,
-  userId: string,
-  installments: any
-) => {
-  const orderWithClientId = {
-    ...order,
-    IdClient: userId,
-    order_code: codeHiper,
-    status_order: 2,
-    installments: installments !== undefined ? installments : null,
+interface OrderProductsProps {
+  nome: string;
+  quantidade: number;
+  altura: number;
+  largura: number;
+  categoria: string | null;
+  preco: number;
+  selectedVariation: {
+    id: string;
+    nomeVariacao: string;
   };
+}
 
-  const docRef = firestore.collection("sales_orders").doc();
-  await docRef.set(orderWithClientId);
-};
+export class PostOrderService {
+  public static async getLastOrderCode() {
+    const collectionRef = firestore.collection("budgets");
 
-const fetchOrderSaleData = async (generatedId: string) => {
-  let token = await fetchToken();
-  try {
-    const getOrderSaleHiper = await axios.get(
-      `http://ms-ecommerce.hiper.com.br/api/v1/pedido-de-venda/eventos/${generatedId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      }
-    );
-    return getOrderSaleHiper.data;
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      console.error("Erro ao buscar dados da venda:", error.response.data);
-    } else {
-      console.error("Erro desconhecido:", error);
+    // Consulta ordenada e limitada ao último documento
+    const querySnapshot = await collectionRef
+      .orderBy("orderId", "desc")
+      .limit(1)
+      .get();
+
+    let lastOrderNumber = 0;
+
+    if (!querySnapshot.empty) {
+      const lastOrder = querySnapshot.docs[0].data();
+      const lastOrderCode = lastOrder.order_code || "LV0";
+
+      // Extraindo o número do código (assumindo formato "LV<number>")
+      const match = lastOrderCode.match(/LV(\d+)/);
+      lastOrderNumber = match ? parseInt(match[1], 10) : 0;
     }
-    throw error;
+
+    // Incrementa o número para gerar o próximo código
+    const nextOrderCode = `LV${lastOrderNumber + 1}`;
+    return nextOrderCode;
   }
-};
 
-const postOrderSale = async (any: any, userId: string): Promise<any> => {
-  let token = await fetchToken();
+  public static async storeOrderInFirestore(
+    orderId: number,
+    order: any,
+    codeHiper: string,
+    newOrderStatus: number
+  ) {
+    const budgetsRef = firestore.collection("budgets");
 
-  const {
-    cliente,
-    enderecoDeCobranca,
-    enderecoDeEntrega,
-    itens,
-    meiosDePagamento,
-    numeroPedidoDeVenda,
-    observacaoDoPedidoDeVenda,
-    valorDoFrete,
-    installments,
-  } = any;
+    const snapshot = await budgetsRef.where("orderId", "==", orderId).get();
 
-  const adjustedItens = itens.map((item: any) => ({
-    produtoId: item.produtoId,
-    quantidade: item.quantidade,
-    precoUnitarioBruto: item.precoUnitarioBruto,
-    precoUnitarioLiquido: item.precoUnitarioLiquido,
-  }));
+    if (snapshot.empty) {
+      console.warn(`Nenhum pedido com orderId ${orderId} encontrado.`);
+      return;
+    }
 
-  const dataForHiper = {
-    cliente: {
-      documento: cliente.documento,
-      email: cliente.email,
-      inscricaoEstadual: cliente.inscricaoEstadual || "",
-      nomeDoCliente: cliente.nomeDoCliente,
-      nomeFantasia: cliente.nomeFantasia || "",
-    },
-    enderecoDeCobranca: {
-      bairro: enderecoDeCobranca.bairro,
-      cep: enderecoDeCobranca.cep,
-      codigoIbge: enderecoDeCobranca.codigoIbge,
-      complemento: enderecoDeCobranca.complemento || "",
-      logradouro: enderecoDeCobranca.logradouro,
-      numero: enderecoDeCobranca.numero,
-    },
-    enderecoDeEntrega: {
-      bairro: enderecoDeEntrega.bairro,
-      cep: enderecoDeEntrega.cep,
-      codigoIbge: enderecoDeEntrega.codigoIbge,
-      complemento: enderecoDeEntrega.complemento || "",
-      logradouro: enderecoDeEntrega.logradouro,
-      numero: enderecoDeEntrega.numero,
-    },
-    itens: adjustedItens,
-    meiosDePagamento,
-    numeroPedidoDeVenda: numeroPedidoDeVenda || "",
-    observacaoDoPedidoDeVenda: observacaoDoPedidoDeVenda || "",
-    valorDoFrete: valorDoFrete || 0,
-  };
+    snapshot.forEach(async (doc) => {
+      await doc.ref.update({
+        ...order,
+        codeHiper: codeHiper,
+        orderStatus: newOrderStatus,
+      });
 
-  const delay = (ms: number) =>
-    new Promise((resolve) => setTimeout(resolve, ms));
-  try {
-    console.log("tentando enviar os dados para a hiper");
-    const response = await axios.post(
-      "http://ms-ecommerce.hiper.com.br/api/v1/pedido-de-venda/",
-      dataForHiper,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
+      console.log(`Documento ${doc.id} atualizado com codeHiper.`);
+    });
+  }
+
+  public static async fetchOrderSaleData(generatedId: string) {
+    let token = await fetchToken();
+    try {
+      const getOrderSaleHiper = await axios.get(
+        `http://ms-ecommerce.hiper.com.br/api/v1/pedido-de-venda/eventos/${generatedId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+      return getOrderSaleHiper.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        console.error("Erro ao buscar dados da venda:", error.response.data);
+      } else {
+        console.error("Erro desconhecido:", error);
       }
-    );
+      throw error;
+    }
+  }
 
-    const generatedId = response.data.id;
-    const updatedany = { ...any, id: generatedId };
+  public static async postOrder(data: OrderType, userId: string): Promise<any> {
+    let token = await fetchToken();
 
-    // Tentativa de buscar o código da venda até que ele não esteja em branco, com limite de 3 tentativas
-    let codeOrderHiper = "";
-    let attempts = 0;
-    const maxAttempts = 3; // Limite de tentativas
+    const {
+      orderId,
+      client,
+      deliveryAddress,
+      billingAddress,
+      detailsPropostal,
+      products,
+      totalValue,
+    } = data;
 
-    while (
-      (codeOrderHiper === "" || codeOrderHiper.trim() === "") &&
-      attempts < maxAttempts
-    ) {
-      const orderSaleData = await fetchOrderSaleData(generatedId);
-      console.log("Retorno do objeto: ", orderSaleData);
-      codeOrderHiper = orderSaleData?.codigoDoPedidoDeVenda || ""; // Garante que pegamos o código ou uma string vazia
+    const adjustedItens = products.map((item) => ({
+      produtoId: item.selectedVariation.id,
+      quantidade: item.quantidade,
+      precoUnitarioBruto: item.preco,
+      precoUnitarioLiquido: item.preco,
+    }));
+
+    const dataForHiper = {
+      cliente: {
+        documento: client.document,
+        email: client.email,
+        inscricaoEstadual: client.ie || "",
+        nomeDoCliente: client.name,
+        nomeFantasia: client.name || "",
+      },
+      enderecoDeCobranca: {
+        bairro: billingAddress.neighborhood,
+        cep: billingAddress.cep,
+        codigoIbge: billingAddress.ibge || "",
+        complemento: "",
+        logradouro: billingAddress.street,
+        numero: String(billingAddress.number),
+      },
+      enderecoDeEntrega: {
+        bairro: deliveryAddress.neighborhood,
+        cep: deliveryAddress.cep,
+        codigoIbge: deliveryAddress.ibge || "",
+        complemento: "",
+        logradouro: deliveryAddress.street,
+        numero: String(deliveryAddress.number),
+      },
+      itens: adjustedItens,
+      meiosDePagamento: [
+        {
+          idMeioDePagamento: 1,
+          parcelas: 1,
+          valor: totalValue,
+        },
+      ],
+      numeroPedidoDeVenda: String(orderId) || "",
+      observacaoDoPedidoDeVenda: detailsPropostal?.obs || "",
+      valorDoFrete: detailsPropostal?.delivery || 0,
+    };
+
+    const delay = (ms: number) =>
+      new Promise((resolve) => setTimeout(resolve, ms));
+    try {
+      console.log("tentando enviar os dados para a hiper");
+      const response = await axios.post(
+        "http://ms-ecommerce.hiper.com.br/api/v1/pedido-de-venda/",
+        dataForHiper,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+
+      const generatedId = response.data.id;
+      const updatedData = { ...data, idOrderHiper: generatedId };
+
+      // Tentativa de buscar o código da venda até que ele não esteja em branco, com limite de 3 tentativas
+      let codeOrderHiper = "";
+      let attempts = 0;
+      const maxAttempts = 10; // Limite de tentativas
+
+      while (
+        (codeOrderHiper === "" || codeOrderHiper.trim() === "") &&
+        attempts < maxAttempts
+      ) {
+        const orderSaleData = await this.fetchOrderSaleData(generatedId);
+        console.log("Retorno do objeto: ", orderSaleData);
+        codeOrderHiper = orderSaleData?.codigoDoPedidoDeVenda || ""; // Garante que pegamos o código ou uma string vazia
+
+        if (codeOrderHiper === "" || codeOrderHiper.trim() === "") {
+          attempts++;
+          console.log(
+            `Tentativa ${attempts} de ${maxAttempts}: código vazio. Aguardando 3 segundos...`
+          );
+          await delay(5000);
+        }
+      }
 
       if (codeOrderHiper === "" || codeOrderHiper.trim() === "") {
-        attempts++;
         console.log(
-          `Tentativa ${attempts} de ${maxAttempts}: código vazio. Aguardando 3 segundos...`
+          "Não foi possível obter o código do pedido de venda. Gerando manualmente..."
         );
-        await delay(3000);
+        codeOrderHiper = await this.getLastOrderCode();
       }
-    }
 
-    if (codeOrderHiper === "" || codeOrderHiper.trim() === "") {
       console.log(
-        "Não foi possível obter o código do pedido de venda. Gerando manualmente..."
+        "Código do pedido de venda obtido ou gerado:",
+        codeOrderHiper
       );
-      codeOrderHiper = await getLastOrderCode();
-    }
 
-    console.log("Código do pedido de venda obtido ou gerado:", codeOrderHiper);
+      const newOrderStatus = 5;
 
-    await storeOrderInFirestore(
-      updatedany,
-      codeOrderHiper,
-      userId,
-      installments
-    );
-    return {
-      generatedId: generatedId,
-      codeOrderHiper: codeOrderHiper,
-    };
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      console.error("Erro na resposta:", error.response.data);
-    } else {
-      console.error("Erro desconhecido:", error);
+      await this.storeOrderInFirestore(
+        orderId,
+        updatedData,
+        codeOrderHiper,
+        newOrderStatus
+      );
+      return {
+        generatedId,
+        codeOrderHiper: codeOrderHiper,
+      };
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        console.error("Erro na resposta:", error.response.data);
+      } else {
+        console.error("Erro desconhecido:", error);
+      }
+      throw error;
     }
-    throw error;
   }
-};
-
-export default postOrderSale;
+}

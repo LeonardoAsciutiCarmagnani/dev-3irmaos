@@ -19,6 +19,7 @@ export class CreateBudgetService {
         orderId: newId,
         client: data.client,
         deliveryAddress: data.deliveryAddress,
+        billingAddress: data.billingAddress,
         products: data.products,
         createdAt: data.createdAt,
         orderStatus: data.orderStatus,
