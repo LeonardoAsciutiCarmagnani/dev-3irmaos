@@ -46,12 +46,8 @@ import { IMaskInput } from "react-imask";
 import { Order } from "@/interfaces/Order";
 import { api } from "@/lib/axios";
 import hiperLogo from "@/assets/hiper_logo.svg";
-
-/* 
-[] Incluir nas props do produto as medidas informadas
-[] Receber os sketches que o cliente informar
-[] Poder subir novas imagens para o envio da proposta comercial
-*/
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 const OrdersTable = () => {
   const [date, setDate] = useState<DateRange>();
@@ -406,6 +402,22 @@ const OrdersTable = () => {
     setShowCardOrder(orderId);
   }
 
+  const exportPDF = async () => {
+    const element = document.getElementById("content-to-print");
+    if (!element) return;
+
+    const canvas = await html2canvas(element);
+    const imgData = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF();
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+    pdf.save("meu-pdf.pdf");
+  };
+
   const formattedFrom = date?.from
     ? format(date.from, "dd/MM/yyyy")
     : "--/--/----";
@@ -704,245 +716,228 @@ const OrdersTable = () => {
                         </DialogTrigger>
 
                         <DialogContent className="flex flex-col border rounded-xs bg-gray-100 md:w-2/3 h-[86vh] overflow-y-scroll">
-                          <DialogHeader>
-                            <div className="flex justify-between items-center">
-                              <DialogTitle>Detalhes do pedido</DialogTitle>
-                            </div>
-                            <div className="flex justify-around w-full bg-gray-200 p-2 rounded-xs items-center shadow-md">
-                              <div className="flex flex-col w-full ">
-                                <div className="flex flex-col md:flex-row space-x-32 items-start ">
-                                  {/* Dados do cliente */}
-                                  <div className=" flex flex-col  ">
-                                    <span className="text-xl font-bold text-gray-700">
-                                      Pedido {order.orderId}
-                                    </span>
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        Cliente:
+                          <div id="content-to-print">
+                            <DialogHeader>
+                              <div className="flex justify-between items-center">
+                                <DialogTitle>Detalhes do pedido</DialogTitle>
+                              </div>
+                              <div className="flex justify-around w-full bg-gray-200 p-2 rounded-xs items-center shadow-md">
+                                <div className="flex flex-col w-full ">
+                                  <div className="flex flex-col md:flex-row space-x-32 items-start ">
+                                    {/* Dados do cliente */}
+                                    <div className=" flex flex-col  ">
+                                      <span className="text-xl font-bold text-gray-700">
+                                        Pedido {order.orderId}
                                       </span>
-                                      <span className="text-lg text-gray-700 ">
-                                        {order.client.name}
-                                      </span>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Cliente:
+                                        </span>
+                                        <span className="text-lg text-gray-700 ">
+                                          {order.client.name}
+                                        </span>
+                                      </div>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Email:
+                                        </span>
+                                        <span className="text-lg text-gray-700 truncate">
+                                          {order.client.email}
+                                        </span>
+                                      </div>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Telefone:
+                                        </span>
+                                        <span className="text-lg  text-gray-700 ">
+                                          {order.client.phone}
+                                        </span>
+                                      </div>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Data:{" "}
+                                        </span>
+                                        <span className="  text-gray-700">
+                                          {order.createdAt}
+                                        </span>
+                                      </div>
                                     </div>
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        Email:
-                                      </span>
-                                      <span className="text-lg text-gray-700 truncate">
-                                        {order.client.email}
-                                      </span>
-                                    </div>
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        Telefone:
-                                      </span>
-                                      <span className="text-lg  text-gray-700 ">
-                                        {order.client.phone}
-                                      </span>
-                                    </div>
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        Data:{" "}
-                                      </span>
-                                      <span className="  text-gray-700">
-                                        {order.createdAt}
-                                      </span>
-                                    </div>
-                                  </div>
-                                  {/* Endereço */}
-                                  <div className=" flex flex-col justify-between">
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        Rua:
-                                      </span>
-                                      <span className="text-lg text-gray-700 ">
-                                        {order.deliveryAddress.street}
-                                      </span>
-                                    </div>
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        Numero:
-                                      </span>
-                                      <span className="text-lg text-gray-700 ">
-                                        {order.deliveryAddress.number}
-                                      </span>
-                                    </div>
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        Bairro:
-                                      </span>
-                                      <span className="text-lg text-gray-700 truncate">
-                                        {order.deliveryAddress.neighborhood}
-                                      </span>
-                                    </div>
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        Cidade:
-                                      </span>
-                                      <span className="text-lg  text-gray-700 ">
-                                        {order.deliveryAddress.city}
-                                      </span>
-                                    </div>
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        Estado:{" "}
-                                      </span>
-                                      <span className="  text-gray-700">
-                                        {" "}
-                                        {order.deliveryAddress.state}
-                                      </span>
-                                    </div>
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        CEP:
-                                      </span>
-                                      <span className="text-gray-700 text-lg">
-                                        {order.deliveryAddress.cep}
-                                      </span>
+                                    {/* Endereço */}
+                                    <div className=" flex flex-col justify-between">
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Rua:
+                                        </span>
+                                        <span className="text-lg text-gray-700 ">
+                                          {order.deliveryAddress.street}
+                                        </span>
+                                      </div>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Numero:
+                                        </span>
+                                        <span className="text-lg text-gray-700 ">
+                                          {order.deliveryAddress.number}
+                                        </span>
+                                      </div>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Bairro:
+                                        </span>
+                                        <span className="text-lg text-gray-700 truncate">
+                                          {order.deliveryAddress.neighborhood}
+                                        </span>
+                                      </div>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Cidade:
+                                        </span>
+                                        <span className="text-lg  text-gray-700 ">
+                                          {order.deliveryAddress.city}
+                                        </span>
+                                      </div>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Estado:{" "}
+                                        </span>
+                                        <span className="  text-gray-700">
+                                          {" "}
+                                          {order.deliveryAddress.state}
+                                        </span>
+                                      </div>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          CEP:
+                                        </span>
+                                        <span className="text-gray-700 text-lg">
+                                          {order.deliveryAddress.cep}
+                                        </span>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                          </DialogHeader>
-                          <div>
-                            <div className="font-semibold text-lg">
-                              Produtos
-                            </div>
-                            <div className="p-2 max-h-50 w-full md:w-2/3 overflow-y-scroll space-y-2">
-                              {order.products &&
-                                order.products.map((item) => {
-                                  return (
-                                    <div
-                                      key={item.id}
-                                      className="flex flex-col  rounded-xs bg-gray-200 w-full justify-around"
-                                    >
-                                      <div className="flex p-2 gap-2 w-full">
-                                        <div className="flex-1 flex flex-col">
-                                          <span className=" text-lg text-gray-700">
-                                            {item.nome}
-                                          </span>
-                                          <span className=" text-md text-gray-700">
-                                            {
-                                              item.selectedVariation
-                                                .nomeVariacao
-                                            }
-                                          </span>
-                                          <div className="text-sm text-gray-500 flex gap-2">
-                                            <span>Altura: {item.altura}</span>
-                                            {/*     <span>
+                            </DialogHeader>
+                            <div>
+                              <div className="font-semibold text-lg">
+                                Produtos
+                              </div>
+                              <div className="p-2 max-h-50 w-full md:w-2/3 overflow-y-scroll space-y-2">
+                                {order.products &&
+                                  order.products.map((item) => {
+                                    return (
+                                      <div
+                                        key={item.id}
+                                        className="flex flex-col  rounded-xs bg-gray-200 w-full justify-around"
+                                      >
+                                        <div className="flex p-2 gap-2 w-full">
+                                          <div className="flex-1 flex flex-col">
+                                            <span className=" text-lg text-gray-700">
+                                              {item.nome}
+                                            </span>
+                                            <span className=" text-md text-gray-700">
+                                              {
+                                                item.selectedVariation
+                                                  .nomeVariacao
+                                              }
+                                            </span>
+                                            <div className="text-sm text-gray-500 flex gap-2">
+                                              <span>Altura: {item.altura}</span>
+                                              {/*     <span>
                                                 Comprimento: {item.comprimento}
                                               </span> */}
-                                            <span>Largura: {item.largura}</span>
+                                              <span>
+                                                Largura: {item.largura}
+                                              </span>
+                                            </div>
                                           </div>
-                                        </div>
-                                        <div className="flex gap-2 w-[12rem] items-center">
-                                          <div className="border-r border-gray-700 h-4" />
-                                          <div className="flex  items-center">
-                                            <span className="text-lg text-gray-700">
-                                              {item.quantidade} x{" "}
-                                            </span>
-                                            <IMaskInput
-                                              mask="R$ num"
-                                              blocks={{
-                                                num: {
-                                                  mask: Number,
-                                                  scale: 2,
-                                                  thousandsSeparator: ".",
-                                                  padFractionalZeros: true,
-                                                  normalizeZeros: true,
-                                                  radix: ",",
-                                                  mapToRadix: ["."],
-                                                },
-                                              }}
-                                              value={String(item.preco)}
-                                              unmask={true} // isso faz com que o valor passado seja numérico
-                                              disabled={order.orderStatus > 1}
-                                              onAccept={(value: string) => {
-                                                const precoFloat =
-                                                  parseFloat(value);
-                                                handleChangePrice(
-                                                  order.orderId,
-                                                  item.selectedVariation.id,
-                                                  precoFloat
-                                                );
-                                              }}
-                                              className="border rounded-xs px-2 py-1 w-[8rem] text-right"
-                                            />
+                                          <div className="flex gap-2 w-[12rem] items-center">
+                                            <div className="border-r border-gray-700 h-4" />
+                                            <div className="flex  items-center">
+                                              <span className="text-lg text-gray-700">
+                                                {item.quantidade} x{" "}
+                                              </span>
+                                              <IMaskInput
+                                                mask="R$ num"
+                                                blocks={{
+                                                  num: {
+                                                    mask: Number,
+                                                    scale: 2,
+                                                    thousandsSeparator: ".",
+                                                    padFractionalZeros: true,
+                                                    normalizeZeros: true,
+                                                    radix: ",",
+                                                    mapToRadix: ["."],
+                                                  },
+                                                }}
+                                                value={String(item.preco)}
+                                                unmask={true} // isso faz com que o valor passado seja numérico
+                                                disabled={order.orderStatus > 1}
+                                                onAccept={(value: string) => {
+                                                  const precoFloat =
+                                                    parseFloat(value);
+                                                  handleChangePrice(
+                                                    order.orderId,
+                                                    item.selectedVariation.id,
+                                                    precoFloat
+                                                  );
+                                                }}
+                                                className="border rounded-xs px-2 py-1 w-[8rem] text-right"
+                                              />
+                                            </div>
                                           </div>
                                         </div>
                                       </div>
-                                    </div>
-                                  );
-                                })}
-                            </div>
-                          </div>
-
-                          <div className="flex gap-2 items-center">
-                            <div className="flex flex-col gap-2">
-                              <h1 className="font-semibold text-lg">
-                                Imagens do produto
-                              </h1>
-                              <div className="flex flex-col gap-2 items-start">
-                                {order.products.map((item) => {
-                                  return (
-                                    <div
-                                      key={item.id}
-                                      className="flex flex-col gap-2 items- overflow-x-auto"
-                                    >
-                                      <span className="text-lg text-gray-700">
-                                        {item.nome}
-                                      </span>
-                                      <div className="flex gap-2 ">
-                                        {item.listImages.map((image, index) => {
-                                          return (
-                                            <img
-                                              key={index}
-                                              src={image.imagem}
-                                              alt="Imagem do produto"
-                                              className="size-32 rounded-xs hover:scale-105 transition-all duration-300"
-                                            />
-                                          );
-                                        })}
-                                      </div>
-                                    </div>
-                                  );
-                                })}
+                                    );
+                                  })}
                               </div>
                             </div>
-                          </div>
 
-                          <div className="flex flex-col gap-2">
-                            <h1 className="font-semibold text-lg">
-                              Imagens de referência
-                            </h1>
-                            <>
-                              {order.clientImages &&
-                              order.clientImages.length > 0 ? (
-                                <div className="flex gap-2">
-                                  {order.clientImages.map((url, index) => (
-                                    <img
-                                      key={index}
-                                      src={url}
-                                      alt="Imagem fornecida pela 3 irmãos"
-                                      className="size-32 rounded-xs hover:scale-105 transition-all duration-300"
-                                    />
-                                  ))}
+                            <div className="flex gap-2 items-center">
+                              <div className="flex flex-col gap-2">
+                                <h1 className="font-semibold text-lg">
+                                  Imagens do produto
+                                </h1>
+                                <div className="flex flex-col gap-2 items-start">
+                                  {order.products.map((item) => {
+                                    return (
+                                      <div
+                                        key={item.id}
+                                        className="flex flex-col gap-2 items- overflow-x-auto"
+                                      >
+                                        <span className="text-lg text-gray-700">
+                                          {item.nome}
+                                        </span>
+                                        <div className="flex gap-2 ">
+                                          {item.listImages.map(
+                                            (image, index) => {
+                                              return (
+                                                <img
+                                                  key={index}
+                                                  src={image.imagem}
+                                                  alt="Imagem do produto"
+                                                  className="size-32 rounded-xs hover:scale-105 transition-all duration-300"
+                                                />
+                                              );
+                                            }
+                                          )}
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
                                 </div>
-                              ) : (
-                                <span>Nenhuma imagem fornecida</span>
-                              )}
-                            </>
-                          </div>
-                          <div className="flex flex-col gap-4">
-                            {/* Upload de imagens */}
-                            <h1 className="font-semibold text-lg">Sketches</h1>
-                            {order.orderStatus > 1 ? (
+                              </div>
+                            </div>
+
+                            <div className="flex flex-col gap-2">
+                              <h1 className="font-semibold text-lg">
+                                Imagens de referência
+                              </h1>
                               <>
-                                {order.imagesUrls &&
-                                order.imagesUrls.length > 0 ? (
+                                {order.clientImages &&
+                                order.clientImages.length > 0 ? (
                                   <div className="flex gap-2">
-                                    {order.imagesUrls.map((url, index) => (
+                                    {order.clientImages.map((url, index) => (
                                       <img
                                         key={index}
                                         src={url}
@@ -955,48 +950,78 @@ const OrdersTable = () => {
                                   <span>Nenhuma imagem fornecida</span>
                                 )}
                               </>
-                            ) : (
-                              <div className="flex flex-col space-y-3">
-                                <div className="flex gap-2">
+                            </div>
+                            <div className="flex flex-col gap-4">
+                              {/* Upload de imagens */}
+                              <h1 className="font-semibold text-lg">
+                                Sketches
+                              </h1>
+                              {order.orderStatus > 1 ? (
+                                <>
                                   {order.imagesUrls &&
-                                    order.imagesUrls.map((image, index) => (
-                                      <img
-                                        key={index}
-                                        src={image}
-                                        alt="Imagem fornecida pela 3 irmãos"
-                                        className="size-32 rounded-xs hover:scale-105 transition-all duration-300"
-                                      />
-                                    ))}
+                                  order.imagesUrls.length > 0 ? (
+                                    <div className="flex gap-2">
+                                      {order.imagesUrls.map((url, index) => (
+                                        <img
+                                          key={index}
+                                          src={url}
+                                          alt="Imagem fornecida pela 3 irmãos"
+                                          className="size-32 rounded-xs hover:scale-105 transition-all duration-300"
+                                        />
+                                      ))}
+                                    </div>
+                                  ) : (
+                                    <span>Nenhuma imagem fornecida</span>
+                                  )}
+                                </>
+                              ) : (
+                                <div className="flex flex-col space-y-3">
+                                  <div className="flex gap-2">
+                                    {order.imagesUrls &&
+                                      order.imagesUrls.map((image, index) => (
+                                        <img
+                                          key={index}
+                                          src={image}
+                                          alt="Imagem fornecida pela 3 irmãos"
+                                          className="size-32 rounded-xs hover:scale-105 transition-all duration-300"
+                                        />
+                                      ))}
+                                  </div>
+                                  <Dropzone
+                                    onFileSelect={handleImagesSelected}
+                                  />
                                 </div>
-                                <Dropzone onFileSelect={handleImagesSelected} />
-                              </div>
-                            )}
-                          </div>
+                              )}
+                            </div>
 
-                          <div>
-                            {/* Inputs para alteração das informações dinâmicas da proposta */}
+                            <div>
+                              {/* Inputs para alteração das informações dinâmicas da proposta */}
 
-                            <DetailsOrder
-                              statusOrder={order.orderStatus}
-                              detailsPropostal={order.detailsPropostal}
-                              getAllData={handleAllData}
-                              propostalValue={order?.totalValue}
-                            />
+                              <DetailsOrder
+                                statusOrder={order.orderStatus}
+                                detailsPropostal={order.detailsPropostal}
+                                getAllData={handleAllData}
+                                propostalValue={order?.totalValue}
+                              />
+                            </div>
+                            <Button
+                              className={`${
+                                order.orderStatus >= 2 && "hidden"
+                              } `}
+                              disabled={sendPropostal}
+                              onClick={() => handlePushProposal(order)}
+                            >
+                              {sendPropostal ? (
+                                <>
+                                  <LoaderCircle className={`animate-spin`} />
+                                  Enviando...
+                                </>
+                              ) : (
+                                "Enviar proposta"
+                              )}
+                            </Button>
                           </div>
-                          <Button
-                            className={`${order.orderStatus >= 2 && "hidden"} `}
-                            disabled={sendPropostal}
-                            onClick={() => handlePushProposal(order)}
-                          >
-                            {sendPropostal ? (
-                              <>
-                                <LoaderCircle className={`animate-spin`} />
-                                Enviando...
-                              </>
-                            ) : (
-                              "Enviar proposta"
-                            )}
-                          </Button>
+                          <button onClick={exportPDF}>Gerar PDF</button>
                         </DialogContent>
                       </Dialog>
                     ))}
