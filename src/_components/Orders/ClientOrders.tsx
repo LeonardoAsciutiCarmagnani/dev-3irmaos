@@ -241,7 +241,10 @@ const ClientOrdersTable = () => {
         orderToPush.orderId
       );
 
-      const allImages = [...uploadedImages, ...(orderToPush.imagesUrls || [])];
+      const allImages = [
+        ...uploadedImages,
+        ...(orderToPush.clientImages || []),
+      ];
 
       await updateDoc(orderDocRef, {
         clientImages: allImages,
@@ -289,6 +292,7 @@ const ClientOrdersTable = () => {
 
   useEffect(() => {
     const collectionRef = collection(db, "budgets");
+
     const q = query(collectionRef, where("client.id", "==", user?.uid));
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -448,9 +452,23 @@ const ClientOrdersTable = () => {
                           <DialogContent className="flex flex-col border rounded-xs bg-gray-100 md:w-2/3 h-[80vh] overflow-y-scroll">
                             <DialogHeader>
                               <div className="flex items-center">
-                                <DialogTitle>Detalhes</DialogTitle>
+                                <DialogTitle>
+                                  {" "}
+                                  <span className="text-xl font-bold text-gray-700">
+                                    {order.orderStatus === 1
+                                      ? "Orçamento"
+                                      : order.orderStatus === 2
+                                      ? "Proposta"
+                                      : order.orderStatus === 3
+                                      ? "Proposta"
+                                      : order.orderStatus === 4
+                                      ? "Proposta"
+                                      : order.orderStatus > 4 && "Pedido"}{" "}
+                                    {order.orderId}
+                                  </span>
+                                </DialogTitle>
                               </div>
-                              <div className="flex w-full bg-gray-200 p-2 rounded-xs items-center shadow-md">
+                              <div className="flex w-full  p-2 rounded-xs items-center">
                                 <div className="flex flex-col w-full">
                                   {order.orderStatus !== 1 && (
                                     <div className="flex justify-end  w-full">
@@ -470,10 +488,7 @@ const ClientOrdersTable = () => {
                                           totalValue: order.totalValue,
                                         }}
                                       >
-                                        <Button
-                                          variant={"ghost"}
-                                          className="font-semibold text-red-800 hover:text-red-900"
-                                        >
+                                        <Button className="font-semibold text-white">
                                           Imprimir PDF
                                           <Download className="size-5" />
                                         </Button>
@@ -482,19 +497,6 @@ const ClientOrdersTable = () => {
                                   )}
                                   <div className="flex space-x-32 items-start">
                                     <div className=" flex flex-col justify-between">
-                                      <span className="text-xl font-bold text-gray-700">
-                                        {order.orderStatus === 1
-                                          ? "Orçamento"
-                                          : order.orderStatus === 2
-                                          ? "Proposta"
-                                          : order.orderStatus === 3
-                                          ? "Proposta"
-                                          : order.orderStatus === 4
-                                          ? "Proposta"
-                                          : order.orderStatus > 4 &&
-                                            "Pedido"}{" "}
-                                        {order.orderId}
-                                      </span>
                                       <div className="flex gap-2 items-center">
                                         <span className="font-semibold  text-gray-700">
                                           Cliente:
@@ -587,17 +589,34 @@ const ClientOrdersTable = () => {
                               <div className="font-semibold text-lg">
                                 Produtos
                               </div>
-                              <div className="p-2 max-h-50 md:w-2/3 overflow-y-scroll space-y-2">
-                                {order.products &&
-                                  order.products.map((item) => {
-                                    return (
-                                      <>
-                                        <div
+                              <table className="p-2 w-full border border-gray-300 overflow-y-scroll space-y-2">
+                                <tr className="w-full border border-gray-500">
+                                  <thead className="grid grid-cols-5 items-center text-center">
+                                    <td className="col-span-2 font-bold">
+                                      Produto
+                                    </td>
+                                    <td className="col-span-1 font-bold">
+                                      Qtd
+                                    </td>
+                                    <td className="col-span-1 font-bold">
+                                      Valor unitário
+                                    </td>
+                                    <td className="col-span-1 font-bold">
+                                      Valor total
+                                    </td>
+                                  </thead>
+                                </tr>
+                                <tbody className="divide-y divide-gray-200">
+                                  {order.products &&
+                                    order.products.map((item) => {
+                                      return (
+                                        <tr
                                           key={item.id}
-                                          className="flex flex-col  rounded-xs bg-gray-200 w-full justify-around"
+                                          className="flex flex-col rounded-xs w-full border-b border-gray-300 last:border-b-0"
                                         >
-                                          <div className="flex flex-col md:flex-row p-2 gap-2 w-full">
-                                            <div className="flex-1 flex flex-col">
+                                          <td className=" grid grid-cols-5 items-center  justify-around  px-2  w-full">
+                                            {/* Produto */}
+                                            <div className=" flex flex-col col-span-2">
                                               <span className="flex-1 text-lg text-gray-700">
                                                 {item.nome}
                                               </span>
@@ -633,12 +652,11 @@ const ClientOrdersTable = () => {
                                                 )}
                                               </div>
                                             </div>
-                                            <div className="flex gap-2 w-[12rem] items-center">
-                                              <div className="border-r border-gray-700 h-4" />
-                                              <div className="flex  items-center">
-                                                <span className="text-lg text-gray-700">
-                                                  {item.quantidade} x{" "}
-                                                </span>
+                                            <div className="flex text-lg text-gray-700 items-center justify-center text-center h-full">
+                                              <span>{item.quantidade} x </span>
+                                            </div>
+                                            <div className="flex gap-2 w-[12rem] items-center justify-center text-center ">
+                                              <div className="flex  items-center text-center ">
                                                 <IMaskInput
                                                   mask="R$ num"
                                                   blocks={{
@@ -659,15 +677,23 @@ const ClientOrdersTable = () => {
                                                 />
                                               </div>
                                             </div>
-                                          </div>
-                                        </div>
-                                      </>
-                                    );
-                                  })}
-                              </div>
+                                            <div className="text-center h-full flex items-center justify-center  ">
+                                              {(
+                                                item.preco * item.quantidade
+                                              ).toLocaleString("pt-BR", {
+                                                style: "currency",
+                                                currency: "BRL",
+                                              })}
+                                            </div>
+                                          </td>
+                                        </tr>
+                                      );
+                                    })}
+                                </tbody>
+                              </table>
                             </div>
 
-                            <div className="flex gap-2 items-center">
+                            {/* <div className="flex gap-2 items-center">
                               <div className="flex flex-col gap-2">
                                 <h1 className="font-semibold text-lg">
                                   Imagens do produto
@@ -701,7 +727,7 @@ const ClientOrdersTable = () => {
                                   })}
                                 </div>
                               </div>
-                            </div>
+                            </div> */}
                             <div className="flex flex-col gap-4">
                               {/* Upload de imagens */}
                               <h1 className="font-semibold text-lg">
@@ -761,7 +787,7 @@ const ClientOrdersTable = () => {
                             {/* Imagens fornecidas pela 3 irmãos */}
                             <div className="flex flex-col gap-4">
                               <h1 className="font-semibold text-lg">
-                                Sketches
+                                Projeto (imagens ilustrativas)
                               </h1>
                               <div className="flex gap-2 overflow-x-auto p-2">
                                 {order.imagesUrls &&
