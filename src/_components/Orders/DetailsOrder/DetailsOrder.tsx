@@ -142,9 +142,9 @@ const DetailsOrder = ({
           </AccordionItem>
         </Accordion>
       )}
-      <div className="flex flex-col w-full h-full bg-white rounded-lg shadow-lg p-4">
+      <div className="flex flex-col w-full h-full  p-4">
         <div className="flex flex-col space-y-4">
-          <div className="flex flex-col items-center   max-w-full  text-wrap">
+          <div className="flex flex-col items-start   max-w-full  text-wrap">
             <span className="text-gray-700 font-semibold">Observações:</span>
             <div className="w-2/4">
               {description === "" ? (
@@ -158,7 +158,7 @@ const DetailsOrder = ({
               )}
             </div>
           </div>
-          <div className="flex flex-col items-center justify-between">
+          <div className="flex flex-col items-start justify-between">
             <div className="flex flex-col">
               <span className="text-gray-700 font-semibold">
                 Facilidade no pagamento e agilidade na entrega:
@@ -185,7 +185,7 @@ const DetailsOrder = ({
               </span>
             </div>
           </div>
-          <div className="flex flex-col items-center justify-between">
+          <div className="flex flex-col items-start justify-between">
             <span className="text-gray-700 font-bold text-lg">
               Por que escolher a 3 Irmãos Arte em Madeira de Demolição ?
             </span>
@@ -203,7 +203,7 @@ const DetailsOrder = ({
               </li>
             </div>
           </div>
-          <div className="flex flex-col items-center justify-between">
+          <div className="flex flex-col items-start justify-between">
             <span className="text-gray-700">
               {" "}
               Vamos conversar e alinhar os próximos passos?

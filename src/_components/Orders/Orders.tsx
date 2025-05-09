@@ -46,8 +46,6 @@ import { IMaskInput } from "react-imask";
 import { Order } from "@/interfaces/Order";
 import { api } from "@/lib/axios";
 import hiperLogo from "@/assets/hiper_logo.svg";
-// import jsPDF from "jspdf";
-// import html2canvas from "html2canvas";
 
 const OrdersTable = () => {
   const [date, setDate] = useState<DateRange>();
@@ -402,22 +400,6 @@ const OrdersTable = () => {
     setShowCardOrder(orderId);
   }
 
-  // const exportPDF = async () => {
-  //   const element = document.getElementById("content-to-print");
-  //   if (!element) return;
-
-  //   const canvas = await html2canvas(element);
-  //   const imgData = canvas.toDataURL("image/png");
-
-  //   const pdf = new jsPDF();
-  //   const imgProps = pdf.getImageProperties(imgData);
-  //   const pdfWidth = pdf.internal.pageSize.getWidth();
-  //   const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-  //   pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-  //   pdf.save("meu-pdf.pdf");
-  // };
-
   const formattedFrom = date?.from
     ? format(date.from, "dd/MM/yyyy")
     : "--/--/----";
@@ -716,7 +698,7 @@ const OrdersTable = () => {
                         </DialogTrigger>
 
                         <DialogContent className="flex flex-col border rounded-xs bg-gray-100 md:w-2/3 h-[86vh] overflow-y-scroll">
-                          <div id="content-to-print">
+                          <div>
                             <DialogHeader>
                               <div className="flex justify-between items-center">
                                 <DialogTitle>Detalhes do pedido</DialogTitle>
@@ -1021,7 +1003,6 @@ const OrdersTable = () => {
                               )}
                             </Button>
                           </div>
-                          {/* <button onClick={exportPDF}>Gerar PDF</button> */}
                         </DialogContent>
                       </Dialog>
                     ))}
