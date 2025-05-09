@@ -4,8 +4,6 @@ import env from "../../config/env";
 let tokenPromise: Promise<string> | null = null;
 
 export const fetchToken = async (): Promise<string> => {
-  console.log("Token ERPPOINT => ", env.API_SECRET_KEY_ERPPOINT);
-
   let token = tokenCache.get("token");
 
   if (!token) {
@@ -13,7 +11,7 @@ export const fetchToken = async (): Promise<string> => {
       tokenPromise = new Promise(async (resolve, reject) => {
         try {
           const response = await axios.get(
-            `${env.HIPER_API_URL}/auth/gerar-token/${env.API_SECRET_KEY_ERPPOINT}`
+            `${env.HIPER_API_URL}/auth/gerar-token/${env.API_SECRET_KEY}`
           );
 
           token = response.data.token;

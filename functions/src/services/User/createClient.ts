@@ -1,7 +1,7 @@
 import { admin } from "../../firebaseConfig";
 import { v4 as uuid } from "uuid";
 
-interface UserFirestore {
+interface Client {
   Id: string;
   name: string;
   email: string;
@@ -23,6 +23,27 @@ interface UserFirestore {
   updatedAt: string;
 }
 
+interface UserFirestore {
+  Id: string;
+  name: string;
+  email: string;
+  document: string;
+  phone: string;
+  ie: string | null;
+  fantasyName: string | null;
+  address: {
+    cep: string;
+    street: string;
+    number: number;
+    neighborhood: string;
+    city: string;
+    state: string;
+    ibge: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
 export type CreateClientResponse = {
   success: boolean;
   data?: UserFirestore;
@@ -31,7 +52,7 @@ export type CreateClientResponse = {
 
 export class CreateClient {
   public static async execute(
-    userData: Omit<UserFirestore, "Id" | "createdAt" | "updatedAt">
+    userData: Omit<Client, "Id" | "createdAt" | "updatedAt">
   ): Promise<CreateClientResponse> {
     const randomHash = uuid();
     try {
@@ -58,8 +79,10 @@ export class CreateClient {
         role: "client",
       });
 
+      const { password, ...userWithoutPassword } = userData;
+
       const userFirestoreData: UserFirestore = {
-        ...userData,
+        ...userWithoutPassword,
         Id: createdUser.uid,
         createdAt: new Date().toLocaleString("pt-BR", {
           timeZone: "America/Sao_Paulo",

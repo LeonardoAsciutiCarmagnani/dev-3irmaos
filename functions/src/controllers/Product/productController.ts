@@ -2,10 +2,9 @@ import { Request, Response, NextFunction } from "express";
 import { productService } from "../../services/hiper/fetchProducts";
 import { z } from "zod";
 
-// Validação rigorosa do query param
-const listProductsSchema = z.string({
-  required_error: "O parâmetro 'category' é obrigatório na query.",
-  invalid_type_error: "A categoria deve ser uma string.",
+// Validação do query param opcional
+const listProductsSchema = z.object({
+  category: z.string().optional(),
 });
 
 export class ProductController {
@@ -15,34 +14,52 @@ export class ProductController {
     next: NextFunction
   ): Promise<void> {
     try {
-      if (!req.query.category) {
-        throw new Error("Parâmetro 'category' não fornecido.");
+      // Validar e obter a categoria do query param, se existir
+      const queryParams = listProductsSchema.parse({
+        category: req.query.category
+          ? decodeURIComponent(req.query.category as string)
+          : undefined,
+      });
+
+      const category = queryParams.category;
+
+      if (category) {
+        console.log(`Buscando produtos da categoria: ${category}`);
+      } else {
+        console.log("Buscando todos os produtos");
       }
 
-      const categoriaDecodificada = decodeURIComponent(
-        req.query.category as string
-      );
-      const category = listProductsSchema.parse(categoriaDecodificada);
-
-      console.log(`Buscando produtos da categoria: ${category}`);
-
+      // Buscar todos os produtos da API
       const apiResponse = await productService.fetchProducts();
 
-      const filteredProducts = apiResponse.produtos.filter(
-        (produto) => produto.categoria?.toLowerCase() === category.toLowerCase()
-      );
+      // Verificar se há categoria especificada para filtrar
+      if (category) {
+        const filteredProducts = apiResponse.produtos.filter(
+          (produto) =>
+            produto.categoria?.toLowerCase() === category.toLowerCase()
+        );
 
-      console.log("Produtos encontrados na categoria: ", filteredProducts);
+        console.log(
+          `Total de produtos encontrados na categoria ${category}: ${filteredProducts.length}`
+        );
 
-      const filteredResponse = {
-        ...apiResponse,
-        produtos: filteredProducts,
-      };
+        // Retornar produtos filtrados com a estrutura original
+        const filteredResponse = {
+          ...apiResponse,
+          produtos: filteredProducts,
+        };
 
-      res.status(200).json({
-        success: true,
-        products: filteredResponse,
-      });
+        res.status(200).json({
+          success: true,
+          products: filteredResponse,
+        });
+      } else {
+        // Quando não há categoria especificada, retornar todos os produtos
+        res.status(200).json({
+          success: true,
+          products: apiResponse,
+        });
+      }
     } catch (error) {
       console.error("Erro ao buscar produtos:", error);
       next(error);

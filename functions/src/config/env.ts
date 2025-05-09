@@ -19,9 +19,6 @@ const envSchema = z.object({
   API_SECRET_KEY: z.string({
     required_error: "API_SECRET_KEY é obrigatória no arquivo .env",
   }),
-  API_SECRET_KEY_ERPPOINT: z.string({
-    required_error: "API_SECRET_KEY é obrigatória no arquivo .env",
-  }),
 });
 
 // Faz o parse das variáveis de ambiente
@@ -31,7 +28,7 @@ const env = envSchema.parse(process.env);
 export default env;
 
 // Se ocorrer erro no parse, o processo será encerrado
-if (!env.API_SECRET_KEY || !env.API_SECRET_KEY_ERPPOINT) {
+if (!env.API_SECRET_KEY) {
   console.error("API_SECRET_KEY é obrigatória no arquivo .env");
   process.exit(1);
 }
