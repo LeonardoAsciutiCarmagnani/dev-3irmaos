@@ -562,7 +562,9 @@ const RegisterModal = ({ open }: Props) => {
                     />
                   </div>
                   <div className="w-full flex justify-end pr-4">
-                    <Button type="submit">Cria conta</Button>
+                    <Button type="submit" className="rounded-xs">
+                      Criar conta
+                    </Button>
                   </div>
                 </form>
               </Form>

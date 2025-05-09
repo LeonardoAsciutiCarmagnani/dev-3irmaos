@@ -41,7 +41,7 @@ export function ImageCarousel({ images }: ImageCarouselProps) {
           ))
         ) : (
           <CarouselItem className="w-full h-full">
-            <Card className="rounded-none h-[10.5rem] shadow-none bg-gray-50 border-none">
+            <Card className="rounded-none h-[13rem] shadow-none bg-gray-50 border-none">
               <CardContent className="p-0 m-0 w-full h-full flex flex-col items-center justify-center space-y-2">
                 <ImageOffIcon size={40} />
                 <span className="text-gray-500 text-sm ml-2 italic">

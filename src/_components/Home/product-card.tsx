@@ -20,11 +20,11 @@ const ProductCard = (Product: Product) => {
         <div className="relative inline-block ">
           <ImageCarousel images={CarouselImages} />
           <Badge className="text-green-500 font-semibold text-sm bg-gray-900 rounded-xs absolute bottom-[-0.45rem] left-1/2 transform -translate-x-1/2 z-[100]">
-            <span className="text-white">A partir de</span> R$ {Product.preco}
+            <span>Consultar valores</span>
           </Badge>
         </div>
 
-        <div className="flex flex-col items-center justify-center md:gap-y-8 p-1 gap-y-4">
+        <div className="flex flex-col items-center justify-center md:gap-y-2 p-1 gap-y-0.5">
           <span className="text-gray-800 font-semibold antialiased text-xs md:text-[0.9rem] line-clamp-2 text-center">
             {Product.nome}
           </span>

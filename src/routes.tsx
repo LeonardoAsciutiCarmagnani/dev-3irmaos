@@ -8,6 +8,7 @@ import AuthenticatedRoute from "./_components/ProtectedRoutes/AuthenticatedRoute
 import LoginPage from "./pages/Login";
 import HomePage from "./_components/Home/index";
 import { PDFPedido } from "./_components/OrderPDF/OrderPDF";
+import CreateOrderPage from "./pages/CreateOrder";
 
 export const routes = createBrowserRouter([
   {
@@ -35,6 +36,14 @@ export const routes = createBrowserRouter([
     element: (
       <LayoutPage>
         <DetailsProduct />
+      </LayoutPage>
+    ),
+  },
+  {
+    path: "/criar-orçamento",
+    element: (
+      <LayoutPage>
+        <CreateOrderPage />
       </LayoutPage>
     ),
   },

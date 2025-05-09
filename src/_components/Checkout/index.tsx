@@ -192,7 +192,7 @@ export const Checkout = () => {
   }, []);
 
   return (
-    <div className="flex  border-gray-300 p-4 rounded-lg text-sm md:text-md overflow-y-auto">
+    <div className="flex border-gray-300 p-4 rounded-lg text-sm md:text-md overflow-y-auto">
       {productsInCart.length !== 0 ? (
         <div className="flex flex-col w-full md:flex-row gap-4 md:justify-around">
           <div className="flex flex-col space-y-4 w-full md:w-2/5 ">
