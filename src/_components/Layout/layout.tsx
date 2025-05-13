@@ -6,7 +6,7 @@ const LayoutPage = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="bg-white flex flex-col h-full w-full overflow-x-hidden overflow-y-auto">
       <Header />
-      <div className="flex flex-1 max-h-[calc(100vh-54px)]">
+      <div className="flex flex-1 max-h-full">
         <div className="hidden md:flex">
           <Sidebar />
         </div>
