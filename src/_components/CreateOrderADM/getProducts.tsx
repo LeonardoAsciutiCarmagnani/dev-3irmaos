@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -16,10 +17,13 @@ import { Input } from "@/components/ui/input";
 import { Check, Plus, Trash2, TriangleAlertIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-
 import { api } from "@/lib/axios";
 import { Badge } from "@/components/ui/badge";
 import Loader from "../Loader/loader";
+interface GetProductsInBudgetProps {
+  selectedProducts: TableItem[];
+  setSelectedProducts: React.Dispatch<React.SetStateAction<TableItem[]>>;
+}
 
 interface Product {
   id: string;
@@ -28,9 +32,26 @@ interface Product {
   preco?: number;
   unidade: string;
   produtoPrimarioId: string;
+  categoria: string;
+  altura: number;
+  largura: number;
+  comprimento: number;
+  variacao: [
+    {
+      codigo: number;
+      codigoDeBarras: string;
+      id: string;
+      nomeVariacaoA: string | null;
+      nomeVariacaoB: string | null;
+      quantidadeEmEstoque: number;
+      quantidadeEmEstoqueReservado: number;
+      quantidadeMinimaEmEstoque: number;
+      tipoVariacaoA: string | null;
+      tipoVariacaoB: string | null;
+    }
+  ];
 }
-
-interface TableItem {
+export interface TableItem {
   id: string;
   produto: Product;
   quantidade: number;
@@ -41,12 +62,15 @@ interface TableItem {
   produtoPrimarioId: string;
 }
 
-const GetProductsForm = () => {
+const GetProductsForm = ({
+  selectedProducts,
+  setSelectedProducts,
+}: GetProductsInBudgetProps) => {
   const [open, setOpen] = useState(false);
   const [productId, setProductId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
-  const [tableItems, settableItems] = useState<TableItem[]>([]);
+  const [tableItems, setTableItems] = useState<TableItem[]>([]);
 
   const [quantidade, setQuantidade] = useState(1);
   const [valorUnitario, setValorUnitario] = useState(0);
@@ -54,6 +78,8 @@ const GetProductsForm = () => {
   const [subtotal, setSubtotal] = useState(0);
   const [tableTotalItems, setTableTotalItems] = useState(0);
   const [frete, setFrete] = useState(0);
+  const [selectedVariacaoId, setSelectedVariacaoId] = useState<string>("");
+  const [files, setFiles] = useState<File[]>([]);
 
   const getProducts = async () => {
     try {
@@ -77,7 +103,7 @@ const GetProductsForm = () => {
   // Atualizar o valor unitário quando um produto for selecionado
   useEffect(() => {
     if (productId) {
-      const selectedProduct = products.find((p) => p.id === productId);
+      const selectedProduct = products.find((p) => p.id === selectedVariacaoId);
       if (selectedProduct && selectedProduct.preco) {
         setValorUnitario(selectedProduct.preco);
       }
@@ -96,13 +122,13 @@ const GetProductsForm = () => {
   }, [quantidade, valorUnitario, descontoUnitario, tableItems]);
 
   // Adicionar item ao carrinho
-  const addToCart = () => {
-    const selectedProduct = products.find((p) => p.id === productId);
+  const addToTable = () => {
+    const selectedProduct = products.find((p) => p.id === selectedVariacaoId);
 
     if (!selectedProduct) return;
 
     const newItem: TableItem = {
-      id: selectedProduct.id,
+      id: selectedVariacaoId,
       produto: selectedProduct,
       quantidade,
       valorUnitario,
@@ -112,18 +138,20 @@ const GetProductsForm = () => {
       produtoPrimarioId: selectedProduct.produtoPrimarioId,
     };
 
-    settableItems([...tableItems, newItem]);
+    // setTableItems([...tableItems, newItem]);
+    setSelectedProducts((prev) => [...prev, newItem]);
 
     // Resetar formulário
     setProductId("");
     setQuantidade(1);
     setValorUnitario(0);
+    setSelectedVariacaoId("");
     setDescontoUnitario(0);
     setSubtotal(0);
   };
 
   const removeTableItem = (itemId: string) => {
-    settableItems(tableItems.filter((item) => item.id !== itemId));
+    setSelectedProducts((prev) => prev.filter((item) => item.id !== itemId));
   };
 
   // Formatar valor para moeda brasileira
@@ -135,7 +163,7 @@ const GetProductsForm = () => {
   };
 
   const calculateTotal = () => {
-    const total = tableItems
+    const total = selectedProducts
       .reduce((acc, item) => acc + item.subtotal, frete)
       .toFixed(2);
     const totalFormatted = String(total).replace(".", ",");
@@ -151,9 +179,8 @@ const GetProductsForm = () => {
           <h2 className="text-xl font-semibold text-red-900">
             Adicionar Produtos
           </h2>
-
           {/* Formulário de seleção e dados do produto */}
-          <div className="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
+          <div className="flex items-end flex-wrap justify-between gap-x-1">
             {/* Seletor de produto */}
             <div className="md:col-span-2">
               <label className="text-sm text-gray-900 mb-1 block">
@@ -165,14 +192,40 @@ const GetProductsForm = () => {
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    className="min-w-fit w-full justify-between font-normal text-sm truncate rounded-xs"
+                    className="w-[40rem] justify-between font-normal text-sm truncate rounded-xs"
                   >
-                    {productId
+                    {selectedVariacaoId
                       ? (() => {
-                          const produto = products.find(
-                            (p) => p.id === productId
+                          const produtoComVariacao = products.find((produto) =>
+                            produto.variacao?.some(
+                              (v) => v.id === selectedVariacaoId
+                            )
                           );
-                          return produto ? produto.nome : "Selecione...";
+                          const variacaoSelecionada =
+                            produtoComVariacao?.variacao?.find(
+                              (v) => v.id === selectedVariacaoId
+                            );
+
+                          if (!produtoComVariacao || !variacaoSelecionada)
+                            return "Selecione...";
+
+                          const nomeVariacao = [
+                            variacaoSelecionada.nomeVariacaoA,
+                            variacaoSelecionada.nomeVariacaoB,
+                          ]
+                            .filter(Boolean)
+                            .join(" - ");
+
+                          return (
+                            <div className="flex justify-start items-center gap-x-2 text-xs 2xl:text-sm">
+                              <span className="font-semibold text-gray-800">
+                                {produtoComVariacao.nome}
+                              </span>
+                              <Badge className="bg-red-900">
+                                {nomeVariacao}
+                              </Badge>
+                            </div>
+                          );
                         })()
                       : "Selecione..."}
                   </Button>
@@ -184,38 +237,52 @@ const GetProductsForm = () => {
                       <CommandEmpty>Nenhum produto encontrado.</CommandEmpty>
                       <CommandGroup>
                         {products
-                          .filter(
-                            (product) =>
-                              product.produtoPrimarioId ===
-                              "00000000-0000-0000-0000-000000000000"
-                          )
-                          .map((product) => (
-                            <CommandItem
-                              key={product.id}
-                              value={product.id}
-                              onSelect={(currentValue) => {
-                                setProductId(
-                                  currentValue === productId ? "" : currentValue
-                                );
-                                setOpen(false);
-                              }}
-                            >
-                              <Check
-                                className={cn(
-                                  "mr-2 h-4 w-4 text-red-900",
-                                  productId === product.id
-                                    ? "opacity-100"
-                                    : "opacity-0"
-                                )}
-                              />
-                              <div className="flex items-center gap-x-2">
-                                <Badge className="rounded-xs border border-red-900 bg-transparent text-red-900">
-                                  {product.codigo}
-                                </Badge>
-                                <span>{product.nome}</span>
-                              </div>
-                            </CommandItem>
-                          ))}
+                          .filter((product) => product.variacao !== null)
+                          .sort((p1, p2) => p1.nome.localeCompare(p2.nome))
+                          .flatMap((product) =>
+                            product.variacao?.map((v) => {
+                              const nomeVariacao = [
+                                v.nomeVariacaoA,
+                                v.nomeVariacaoB,
+                              ]
+                                .filter(Boolean)
+                                .join(" - ");
+
+                              return (
+                                <CommandItem
+                                  key={v.id}
+                                  value={v.id}
+                                  onSelect={() => {
+                                    setSelectedVariacaoId(v.id);
+                                    setOpen(false);
+                                  }}
+                                >
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4 text-red-900",
+                                      selectedVariacaoId === v.id
+                                        ? "opacity-100"
+                                        : "opacity-0"
+                                    )}
+                                  />
+                                  <div className="flex flex-col text-sm">
+                                    <div className="flex items-center gap-x-2">
+                                      <span className="font-medium">
+                                        {product.nome}
+                                      </span>
+                                      <Badge className="font-medium bg-red-900">
+                                        {nomeVariacao}
+                                      </Badge>
+                                    </div>
+
+                                    <Badge className="text-xs text-red-900 bg-gray-100">
+                                      Cód: {v.codigo}
+                                    </Badge>
+                                  </div>
+                                </CommandItem>
+                              );
+                            })
+                          )}
                       </CommandGroup>
                     </CommandList>
                   </Command>
@@ -233,7 +300,7 @@ const GetProductsForm = () => {
                 min={1}
                 value={quantidade}
                 onChange={(e) => setQuantidade(Number(e.target.value))}
-                className="w-full rounded-xs"
+                className="w-[4rem] rounded-xs"
               />
             </div>
 
@@ -248,7 +315,7 @@ const GetProductsForm = () => {
                 step={0.01}
                 value={valorUnitario}
                 onChange={(e) => setValorUnitario(Number(e.target.value))}
-                className="w-full rounded-xs"
+                className="w-[7rem] rounded-xs"
               />
             </div>
 
@@ -263,7 +330,7 @@ const GetProductsForm = () => {
                 step={0.01}
                 value={descontoUnitario}
                 onChange={(e) => setDescontoUnitario(Number(e.target.value))}
-                className="w-full rounded-xs"
+                className="w-[7rem] rounded-xs"
               />
             </div>
 
@@ -276,20 +343,20 @@ const GetProductsForm = () => {
                 type="text"
                 value={formatCurrency(subtotal)}
                 readOnly
-                className="w-full bg-gray-50 rounded-xs"
+                className="w-[7rem] bg-gray-50 rounded-xs"
               />
             </div>
 
             {/* Botão Adicionar */}
-            <div>
-              <Button
-                onClick={addToCart}
-                disabled={!productId || quantidade <= 0}
-                className="w-[12rem] bg-red-900 hover:bg-red-800 text-white rounded-xs"
-              >
-                <Plus /> Adicionar
-              </Button>
-            </div>
+          </div>
+          <div>
+            <Button
+              onClick={addToTable}
+              disabled={!selectedVariacaoId || quantidade <= 0}
+              className="w-[12rem] bg-red-900 hover:bg-red-800 text-white rounded-xs"
+            >
+              <Plus /> Adicionar
+            </Button>
           </div>
 
           {/* Tabela de produtos */}
@@ -302,6 +369,17 @@ const GetProductsForm = () => {
               {/* Cabeçalho fixo */}
               <div className="bg-gray-200/60">
                 <table className="w-full table-fixed">
+                  <colgroup>
+                    <col className="w-16" /> {/* Código */}
+                    <col className="w-48" /> {/* Produto */}
+                    <col className="w-20" /> {/* Medida */}
+                    <col className="w-40" /> {/* Variação */}
+                    <col className="w-12" /> {/* Qtd */}
+                    <col className="w-28" /> {/* Valor Unit. */}
+                    <col className="w-28" /> {/* Desconto */}
+                    <col className="w-28" /> {/* Subtotal */}
+                    <col className="w-16" /> {/* Ações */}
+                  </colgroup>
                   <thead>
                     <tr>
                       <th className="p-2 text-start text-sm font-medium text-gray-900">
@@ -312,6 +390,9 @@ const GetProductsForm = () => {
                       </th>
                       <th className="p-2 text-start text-sm font-medium text-gray-900">
                         Medida
+                      </th>
+                      <th className="p-2 text-start text-sm font-medium text-gray-900">
+                        Variação
                       </th>
                       <th className="p-2 text-start text-sm font-medium text-gray-900">
                         Qtd
@@ -336,46 +417,78 @@ const GetProductsForm = () => {
               {/* Corpo da tabela */}
               <div className="flex-1 overflow-y-auto">
                 <table className="w-full table-fixed">
+                  <colgroup>
+                    <col className="w-16" />
+                    <col className="w-48" />
+                    <col className="w-20" />
+                    <col className="w-40" />
+                    <col className="w-12" />
+                    <col className="w-28" />
+                    <col className="w-28" />
+                    <col className="w-28" />
+                    <col className="w-16" />
+                  </colgroup>
                   <tbody>
-                    {tableItems.length > 0 ? (
-                      tableItems.map((item) => (
-                        <tr key={item.id} className="border-b border-gray-200">
-                          <td className="p-2 text-sm text-start text-gray-800">
-                            {item.produto.codigo}
-                          </td>
-                          <td className="p-2 text-sm text-gray-800 text-start">
-                            {item.produto.nome}
-                          </td>
-                          <td className="p-2 text-sm text-gray-800 text-start pl-3">
-                            {item.produto.unidade}
-                          </td>
-                          <td className="p-2 text-sm text-gray-800 text-start pl-4">
-                            {item.quantidade}
-                          </td>
-                          <td className="p-2 text-sm text-gray-800 pl-4 text-start">
-                            {formatCurrency(item.valorUnitario)}
-                          </td>
-                          <td className="p-2 text-sm text-gray-800 pl-4 text-start">
-                            {formatCurrency(item.descontoUnitario)}
-                          </td>
-                          <td className="p-2 text-sm font-medium pl-5 text-gray-800 text-start">
-                            {formatCurrency(item.subtotal)}
-                          </td>
-                          <td className="p-2 text-start pl-6">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => removeTableItem(item.id)}
-                              className="text-gray-500 hover:text-red-900 hover:bg-red-50 "
-                            >
-                              <Trash2 size={16} />
-                            </Button>
-                          </td>
-                        </tr>
-                      ))
+                    {selectedProducts.length > 0 ? (
+                      selectedProducts.map((item) => {
+                        const produtoPai = products.find((p) =>
+                          p.variacao?.some((v) => v.id === item.id)
+                        );
+                        const variacao = produtoPai?.variacao?.find(
+                          (v) => v.id === item.id
+                        );
+                        const nomeVariacao = [
+                          variacao?.nomeVariacaoA,
+                          variacao?.nomeVariacaoB,
+                        ]
+                          .filter(Boolean)
+                          .join(" - ");
+
+                        return (
+                          <tr
+                            key={item.id}
+                            className="border-b border-gray-200"
+                          >
+                            <td className="p-2 text-sm text-start text-gray-800">
+                              {item.produto.codigo}
+                            </td>
+                            <td className="p-2 text-sm text-gray-800 text-start">
+                              {item.produto.nome}
+                            </td>
+                            <td className="p-2 text-sm text-gray-800 text-start pl-4">
+                              {item.unidade}
+                            </td>
+                            <td className="p-2 text-sm text-gray-800 text-start pl-4">
+                              {nomeVariacao || "—"}
+                            </td>
+                            <td className="p-2 text-sm text-gray-800 text-start pl-4">
+                              {item.quantidade}
+                            </td>
+                            <td className="p-2 text-sm text-gray-800 text-start pl-5">
+                              {formatCurrency(item.valorUnitario)}
+                            </td>
+                            <td className="p-2 text-sm text-gray-800 text-start pl-5">
+                              {formatCurrency(item.descontoUnitario)}
+                            </td>
+                            <td className="p-2 text-sm font-medium text-gray-800 text-start pl-5">
+                              {formatCurrency(item.subtotal)}
+                            </td>
+                            <td className="p-2 text-start pl-6">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeTableItem(item.id)}
+                                className="text-gray-500 hover:text-red-900 hover:bg-red-50"
+                              >
+                                <Trash2 size={16} />
+                              </Button>
+                            </td>
+                          </tr>
+                        );
+                      })
                     ) : (
                       <tr>
-                        <td colSpan={8}>
+                        <td colSpan={9}>
                           <div className="w-full flex items-center justify-center h-32">
                             <div className="flex items-center gap-x-2">
                               <TriangleAlertIcon color="darkred" />
@@ -392,28 +505,35 @@ const GetProductsForm = () => {
 
             {/* Rodapé com totais */}
             <div className="mt-2">
-              <table className="w-full table-fixed">
+              <table className="w-full">
+                <colgroup>
+                  <col span={7} /> {/* mantém colspans uniformes */}
+                  <col className="w-16" />
+                </colgroup>
                 <tfoot>
                   <tr className="pt-2 border-t border-gray-300">
                     <td colSpan={7} className="p-2 text-right font-base">
                       Quantidade de itens:
                     </td>
-                    <td className="p-2 text-right text-gray-700 w-16">
-                      {tableTotalItems}
+                    <td className="p-2 text-start text-gray-700">
+                      {" "}
+                      {selectedProducts.length}{" "}
                     </td>
                   </tr>
-                  <tr className="flex items-center justify-end w-[172vh] 2xl:w-[174.75vh] mb-3">
-                    <td colSpan={7} className="p-2 text-right font-base">
+                  <tr className="flex items-center justify-end mb-3 w-full">
+                    <td colSpan={2} className="p-2 text-right font-base">
                       Frete:
                     </td>
-                    <Input
-                      className="text-end text-gray-700 w-25 rounded-xs"
-                      type="number"
-                      placeholder="R$ 0,00"
-                      onChange={(e) => setFrete(Number(e.target.value))}
-                    ></Input>
+                    <td>
+                      <Input
+                        className="text-end text-gray-700 w-25 rounded-xs"
+                        type="number"
+                        placeholder="R$ 0,00"
+                        onChange={(e) => setFrete(Number(e.target.value))}
+                      />
+                    </td>
                   </tr>
-                  <tr className="text-center border-t border-b border-gray-300">
+                  <tr className="text-center border-t border-b border-gray-300 bg-gray-100">
                     <td
                       colSpan={7}
                       className="p-2.5 px-4 text-right font-semibold text-gray-700"

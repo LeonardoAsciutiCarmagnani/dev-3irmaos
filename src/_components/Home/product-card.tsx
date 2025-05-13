@@ -17,7 +17,7 @@ const ProductCard = (Product: Product) => {
       className="hover:cursor-pointer flex flex-col items-center justify-between h-[17.5rem] bg-gray-50/80 w-full hover:shadow-md transition-all duration-300 ease-in-out shadow-sm shadow-gray-300"
     >
       <div className="flex flex-col items-center justify-start w-full space-y-2">
-        <div className="relative inline-block ">
+        <div className="relative inline-block w-full">
           <ImageCarousel images={CarouselImages} />
           <Badge className="text-green-500 font-semibold text-sm bg-gray-900 rounded-xs absolute bottom-[-0.45rem] left-1/2 transform -translate-x-1/2 z-[100]">
             <span>Consultar valores</span>

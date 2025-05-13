@@ -96,7 +96,7 @@ const Dropzone: React.FC<ImageUploaderProps> = ({
         {/* Área do Dropzone */}
         <div
           {...getRootProps()}
-          className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center w-52 h-52 hover:border-red-400 transition-colors cursor-pointer"
+          className="border-2 border-dashed border-gray-300 rounded-xs p-6 flex flex-col items-center justify-center w-52 h-52 hover:border-red-400 transition-colors cursor-pointer"
           aria-disabled={isUploading}
         >
           <input {...getInputProps()} />
@@ -133,7 +133,7 @@ const Dropzone: React.FC<ImageUploaderProps> = ({
         {previews.map((preview, index) => (
           <div
             key={index}
-            className="relative w-32 h-32 rounded-md overflow-hidden shadow-lg"
+            className="relative w-32 h-32 rounded-xs overflow-hidden shadow-lg"
           >
             {preview.type === "image" ? (
               <img
@@ -156,7 +156,11 @@ const Dropzone: React.FC<ImageUploaderProps> = ({
               }}
               className="absolute top-1 right-1 bg-red-600 hover:bg-red-700 text-white rounded-full p-1 transition-colors"
             >
-              <XCircleIcon size={16} color="white" />
+              <XCircleIcon
+                size={16}
+                color="white"
+                className="hover:cursor-pointer"
+              />
             </button>
           </div>
         ))}

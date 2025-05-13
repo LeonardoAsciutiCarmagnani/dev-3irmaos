@@ -890,7 +890,7 @@ const OrdersTable = () => {
                                         <span className="text-lg text-gray-700">
                                           {item.nome}
                                         </span>
-                                        <div className="flex gap-2 ">
+                                        {/* <div className="flex gap-2 ">
                                           {item.listImages.map(
                                             (image, index) => {
                                               return (
@@ -903,7 +903,7 @@ const OrdersTable = () => {
                                               );
                                             }
                                           )}
-                                        </div>
+                                        </div> */}
                                       </div>
                                     );
                                   })}
