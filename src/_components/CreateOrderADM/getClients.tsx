@@ -19,11 +19,14 @@ import type { Client } from "@/interfaces/Client";
 import { collection, onSnapshot, query } from "firebase/firestore";
 import { db } from "../Utils/FirebaseConfig";
 
-const GetClients = () => {
+interface GetClientsProps {
+  selectedClient: Client | null;
+  setSelectedClient: React.Dispatch<React.SetStateAction<Client | null>>;
+}
+
+const GetClients = ({ selectedClient, setSelectedClient }: GetClientsProps) => {
   const [clients, setClients] = useState<Client[]>([]);
-  const [selectedClient, setSelectedClient] = useState<Client>();
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
 
   useEffect(() => {
     const collectionRef = collection(db, "clients");
@@ -39,11 +42,14 @@ const GetClients = () => {
     return () => unsubscribe();
   }, []);
 
+  const value = selectedClient?.Id ?? "";
+  const label = selectedClient ? selectedClient.name : "Selecione...";
+
   return (
-    <div className="flex items-start gap-x-[7rem] rounded-xs p-2 w-full justify-evenly">
+    <div className="flex items-center rounded-xs p-4 w-[180vh] justify-around pl-12 gap-x-7 border border-gray-200 shadow-md shadow-gray-200">
       <div>
         <div>
-          <h1 className="text-md text-red-900">Cliente</h1>
+          <h1 className="text-xl font-semibold text-red-900">Cliente</h1>
         </div>
         <div>
           <Popover open={open} onOpenChange={setOpen}>
@@ -54,9 +60,7 @@ const GetClients = () => {
                 aria-expanded={open}
                 className="w-[30rem] justify-between rounded-xs font-normal text-base"
               >
-                {value
-                  ? clients.find((client) => client.Id === value)?.name
-                  : "Selecione..."}
+                {label}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-[30rem] p-0 rounded-xs">
@@ -70,10 +74,9 @@ const GetClients = () => {
                         key={client.Id}
                         value={client.Id}
                         onSelect={(currentValue) => {
-                          setValue(currentValue === value ? "" : currentValue);
-                          setSelectedClient(
-                            clients.find((client) => client.Id === currentValue)
-                          );
+                          const client =
+                            clients.find((c) => c.Id === currentValue) || null;
+                          setSelectedClient(client);
                           setOpen(false);
                         }}
                       >
@@ -95,49 +98,56 @@ const GetClients = () => {
       </div>
 
       {selectedClient && (
-        <div className="grid grid-cols-1 md:grid-cols-2 px-2 py-2 items-start place-items-center shadow-md">
+        <div className="grid grid-cols-1 md:grid-cols-2 px-6 py-4 items-start place-items-start w-[40rem]">
           {/* Informações Pessoais */}
-          <div className="space-y-3 flex flex-col items-start">
-            <div className="flex items-center mb-2">
-              <User className="text-red-800 mr-2" size={20} />
-              <h3 className="text-red-800 font-semibold">
-                Informações Pessoais
-              </h3>
+          <div className="space-y-1 flex flex-col items-start">
+            <div className="flex items-center">
+              <User className="text-red-900 mr-2" size={25} />
+              <h3 className="text-red-900 font-semibold">Dados pessoais</h3>
             </div>
 
-            <div className="pl-7 space-y-2">
-              <p className="font-medium text-gray-800">{selectedClient.name}</p>
+            <div className="pl-1 space-y-1">
+              {/* <p className="font-medium text-lg text-gray-800">
+                {selectedClient.name}
+              </p> */}
 
               <div className="flex items-center text-gray-600">
-                <Phone size={16} className="mr-2 flex-shrink-0" />
+                <Phone size={20} className="mr-2 flex-shrink-0 text-gray-900" />
                 <p>{selectedClient.phone}</p>
               </div>
 
               <div className="flex items-center text-gray-600">
-                <Mail size={16} className="mr-2 flex-shrink-0" />
-                <p className="break-all truncate">{selectedClient.email}</p>
+                <Mail size={20} className="mr-2 flex-shrink-0 text-gray-900" />
+                <p className="break-all max-w-[16rem] text-nowrap truncate">
+                  {selectedClient.email}
+                </p>
               </div>
 
               <div className="flex items-center text-gray-600">
-                <FileText size={16} className="mr-2 flex-shrink-0" />
+                <FileText
+                  size={20}
+                  className="mr-2 flex-shrink-0 text-gray-900"
+                />
                 <p>{selectedClient.document}</p>
               </div>
             </div>
           </div>
 
           {/* Endereço */}
-          <div className="space-y-3 flex flex-col items-start">
+          <div className="flex flex-col items-start">
             <div className="flex items-center mb-2">
-              <MapPin className="text-red-800 mr-2" size={20} />
-              <h3 className="text-red-800 font-semibold">Endereço</h3>
+              <MapPin className="text-red-900 mr-2" size={25} />
+              <h3 className="text-red-900 font-semibold">Endereço</h3>
             </div>
 
-            <div className="pl-7 space-y-2 text-gray-600">
+            <div className="pl-1 space-y-0.5 text-gray-600">
               <p>
                 {selectedClient.address.street}, {selectedClient.address.number}
               </p>
               <p>{selectedClient.address.neighborhood}</p>
-              <p>{selectedClient.address.city}</p>
+              <p>
+                {selectedClient.address.city} - {selectedClient.address.state}
+              </p>
             </div>
           </div>
         </div>

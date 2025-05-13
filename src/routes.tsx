@@ -9,6 +9,7 @@ import LoginPage from "./pages/Login";
 import HomePage from "./_components/Home/index";
 import { PDFPedido } from "./_components/OrderPDF/OrderPDF";
 import CreateOrderPage from "./pages/CreateOrder";
+import ClientsTable from "./_components/Clients/Clientstable";
 
 export const routes = createBrowserRouter([
   {
@@ -28,6 +29,14 @@ export const routes = createBrowserRouter([
     element: (
       <LayoutPage>
         <ProductsPage />
+      </LayoutPage>
+    ),
+  },
+  {
+    path: "/clients",
+    element: (
+      <LayoutPage>
+        <ClientsTable />
       </LayoutPage>
     ),
   },

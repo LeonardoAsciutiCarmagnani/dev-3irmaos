@@ -109,7 +109,7 @@ const Header = () => {
               onClick={() => setOpenUser(true)}
               onMouseEnter={() => setOpenUser(true)}
             >
-              <CircleUserIcon size={35} className="text-gray-700" />
+              <CircleUserIcon size={35} className="text-gray-800" />
             </PopoverTrigger>
             <PopoverContent className="w-[300px] flex flex-col space-y-2 rounded-xs p-3">
               {user ? (
@@ -118,7 +118,7 @@ const Header = () => {
                     <div className="flex flex-col gap-y-0.5">
                       <div className="flex items-center gap-x-3">
                         <h1
-                          className={`font-semibold text-gray-900 text-md ${
+                          className={`font-semibold text-gray-900 text-lg ${
                             user.role === "admin" ? "text-red-900" : ""
                           }`}
                         >
@@ -142,7 +142,7 @@ const Header = () => {
                       to="/pedidos-e-orçamentos"
                       className="text-sm md:text-md text-gray-900 font-semibold hover:underline hover:cursor-pointer hover:text-red-900"
                     >
-                      Orçamentos
+                      Meus orçamentos
                     </Link>
                   </div>
                 </div>
@@ -173,7 +173,7 @@ const Header = () => {
             </PopoverContent>
           </Popover>
           {user && user.displayName ? (
-            <div className="hidden md:flex text-nowrap text-sm font-semibold text-gray-600 hover:cursor-default">
+            <div className="hidden md:flex text-nowrap text-lg font-semibold text-gray-600 hover:cursor-default">
               {user.displayName.split(" ")[0]}
             </div>
           ) : null}
