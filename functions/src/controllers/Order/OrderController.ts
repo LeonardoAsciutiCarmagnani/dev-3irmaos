@@ -58,6 +58,8 @@ const createBudgetSchema = z.object({
       payment: z.string().optional(),
       delivery: z.number().optional(),
       time: z.string().optional(),
+      seller: z.string().optional(),
+      sellerPhone: z.string().optional(),
     })
     .nullable()
     .optional(),
@@ -122,6 +124,8 @@ const createOrderSchema = z.object({
       payment: z.string().optional(),
       delivery: z.number().optional(),
       time: z.string().optional(),
+      seller: z.string().optional(),
+      sellerPhone: z.string().optional(),
     })
     .nullable()
     .optional(),
