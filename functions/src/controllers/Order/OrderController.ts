@@ -45,13 +45,9 @@ const createBudgetSchema = z.object({
         id: z.string({ message: "ID da variação obrigatória." }),
         nomeVariacao: z.string({ message: "Nome da variação obrigatória." }),
       }),
-      listImages: z.array(
-        z.object({
-          imagem: z.string().nullable(),
-        })
-      ),
     })
   ),
+  imagesUrls: z.array(z.string()).optional(),
   detailsPropostal: z
     .object({
       obs: z.string().optional(),
@@ -128,6 +124,7 @@ const createOrderSchema = z.object({
   createdAt: z.string().optional(),
   orderStatus: z.number(),
   totalValue: z.number().min(0, "Valor total inválido."),
+  imagesUrls: z.array(z.string()).optional(),
 });
 
 export type BudgetType = z.infer<typeof createBudgetSchema>;

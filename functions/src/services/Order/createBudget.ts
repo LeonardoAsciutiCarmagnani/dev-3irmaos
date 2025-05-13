@@ -24,6 +24,7 @@ export class CreateBudgetService {
         createdAt: data.createdAt,
         orderStatus: data.orderStatus,
         totalValue: data.totalValue,
+        imagesUrls: data.imagesUrls,
       });
 
       return budgetCreated;
