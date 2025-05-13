@@ -5,17 +5,16 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuthStore } from "@/context/authContext";
+import { DetailsPropostalProps } from "@/interfaces/Order";
 import { useEffect, useState } from "react";
 import { IMaskInput } from "react-imask";
-
-interface DetailsPropostalProps {
-  obs: string;
-  payment: string;
-  time: string;
-  delivery: number;
-}
 
 interface IDetailsOrder {
   statusOrder: number;
@@ -25,7 +24,8 @@ interface IDetailsOrder {
     obs: string,
     payment: string,
     time: string,
-    delivery: number
+    delivery: number,
+    sellectedSeller: { name: string; phone: string; email: string }
   ) => void;
 }
 
@@ -51,15 +51,47 @@ const DetailsOrder = ({
   );
   const [total, setTotal] = useState(propostalValue);
 
+  const [selectedSeller, setSelectedSeller] = useState({
+    name: detailsPropostal?.selectedSeller.name
+      ? detailsPropostal?.selectedSeller.name
+      : "",
+    phone: detailsPropostal?.selectedSeller.phone
+      ? detailsPropostal?.selectedSeller.phone
+      : "",
+    email: detailsPropostal?.selectedSeller.email
+      ? detailsPropostal?.selectedSeller.email
+      : "",
+  });
+
+  const sellersList = [
+    {
+      name: "Regiane Oliveira",
+      phone: "(11) 99592-6335",
+      email: "regiane@3irmaosmadeirademolicao.com.br",
+    },
+    {
+      name: "Anderson Santos",
+      phone: "(11) 97134-8966",
+      email: "anderson@3irmaosmadeirademolicao.com.br",
+    },
+  ];
+
   useEffect(() => {
     setTotal(propostalValue + deliveryValue);
-    getAllData(description, paymentMethod, deliveryTime, deliveryValue);
+    getAllData(
+      description,
+      paymentMethod,
+      deliveryTime,
+      deliveryValue,
+      selectedSeller
+    );
   }, [
     propostalValue,
     description,
     paymentMethod,
     deliveryTime,
     deliveryValue,
+    selectedSeller,
     getAllData,
   ]);
 
@@ -71,7 +103,7 @@ const DetailsOrder = ({
             <AccordionTrigger className="text-lg">
               Informar detalhes da proposta
             </AccordionTrigger>
-            <AccordionContent className="flex flex-col space-y-2">
+            <AccordionContent className="flex flex-col space-y-2 ml-2">
               <div className="flex flex-col gap-2 w-1/2">
                 <label htmlFor="observacoes" className="font-semibold">
                   Observações:
@@ -138,6 +170,30 @@ const DetailsOrder = ({
                   className="border rounded px-2 py-1 w-[8rem] text-right"
                 />
               </div>
+
+              <Popover>
+                <PopoverTrigger asChild>
+                  <div
+                    className={`${
+                      statusOrder > 1 && "pointer-events-none"
+                    } border rounded-xs p-2 w-fit font-semibold hover:border-black hover:ring-1 hover:cursor-pointer`}
+                  >
+                    {selectedSeller.name !== ""
+                      ? selectedSeller.name
+                      : "Selecione um vendedor"}
+                  </div>
+                </PopoverTrigger>
+                <PopoverContent className="space-y-2">
+                  {sellersList.map((seller) => (
+                    <div
+                      onClick={() => setSelectedSeller(seller)}
+                      className="border rounded-xs p-2 w-fit font-semibold hover:border-black hover:ring-1 hover:cursor-pointer"
+                    >
+                      {seller.name}
+                    </div>
+                  ))}
+                </PopoverContent>
+              </Popover>
             </AccordionContent>
           </AccordionItem>
         </Accordion>
@@ -145,51 +201,47 @@ const DetailsOrder = ({
       <div className="flex flex-col w-full h-full  p-4">
         <div className="flex flex-col space-y-4">
           <div className="flex flex-col items-start   max-w-full  text-wrap">
-            <span className="text-gray-700 font-semibold">Observações:</span>
-            <div className="w-2/4">
+            <span className=" font-semibold text-lg">Observações:</span>
+            <div className="w-full px-5">
               {description === "" ? (
-                <span className="flex w-full justify-center">
+                <span className="flex w-full justify-start">
                   Sem observações
                 </span>
               ) : (
-                <p className="flex   text-gray-700 text-start whitespace-pre-wrap break-words">
+                <p className="flex    text-start whitespace-pre-wrap break-words">
                   {description}
                 </p>
               )}
             </div>
           </div>
-          <div className="flex flex-col items-start justify-between">
-            <div className="flex flex-col">
-              <span className="text-gray-700 font-semibold">
-                Facilidade no pagamento e agilidade na entrega:
-              </span>
-              <span className="font-semibold">
-                Forma de pagamento: {paymentMethod}
-              </span>
-              <span className="font-semibold">
-                Prazo de entrega: {deliveryTime}
-              </span>
-              <span className="font-semibold">
+          <div className="flex flex-col items-start justify-between ">
+            <span className=" font-semibold text-lg">
+              Facilidade no pagamento e agilidade na entrega:
+            </span>
+            <div className="flex flex-col px-5">
+              <li className="">Forma de pagamento: {paymentMethod}</li>
+              <li className="">Prazo de entrega: {deliveryTime}</li>
+              <li className="">
                 Frete:{" "}
                 {deliveryValue.toLocaleString("pt-BR", {
                   style: "currency",
                   currency: "BRL",
                 })}
-              </span>
-              <span className="font-semibold">
+              </li>
+              <li className="">
                 Valor final:{" "}
                 {total.toLocaleString("pt-BR", {
                   style: "currency",
                   currency: "BRL",
                 })}{" "}
-              </span>
+              </li>
             </div>
           </div>
           <div className="flex flex-col items-start justify-between">
-            <span className="text-gray-700 font-bold text-lg">
+            <span className=" font-bold text-lg">
               Por que escolher a 3 Irmãos Arte em Madeira de Demolição ?
             </span>
-            <div className="">
+            <div className="px-5">
               <li>
                 Mais de 40 anos de experiência, garantindo qualidade e
                 compromisso.
@@ -204,11 +256,16 @@ const DetailsOrder = ({
             </div>
           </div>
           <div className="flex flex-col items-start justify-between">
-            <span className="text-gray-700">
+            <span className=" font-semibold">
               {" "}
               Vamos conversar e alinhar os próximos passos?
             </span>
-            <span className="font-semibold">(11) 94592-6335</span>
+            <span className="font-semibold">Atenciosamente,</span>
+            <div className="flex gap-2">
+              <span>{selectedSeller.name}</span>-
+              <span>{selectedSeller.email}</span>
+            </div>
+            <span className="font-semibold">{selectedSeller.phone}</span>
           </div>
         </div>
       </div>
