@@ -9,9 +9,12 @@ import GetClients from "./getClients";
 import GetProductsForm from "./getProducts";
 import { db } from "../Utils/FirebaseConfig";
 import { useEffect, useState } from "react";
+import { Client } from "@/interfaces/Client";
+import { Button } from "@/components/ui/button";
 
 const CreateOrderADM = () => {
   const [budgetNumber, setBudgetNumber] = useState(0);
+  const [client, setClient] = useState<Client | null>(null);
 
   useEffect(() => {
     const collectionRef = collection(db, "budgets");
@@ -28,23 +31,27 @@ const CreateOrderADM = () => {
         setBudgetNumber(1);
       }
     });
-
+    console.log("Cliente:", client);
     return () => unsubscribe();
-  }, []);
+  }, [client]);
 
   return (
-    <div className="flex flex-col items-start h-full">
+    <div className="flex flex-col items-start h-full gap-y-4">
       <div className="w-full">
-        <div className="p-2 flex items-center justify-between ">
-          <h1 className="text-xl font-bold text-gray-600">{`Novo orçamento - #${budgetNumber}`}</h1>
-          <h2 className="text-sm text-red-800">
+        <div className="p-2 flex items-center justify-between gap-x-12">
+          <h1 className="text-2xl font-bold text-gray-800">{`Novo orçamento - #${budgetNumber}`}</h1>
+          <h2 className="text-sm text-gray-400">
             Emissão: {new Date().toLocaleDateString()}
           </h2>
         </div>
-        <GetClients />
+        <GetClients selectedClient={client} setSelectedClient={setClient} />
       </div>
       <div>
         <GetProductsForm />
+      </div>
+      <div className="flex items-center gap-x-2 w-[180vh] justify-end">
+        <Button className="bg-red-800 rounded-xs">Cancelar</Button>
+        <Button className="bg-green-700 rounded-xs">Criar orçamento</Button>
       </div>
     </div>
   );

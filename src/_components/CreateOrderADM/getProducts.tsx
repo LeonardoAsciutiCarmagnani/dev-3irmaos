@@ -13,7 +13,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
-import { Check, Plus, Trash2 } from "lucide-react";
+import { Check, Plus, Trash2, TriangleAlertIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -26,15 +26,19 @@ interface Product {
   nome: string;
   codigo: string;
   preco?: number;
+  unidade: string;
+  produtoPrimarioId: string;
 }
 
-interface CartItem {
+interface TableItem {
   id: string;
   produto: Product;
   quantidade: number;
   valorUnitario: number;
   descontoUnitario: number;
   subtotal: number;
+  unidade: string;
+  produtoPrimarioId: string;
 }
 
 const GetProductsForm = () => {
@@ -42,12 +46,14 @@ const GetProductsForm = () => {
   const [productId, setProductId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
-  const [tableItems, settableItems] = useState<CartItem[]>([]);
+  const [tableItems, settableItems] = useState<TableItem[]>([]);
 
   const [quantidade, setQuantidade] = useState(1);
   const [valorUnitario, setValorUnitario] = useState(0);
   const [descontoUnitario, setDescontoUnitario] = useState(0);
   const [subtotal, setSubtotal] = useState(0);
+  const [tableTotalItems, setTableTotalItems] = useState(0);
+  const [frete, setFrete] = useState(0);
 
   const getProducts = async () => {
     try {
@@ -82,7 +88,12 @@ const GetProductsForm = () => {
   useEffect(() => {
     const total = quantidade * (valorUnitario - descontoUnitario);
     setSubtotal(total);
-  }, [quantidade, valorUnitario, descontoUnitario]);
+    const totalItems = tableItems.reduce(
+      (acc, item) => acc + item.quantidade,
+      0
+    );
+    setTableTotalItems(totalItems);
+  }, [quantidade, valorUnitario, descontoUnitario, tableItems]);
 
   // Adicionar item ao carrinho
   const addToCart = () => {
@@ -90,13 +101,15 @@ const GetProductsForm = () => {
 
     if (!selectedProduct) return;
 
-    const newItem: CartItem = {
+    const newItem: TableItem = {
       id: selectedProduct.id,
       produto: selectedProduct,
       quantidade,
       valorUnitario,
       descontoUnitario,
       subtotal,
+      unidade: selectedProduct.unidade,
+      produtoPrimarioId: selectedProduct.produtoPrimarioId,
     };
 
     settableItems([...tableItems, newItem]);
@@ -109,7 +122,7 @@ const GetProductsForm = () => {
     setSubtotal(0);
   };
 
-  const removeCartItem = (itemId: string) => {
+  const removeTableItem = (itemId: string) => {
     settableItems(tableItems.filter((item) => item.id !== itemId));
   };
 
@@ -121,18 +134,27 @@ const GetProductsForm = () => {
     }).format(value);
   };
 
+  const calculateTotal = () => {
+    const total = tableItems
+      .reduce((acc, item) => acc + item.subtotal, frete)
+      .toFixed(2);
+    const totalFormatted = String(total).replace(".", ",");
+    return totalFormatted;
+  };
+
   return (
     <>
       {isLoading ? (
         <Loader />
       ) : (
-        <div className="flex flex-col gap-4 p-4 bg-white rounded-xs w-[175vh]">
+        <div className="flex flex-col gap-4 p-4 bg-white rounded-xs w-[180vh] border border-gray-200 shadow-md shadow-gray-200">
           <h2 className="text-xl font-semibold text-red-900">
             Adicionar Produtos
           </h2>
 
           {/* Formulário de seleção e dados do produto */}
           <div className="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
+            {/* Seletor de produto */}
             <div className="md:col-span-2">
               <label className="text-sm text-gray-900 mb-1 block">
                 Produto
@@ -143,51 +165,57 @@ const GetProductsForm = () => {
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    className="w-full justify-between font-normal text-base rounded-xs"
+                    className="min-w-fit w-full justify-between font-normal text-sm truncate rounded-xs"
                   >
                     {productId
                       ? (() => {
                           const produto = products.find(
                             (p) => p.id === productId
                           );
-                          return produto ? `${produto.nome}` : "Selecione...";
+                          return produto ? produto.nome : "Selecione...";
                         })()
                       : "Selecione..."}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-80 p-0 md:w-96">
+                <PopoverContent className="w-80 p-0 md:w-96 2xl:w-[36rem]">
                   <Command>
-                    <CommandInput placeholder="Busque pelo nome ou código" />
+                    <CommandInput placeholder="Busque pelo nome" />
                     <CommandList>
                       <CommandEmpty>Nenhum produto encontrado.</CommandEmpty>
                       <CommandGroup>
-                        {products.map((product) => (
-                          <CommandItem
-                            key={product.id}
-                            value={product.id}
-                            onSelect={(currentValue) => {
-                              setProductId(
-                                currentValue === productId ? "" : currentValue
-                              );
-                              setOpen(false);
-                            }}
-                          >
-                            <Check
-                              className={cn(
-                                "mr-2 h-4 w-4 text-red-900",
-                                productId === product.id
-                                  ? "opacity-100"
-                                  : "opacity-0"
-                              )}
-                            />
-                            <div className="flex items-center gap-x-2">
-                              <Badge className="rounded-xs border border-red-900 bg-transparent text-red-900">
-                                {product.codigo}
-                              </Badge>
-                              <span>{product.nome}</span>
-                            </div>
-                          </CommandItem>
-                        ))}
+                        {products
+                          .filter(
+                            (product) =>
+                              product.produtoPrimarioId ===
+                              "00000000-0000-0000-0000-000000000000"
+                          )
+                          .map((product) => (
+                            <CommandItem
+                              key={product.id}
+                              value={product.id}
+                              onSelect={(currentValue) => {
+                                setProductId(
+                                  currentValue === productId ? "" : currentValue
+                                );
+                                setOpen(false);
+                              }}
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4 text-red-900",
+                                  productId === product.id
+                                    ? "opacity-100"
+                                    : "opacity-0"
+                                )}
+                              />
+                              <div className="flex items-center gap-x-2">
+                                <Badge className="rounded-xs border border-red-900 bg-transparent text-red-900">
+                                  {product.codigo}
+                                </Badge>
+                                <span>{product.nome}</span>
+                              </div>
+                            </CommandItem>
+                          ))}
                       </CommandGroup>
                     </CommandList>
                   </Command>
@@ -195,47 +223,51 @@ const GetProductsForm = () => {
               </Popover>
             </div>
 
+            {/* Quantidade */}
             <div>
               <label className="text-sm text-gray-900 mb-1 block">
                 Quantidade
               </label>
               <Input
                 type="number"
-                min="1"
+                min={1}
                 value={quantidade}
                 onChange={(e) => setQuantidade(Number(e.target.value))}
                 className="w-full rounded-xs"
               />
             </div>
 
+            {/* Valor Unitário */}
             <div>
               <label className="text-sm text-gray-900 mb-1 block">
                 Valor Unitário
               </label>
               <Input
                 type="number"
-                min="0"
-                step="0.01"
+                min={0}
+                step={0.01}
                 value={valorUnitario}
                 onChange={(e) => setValorUnitario(Number(e.target.value))}
                 className="w-full rounded-xs"
               />
             </div>
 
+            {/* Desconto Unitário */}
             <div>
               <label className="text-sm text-gray-900 mb-1 block">
-                Desconto Unit.
+                Desconto Unitário
               </label>
               <Input
                 type="number"
-                min="0"
-                step="0.01"
+                min={0}
+                step={0.01}
                 value={descontoUnitario}
                 onChange={(e) => setDescontoUnitario(Number(e.target.value))}
                 className="w-full rounded-xs"
               />
             </div>
 
+            {/* Subtotal */}
             <div>
               <label className="text-sm text-gray-900 mb-1 block">
                 Subtotal
@@ -248,103 +280,154 @@ const GetProductsForm = () => {
               />
             </div>
 
+            {/* Botão Adicionar */}
             <div>
               <Button
                 onClick={addToCart}
                 disabled={!productId || quantidade <= 0}
-                className="w-full bg-red-900 hover:bg-red-800 text-white rounded-xs"
+                className="w-[12rem] bg-red-900 hover:bg-red-800 text-white rounded-xs"
               >
-                <Plus className="mr-2 h-4 w-4" /> Adicionar
+                <Plus /> Adicionar
               </Button>
             </div>
           </div>
 
           {/* Tabela de produtos */}
-          {tableItems.length > 0 && (
-            <div className="mt-6">
-              <h3 className="text-lg font-medium text-red-900 mb-2">
-                Itens Adicionados
-              </h3>
-              <div className="max-h-[20rem] overflow-y-auto border border-gray-200 rounded-xs">
-                <table className="w-full border-collapse max-h-[10rem]">
+          <div className="mt-6 p-2 border border-gray-200">
+            <h3 className="text-lg font-medium text-red-900 mb-2">
+              Itens Adicionados
+            </h3>
+
+            <div className="flex flex-col border border-gray-200 rounded-xs sm:h-45 2xl:max-h-64 overflow-hidden">
+              {/* Cabeçalho fixo */}
+              <div className="bg-gray-200/60">
+                <table className="w-full table-fixed">
                   <thead>
-                    <tr className="bg-gray-100">
-                      <th className="p-2 text-left text-sm font-medium text-gray-900">
+                    <tr>
+                      <th className="p-2 text-start text-sm font-medium text-gray-900">
                         Código
                       </th>
-                      <th className="p-2 text-left text-sm font-medium text-gray-900">
+                      <th className="p-2 text-start text-sm font-medium text-gray-900">
                         Produto
                       </th>
-                      <th className="p-2 text-center text-sm font-medium text-gray-900">
+                      <th className="p-2 text-start text-sm font-medium text-gray-900">
+                        Medida
+                      </th>
+                      <th className="p-2 text-start text-sm font-medium text-gray-900">
                         Qtd
                       </th>
-                      <th className="p-2 text-right text-sm font-medium text-gray-900">
+                      <th className="p-2 text-start text-sm font-medium text-gray-900">
                         Valor Unit.
                       </th>
-                      <th className="p-2 text-right text-sm font-medium text-gray-900">
+                      <th className="p-2 text-start text-sm font-medium text-gray-900">
                         Desconto
                       </th>
-                      <th className="p-2 text-right text-sm font-medium text-gray-900">
+                      <th className="p-2 text-start text-sm font-medium text-gray-900">
                         Subtotal
                       </th>
-                      <th className="p-2 text-center text-sm font-medium text-gray-900">
+                      <th className="p-2 text-start text-sm font-medium text-gray-900">
                         Ações
                       </th>
                     </tr>
                   </thead>
+                </table>
+              </div>
 
+              {/* Corpo da tabela */}
+              <div className="flex-1 overflow-y-auto">
+                <table className="w-full table-fixed">
                   <tbody>
-                    {tableItems.map((item) => (
-                      <tr key={item.id} className="border-b border-gray-200">
-                        <td className="p-2 text-sm text-gray-800">
-                          {item.produto.codigo}
-                        </td>
-                        <td className="p-2 text-sm text-gray-800">
-                          {item.produto.nome}
-                        </td>
-                        <td className="p-2 text-sm text-center text-gray-800">
-                          {item.quantidade}
-                        </td>
-                        <td className="p-2 text-sm text-right text-gray-800">
-                          {formatCurrency(item.valorUnitario)}
-                        </td>
-                        <td className="p-2 text-sm text-right text-gray-800">
-                          {formatCurrency(item.descontoUnitario)}
-                        </td>
-                        <td className="p-2 text-sm text-right font-medium text-gray-800">
-                          {formatCurrency(item.subtotal)}
-                        </td>
-                        <td className="p-2 text-center">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => removeCartItem(item.id)}
-                            className="text-gray-500 hover:text-red-800 hover:bg-red-50"
-                          >
-                            <Trash2 size={16} />
-                          </Button>
+                    {tableItems.length > 0 ? (
+                      tableItems.map((item) => (
+                        <tr key={item.id} className="border-b border-gray-200">
+                          <td className="p-2 text-sm text-start text-gray-800">
+                            {item.produto.codigo}
+                          </td>
+                          <td className="p-2 text-sm text-gray-800 text-start">
+                            {item.produto.nome}
+                          </td>
+                          <td className="p-2 text-sm text-gray-800 text-start pl-3">
+                            {item.produto.unidade}
+                          </td>
+                          <td className="p-2 text-sm text-gray-800 text-start pl-4">
+                            {item.quantidade}
+                          </td>
+                          <td className="p-2 text-sm text-gray-800 pl-4 text-start">
+                            {formatCurrency(item.valorUnitario)}
+                          </td>
+                          <td className="p-2 text-sm text-gray-800 pl-4 text-start">
+                            {formatCurrency(item.descontoUnitario)}
+                          </td>
+                          <td className="p-2 text-sm font-medium pl-5 text-gray-800 text-start">
+                            {formatCurrency(item.subtotal)}
+                          </td>
+                          <td className="p-2 text-start pl-6">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeTableItem(item.id)}
+                              className="text-gray-500 hover:text-red-900 hover:bg-red-50 "
+                            >
+                              <Trash2 size={16} />
+                            </Button>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={8}>
+                          <div className="w-full flex items-center justify-center h-32">
+                            <div className="flex items-center gap-x-2">
+                              <TriangleAlertIcon color="darkred" />
+                              <h1>Nenhum produto adicionado</h1>
+                            </div>
+                          </div>
                         </td>
                       </tr>
-                    ))}
-                    <tr className="bg-gray-50">
-                      <td colSpan={5} className="p-2 text-right font-medium">
-                        Total:
-                      </td>
-                      <td className="p-2 text-right font-bold text-red-900">
-                        {formatCurrency(
-                          tableItems.reduce(
-                            (sum, item) => sum + item.subtotal,
-                            0
-                          )
-                        )}
-                      </td>
-                      <td></td>
-                    </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
             </div>
-          )}
+
+            {/* Rodapé com totais */}
+            <div className="mt-2">
+              <table className="w-full table-fixed">
+                <tfoot>
+                  <tr className="pt-2 border-t border-gray-300">
+                    <td colSpan={7} className="p-2 text-right font-base">
+                      Quantidade de itens:
+                    </td>
+                    <td className="p-2 text-right text-gray-700 w-16">
+                      {tableTotalItems}
+                    </td>
+                  </tr>
+                  <tr className="flex items-center justify-end w-[172vh] 2xl:w-[174.75vh] mb-3">
+                    <td colSpan={7} className="p-2 text-right font-base">
+                      Frete:
+                    </td>
+                    <Input
+                      className="text-end text-gray-700 w-25 rounded-xs"
+                      type="number"
+                      placeholder="R$ 0,00"
+                      onChange={(e) => setFrete(Number(e.target.value))}
+                    ></Input>
+                  </tr>
+                  <tr className="text-center border-t border-b border-gray-300">
+                    <td
+                      colSpan={7}
+                      className="p-2.5 px-4 text-right font-semibold text-gray-700"
+                    >
+                      Total:
+                    </td>
+                    <td className="text-start font-bold text-gray-700 pr-6 text-nowrap">
+                      {"R$ " + calculateTotal()}
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
         </div>
       )}
     </>
