@@ -7,6 +7,7 @@ export interface ProductsInOrderProps {
   altura: number;
   largura: number;
   comprimento: number;
+  unidade: string;
   listImages: { imagem: string }[];
   selectedVariation: { id: string; nomeVariacao: string };
 }

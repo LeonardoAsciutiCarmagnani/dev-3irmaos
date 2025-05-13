@@ -551,6 +551,8 @@ const ClientOrdersTable = () => {
                                           {order.deliveryAddress.city}
                                         </span>
                                       </div>
+                                    </div>
+                                    <div>
                                       <div className="flex gap-2 items-center">
                                         <span className="font-semibold  text-gray-700">
                                           Estado:{" "}
@@ -579,10 +581,11 @@ const ClientOrdersTable = () => {
                               </div>
                               <div className="space-y-2 w-full border border-t-0">
                                 {/* Cabeçalho visível apenas em telas médias para cima */}
-                                <div className="hidden md:grid grid-cols-6 font-bold text-center border border-gray-700">
+                                <div className="hidden md:grid grid-cols-7 font-bold text-center border border-gray-700">
                                   <div className="col-span-2 text-base">
                                     Produto
                                   </div>
+                                  <div className="col-span-1 text-base">Un</div>
                                   <div className="col-span-1 text-base">
                                     Qtd
                                   </div>
@@ -600,7 +603,7 @@ const ClientOrdersTable = () => {
                                 {order.products?.map((item, index) => (
                                   <div
                                     key={index}
-                                    className="border-b p-2 flex flex-col md:grid md:grid-cols-6 md:items-center md:justify-center"
+                                    className="border-b p-2 flex flex-col md:grid md:grid-cols-7 md:items-center md:justify-center"
                                   >
                                     {/* Produto */}
                                     <div className="col-span-2">
@@ -621,7 +624,12 @@ const ClientOrdersTable = () => {
                                           : "Sob Medida"}
                                       </p>
                                     </div>
-
+                                    <div className="mt-2 md:mt-0 md:flex justify-center items-center text-sm md:text-base">
+                                      <span className="block md:hidden font-semibold">
+                                        Unidade:
+                                      </span>{" "}
+                                      {item.unidade}
+                                    </div>
                                     {/* Qtd */}
                                     <div className="mt-2 md:mt-0 md:flex justify-center items-center text-sm md:text-base">
                                       <span className="block md:hidden font-semibold">
@@ -681,17 +689,20 @@ const ClientOrdersTable = () => {
                                     </div>
 
                                     {/* Valor Total */}
-                                    <div className="mt-2 md:mt-0 text-sm md:text-base text-center">
+                                    <div className="text-center h-full flex flex-col  items-start justify-center gap-2 mt-2 md:mt-0 text-sm md:text-base ">
                                       <span className="block md:hidden font-semibold">
                                         Valor total:
                                       </span>
-                                      {(
-                                        item.preco * item.quantidade -
-                                        item.desconto
-                                      ).toLocaleString("pt-BR", {
-                                        style: "currency",
-                                        currency: "BRL",
-                                      })}
+                                      <span className="w-full">
+                                        {(item.desconto
+                                          ? item.preco * item.quantidade -
+                                            item.desconto
+                                          : item.preco * item.quantidade
+                                        ).toLocaleString("pt-BR", {
+                                          style: "currency",
+                                          currency: "BRL",
+                                        })}
+                                      </span>
                                     </div>
                                   </div>
                                 ))}
@@ -816,7 +827,7 @@ const ClientOrdersTable = () => {
                             {/* Imagens fornecidas pela 3 irmãos */}
                             <div className="flex flex-col gap-4">
                               <h1 className="font-semibold text-lg">
-                                Projeto (imagens ilustrativas)
+                                Imagens ilustrativas
                               </h1>
                               <div className="flex gap-2 overflow-x-auto p-2">
                                 {order.imagesUrls &&

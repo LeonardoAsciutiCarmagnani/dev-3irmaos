@@ -262,10 +262,10 @@ const DetailsOrder = ({
             </span>
             <span className="font-semibold">Atenciosamente,</span>
             <div className="flex gap-2">
-              <span>{selectedSeller.name}</span>-
-              <span>{selectedSeller.email}</span>
+              <span>{selectedSeller?.name}</span>-
+              <span>{selectedSeller?.email}</span>
             </div>
-            <span className="font-semibold">{selectedSeller.phone}</span>
+            <span className="font-semibold">{selectedSeller?.phone}</span>
           </div>
         </div>
       </div>

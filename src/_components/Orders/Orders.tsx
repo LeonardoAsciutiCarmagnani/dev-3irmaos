@@ -838,6 +838,9 @@ const OrdersTable = () => {
                                         {order.deliveryAddress.city}
                                       </span>
                                     </div>
+                                  </div>
+                                  <div>
+                                    {" "}
                                     <div className="flex gap-2 items-center">
                                       <span className="font-semibold  text-gray-700">
                                         Estado:{" "}
@@ -861,15 +864,13 @@ const OrdersTable = () => {
                             </div>
                           </DialogHeader>
                           <div>
-                            <div className="font-semibold text-lg">
-                              Produtos
-                            </div>
                             <table className="p-2 w-full border border-gray-300 overflow-y-scroll space-y-2">
                               <thead className="w-full border border-gray-500 ">
-                                <tr className="grid grid-cols-6 items-center text-center">
+                                <tr className="grid grid-cols-7 items-center text-center">
                                   <td className="col-span-2 font-bold">
                                     Produto
                                   </td>
+                                  <td className="col-span-1 font-bold">Un</td>
                                   <td className="col-span-1 font-bold">Qtd</td>
                                   <td className="col-span-1 font-bold">
                                     Desconto
@@ -890,7 +891,7 @@ const OrdersTable = () => {
                                         key={item.id}
                                         className="flex flex-col rounded-xs w-full border-b border-gray-300 last:border-b-0"
                                       >
-                                        <td className=" grid grid-cols-6 items-center  justify-around  px-2  w-full">
+                                        <td className=" grid grid-cols-7 items-center  justify-around  px-2  w-full">
                                           {/* Produto */}
                                           <div className=" flex flex-col col-span-2">
                                             <span className="flex-1 text-lg text-gray-700">
@@ -927,6 +928,9 @@ const OrdersTable = () => {
                                                 </span>
                                               )}
                                             </div>
+                                          </div>
+                                          <div className="flex text-lg text-gray-700 items-center justify-center text-center h-full">
+                                            <span>{item.unidade}</span>
                                           </div>
                                           <div className="flex text-lg text-gray-700 items-center justify-center text-center h-full">
                                             <span>{item.quantidade} x </span>
