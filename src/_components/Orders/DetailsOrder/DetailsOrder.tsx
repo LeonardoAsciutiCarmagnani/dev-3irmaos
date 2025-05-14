@@ -52,14 +52,14 @@ const DetailsOrder = ({
   const [total, setTotal] = useState(propostalValue);
 
   const [selectedSeller, setSelectedSeller] = useState({
-    name: detailsPropostal?.selectedSeller.name
-      ? detailsPropostal?.selectedSeller.name
+    name: detailsPropostal?.selectedSeller?.name
+      ? detailsPropostal?.selectedSeller?.name
       : "",
-    phone: detailsPropostal?.selectedSeller.phone
-      ? detailsPropostal?.selectedSeller.phone
+    phone: detailsPropostal?.selectedSeller?.phone
+      ? detailsPropostal?.selectedSeller?.phone
       : "",
-    email: detailsPropostal?.selectedSeller.email
-      ? detailsPropostal?.selectedSeller.email
+    email: detailsPropostal?.selectedSeller?.email
+      ? detailsPropostal?.selectedSeller?.email
       : "",
   });
 
