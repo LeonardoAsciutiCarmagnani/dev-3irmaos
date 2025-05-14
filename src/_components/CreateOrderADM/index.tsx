@@ -282,7 +282,7 @@ const CreateOrderADM = () => {
         </div>
       </div>
 
-      <div className="flex items-center gap-x-2 justify-start w-[180vh]">
+      <div className="flex items-center gap-x-2 justify-end w-[180vh]">
         <Button
           type="reset"
           className="bg-red-800 rounded-xs"

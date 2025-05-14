@@ -4,9 +4,9 @@ import { Toaster } from "@/components/ui/sonner";
 
 const LayoutPage = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="bg-white flex flex-col h-full w-full overflow-x-hidden overflow-y-auto">
+    <div className="bg-white flex flex-col h-full w-full overflow-hidden">
       <Header />
-      <div className="flex flex-1 max-h-full">
+      <div className="flex flex-1 h-full">
         <div className="hidden md:flex">
           <Sidebar />
         </div>

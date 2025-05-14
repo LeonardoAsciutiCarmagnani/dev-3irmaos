@@ -32,7 +32,7 @@ const Home = () => {
         "https://hiper-gestao.s3.amazonaws.com/88f64a86-0b27-41c2-beba-076650f8ee25/imagem-de-produto/4e2eb499-669a-4703-aaaa-4f954b5ec039/original.jpeg",
     },
     {
-      label: "Portas Pronta Entrega ",
+      label: "Portas Pronta Entrega",
       imageUrl:
         "https://hiper-gestao.s3.amazonaws.com/88f64a86-0b27-41c2-beba-076650f8ee25/imagem-de-produto/ecf0a448-f699-43d6-8a3c-a3c4c4cd2e0a/original.jpeg",
     },
@@ -52,7 +52,7 @@ const Home = () => {
             className="relative group overflow-hidden rounded-xs shadow-md hover:shadow-xl transition-shadow duration-300"
           >
             <Link
-              to={`/produtos?c=${categoria.label}`}
+              to={`/produtos?c=${categoria.label.toLowerCase()}`}
               className="block w-full h-full text-center text-gray-800 hover:text-white"
             >
               <div className="relative w-full aspect-square h-full">
