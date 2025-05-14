@@ -40,6 +40,7 @@ const createBudgetSchema = z.object({
       largura: z.number().min(1, "Largura deve ser maior que 0."),
       // comprimento: z.number().min(1, "Comprimento deve ser maior que 0."),
       categoria: z.string({ message: "Categoria obrigatória." }).nullable(),
+      unidade: z.string().optional(),
       preco: z.number({ message: "Preço obrigatório." }),
       selectedVariation: z.object({
         id: z.string({ message: "ID da variação obrigatória." }),
