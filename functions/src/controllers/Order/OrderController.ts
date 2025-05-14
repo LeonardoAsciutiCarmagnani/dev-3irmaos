@@ -40,8 +40,9 @@ const createBudgetSchema = z.object({
       largura: z.number().min(1, "Largura deve ser maior que 0."),
       // comprimento: z.number().min(1, "Comprimento deve ser maior que 0."),
       categoria: z.string({ message: "Categoria obrigatória." }).nullable(),
-      unidade: z.string().optional(),
+      unidade: z.string({ message: "Unidade obrigatória." }),
       preco: z.number({ message: "Preço obrigatório." }),
+      desconto: z.number().optional().nullable(),
       selectedVariation: z.object({
         id: z.string({ message: "ID da variação obrigatória." }),
         nomeVariacao: z.string({ message: "Nome da variação obrigatória." }),
@@ -57,11 +58,20 @@ const createBudgetSchema = z.object({
       time: z.string().optional(),
       seller: z.string().optional(),
       sellerPhone: z.string().optional(),
+      selectedSeller: z
+        .object({
+          email: z.string(),
+          name: z.string(),
+          phone: z.string(),
+        })
+        .nullable()
+        .optional(),
     })
     .nullable()
     .optional(),
   createdAt: z.string().optional(),
   orderStatus: z.number(),
+
   totalValue: z.number().min(0, "Valor total inválido."),
 });
 
@@ -121,8 +131,14 @@ const createOrderSchema = z.object({
       payment: z.string().optional(),
       delivery: z.number().optional(),
       time: z.string().optional(),
-      seller: z.string().optional(),
-      sellerPhone: z.string().optional(),
+      selectedSeller: z
+        .object({
+          email: z.string(),
+          name: z.string(),
+          phone: z.string(),
+        })
+        .optional()
+        .nullable(),
     })
     .nullable()
     .optional(),
