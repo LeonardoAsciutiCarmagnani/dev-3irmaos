@@ -8,6 +8,7 @@ import env from "./config/env";
 import { ProductController } from "./controllers/Product/productController";
 import { UserController } from "./controllers/User/UserController";
 import { OrderController } from "./controllers/Order/OrderController";
+import { CreateAdmin } from "./services/User/createAdmin";
 
 const errorHandler = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -75,6 +76,7 @@ class App {
     // router.post("/check-email", UserController.checkEmail);
     router.post("/post-order", OrderController.postOrderInHiper);
     router.post("/post-budget", OrderController.createBudget);
+    router.post("/create-adm", CreateAdmin.execute);
     // router.post("/find-CEP", CEPController.getCEP);
     // //PUT ROUTES
     // router.put("/prices-lists/:id", PricesListsController.putPriceListById);
