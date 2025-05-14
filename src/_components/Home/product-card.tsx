@@ -20,7 +20,7 @@ const ProductCard = (Product: Product) => {
         <div className="relative inline-block w-full">
           <ImageCarousel images={CarouselImages} />
           <Badge className="text-green-500 font-semibold text-sm bg-gray-900 rounded-xs absolute bottom-[-0.45rem] left-1/2 transform -translate-x-1/2 z-[100]">
-            <span>Consultar valores</span>
+            <span>Valor sob consulta</span>
           </Badge>
         </div>
 
