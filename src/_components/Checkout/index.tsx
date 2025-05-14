@@ -358,24 +358,6 @@ export const Checkout = () => {
             </div>
 
             <div className="flex flex-col space-y-2 justify-between border border-gray-200 bg-gray-50 rounded-xs p-4 w-full md:w-lg">
-              {/*  <Select
-                onValueChange={(e) => setpaymentMethodSelected(JSON.parse(e))}
-              >
-                <SelectTrigger className="w-[210px] bg-gray-50">
-                  <SelectValue placeholder="Métodos de pagamento" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Métodos de pagamento:</SelectLabel>
-                    {clientPaymentMethods.map((method) => (
-                      <SelectItem value={JSON.stringify(method)}>
-                        {method.name}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select> */}
-
               <div className="flex flex-col items-center justify-between p-2">
                 <div className="flex items-center justify-between p-2 w-full">
                   <span className="text-lg font-semibold">A partir de: </span>

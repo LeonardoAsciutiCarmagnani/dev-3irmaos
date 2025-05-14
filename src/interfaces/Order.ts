@@ -3,9 +3,11 @@ export interface ProductsInOrderProps {
   nome: string;
   quantidade: number;
   preco: number;
+  desconto: number;
   altura: number;
   largura: number;
   comprimento: number;
+  unidade: string;
   listImages: { imagem: string }[];
   selectedVariation: { id: string; nomeVariacao: string };
 }
@@ -36,11 +38,16 @@ interface IPaymentMethod {
   id: string;
   name: string;
 }
-interface DetailsPropostalProps {
+export interface DetailsPropostalProps {
   obs: string;
   payment: string;
   time: string;
   delivery: number;
+  selectedSeller: {
+    name: string;
+    phone: string;
+    email: string;
+  };
 }
 export interface Order {
   id: number;
@@ -52,6 +59,8 @@ export interface Order {
   idOrderHiper: string;
   orderStatus: number;
   totalValue: number;
+  totalDiscount: number;
+  discountTotalValue: number;
   createdAt: string;
   paymentMethod?: IPaymentMethod;
   detailsPropostal: DetailsPropostalProps;
