@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 import { Button } from "@/components/ui/button";
-import { LoaderCircle, Download } from "lucide-react";
+import { LoaderCircle } from "lucide-react";
 import { Order } from "@/interfaces/Order";
 import logo from "@/assets/logo_3irmaos.png";
 import { IMaskInput } from "react-imask";
@@ -11,8 +11,6 @@ export const PDFPedido = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const {
     id,
     client,
@@ -64,84 +62,6 @@ export const PDFPedido = () => {
     setLoading(false);
   }
 
-  // Função para gerar PDF e fazer upload para o Firebase Storage
-  const generatePDFAndUpload = async () => {
-    try {
-      setIsGeneratingPDF(true);
-
-      if (!contentRef.current) {
-        console.error("Content ref is null");
-        setIsGeneratingPDF(false);
-        return;
-      }
-
-      // Capturar o conteúdo como imagem usando html2canvas
-      const canvas = await html2canvas(contentRef.current, {
-        scale: 2, // Melhor qualidade
-        useCORS: true, // Para permitir imagens de outras origens
-        logging: false,
-        windowWidth: contentRef.current.scrollWidth,
-        windowHeight: contentRef.current.scrollHeight,
-      });
-
-      // Criar um PDF no formato A4
-      const pdf = new jsPDF({
-        orientation: "portrait",
-        unit: "mm",
-        format: "a4",
-      });
-
-      // Dimensões da página A4 em mm (210 x 297)
-      const imgWidth = 210;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-      // Adicionar a imagem ao PDF
-      const imgData = canvas.toDataURL("image/jpeg", 1.0);
-      pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight);
-
-      // Se o conteúdo for maior que uma página, adicionar mais páginas
-      let heightLeft = imgHeight;
-      let position = 0;
-
-      // Necessário apenas se o conteúdo for maior que uma página A4
-      while (heightLeft > 297) {
-        position = heightLeft - 297;
-        pdf.addPage();
-        pdf.addImage(imgData, "JPEG", 0, -position, imgWidth, imgHeight);
-        heightLeft -= 297;
-      }
-
-      // Converter o PDF para Base64
-      const pdfBase64 = pdf.output("datauristring");
-
-      // Fazer upload para o Firebase Storage
-      const storage = getStorage();
-      const storageRef = ref(storage, `pedidos/pedido_${id}_${Date.now()}.pdf`);
-
-      // Upload do PDF como string Base64
-      await uploadString(storageRef, pdfBase64, "data_url");
-
-      // Obter a URL de download
-      const downloadUrl = await getDownloadURL(storageRef);
-
-      // Salvar a URL no estado
-      setPdfUrl(downloadUrl);
-      setIsGeneratingPDF(false);
-
-      console.log("PDF gerado e enviado com sucesso");
-    } catch (error) {
-      console.error("Erro ao gerar ou fazer upload do PDF:", error);
-      setIsGeneratingPDF(false);
-    }
-  };
-
-  // Função para download do PDF
-  const handlePdfDownload = () => {
-    if (pdfUrl) {
-      window.open(pdfUrl, "_blank");
-    }
-  };
-
   return (
     <div className="flex text-start w-full items-center justify-center p-4 ">
       <div className="flex flex-col  w-full items-center justify-center ">
@@ -149,37 +69,16 @@ export const PDFPedido = () => {
           <Button className="mb-10" onClick={() => handlingPrintPage()}>
             {loading ? (
               <>
-                <LoaderCircle className="mr-2 animate-spin" /> Imprimindo...
+                <LoaderCircle /> Imprimindo...
               </>
             ) : (
               "Imprimir"
             )}
           </Button>
-
-          {!pdfUrl ? (
-            <Button
-              className="mb-10"
-              onClick={generatePDFAndUpload}
-              disabled={isGeneratingPDF}
-            >
-              {isGeneratingPDF ? (
-                <>
-                  <LoaderCircle className="mr-2 animate-spin" /> Gerando PDF...
-                </>
-              ) : (
-                "Gerar PDF"
-              )}
-            </Button>
-          ) : (
-            <Button className="mb-10" onClick={handlePdfDownload}>
-              <Download className="mr-2" /> Baixar PDF
-            </Button>
-          )}
-
           <Button className="mb-10" onClick={() => navigate(-1)}>
             {loading ? (
               <>
-                <LoaderCircle className="mr-2 animate-spin" /> Voltando...
+                <LoaderCircle /> Voltando...
               </>
             ) : (
               "Voltar"
