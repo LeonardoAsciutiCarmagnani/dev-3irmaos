@@ -548,20 +548,12 @@ const ClientOrdersTable = () => {
                                           Cidade:
                                         </span>
                                         <span className="text-lg  text-gray-700 ">
-                                          {order.deliveryAddress.city}
+                                          {order.deliveryAddress.city} /{" "}
+                                          {order.deliveryAddress.state}
                                         </span>
                                       </div>
                                     </div>
                                     <div>
-                                      <div className="flex gap-2 items-center">
-                                        <span className="font-semibold  text-gray-700">
-                                          Estado:{" "}
-                                        </span>
-                                        <span className="  text-gray-700">
-                                          {" "}
-                                          {order.deliveryAddress.state}
-                                        </span>
-                                      </div>
                                       <div className="flex gap-2 items-center">
                                         <span className="font-semibold  text-gray-700">
                                           CEP:
@@ -809,7 +801,10 @@ const ClientOrdersTable = () => {
                                     onFileSelect={handleImagesSelected}
                                   />
                                   <Button
-                                    disabled={sendPropostal}
+                                    disabled={
+                                      sendPropostal ||
+                                      selectedImages.length === 0
+                                    }
                                     onClick={() => handlePushNewImages(order)}
                                   >
                                     {sendPropostal ? (
@@ -855,7 +850,7 @@ const ClientOrdersTable = () => {
                                   statusOrder={order.orderStatus}
                                   detailsPropostal={order.detailsPropostal}
                                   getAllData={handleAllData}
-                                  propostalValue={order?.totalValue}
+                                  propostalValue={order?.discountTotalValue}
                                 />
                               </div>
                             )}
