@@ -9,7 +9,7 @@ import { productsContext } from "@/context/productsContext";
 import {
   CircleUserIcon,
   FileBoxIcon,
-  HomeIcon,
+  // HomeIcon,
   Minus,
   ScrollTextIcon,
   Trash2,
@@ -27,13 +27,14 @@ const Header = () => {
 
   return (
     <div className="flex justify-around items-center border-b border-gray-200 w-screen ">
-      <Link to="/" className="flex md:hidden">
+      {/* <Link to="/" className="flex md:hidden">
         <HomeIcon className="font-bold text-gray-800" />
-      </Link>
+      </Link> */}
       <img
         src="/src/assets/logo_3irmaos.png"
         alt="3 Irmãos"
-        className="w-[8rem]"
+        className="w-[8rem] hover:cursor-pointer"
+        onClick={() => navigate("/")}
       />
 
       <div className="flex items-center justify-center gap-x-6 p-1 w-[8rem]">

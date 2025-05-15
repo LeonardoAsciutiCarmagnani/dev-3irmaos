@@ -9,12 +9,12 @@ import {
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 const categorias = [
-  "Portas, Vitrais e Grades Antigas",
+  "Antiguidades",
   "Janelas e Esquadrias",
-  "Assoalhos, Deck, Escada e Forro",
-  "Portas Duplas, Pivotantes e Internas",
+  "Assoalhos, Escadas, Decks e Forros",
+  "Portas Sob Medida",
   "Portas Pronta Entrega",
-  "Moveis, Painéis e Bancadas",
+  "Bancadas, Móveis e Painéis",
 ];
 
 export function RouteSelect() {
@@ -43,7 +43,7 @@ export function RouteSelect() {
   return (
     <div className="mb-2 flex items-center justify-center w-full md:hidden">
       <Select value={value} onValueChange={handleValueChange}>
-        <SelectTrigger className="hover:cursor-default w-full max-w-xs text-center rounded-none font-semibold border-2 border-red-900 shadow-sm shadow-gray-200 text-red-900 focus:outline-none focus:ring-0 focus:ring-offset-0">
+        <SelectTrigger className="hover:cursor-default w-full max-w-xs text-center rounded-none font-semibold border-2 border-red-900 shadow-sm shadow-gray-200 text-gray-700 focus:outline-none focus:ring-0 focus:ring-offset-0">
           <SelectValue
             placeholder="Selecione uma categoria"
             className="hover:cursor-default"

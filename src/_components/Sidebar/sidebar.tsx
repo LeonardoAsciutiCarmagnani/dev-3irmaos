@@ -8,9 +8,11 @@ import { useAuthStore } from "@/context/authContext";
 import {
   ArrowRight,
   CircleIcon,
+  FilePlus2Icon,
   Home,
   PackageSearchIcon,
   ScrollTextIcon,
+  UserIcon,
 } from "lucide-react";
 import React, { useEffect } from "react";
 import { useState } from "react";
@@ -33,11 +35,21 @@ const Sidebar = () => {
   ];
 
   const adminMenuItems = [
-    { label: "Home", path: "/", icon: <Home className="size-6" /> },
+    // { label: "Home", path: "/", icon: <Home className="size-6" /> },
     {
       label: "Orçamentos",
       path: "/adm/pedidos-e-orçamentos",
       icon: <ScrollTextIcon className="text-red-900 size-6" />,
+    },
+    {
+      label: "Clientes",
+      path: "/adm/clientes",
+      icon: <UserIcon className="text-red-900 size-6" />,
+    },
+    {
+      label: "Criar orçamento",
+      path: "/adm/criar-orçamento",
+      icon: <FilePlus2Icon className="text-red-900 size-6" />,
     },
   ];
 
@@ -51,13 +63,12 @@ const Sidebar = () => {
   }, [user]);
 
   const categorias = [
-    "Portas, Vitrais e Grades Antigas",
+    "Antiguidades",
     "Janelas e Esquadrias",
-    "Assoalhos, Deck, Escada e Forro",
-    "Portas Duplas, Pivotantes e Internas",
+    "Assoalhos, Escadas, Decks e Forros",
+    "Portas Sob Medida",
     "Portas Pronta Entrega",
-    "Moveis, Painéis e Bancadas",
-    "Outros",
+    "Bancadas, Móveis e Painéis",
   ];
 
   useEffect(() => {

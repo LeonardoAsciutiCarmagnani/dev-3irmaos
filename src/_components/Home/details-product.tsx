@@ -169,7 +169,7 @@ export const DetailsProduct = () => {
               </CarouselContent>
             </Carousel>
             <div className="text-center line-clamp-2 p-2 bg-white rounded-xs px-4">
-              <span className="text-sm md:text-md font-semibold text-gray-800">
+              <span className="text-sm md:text-md font-normal text-gray-800">
                 {product.nome}
               </span>
             </div>
