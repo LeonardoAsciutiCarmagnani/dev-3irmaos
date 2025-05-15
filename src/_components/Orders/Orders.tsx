@@ -75,6 +75,8 @@ const OrdersTable = () => {
     phone: "",
     email: "",
   });
+  const [itemsIncluded, setItemsIncluded] = useState("");
+  const [itemsNotIncluded, setItemsNotIncluded] = useState("");
 
   const [localDiscounts, setLocalDiscounts] = useState<Record<string, string>>(
     {}
@@ -151,13 +153,17 @@ const OrdersTable = () => {
     payment: string,
     time: string,
     delivery: number,
-    selectedSeller: { name: string; phone: string; email: string }
+    selectedSeller: { name: string; phone: string; email: string },
+    itemsIncluded: string,
+    itemsNotIncluded: string
   ) {
     setObs(obs);
     setPayment(payment);
     setTime(time);
     setDelivery(delivery);
     setSelectedSeller(selectedSeller);
+    setItemsIncluded(itemsIncluded);
+    setItemsNotIncluded(itemsNotIncluded);
     return { obs, payment, time, delivery, selectedSeller };
   }
 
@@ -378,10 +384,20 @@ const OrdersTable = () => {
           return sum + (product.totalValue || 0);
         }, 0);
 
+        const totalDiscount = updatedProducts.reduce((sum, product) => {
+          return sum + product.desconto;
+        }, 0);
+
+        const discountTotalValue = updatedProducts.reduce((sum, product) => {
+          return sum + product.preco - product.desconto;
+        }, 0);
+
         return {
           ...order,
           products: updatedProducts,
           totalValue: orderTotal,
+          totalDiscount,
+          discountTotalValue,
         };
       });
 
@@ -450,7 +466,15 @@ const OrdersTable = () => {
         orderStatus: 2,
         products: updatedPriceInProduct,
         imagesUrls: allImages,
-        detailsPropostal: { obs, payment, time, delivery, selectedSeller },
+        detailsPropostal: {
+          obs,
+          payment,
+          time,
+          delivery,
+          selectedSeller,
+          itemsIncluded,
+          itemsNotIncluded,
+        },
         totalValue: orderToPush.totalValue,
       });
 
@@ -887,7 +911,7 @@ const OrdersTable = () => {
                                   <td className="col-span-1 font-bold">Un</td>
                                   <td className="col-span-1 font-bold">Qtd</td>
                                   <td className="col-span-1 font-bold">
-                                    Desconto
+                                    Desconto Unitário
                                   </td>
                                   <td className="col-span-1 font-bold">
                                     Valor unitário

@@ -40,6 +40,8 @@ interface IPaymentMethod {
 }
 export interface DetailsPropostalProps {
   obs: string;
+  itemsIncluded: string;
+  itemsNotIncluded: string;
   payment: string;
   time: string;
   delivery: number;

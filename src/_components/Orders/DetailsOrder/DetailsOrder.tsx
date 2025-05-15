@@ -13,6 +13,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useAuthStore } from "@/context/authContext";
 import { DetailsPropostalProps } from "@/interfaces/Order";
+import { Check, CircleUser, Globe, Instagram, Mail, Phone } from "lucide-react";
 import { useEffect, useState } from "react";
 import { IMaskInput } from "react-imask";
 
@@ -25,7 +26,9 @@ interface IDetailsOrder {
     payment: string,
     time: string,
     delivery: number,
-    sellectedSeller: { name: string; phone: string; email: string }
+    sellectedSeller: { name: string; phone: string; email: string },
+    itemsIncluded: string,
+    itemsNotIncluded: string
   ) => void;
 }
 
@@ -63,6 +66,15 @@ const DetailsOrder = ({
       : "",
   });
 
+  const [itemsIncluded, setItemsIncluded] = useState(
+    detailsPropostal?.itemsIncluded ? detailsPropostal?.itemsIncluded : ""
+  );
+  const [itemsNotIncluded, setItemsNotIncluded] = useState(
+    detailsPropostal?.itemsNotIncluded ? detailsPropostal?.itemsNotIncluded : ""
+  );
+
+  const [open, setOpen] = useState(false);
+
   const sellersList = [
     {
       name: "Regiane Oliveira",
@@ -83,7 +95,9 @@ const DetailsOrder = ({
       paymentMethod,
       deliveryTime,
       deliveryValue,
-      selectedSeller
+      selectedSeller,
+      itemsIncluded,
+      itemsNotIncluded
     );
   }, [
     total,
@@ -93,6 +107,8 @@ const DetailsOrder = ({
     deliveryTime,
     deliveryValue,
     selectedSeller,
+    itemsIncluded,
+    itemsNotIncluded,
     getAllData,
   ]);
 
@@ -115,6 +131,34 @@ const DetailsOrder = ({
                   value={description}
                   onChange={(e) => {
                     setDescription(e.target.value);
+                  }}
+                  className="bg-white"
+                />
+              </div>
+              <div className="flex flex-col gap-2 w-1/2">
+                <label htmlFor="itemsInclusos" className="font-semibold">
+                  Itens inclusos:
+                </label>
+                <Textarea
+                  id="itemsInclusos"
+                  disabled={statusOrder > 1}
+                  value={itemsIncluded}
+                  onChange={(e) => {
+                    setItemsIncluded(e.target.value);
+                  }}
+                  className="bg-white"
+                />
+              </div>
+              <div className="flex flex-col gap-2 w-1/2">
+                <label htmlFor="itemsNaoInclusos" className="font-semibold">
+                  Itens não incluídos:
+                </label>
+                <Textarea
+                  id="itemsNaoInclusos"
+                  disabled={statusOrder > 1}
+                  value={itemsNotIncluded}
+                  onChange={(e) => {
+                    setItemsNotIncluded(e.target.value);
                   }}
                   className="bg-white"
                 />
@@ -172,7 +216,7 @@ const DetailsOrder = ({
                 />
               </div>
 
-              <Popover>
+              <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                   <div
                     className={`${
@@ -187,7 +231,10 @@ const DetailsOrder = ({
                 <PopoverContent className="space-y-2">
                   {sellersList.map((seller) => (
                     <div
-                      onClick={() => setSelectedSeller(seller)}
+                      onClick={() => {
+                        setSelectedSeller(seller);
+                        setOpen(false);
+                      }}
                       className="border rounded-xs p-2 w-fit font-semibold hover:border-black hover:ring-1 hover:cursor-pointer"
                     >
                       {seller.name}
@@ -215,6 +262,28 @@ const DetailsOrder = ({
               )}
             </div>
           </div>
+          {itemsIncluded !== "" && (
+            <div className="flex flex-col items-start   max-w-full  text-wrap">
+              <span className=" font-semibold text-lg">Itens inclusos:</span>
+              <div className="w-full px-5">
+                <p className="flex    text-start whitespace-pre-wrap break-words">
+                  {itemsIncluded}
+                </p>
+              </div>
+            </div>
+          )}
+          {itemsNotIncluded !== "" && (
+            <div className="flex flex-col items-start   max-w-full  text-wrap">
+              <span className=" font-semibold text-lg text-red-500">
+                Itens não incluídos:
+              </span>
+              <div className="w-full px-5">
+                <p className="flex  text-red-500 text-start whitespace-pre-wrap break-words">
+                  {itemsNotIncluded}
+                </p>
+              </div>
+            </div>
+          )}
           <div className="flex flex-col items-start justify-between ">
             <span className=" font-semibold text-lg">
               Facilidade no pagamento e agilidade na entrega:
@@ -243,35 +312,60 @@ const DetailsOrder = ({
               </li>
             </div>
           </div>
-          <div className="flex flex-col items-start justify-between">
-            <span className=" font-bold text-lg">
+          <div className="flex flex-col items-start justify-between ">
+            <span className="font-bold text-lg">
               Por que escolher a 3 Irmãos Arte em Madeira de Demolição ?
             </span>
-            <div className="px-5">
-              <li>
+            <div className="px-3">
+              <ul className="flex gap-2">
+                <Check color="green" />
                 Mais de 40 anos de experiência, garantindo qualidade e
                 compromisso.
-              </li>
-              <li>Madeira nobre e sustentável, com excelente durabilidade.</li>
-              <li>Acabamento exclusivo, agregando valor ao seu imóvel.</li>
-              <li>
+              </ul>
+              <ul className="flex gap-2">
+                <Check color="green" />
+                Madeira nobre e sustentável, com excelente durabilidade.
+              </ul>
+              <ul className="flex gap-2">
                 {" "}
+                <Check color="green" /> Acabamento exclusivo, agregando valor ao
+                seu imóvel.
+              </ul>
+              <ul className="flex gap-2">
+                <Check color="green" />
                 Atendimento especializado, acompanhando cada etapa do seu
                 projeto.
-              </li>
+              </ul>
             </div>
           </div>
-          <div className="flex flex-col items-start justify-between">
+          <div className="flex flex-col items-start justify-between space-y-3">
             <span className=" font-semibold">
               {" "}
-              Vamos conversar e alinhar os próximos passos?
+              📞 Vamos conversar e alinhar os próximos passos?
             </span>
             <span className="font-semibold">Atenciosamente,</span>
-            <div className="flex gap-2">
-              <span>{selectedSeller?.name}</span>-
-              <span>{selectedSeller?.email}</span>
+            <div className="flex flex-col gap-2 font-semibold">
+              <span className="flex gap-2">
+                <CircleUser />
+                {selectedSeller.name === undefined ? "" : selectedSeller.name}
+              </span>
+              <span className="flex gap-2">
+                <Mail />
+                {selectedSeller.email === undefined ? "" : selectedSeller.email}
+              </span>
+              <span className="flex gap-2 font-semibold">
+                <Phone />
+                {selectedSeller.phone === undefined ? "" : selectedSeller.phone}
+              </span>
+              <span className="flex gap-2 font-semibold">
+                <Instagram />
+                3irmaosmadeirademolicao
+              </span>
+              <span className="flex gap-2 font-semibold">
+                <Globe />
+                3irmaosmadeirademolicao.com.br
+              </span>
             </div>
-            <span className="font-semibold">{selectedSeller?.phone}</span>
           </div>
         </div>
       </div>

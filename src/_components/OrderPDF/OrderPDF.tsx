@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import {
   Check,
   CircleUser,
+  Download,
   Globe,
   Instagram,
   LoaderCircle,
@@ -217,10 +218,10 @@ export const PDFPedido = () => {
               </div>
             </div>
             <span className="text-md">
-              Prezada (o), {client.name} Obrigado pelo interesse na 3 Irmãos.
-              Trabalhamos com madeira de demolição nobre, com peças feitas sob
-              medida e acabamento artesanal. Abaixo seguem os detalhes do
-              orçamento solicitado. Qualquer ajuste, é só me chamar.
+              Prezada (o), {client.name} <br /> Obrigado pelo interesse na 3
+              Irmãos. Trabalhamos com madeira de demolição nobre, com peças
+              feitas sob medida e acabamento artesanal. Abaixo seguem os
+              detalhes do orçamento solicitado. Qualquer ajuste, é só me chamar.
             </span>
           </div>
           {/* Produtos */}
@@ -237,13 +238,13 @@ export const PDFPedido = () => {
                   <th className="px-2 py-2 border border-gray-500 font-bold text-center w-[40px]">
                     Qtd
                   </th>
-                  <th className="px-2 py-2 border border-gray-500 font-bold text-center w-[150px]">
+                  <th className="px-2 py-2 border border-gray-500 font-bold text-center w-[100px]">
                     Desconto
                   </th>
-                  <th className="px-2 py-2 border border-gray-500 font-bold text-center w-[150px]">
+                  <th className="px-2 py-2 border border-gray-500 font-bold text-center w-[100px]">
                     Valor unitário
                   </th>
-                  <th className="px-2 py-2 border border-gray-500 font-bold text-center w-[150px]">
+                  <th className="px-2 py-2 border border-gray-500 font-bold text-center w-[100px]">
                     Valor total
                   </th>
                 </tr>
@@ -255,10 +256,11 @@ export const PDFPedido = () => {
                       <tr key={item.id}>
                         <td className="px-2 py-2 border  align-top">
                           <div className="text-gray-800">{item.nome}</div>
-                          {/*   <div className="text-gray-600">
-                            {item.selectedVariation.nomeVariacao}
-                          </div> */}
-                          <div className="text-xs text-gray-500 flex gap-2">
+
+                          <div className="text-sm text-gray-500 flex gap-2">
+                            <span className="text-red-900">
+                              {item.selectedVariation.nomeVariacao}
+                            </span>
                             <span>Altura: {item.altura}m</span>
                             <span>Largura: {item.largura}m</span>
                           </div>
@@ -381,7 +383,7 @@ export const PDFPedido = () => {
                         key={index}
                         src={image}
                         alt="Imagem fornecida pela 3 irmãos"
-                        className="size-[40rem] border rounded-lg hover:scale-105 transition-all duration-300"
+                        className="size-[30rem] border rounded-lg hover:scale-105 transition-all duration-300"
                       />
                     ))
                   ) : (
@@ -396,7 +398,7 @@ export const PDFPedido = () => {
                         key={index}
                         src={image}
                         alt="Imagem fornecida pela 3 irmãos"
-                        className="size-96 border rounded-lg hover:scale-105 transition-all duration-300"
+                        className="size-[30rem] border rounded-lg hover:scale-105 transition-all duration-300"
                       />
                     ))
                   ) : (
@@ -413,7 +415,7 @@ export const PDFPedido = () => {
               Projeto (imagens ilustrativas)
             </h1>
             {imagesUrls.length > 1 ? (
-              <div className="grid grid-cols-2  justify-center items-center gap-2 py-2  flex-wrap">
+              <div className="grid grid-cols-2 justify-center items-center  py-2 gap-2 flex-wrap">
                 {imagesUrls && imagesUrls.length > 0 ? (
                   imagesUrls
                     .map((image, index) => ({ image, index }))
@@ -423,7 +425,7 @@ export const PDFPedido = () => {
                         key={index}
                         src={image}
                         alt="Imagem fornecida pela 3 irmãos"
-                        className="size-[40rem] border rounded-lg hover:scale-105 transition-all duration-300"
+                        className="size-[30rem] border  rounded-lg hover:scale-105 transition-all duration-300"
                       />
                     ))
                 ) : (
@@ -441,7 +443,7 @@ export const PDFPedido = () => {
                         key={index}
                         src={image}
                         alt="Imagem fornecida pela 3 irmãos"
-                        className="size-[40rem] border rounded-lg hover:scale-105 transition-all duration-300"
+                        className="size-[30rem] border rounded-lg hover:scale-105 transition-all duration-300"
                       />
                     ))
                 ) : (
@@ -468,6 +470,30 @@ export const PDFPedido = () => {
                   )}
                 </div>
               </div>
+              {detailsPropostal.itemsIncluded !== "" && (
+                <div className="flex flex-col items-start   max-w-full  text-wrap">
+                  <span className=" font-semibold text-lg ">
+                    Itens incluídos:
+                  </span>
+                  <div className="w-full px-5">
+                    <p className="flex   text-start whitespace-pre-wrap break-words">
+                      {detailsPropostal.itemsIncluded}
+                    </p>
+                  </div>
+                </div>
+              )}
+              {detailsPropostal.itemsNotIncluded !== "" && (
+                <div className="flex flex-col items-start   max-w-full  text-wrap">
+                  <span className=" font-semibold text-lg text-red-500">
+                    Itens não incluídos:
+                  </span>
+                  <div className="w-full px-5">
+                    <p className="flex  text-red-500 text-start whitespace-pre-wrap break-words">
+                      {detailsPropostal.itemsIncluded}
+                    </p>
+                  </div>
+                </div>
+              )}
               <div className="flex flex-col items-start justify-between">
                 <span className="font-semibold text-lg">
                   Facilidade no pagamento e agilidade na entrega:
@@ -546,7 +572,7 @@ export const PDFPedido = () => {
                   </ul>
                 </div>
               </div>
-              <div className="flex flex-col items-start justify-between">
+              <div className="flex flex-col items-start justify-between space-y-3">
                 <span className=" font-semibold">
                   {" "}
                   📞 Vamos conversar e alinhar os próximos passos?
