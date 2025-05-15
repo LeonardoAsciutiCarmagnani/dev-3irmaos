@@ -34,6 +34,9 @@ const CreateOrderADM = () => {
   const [timeEstimate, setTimeEstimate] = useState("");
   const [selectedSeller, setSelectedSeller] = useState<Seller | null>(null);
   const [open, setOpen] = useState(false);
+  const [totalWithoutFreteAndDiscount, setTotalWithoutFreteAndDiscount] =
+    useState(0);
+  const [totalDiscount, setTotalDiscount] = useState(0);
 
   const postBudget = async () => {
     try {
@@ -124,10 +127,13 @@ const CreateOrderADM = () => {
         },
         createdAt: format(new Date(), "dd/MM/yyyy HH:mm:ss"),
         orderStatus: 1,
-        totalValue: productsInBudget.reduce(
+        discountTotalValue: productsInBudget.reduce(
           (acc, item) => acc + item.subtotal,
           0
         ),
+
+        totalDiscount: totalDiscount,
+        totalValue: totalWithoutFreteAndDiscount,
         imagesUrls: imageUrls,
       };
 
@@ -220,7 +226,7 @@ const CreateOrderADM = () => {
   };
 
   return (
-    <div className="flex flex-col items-start h-full gap-y-4">
+    <div className="flex flex-col items-start h-full gap-y-4 pl-4">
       <div className="w-full">
         <div className="p-2 flex items-center justify-between gap-x-12">
           <h1 className="text-2xl font-bold text-gray-800">{`Novo orçamento - #${budgetNumber}`}</h1>
@@ -283,6 +289,10 @@ const CreateOrderADM = () => {
           setSelectedProducts={setProductsInBudget}
           frete={deliveryValue}
           setFrete={setDeliveryValue}
+          totalDiscount={totalDiscount}
+          setTotalDiscount={setTotalDiscount}
+          totalWithoutFreteAndDiscount={totalWithoutFreteAndDiscount}
+          setTotalWithoutFreteAndDiscount={setTotalWithoutFreteAndDiscount}
         />
       </div>
 
@@ -359,7 +369,7 @@ const CreateOrderADM = () => {
         </div>
       </div>
 
-      <div className="flex items-center gap-x-2 justify-end w-[180vh]">
+      <div className="flex items-center gap-x-2 justify-start w-[180vh]">
         <Button
           type="reset"
           className="bg-red-800 rounded-xs"

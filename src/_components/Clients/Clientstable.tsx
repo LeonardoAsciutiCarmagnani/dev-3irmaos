@@ -256,7 +256,7 @@ const ClientsTable = () => {
   });
 
   const renderError = () => (
-    <div className="rounded-md bg-red-50 p-4 flex items-center">
+    <div className="rounded-xs bg-red-50 p-4 flex items-center">
       <FiAlertCircle className="h-5 w-5 text-red-400 flex-shrink-0" />
       <h3 className="ml-3 text-sm font-medium text-red-800">{error}</h3>
     </div>
@@ -378,15 +378,15 @@ const ClientsTable = () => {
   } = register("address.cep");
 
   return (
-    <div className="space-y-3 p-4 bg-white rounded-lg shadow w-full h-full">
+    <div className="space-y-3 p-4 bg-white rounded-xs shadow w-full h-full">
       <div className="relative">
-        <FiSearch className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
+        <FiSearch className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
         <input
           type="text"
           placeholder="Buscar por nome do cliente..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+          className="w-full pl-10 pr-4 py-2 rounded-xs border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
         />
       </div>
       <div className="flex justify-between gap-x-2 p-2">
@@ -398,7 +398,7 @@ const ClientsTable = () => {
         </div>
       </div>
 
-      <div className="border rounded-lg overflow-hidden">
+      <div className="border rounded-xs overflow-hidden">
         <table className="w-full relative">
           <thead className="bg-gray-100 sticky top-0">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -455,7 +455,7 @@ const ClientsTable = () => {
                     </tr>
                   </DialogTrigger>
 
-                  <DialogContent className="max-w-2xl bg-white rounded-lg shadow-lg p-6">
+                  <DialogContent className="max-w-2xl bg-white rounded-xs shadow-lg p-6">
                     <DialogTitle className="text-2xl font-bold mb-2">
                       Editar Cliente
                     </DialogTitle>
