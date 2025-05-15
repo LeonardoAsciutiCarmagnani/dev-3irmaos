@@ -38,18 +38,18 @@ const Sidebar = () => {
     // { label: "Home", path: "/", icon: <Home className="size-6" /> },
     {
       label: "Orçamentos",
-      path: "/adm/pedidos-e-orçamentos",
-      icon: <ScrollTextIcon className="text-red-900 size-6" />,
+      path: "/pedidos-e-orçamentos",
+      icon: <ScrollTextIcon className="text-gray-900 size-6" />,
     },
     {
       label: "Clientes",
       path: "/adm/clientes",
-      icon: <UserIcon className="text-red-900 size-6" />,
+      icon: <UserIcon className="text-gray-900 size-6" />,
     },
     {
       label: "Criar orçamento",
       path: "/adm/criar-orçamento",
-      icon: <FilePlus2Icon className="text-red-900 size-6" />,
+      icon: <FilePlus2Icon className="text-gray-900 size-6" />,
     },
   ];
 
@@ -58,7 +58,7 @@ const Sidebar = () => {
       return defaultMenuItems;
     }
 
-    return user.role === "admin" ? adminMenuItems : clientMenuItems;
+    return user.role !== "admin" ? adminMenuItems : clientMenuItems;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
@@ -73,6 +73,7 @@ const Sidebar = () => {
 
   useEffect(() => {
     setAccordionValue(pathname === "/produtos" ? "produtos" : "");
+    setOpen(false);
   }, [pathname]);
 
   return (

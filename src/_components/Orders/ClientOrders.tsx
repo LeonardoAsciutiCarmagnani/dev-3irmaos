@@ -167,6 +167,7 @@ const ClientOrdersTable = () => {
         )
       );
       setSendPropostal(false);
+      setShowCardOrder(null);
       toast.success("Status atualizado com sucesso !");
     } catch (error) {
       setSendPropostal(false);

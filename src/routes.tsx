@@ -10,6 +10,7 @@ import HomePage from "./_components/Home/index";
 import { PDFPedido } from "./_components/OrderPDF/OrderPDF";
 import CreateOrderPage from "./pages/CreateOrder";
 import ClientsTable from "./_components/Clients/Clientstable";
+import AdminRoute from "./_components/ProtectedRoutes/AdminRoute";
 
 export const routes = createBrowserRouter([
   {
@@ -33,11 +34,13 @@ export const routes = createBrowserRouter([
     ),
   },
   {
-    path: "/clients",
+    path: "/adm/clientes",
     element: (
-      <LayoutPage>
-        <ClientsTable />
-      </LayoutPage>
+      <AdminRoute>
+        <LayoutPage>
+          <ClientsTable />
+        </LayoutPage>
+      </AdminRoute>
     ),
   },
   {
@@ -49,11 +52,13 @@ export const routes = createBrowserRouter([
     ),
   },
   {
-    path: "/criar-orçamento",
+    path: "/adm/criar-orçamento",
     element: (
-      <LayoutPage>
-        <CreateOrderPage />
-      </LayoutPage>
+      <AdminRoute>
+        <LayoutPage>
+          <CreateOrderPage />
+        </LayoutPage>
+      </AdminRoute>
     ),
   },
   {
