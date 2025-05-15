@@ -66,13 +66,16 @@ const createBudgetSchema = z.object({
         })
         .nullable()
         .optional(),
+      itemsIncluded: z.string().optional(),
+      itemsNotIncluded: z.string().optional(),
     })
     .nullable()
     .optional(),
   createdAt: z.string().optional(),
   orderStatus: z.number(),
-
-  totalValue: z.number().min(0, "Valor total inválido."),
+  discountTotalValue: z.number().optional(),
+  totalDiscount: z.number().min(0, "Desconto inválido.").optional(),
+  totalValue: z.number().min(0, "Valor total inválido.").optional(),
 });
 
 const createOrderSchema = z.object({
