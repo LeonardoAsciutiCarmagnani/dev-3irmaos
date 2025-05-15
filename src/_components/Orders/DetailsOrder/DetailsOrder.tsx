@@ -18,7 +18,7 @@ import { IMaskInput } from "react-imask";
 
 interface IDetailsOrder {
   statusOrder: number;
-  propostalValue: number;
+  propostalValue?: number;
   detailsPropostal?: DetailsPropostalProps;
   getAllData: (
     obs: string,
@@ -77,7 +77,7 @@ const DetailsOrder = ({
   ];
 
   useEffect(() => {
-    setTotal(propostalValue + deliveryValue);
+    setTotal(propostalValue ? propostalValue + deliveryValue : 0);
     getAllData(
       description,
       paymentMethod,
@@ -86,6 +86,7 @@ const DetailsOrder = ({
       selectedSeller
     );
   }, [
+    total,
     propostalValue,
     description,
     paymentMethod,
@@ -230,10 +231,15 @@ const DetailsOrder = ({
               </li>
               <li className="">
                 Valor final:{" "}
-                {total.toLocaleString("pt-BR", {
-                  style: "currency",
-                  currency: "BRL",
-                })}{" "}
+                {total
+                  ? total.toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })
+                  : Number(0).toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })}{" "}
               </li>
             </div>
           </div>

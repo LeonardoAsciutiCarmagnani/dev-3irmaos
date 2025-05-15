@@ -76,6 +76,10 @@ const OrdersTable = () => {
     email: "",
   });
 
+  const [localDiscounts, setLocalDiscounts] = useState<Record<string, string>>(
+    {}
+  );
+
   const lisToUse = filteredData.length > 0 ? filteredData : data;
 
   const filterOrders = () => {
@@ -277,6 +281,25 @@ const OrdersTable = () => {
       console.log("Ocorreu um erro ao tentar atualizar o pedido", error);
       toast.error("Ocorreu um erro ao tentar atualizar o pedido");
     }
+  }
+
+  function handleLocalDiscountChange(
+    orderId: number,
+    productId: string,
+    value: string
+  ) {
+    const key = `${orderId}-${productId}`;
+    setLocalDiscounts((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  }
+
+  function handleDiscountBlur(orderId: number, productId: string) {
+    const key = `${orderId}-${productId}`;
+    const value = localDiscounts[key];
+    const parsed = parseFloat(value || "0");
+    handleChangeDiscountProduct(orderId, productId, parsed);
   }
 
   function handleChangeDiscountProduct(
@@ -835,21 +858,12 @@ const OrdersTable = () => {
                                         Cidade:
                                       </span>
                                       <span className="text-lg  text-gray-700 ">
-                                        {order.deliveryAddress.city}
+                                        {order.deliveryAddress.city} /{" "}
+                                        {order.deliveryAddress.state}
                                       </span>
                                     </div>
                                   </div>
                                   <div>
-                                    {" "}
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        Estado:{" "}
-                                      </span>
-                                      <span className="  text-gray-700">
-                                        {" "}
-                                        {order.deliveryAddress.state}
-                                      </span>
-                                    </div>
                                     <div className="flex gap-2 items-center">
                                       <span className="font-semibold  text-gray-700">
                                         CEP:
@@ -951,21 +965,31 @@ const OrdersTable = () => {
                                                     mapToRadix: ["."],
                                                   },
                                                 }}
-                                                value={String(
-                                                  item.desconto || 0
-                                                )}
-                                                unmask={true} // isso faz com que o valor passado seja numérico
+                                                value={
+                                                  localDiscounts[
+                                                    `${order.orderId}-${item.selectedVariation.id}`
+                                                  ] ??
+                                                  String(
+                                                    (item.desconto || 0) /
+                                                      item.quantidade
+                                                  )
+                                                }
+                                                unmask={true}
                                                 disabled={order.orderStatus > 1}
-                                                onAccept={(value: string) => {
-                                                  const discountValue =
-                                                    parseFloat(value);
-                                                  handleChangeDiscountProduct(
+                                                onAccept={(value) =>
+                                                  handleLocalDiscountChange(
                                                     order.orderId,
                                                     item.selectedVariation.id,
-                                                    discountValue
-                                                  );
-                                                }}
-                                                className="rounded-xs px-2 py-1 w-[8rem] text-right"
+                                                    value
+                                                  )
+                                                }
+                                                onBlur={() =>
+                                                  handleDiscountBlur(
+                                                    order.orderId,
+                                                    item.selectedVariation.id
+                                                  )
+                                                }
+                                                className="rounded-xs px-2 py-1 w-[8rem] text-center"
                                               />
                                             </div>
                                           </div>
@@ -1141,7 +1165,7 @@ const OrdersTable = () => {
                               statusOrder={order.orderStatus}
                               detailsPropostal={order.detailsPropostal}
                               getAllData={handleAllData}
-                              propostalValue={order?.totalValue}
+                              propostalValue={order?.discountTotalValue}
                             />
                           </div>
                           <Button
