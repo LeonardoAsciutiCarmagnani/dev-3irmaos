@@ -46,7 +46,7 @@ const GetClients = ({ selectedClient, setSelectedClient }: GetClientsProps) => {
   const label = selectedClient ? selectedClient.name : "Selecione...";
 
   return (
-    <div className="flex items-center rounded-xs p-4 w-[180vh] justify-around pl-12 gap-x-7 border border-gray-200 shadow-md shadow-gray-200">
+    <div className="flex items-start rounded-xs p-4 w-[120vh] justify-start gap-x-10 border border-gray-200 shadow-md shadow-gray-200 h-full">
       <div>
         <div>
           <h1 className="text-xl font-semibold text-red-900">Cliente</h1>
@@ -58,7 +58,7 @@ const GetClients = ({ selectedClient, setSelectedClient }: GetClientsProps) => {
                 variant="outline"
                 role="combobox"
                 aria-expanded={open}
-                className="w-[30rem] justify-between rounded-xs font-normal text-base"
+                className="w-[15rem] justify-between rounded-xs font-normal text-base"
               >
                 {label}
               </Button>
@@ -98,7 +98,7 @@ const GetClients = ({ selectedClient, setSelectedClient }: GetClientsProps) => {
       </div>
 
       {selectedClient && (
-        <div className="grid grid-cols-1 md:grid-cols-2 px-6 py-4 items-start place-items-start w-[40rem]">
+        <div className="grid grid-cols-1 md:grid-cols-2 px-2 items-start place-items-center ">
           {/* Informações Pessoais */}
           <div className="space-y-1 flex flex-col items-start">
             <div className="flex items-center">

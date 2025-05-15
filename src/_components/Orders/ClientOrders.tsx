@@ -477,7 +477,7 @@ const ClientOrdersTable = () => {
                                         }}
                                       >
                                         <Button className="font-semibold text-white">
-                                          Imprimir PDF
+                                          GERAR PDF
                                           <Download className="size-5" />
                                         </Button>
                                       </Link>

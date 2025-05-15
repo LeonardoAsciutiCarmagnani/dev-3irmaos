@@ -23,6 +23,8 @@ import Loader from "../Loader/loader";
 interface GetProductsInBudgetProps {
   selectedProducts: TableItem[];
   setSelectedProducts: React.Dispatch<React.SetStateAction<TableItem[]>>;
+  frete: number | null;
+  setFrete: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
 interface Product {
@@ -65,6 +67,8 @@ export interface TableItem {
 const GetProductsForm = ({
   selectedProducts,
   setSelectedProducts,
+  frete,
+  setFrete,
 }: GetProductsInBudgetProps) => {
   const [open, setOpen] = useState(false);
   const [productId, setProductId] = useState("");
@@ -77,7 +81,6 @@ const GetProductsForm = ({
   const [descontoUnitario, setDescontoUnitario] = useState(0);
   const [subtotal, setSubtotal] = useState(0);
   const [tableTotalItems, setTableTotalItems] = useState(0);
-  const [frete, setFrete] = useState(0);
   const [selectedVariacaoId, setSelectedVariacaoId] = useState<string>("");
   const [files, setFiles] = useState<File[]>([]);
 
@@ -164,7 +167,7 @@ const GetProductsForm = ({
 
   const calculateTotal = () => {
     const total = selectedProducts
-      .reduce((acc, item) => acc + item.subtotal, frete)
+      .reduce((acc, item) => acc + item.subtotal, frete ?? 0)
       .toFixed(2);
     const totalFormatted = String(total).replace(".", ",");
     return totalFormatted;
@@ -266,7 +269,7 @@ const GetProductsForm = ({
                                     )}
                                   />
                                   <div className="flex flex-col text-sm">
-                                    <div className="flex items-center gap-x-2">
+                                    <div className="flex items-center gap-x-2 justify-start">
                                       <span className="font-medium">
                                         {product.nome}
                                       </span>

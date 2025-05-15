@@ -1,16 +1,19 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRef, useState } from "react";
-import { useReactToPrint } from "react-to-print";
 import { Button } from "@/components/ui/button";
-import { LoaderCircle } from "lucide-react";
+import { LoaderCircle, Download } from "lucide-react";
 import { Order } from "@/interfaces/Order";
 import logo from "@/assets/logo_3irmaos.png";
 import { IMaskInput } from "react-imask";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export const PDFPedido = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState("");
   const {
     id,
     client,
@@ -26,59 +29,106 @@ export const PDFPedido = () => {
   } = state as Order;
 
   const contentRef = useRef<HTMLDivElement>(null);
-  const contentToPrint = useReactToPrint({
-    contentRef,
-    documentTitle: `Pedido ${id} - 3 Irmãos`,
-    onBeforePrint: async () => {
-      setLoading(true);
-    },
-    pageStyle: `
-    @page {
-      size: A4;
-      margin: 0;
+
+  // Função para gerar o PDF e fazer upload para o Firebase Storage
+  const generatePDF = async () => {
+    if (!contentRef.current) return;
+
+    setLoading(true);
+
+    try {
+      // Capturar o conteúdo como imagem
+      const canvas = await html2canvas(contentRef.current, {
+        scale: 2, // Melhora a qualidade
+        useCORS: true, // Permite carregar imagens de outros domínios
+        logging: false,
+      });
+
+      // Criar um novo documento PDF
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      });
+
+      // Adicionar a imagem ao PDF
+      const imgData = canvas.toDataURL("image/png");
+      const imgWidth = 210; // A4 width in mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
+
+      // Se o conteúdo for maior que uma página A4, adicionar mais páginas
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      while (heightLeft > 297) {
+        // 297mm é o comprimento de uma página A4
+        position = heightLeft - 297;
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, -position, imgWidth, imgHeight);
+        heightLeft -= 297;
+      }
+
+      // Criar Blob do PDF
+      const pdfBlob = pdf.output("blob");
+
+      // Fazer upload para o Firebase Storage
+      const storage = getStorage();
+      const storageRef = ref(storage, `pedidos/pedido-${id}-${Date.now()}.pdf`);
+      await uploadBytes(storageRef, pdfBlob);
+
+      // Obter URL de download
+      const downloadURL = await getDownloadURL(storageRef);
+      setPdfUrl(downloadURL);
+
+      setLoading(false);
+
+      return downloadURL;
+    } catch (error) {
+      console.error("Erro ao gerar PDF:", error);
+      setLoading(false);
+      return null;
     }
+  };
 
-    @media print {
-      body {
-        margin: 0;
-        padding: 0;
-        -webkit-print-color-adjust: exact;
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      html, body, #root {
-        height: 100%;
-        width: 100%;
-      }
+  // Função para download direto do PDF
+  const downloadPDF = () => {
+    if (pdfUrl) {
+      const link = document.createElement("a");
+      link.href = pdfUrl;
+      link.download = `Pedido-${id}-3Irmaos.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
-  `,
-  });
-
-  function handlingPrintPage() {
-    contentToPrint();
-    setLoading(false);
-  }
+  };
 
   return (
     <div className="flex text-start w-full items-center justify-center p-4 ">
       <div className="flex flex-col  w-full items-center justify-center ">
         <div className="flex gap-2">
-          <Button className="mb-10" onClick={() => handlingPrintPage()}>
-            {loading ? (
-              <>
-                <LoaderCircle /> Imprimindo...
-              </>
-            ) : (
-              "Imprimir"
-            )}
-          </Button>
+          {!pdfUrl ? (
+            <Button className="mb-10" onClick={generatePDF} disabled={loading}>
+              {loading ? (
+                <>
+                  <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> Gerando
+                  PDF...
+                </>
+              ) : (
+                "Gerar PDF"
+              )}
+            </Button>
+          ) : (
+            <Button className="mb-10" onClick={downloadPDF}>
+              <Download className="mr-2 h-4 w-4" /> Download PDF
+            </Button>
+          )}
           <Button className="mb-10" onClick={() => navigate(-1)}>
             {loading ? (
               <>
-                <LoaderCircle /> Voltando...
+                <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />{" "}
+                Voltando...
               </>
             ) : (
               "Voltar"
@@ -166,10 +216,6 @@ export const PDFPedido = () => {
                             </span>
                             <div className="text-sm text-gray-500 flex gap-2">
                               <span>Altura: {item.altura} m</span>
-                              {/*   <span>
-                                                  Comprimento:{" "}
-                                                  {item.comprimento}
-                                                </span> */}
                               <span>Largura: {item.largura} m</span>
                             </div>
                             <div className="flex-1 text-lg ">
@@ -205,7 +251,7 @@ export const PDFPedido = () => {
                                   },
                                 }}
                                 value={String(item.desconto || 0)}
-                                unmask={true} // isso faz com que o valor passado seja numérico
+                                unmask={true}
                                 disabled
                                 className="rounded-xs px-2 py-1 w-[8rem] text-right"
                               />
@@ -227,7 +273,7 @@ export const PDFPedido = () => {
                                   },
                                 }}
                                 value={String(item.preco) + ""}
-                                unmask={true} // isso faz com que o valor passado seja numérico
+                                unmask={true}
                                 disabled
                                 className="rounded-xs px-2 py-1 w-[8rem] text-right"
                               />
@@ -340,8 +386,7 @@ export const PDFPedido = () => {
               <div className="flex flex-col items-start justify-between  max-w-full  text-wrap">
                 <span className="font-semibold text-lg">Observações:</span>
                 <div className="flex w-full  items-start text-start px-5">
-                  {detailsPropostal.obs === "" ||
-                  detailsPropostal.obs === undefined ? (
+                  {!detailsPropostal.obs ? (
                     <span className=" w-full  flex text-center items-center">
                       Sem observações
                     </span>

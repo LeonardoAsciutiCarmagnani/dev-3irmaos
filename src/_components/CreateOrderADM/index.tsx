@@ -16,7 +16,11 @@ import { Button } from "@/components/ui/button";
 import Dropzone from "../DropzoneImage/DropzoneImage";
 import Loader from "../Loader/loader";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { v4 as uuidv4 } from "uuid";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 const CreateOrderADM = () => {
   const [budgetNumber, setBudgetNumber] = useState(0);
@@ -26,10 +30,10 @@ const CreateOrderADM = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [observations, setObservations] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
-  const [deliveryTime, setDeliveryTime] = useState<number | undefined>(
-    undefined
-  );
+  const [deliveryValue, setDeliveryValue] = useState<number | null>(null);
   const [timeEstimate, setTimeEstimate] = useState("");
+  const [selectedSeller, setSelectedSeller] = useState<Seller | null>(null);
+  const [open, setOpen] = useState(false);
 
   const postBudget = async () => {
     try {
@@ -71,6 +75,8 @@ const CreateOrderADM = () => {
           largura: produto.largura || 1,
           categoria: produto.categoria || null,
           preco: product.valorUnitario || 0,
+          desconto: product.descontoUnitario || 0,
+          unidade: product.unidade,
           selectedVariation: {
             id: product.id,
             nomeVariacao: nomeVariacao,
@@ -83,7 +89,7 @@ const CreateOrderADM = () => {
       const orderData = {
         orderId: budgetNumber,
         client: {
-          id: client.Id || uuidv4(),
+          id: client.Id,
           name: client.name,
           email: client.email,
           phone: client.phone,
@@ -112,8 +118,9 @@ const CreateOrderADM = () => {
         detailsPropostal: {
           obs: observations || undefined,
           payment: paymentMethod || undefined,
-          delivery: deliveryTime || undefined,
+          delivery: deliveryValue || undefined,
           time: timeEstimate || undefined,
+          selectedSeller: selectedSeller || undefined,
         },
         createdAt: format(new Date(), "dd/MM/yyyy HH:mm:ss"),
         orderStatus: 1,
@@ -136,7 +143,7 @@ const CreateOrderADM = () => {
         setFiles([]);
         setObservations("");
         setPaymentMethod("");
-        setDeliveryTime(undefined);
+        setDeliveryValue(null);
         setTimeEstimate("");
       }
     } catch (error) {
@@ -193,6 +200,25 @@ const CreateOrderADM = () => {
     return () => unsubscribe();
   }, []);
 
+  const sellersList = [
+    {
+      name: "Regiane Oliveira",
+      phone: "(11) 99592-6335",
+      email: "regiane@3irmaosmadeirademolicao.com.br",
+    },
+    {
+      name: "Anderson Santos",
+      phone: "(11) 97134-8966",
+      email: "anderson@3irmaosmadeirademolicao.com.br",
+    },
+  ];
+
+  type Seller = {
+    name: string;
+    phone: string;
+    email: string;
+  };
+
   return (
     <div className="flex flex-col items-start h-full gap-y-4">
       <div className="w-full">
@@ -202,27 +228,77 @@ const CreateOrderADM = () => {
             Emissão: {new Date().toLocaleDateString()}
           </h2>
         </div>
-        <GetClients selectedClient={client} setSelectedClient={setClient} />
+        <div className="flex items-start justify-between gap-x-2 w-[180vh] h-[11rem]">
+          <div className="border border-gray-200 shadow-md shadow-gray-200 h-full w-full p-2">
+            <div className="mb-1">
+              <h2 className="text-red-900 font-semibold text-xl">Vendedor</h2>
+            </div>
+            <Popover open={open} onOpenChange={setOpen}>
+              <PopoverTrigger asChild>
+                <div
+                  className="
+                     rounded-xs p-2 w-[20rem] font-semibold border border-gray-200 hover:ring-1 hover:cursor-pointer"
+                >
+                  {selectedSeller?.name ?? "Selecione um vendedor"}
+                </div>
+              </PopoverTrigger>
+              <PopoverContent className="space-y-1 rounded-xs w-[20rem]">
+                {sellersList.map((seller) => (
+                  <div
+                    onClick={() => {
+                      setSelectedSeller(seller);
+                      setOpen(false);
+                    }}
+                    className="border rounded-xs p-2 w-fit font-semibold hover:bg-red-900 hover:text-white hover:cursor-pointer"
+                  >
+                    {seller.name}
+                  </div>
+                ))}
+              </PopoverContent>
+            </Popover>
+            {selectedSeller && (
+              <div className="p-1">
+                <span className="text-xs text-gray-600">
+                  Nome: {selectedSeller.name}
+                </span>
+                <br />
+                <span className="text-xs text-gray-600">
+                  Telefone: {selectedSeller.phone}
+                </span>
+                <br />
+                <span className="text-xs text-gray-600">
+                  Email: {selectedSeller.email}
+                </span>
+              </div>
+            )}
+          </div>
+          <div className="h-full">
+            <GetClients selectedClient={client} setSelectedClient={setClient} />
+          </div>
+        </div>
       </div>
       <div>
         <GetProductsForm
           selectedProducts={productsInBudget}
           setSelectedProducts={setProductsInBudget}
+          frete={deliveryValue}
+          setFrete={setDeliveryValue}
         />
       </div>
 
       {/* Detalhes adicionais do orçamento */}
       <div className="bg-white rounded-xs w-[180vh] border border-gray-200 shadow-md shadow-gray-200 p-4">
         <div className="flex flex-col gap-y-4">
-          <span className="text-xl font-semibold text-gray-800">
-            Detalhes da proposta
+          <span className="text-xl font-semibold text-red-900">
+            Detalhes do orçamento
           </span>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col">
-              <label className="text-sm text-gray-600 mb-1">Observações</label>
+              <label className="text-sm text-gray-600 mb-1 ">Observações</label>
               <textarea
-                className="border border-gray-300 rounded p-2"
+                className="border border-gray-300 rounded-xs p-2 resize-none"
+                placeholder="Digite aqui as observações do orçamento..."
                 value={observations}
                 onChange={(e) => setObservations(e.target.value)}
                 rows={3}
@@ -231,40 +307,41 @@ const CreateOrderADM = () => {
 
             <div className="flex flex-col">
               <label className="text-sm text-gray-600 mb-1">
-                Método de pagamento
+                Forma de pagamento
               </label>
               <input
                 type="text"
-                className="border border-gray-300 rounded p-2"
+                placeholder="Forma de pagamento utilizada pelo cliente..."
+                className="border border-gray-300 rounded-xs p-2"
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value)}
               />
             </div>
 
-            <div className="flex flex-col">
+            {/* <div className="flex flex-col">
               <label className="text-sm text-gray-600 mb-1">
                 Prazo de entrega (dias)
               </label>
               <input
                 type="number"
-                className="border border-gray-300 rounded p-2"
-                value={deliveryTime || ""}
+                className="border border-gray-300 rounded-xs p-2"
+                value={deliveryValue || ""}
                 onChange={(e) =>
-                  setDeliveryTime(Number(e.target.value) || undefined)
+                  setDeliveryValue(Number(e.target.value) || undefined)
                 }
               />
-            </div>
+            </div> */}
 
             <div className="flex flex-col">
               <label className="text-sm text-gray-600 mb-1">
-                Estimativa de tempo
+                Prazo de entrega
               </label>
               <input
                 type="text"
-                className="border border-gray-300 rounded p-2"
+                className="border border-gray-300 rounded-xs p-2"
                 value={timeEstimate}
                 onChange={(e) => setTimeEstimate(e.target.value)}
-                placeholder="Ex: 1 semana, 2 meses, etc."
+                placeholder="Ex: 1 mês, 2 meses, etc."
               />
             </div>
           </div>
@@ -292,7 +369,7 @@ const CreateOrderADM = () => {
             setFiles([]);
             setObservations("");
             setPaymentMethod("");
-            setDeliveryTime(undefined);
+            setDeliveryValue(null);
             setTimeEstimate("");
           }}
         >
