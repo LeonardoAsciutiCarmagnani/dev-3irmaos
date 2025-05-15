@@ -186,10 +186,9 @@ export const Checkout = () => {
   }, [user]);
 
   useEffect(() => {
-    console.log("Chamou", address.cep);
     getUserAddress();
     fetchAddress(address.cep);
-  }, []);
+  }, [user]);
 
   return (
     <div className="flex border-gray-300 p-4 rounded-lg text-sm md:text-md overflow-y-auto">

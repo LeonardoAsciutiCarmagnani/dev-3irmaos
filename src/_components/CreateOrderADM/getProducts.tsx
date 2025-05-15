@@ -25,6 +25,11 @@ interface GetProductsInBudgetProps {
   setSelectedProducts: React.Dispatch<React.SetStateAction<TableItem[]>>;
   frete: number | null;
   setFrete: React.Dispatch<React.SetStateAction<number | null>>;
+
+  totalWithoutFreteAndDiscount: number;
+  setTotalWithoutFreteAndDiscount: React.Dispatch<React.SetStateAction<number>>;
+  totalDiscount: number;
+  setTotalDiscount: React.Dispatch<React.SetStateAction<number>>;
 }
 
 interface Product {
@@ -69,6 +74,8 @@ const GetProductsForm = ({
   setSelectedProducts,
   frete,
   setFrete,
+  setTotalWithoutFreteAndDiscount,
+  setTotalDiscount,
 }: GetProductsInBudgetProps) => {
   const [open, setOpen] = useState(false);
   const [productId, setProductId] = useState("");
@@ -82,7 +89,6 @@ const GetProductsForm = ({
   const [subtotal, setSubtotal] = useState(0);
   const [tableTotalItems, setTableTotalItems] = useState(0);
   const [selectedVariacaoId, setSelectedVariacaoId] = useState<string>("");
-  const [files, setFiles] = useState<File[]>([]);
 
   const getProducts = async () => {
     try {
@@ -142,6 +148,7 @@ const GetProductsForm = ({
     };
 
     // setTableItems([...tableItems, newItem]);
+
     setSelectedProducts((prev) => [...prev, newItem]);
 
     // Resetar formulário
@@ -171,6 +178,24 @@ const GetProductsForm = ({
       .toFixed(2);
     const totalFormatted = String(total).replace(".", ",");
     return totalFormatted;
+  };
+
+  useEffect(() => {
+    setTotalWithoutFreteAndDiscount(
+      calculateTotalWithoutFreteAndDiscountValue()
+    );
+    setTotalDiscount(calculateTotalDiscountValue());
+  }, [selectedProducts, frete]);
+
+  const calculateTotalWithoutFreteAndDiscountValue = (): number => {
+    return selectedProducts.reduce((acc, item) => acc + item.valorUnitario, 0);
+  };
+
+  const calculateTotalDiscountValue = (): number => {
+    return selectedProducts.reduce(
+      (acc, item) => acc + item.descontoUnitario,
+      0
+    );
   };
 
   return (
@@ -354,7 +379,10 @@ const GetProductsForm = ({
           </div>
           <div>
             <Button
-              onClick={addToTable}
+              onClick={() => {
+                addToTable();
+                calculateTotal();
+              }}
               disabled={!selectedVariacaoId || quantidade <= 0}
               className="w-[12rem] bg-red-900 hover:bg-red-800 text-white rounded-xs"
             >
