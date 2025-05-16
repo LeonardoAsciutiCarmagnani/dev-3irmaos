@@ -21,7 +21,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { CircleCheckBig, InfoIcon, LoaderCircle } from "lucide-react";
+import {
+  CircleCheckBig,
+  FileDown,
+  FileDownIcon,
+  InfoIcon,
+  LoaderCircle,
+} from "lucide-react";
 import Dropzone from "../DropzoneImage/DropzoneImage";
 import {
   collection,
@@ -117,7 +123,7 @@ const OrdersTable = () => {
         cell: ({ row }) => row.getValue("orderId"),
       },
       {
-        header: "código Hiper",
+        header: "ID Hiper",
         accessorKey: "codeHiper",
         cell: ({ row }) => row.getValue("codeHiper"),
       },
@@ -794,16 +800,16 @@ const OrdersTable = () => {
                                         )}
                                       </Button>
                                     </PopoverTrigger>
-                                    <PopoverContent className="flex flex-col space-y-2 justify-center">
-                                      <span>
-                                        Deseja confirmar o envio para a Hiper ?
+                                    <PopoverContent className="flex flex-col space-y-2 justify-center rounded-xs">
+                                      <span className="text-sm text-center">
+                                        Deseja confirmar o envio para a Hiper?
                                       </span>
                                       <div className="flex items-center justify-between">
                                         <Button
                                           onClick={() =>
                                             setPopoverHiperController(null)
                                           }
-                                          className=" bg-red-500 hover:bg-red-600"
+                                          className=" bg-red-500 hover:bg-red-600 rounded-xs"
                                         >
                                           Cancelar
                                         </Button>
@@ -815,7 +821,7 @@ const OrdersTable = () => {
                                             );
                                             setPopoverHiperController(null);
                                           }}
-                                          className="bg-emerald-500 hover:bg-emerald-600"
+                                          className="bg-emerald-500 hover:bg-emerald-600 rounded-xs"
                                         >
                                           Confirmar
                                         </Button>
@@ -827,21 +833,27 @@ const OrdersTable = () => {
                           </tr>
                         </DialogTrigger>
 
-                        <DialogContent className="flex flex-col border rounded-xs space-y-1 bg-gray-100 md:w-2/3 h-[86vh] overflow-y-scroll">
+                        <DialogContent className="flex flex-col border rounded-xs space-y-1 bg-gray-100 md:w-5/6 h-[86vh] overflow-y-scroll">
                           <DialogHeader>
-                            <Button
-                              className="w-fit"
-                              onClick={() => handleGeneratedPDF(order)}
-                            >
-                              {generatedPdf ? (
-                                <div className="flex gap-2">
-                                  <LoaderCircle className="animate-spin" />
-                                  <span>Baixando PDF...</span>
-                                </div>
-                              ) : (
-                                "Baixar PDF"
-                              )}
-                            </Button>
+                            <div className="w-[95%] flex items-center justify-end">
+                              <Button
+                                className="w-fit rounded-xs bg-gray-100 text-red-900 hover:text-white border
+border-red-900 hover:border-white"
+                                onClick={() => handleGeneratedPDF(order)}
+                              >
+                                {generatedPdf ? (
+                                  <div className="flex gap-2 items-center ">
+                                    <LoaderCircle className="animate-spin" />
+                                    <span>BAIXANDO...</span>
+                                  </div>
+                                ) : (
+                                  <div className="flex gap-2 items-center ">
+                                    <FileDownIcon />
+                                    <span className="text-xl">PDF</span>
+                                  </div>
+                                )}
+                              </Button>
+                            </div>
                             <div className="flex items-center">
                               <DialogTitle>
                                 {" "}
@@ -855,7 +867,7 @@ const OrdersTable = () => {
                                     : order.orderStatus === 4
                                     ? "Proposta"
                                     : order.orderStatus > 4 && "Pedido"}{" "}
-                                  {order.orderId}
+                                  #{order.orderId}
                                 </span>
                               </DialogTitle>
                             </div>
@@ -1237,7 +1249,7 @@ const OrdersTable = () => {
                             />
                           </div>
                           <Button
-                            className={`w-full ${
+                            className={`rounded-xs w-full ${
                               order.orderStatus >= 2 && "hidden"
                             } `}
                             disabled={sendPropostal}

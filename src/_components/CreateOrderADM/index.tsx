@@ -21,6 +21,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { toast } from "sonner";
 
 const CreateOrderADM = () => {
   const [budgetNumber, setBudgetNumber] = useState(0);
@@ -158,7 +159,9 @@ const CreateOrderADM = () => {
       }
     } catch (error) {
       console.error("Erro ao criar orçamento:", error);
-      alert("Erro ao criar orçamento. Verifique o console para mais detalhes.");
+      toast.error(
+        "Erro ao criar orçamento. Verifique o console para mais detalhes."
+      );
     } finally {
       setIsLoading(false);
     }

@@ -22,7 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Download, InfoIcon, LoaderCircle } from "lucide-react";
+import { Download, FileDownIcon, InfoIcon, LoaderCircle } from "lucide-react";
 import {
   collection,
   doc,
@@ -477,9 +477,14 @@ const ClientOrdersTable = () => {
                                             order.discountTotalValue,
                                         }}
                                       >
-                                        <Button className="font-semibold text-white">
-                                          GERAR PDF
-                                          <Download className="size-5" />
+                                        <Button
+                                          className="w-fit rounded-xs bg-gray-100 text-red-900 hover:text-white border
+border-red-900 hover:border-white"
+                                        >
+                                          <div className="flex gap-2 items-center ">
+                                            <FileDownIcon />
+                                            <span className="text-xl">PDF</span>
+                                          </div>
                                         </Button>
                                       </Link>
                                     </div>

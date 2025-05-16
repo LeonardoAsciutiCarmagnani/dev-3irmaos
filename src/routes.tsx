@@ -3,7 +3,6 @@ import LayoutPage from "./_components/Layout/layout";
 import ProductsPage from "./pages/Products";
 import DetailsProduct from "./_components/Home/details-product";
 import { CheckoutPage } from "./pages/Checkout";
-import Orders from "./pages/Orders";
 import AuthenticatedRoute from "./_components/ProtectedRoutes/AuthenticatedRoute";
 import LoginPage from "./pages/Login";
 import HomePage from "./_components/Home/index";
@@ -11,6 +10,9 @@ import { PDFPedido } from "./_components/OrderPDF/OrderPDF";
 import CreateOrderPage from "./pages/CreateOrder";
 import ClientsTable from "./_components/Clients/Clientstable";
 import AdminRoute from "./_components/ProtectedRoutes/AdminRoute";
+import UnauthorizedPage from "./_components/ProtectedRoutes/NotAllowed/NotAllowed";
+import ClientOrdersPage from "./pages/Orders/ClientOrders";
+import AdmOrdersPage from "./pages/Orders/AdmOrders";
 
 export const routes = createBrowserRouter([
   {
@@ -71,15 +73,24 @@ export const routes = createBrowserRouter([
       </AuthenticatedRoute>
     ),
   },
-
   {
     path: "/pedidos-e-orçamentos",
     element: (
       <AuthenticatedRoute>
         <LayoutPage>
-          <Orders />
+          <ClientOrdersPage />
         </LayoutPage>
       </AuthenticatedRoute>
+    ),
+  },
+  {
+    path: "/adm/pedidos-e-orçamentos",
+    element: (
+      <AdminRoute>
+        <LayoutPage>
+          <AdmOrdersPage />
+        </LayoutPage>
+      </AdminRoute>
     ),
   },
   {
@@ -89,6 +100,14 @@ export const routes = createBrowserRouter([
         <LayoutPage>
           <PDFPedido />
         </LayoutPage>
+      </AuthenticatedRoute>
+    ),
+  },
+  {
+    path: "/401",
+    element: (
+      <AuthenticatedRoute>
+        <UnauthorizedPage />
       </AuthenticatedRoute>
     ),
   },

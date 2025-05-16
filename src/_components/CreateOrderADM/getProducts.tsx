@@ -188,12 +188,15 @@ const GetProductsForm = ({
   }, [selectedProducts, frete]);
 
   const calculateTotalWithoutFreteAndDiscountValue = (): number => {
-    return selectedProducts.reduce((acc, item) => acc + item.valorUnitario, 0);
+    return selectedProducts.reduce(
+      (acc, item) => acc + item.valorUnitario * item.quantidade,
+      0
+    );
   };
 
   const calculateTotalDiscountValue = (): number => {
     return selectedProducts.reduce(
-      (acc, item) => acc + item.descontoUnitario,
+      (acc, item) => acc + item.descontoUnitario * item.quantidade,
       0
     );
   };

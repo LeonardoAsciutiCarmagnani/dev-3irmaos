@@ -132,12 +132,12 @@ const DetailsOrder = ({
                   onChange={(e) => {
                     setDescription(e.target.value);
                   }}
-                  className="bg-white"
+                  className="bg-white rounded-xs resize-none"
                 />
               </div>
               <div className="flex flex-col gap-2 w-1/2">
                 <label htmlFor="itemsInclusos" className="font-semibold">
-                  Itens inclusos:
+                  Itens incluídos:
                 </label>
                 <Textarea
                   id="itemsInclusos"
@@ -146,7 +146,7 @@ const DetailsOrder = ({
                   onChange={(e) => {
                     setItemsIncluded(e.target.value);
                   }}
-                  className="bg-white"
+                  className="bg-white rounded-xs resize-none"
                 />
               </div>
               <div className="flex flex-col gap-2 w-1/2">
@@ -160,7 +160,7 @@ const DetailsOrder = ({
                   onChange={(e) => {
                     setItemsNotIncluded(e.target.value);
                   }}
-                  className="bg-white"
+                  className="bg-white rounded-xs resize-none"
                 />
               </div>
               <div className="flex flex-col gap-2 w-1/2">
@@ -174,7 +174,7 @@ const DetailsOrder = ({
                   onChange={(e) => {
                     setPaymentMethod(e.target.value);
                   }}
-                  className="bg-white"
+                  className="bg-white rounded-xs resize-none"
                 />
               </div>
               <div className="flex flex-col gap-2 w-1/2">
@@ -188,7 +188,7 @@ const DetailsOrder = ({
                   onChange={(e) => {
                     setDeliveryTime(e.target.value);
                   }}
-                  className="bg-white"
+                  className="bg-white rounded-xs resize-none"
                 />
               </div>
               <div className="flex flex-col gap-2 w-1/2">
@@ -212,7 +212,7 @@ const DetailsOrder = ({
                   unmask={true} // isso faz com que o valor passado seja numérico
                   disabled={statusOrder > 1}
                   onAccept={(value) => setDeliveryValue(Number(value))}
-                  className="border rounded px-2 py-1 w-[8rem] text-right"
+                  className="border px-2 py-1 w-[8rem] text-right bg-white rounded-xs resize-none"
                 />
               </div>
 

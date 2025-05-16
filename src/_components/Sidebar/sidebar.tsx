@@ -58,7 +58,7 @@ const Sidebar = () => {
       return defaultMenuItems;
     }
 
-    return user.role !== "admin" ? adminMenuItems : clientMenuItems;
+    return user.role === "admin" ? adminMenuItems : clientMenuItems;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
