@@ -22,7 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Download, FileDownIcon, InfoIcon, LoaderCircle } from "lucide-react";
+import { FileDownIcon, InfoIcon, LoaderCircle } from "lucide-react";
 import {
   collection,
   doc,

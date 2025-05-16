@@ -23,7 +23,6 @@ import {
 } from "@/components/ui/dialog";
 import {
   CircleCheckBig,
-  FileDown,
   FileDownIcon,
   InfoIcon,
   LoaderCircle,
@@ -523,7 +522,7 @@ const OrdersTable = () => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `pedido-${order.orderId}.pdf`;
+      link.download = `Pedido #${order.orderId} - 3 Irmãos.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
