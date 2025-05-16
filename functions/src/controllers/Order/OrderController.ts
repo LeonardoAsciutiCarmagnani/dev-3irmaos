@@ -49,7 +49,7 @@ const createBudgetSchema = z.object({
       }),
     })
   ),
-  imagesUrls: z.array(z.string()).optional(),
+  imagesUrls: z.array(z.string()).optional().nullable(),
   detailsPropostal: z
     .object({
       obs: z.string().optional(),
