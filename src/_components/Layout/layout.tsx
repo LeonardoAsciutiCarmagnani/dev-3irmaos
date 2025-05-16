@@ -6,11 +6,11 @@ const LayoutPage = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="bg-white flex flex-col h-full w-full overflow-hidden">
       <Header />
-      <div className="flex flex-1 h-full">
+      <div className="flex flex-1">
         <div className="hidden md:flex">
           <Sidebar />
         </div>
-        <div className="flex-1">{children}</div>
+        <div className="flex-1 overflow-hidden">{children}</div>
         <Toaster
           richColors
           position="top-right"

@@ -38,7 +38,7 @@ const Sidebar = () => {
     // { label: "Home", path: "/", icon: <Home className="size-6" /> },
     {
       label: "Orçamentos",
-      path: "/pedidos-e-orçamentos",
+      path: "/adm/pedidos-e-orçamentos",
       icon: <ScrollTextIcon className="text-gray-900 size-6" />,
     },
     {
@@ -78,7 +78,7 @@ const Sidebar = () => {
 
   return (
     <div
-      className={`flex flex-col justify-between transition-all duration-400 ${
+      className={`flex flex-col justify-between transition-all duration-400 border-1 border-r border-gray-200 ${
         open ? "w-45" : "w-12"
       } pt-4`}
     >

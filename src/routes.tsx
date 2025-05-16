@@ -7,11 +7,12 @@ import AuthenticatedRoute from "./_components/ProtectedRoutes/AuthenticatedRoute
 import LoginPage from "./pages/Login";
 import HomePage from "./_components/Home/index";
 import CreateOrderPage from "./pages/CreateOrder";
-import ClientsTable from "./_components/Clients/Clientstable";
+
 import AdminRoute from "./_components/ProtectedRoutes/AdminRoute";
 import UnauthorizedPage from "./_components/ProtectedRoutes/NotAllowed/NotAllowed";
 import ClientOrdersPage from "./pages/Orders/ClientOrders";
 import AdmOrdersPage from "./pages/Orders/AdmOrders";
+import ClientsPage from "./pages/Clients";
 
 export const routes = createBrowserRouter([
   {
@@ -39,7 +40,7 @@ export const routes = createBrowserRouter([
     element: (
       <AdminRoute>
         <LayoutPage>
-          <ClientsTable />
+          <ClientsPage />
         </LayoutPage>
       </AdminRoute>
     ),

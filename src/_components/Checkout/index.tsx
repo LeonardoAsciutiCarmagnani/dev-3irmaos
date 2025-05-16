@@ -126,6 +126,7 @@ export const Checkout = () => {
 
   const handleSubmitBudget = async () => {
     if (!user?.uid) return toast.error("Usuário não autenticado.");
+
     if (!address.cep || !address.street || !address.city) {
       return toast.error("Endereço incompleto.");
     }
