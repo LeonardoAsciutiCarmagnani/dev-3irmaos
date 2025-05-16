@@ -22,7 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { FileDownIcon, InfoIcon, LoaderCircle } from "lucide-react";
+import { InfoIcon, LoaderCircle } from "lucide-react";
 import {
   collection,
   doc,
@@ -37,7 +37,6 @@ import { toast } from "sonner";
 import DetailsOrder from "./DetailsOrder/DetailsOrder";
 import { IMaskInput } from "react-imask";
 import { useAuthStore } from "@/context/authContext";
-import { Link } from "react-router-dom";
 import Dropzone from "../DropzoneImage/DropzoneImage";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { Order } from "@/interfaces/Order";
@@ -454,7 +453,7 @@ const ClientOrdersTable = () => {
                                   </span>
                                 </DialogTitle>
                               </div>
-                              <div className="flex w-full p-2 rounded-xs items-center">
+                              <div className="flex w-full p-2 rounded-xs items-center ">
                                 <div className="flex flex-col w-full">
                                   <div className="flex flex-col md:flex-row space-y-2 space-x-32 items-start">
                                     <div className=" flex flex-col justify-between">
@@ -565,112 +564,117 @@ const ClientOrdersTable = () => {
                                   </div>
                                 </div>
 
-                                {order.products?.map((item, index) => (
-                                  <div
-                                    key={index}
-                                    className="border-b p-2 flex flex-col md:grid md:grid-cols-7 md:items-center md:justify-center"
-                                  >
-                                    {/* Produto */}
-                                    <div className="col-span-2">
-                                      <p className="text-sm md:text-lg font-medium">
-                                        {item.nome}
-                                      </p>
-                                      <p className="text-sm">
-                                        {item.selectedVariation.nomeVariacao}
-                                      </p>
-                                      <p className="text-sm text-gray-500">
-                                        Altura: {item.altura} | Largura:{" "}
-                                        {item.largura}
-                                      </p>
-                                      <p className="text-sm text-red-900">
-                                        {item.selectedVariation.nomeVariacao ===
-                                        "Medida Padrao"
-                                          ? "Pronta Entrega"
-                                          : "Sob Medida"}
-                                      </p>
-                                    </div>
-                                    <div className="mt-2 md:mt-0 md:flex justify-center items-center text-sm md:text-base">
-                                      <span className="block md:hidden font-semibold">
-                                        Unidade:
-                                      </span>{" "}
-                                      {item.unidade}
-                                    </div>
-                                    {/* Qtd */}
-                                    <div className="mt-2 md:mt-0 md:flex justify-center items-center text-sm md:text-base">
-                                      <span className="block md:hidden font-semibold">
-                                        Qtd:
-                                      </span>{" "}
-                                      {item.quantidade} x
-                                    </div>
+                                {order.products?.map((item, index) => {
+                                  const variation =
+                                    item.selectedVariation.nomeVariacao.split(
+                                      "-"
+                                    );
 
-                                    {/* Desconto */}
-                                    <div className="mt-2 md:mt-0 md:flex justify-center items-center text-sm md:text-base">
-                                      <span className="block md:hidden font-semibold">
-                                        Desconto:
-                                      </span>
-                                      <IMaskInput
-                                        mask="R$ num"
-                                        blocks={{
-                                          num: {
-                                            mask: Number,
-                                            scale: 2,
-                                            thousandsSeparator: ".",
-                                            padFractionalZeros: true,
-                                            normalizeZeros: true,
-                                            radix: ",",
-                                            mapToRadix: ["."],
-                                          },
-                                        }}
-                                        value={String(item.desconto || 0)}
-                                        unmask={true}
-                                        disabled
-                                        className="rounded-xs p-0 md:px-2 py-1 text-center w-full"
-                                      />
-                                    </div>
+                                  return (
+                                    <div
+                                      key={index}
+                                      className="border-b p-2 flex flex-col md:grid md:grid-cols-7 md:items-center md:justify-center"
+                                    >
+                                      {/* Produto */}
+                                      <div className="col-span-2">
+                                        <p className="text-sm md:text-lg font-medium">
+                                          {item.nome}
+                                        </p>
+                                        <p className="text-sm">
+                                          {variation[1]}
+                                        </p>
+                                        <p className="text-sm text-gray-500">
+                                          Altura: {item.altura} | Largura:{" "}
+                                          {item.largura} | Comprimento:{" "}
+                                          {item.comprimento}
+                                        </p>
+                                        <p className="text-sm text-red-900">
+                                          {variation[0]}
+                                        </p>
+                                      </div>
+                                      <div className="mt-2 md:mt-0 md:flex justify-center items-center text-sm md:text-base">
+                                        <span className="block md:hidden font-semibold">
+                                          Unidade:
+                                        </span>{" "}
+                                        {item.unidade}
+                                      </div>
+                                      {/* Qtd */}
+                                      <div className="mt-2 md:mt-0 md:flex justify-center items-center text-sm md:text-base">
+                                        <span className="block md:hidden font-semibold">
+                                          Qtd:
+                                        </span>{" "}
+                                        {item.quantidade} x
+                                      </div>
 
-                                    {/* Valor Unitário */}
-                                    <div className="mt-2 md:mt-0 md:flex justify-center items-center text-sm md:text-base">
-                                      <span className="block md:hidden font-semibold">
-                                        Valor unitário:
-                                      </span>
-                                      <IMaskInput
-                                        mask="R$ num"
-                                        blocks={{
-                                          num: {
-                                            mask: Number,
-                                            scale: 2,
-                                            thousandsSeparator: ".",
-                                            padFractionalZeros: true,
-                                            normalizeZeros: true,
-                                            radix: ",",
-                                            mapToRadix: ["."],
-                                          },
-                                        }}
-                                        value={String(item.preco)}
-                                        unmask={true}
-                                        disabled
-                                        className="rounded-xs p-0 md:px-2 py-1 text-center w-full"
-                                      />
-                                    </div>
+                                      {/* Desconto */}
+                                      <div className="mt-2 md:mt-0 md:flex justify-center items-center text-sm md:text-base">
+                                        <span className="block md:hidden font-semibold">
+                                          Desconto:
+                                        </span>
+                                        <IMaskInput
+                                          mask="R$ num"
+                                          blocks={{
+                                            num: {
+                                              mask: Number,
+                                              scale: 2,
+                                              thousandsSeparator: ".",
+                                              padFractionalZeros: true,
+                                              normalizeZeros: true,
+                                              radix: ",",
+                                              mapToRadix: ["."],
+                                            },
+                                          }}
+                                          value={String(item.desconto || 0)}
+                                          unmask={true}
+                                          disabled
+                                          className="rounded-xs p-0 md:px-2 py-1 text-center w-full"
+                                        />
+                                      </div>
 
-                                    {/* Valor Total */}
-                                    <div className="text-center h-full flex flex-col  items-start justify-center gap-2 mt-2 md:mt-0 text-sm md:text-base ">
-                                      <span className="block md:hidden font-semibold">
-                                        Valor total:
-                                      </span>
-                                      <span className="w-full">
-                                        {(item.desconto
-                                          ? item.preco * item.quantidade -
-                                            item.desconto
-                                          : item.preco * item.quantidade
-                                        ).toLocaleString("pt-BR", {
-                                          style: "currency",
-                                          currency: "BRL",
-                                        })}
-                                      </span>
+                                      {/* Valor Unitário */}
+                                      <div className="mt-2 md:mt-0 md:flex justify-center items-center text-sm md:text-base">
+                                        <span className="block md:hidden font-semibold">
+                                          Valor unitário:
+                                        </span>
+                                        <IMaskInput
+                                          mask="R$ num"
+                                          blocks={{
+                                            num: {
+                                              mask: Number,
+                                              scale: 2,
+                                              thousandsSeparator: ".",
+                                              padFractionalZeros: true,
+                                              normalizeZeros: true,
+                                              radix: ",",
+                                              mapToRadix: ["."],
+                                            },
+                                          }}
+                                          value={String(item.preco)}
+                                          unmask={true}
+                                          disabled
+                                          className="rounded-xs p-0 md:px-2 py-1 text-center w-full"
+                                        />
+                                      </div>
+
+                                      {/* Valor Total */}
+                                      <div className="text-center h-full flex flex-col  items-start justify-center gap-2 mt-2 md:mt-0 text-sm md:text-base ">
+                                        <span className="block md:hidden font-semibold">
+                                          Valor total:
+                                        </span>
+                                        <span className="w-full">
+                                          {(item.desconto
+                                            ? item.preco * item.quantidade -
+                                              item.desconto
+                                            : item.preco * item.quantidade
+                                          ).toLocaleString("pt-BR", {
+                                            style: "currency",
+                                            currency: "BRL",
+                                          })}
+                                        </span>
+                                      </div>
                                     </div>
-                                  </div>
-                                ))}
+                                  );
+                                })}
 
                                 {/* Totais */}
                                 <div className="flex flex-col items-end gap-2 ">

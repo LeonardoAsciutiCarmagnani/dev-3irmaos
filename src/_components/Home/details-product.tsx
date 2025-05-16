@@ -59,12 +59,16 @@ export const DetailsProduct = () => {
   const [typeProduct, setTypeProduct] = useState({
     typeProduct: true,
     productVariationSelected: {
-      id: hasVariations ? product.variacao[0]?.id || "" : "",
-      nomeVariacao: hasVariations
-        ? product.variacao[0]?.nomeVariacaoA || ""
-        : "",
+      id: hasVariations ? product.variacao?.[0]?.id || "" : "",
+      nomeVariacao: product.variacao?.[0]?.nomeVariacaoA || "",
     },
   });
+
+  useEffect(() => {
+    const stringTest = typeProduct.productVariationSelected.nomeVariacao;
+
+    console.log("Variação selecionada =>", stringTest.trim());
+  }, [typeProduct]);
 
   const {
     reset,
@@ -225,11 +229,9 @@ export const DetailsProduct = () => {
                           setTypeProduct(() => ({
                             typeProduct: false,
                             productVariationSelected: {
-                              id:
-                                product.variacao?.find(
-                                  (v) => v.nomeVariacaoA === "Sob Medida"
-                                )?.id || "",
-                              nomeVariacao: "Sob Medida",
+                              id: product.variacao?.[1].id || "",
+                              nomeVariacao:
+                                product.variacao?.[1].nomeVariacaoA || "",
                             },
                           }))
                         }
@@ -257,8 +259,9 @@ export const DetailsProduct = () => {
                           setTypeProduct(() => ({
                             typeProduct: true,
                             productVariationSelected: {
-                              id: "",
-                              nomeVariacao: "",
+                              id: product.variacao?.[0]?.id || "",
+                              nomeVariacao:
+                                product.variacao?.[0]?.nomeVariacaoA || "",
                             },
                           }))
                         }
@@ -316,8 +319,7 @@ export const DetailsProduct = () => {
                                               ...prev,
                                               productVariationSelected: {
                                                 id: variation.id,
-                                                nomeVariacao:
-                                                  variation.nomeVariacaoB || "",
+                                                nomeVariacao: `${variation.nomeVariacaoA} - ${variation.nomeVariacaoB}`,
                                               },
                                             };
                                           });
@@ -362,8 +364,7 @@ export const DetailsProduct = () => {
                                               ...prev,
                                               productVariationSelected: {
                                                 id: variation.id,
-                                                nomeVariacao:
-                                                  variation.nomeVariacaoB || "",
+                                                nomeVariacao: `${variation.nomeVariacaoA} - ${variation.nomeVariacaoB}`,
                                               },
                                             };
                                           });
@@ -396,7 +397,7 @@ export const DetailsProduct = () => {
                                 htmlFor="altura"
                                 className="text-xs md:text-sm font-medium text-gray-700 text-nowrap"
                               >
-                                Altura (cm)
+                                Altura (m)
                               </label>
                               <Input
                                 id="altura"
@@ -422,7 +423,7 @@ export const DetailsProduct = () => {
                                 htmlFor="largura"
                                 className="text-xs md:text-sm font-medium text-gray-700 text-nowrap"
                               >
-                                Largura (cm)
+                                Largura (m)
                               </label>
                               <Input
                                 id="largura"
@@ -448,7 +449,7 @@ export const DetailsProduct = () => {
                                 htmlFor="comprimento"
                                 className="text-xs md:text-sm font-medium text-gray-700 text-nowrap"
                               >
-                                Profundidade (cm)
+                                Profundidade (m)
                               </label>
                               <Input
                                 id="comprimento"

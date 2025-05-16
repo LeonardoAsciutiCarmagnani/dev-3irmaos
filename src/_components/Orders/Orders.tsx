@@ -51,8 +51,6 @@ import { IMaskInput } from "react-imask";
 import { Order } from "@/interfaces/Order";
 import { api } from "@/lib/axios";
 import hiperLogo from "@/assets/hiper_logo.svg";
-/* import logo from "@/assets/logo_3irmaos.png";
-import { generatePDF } from "../OrderPDF/ReactPDF"; */
 
 const OrdersTable = () => {
   const [date, setDate] = useState<DateRange>();
@@ -89,7 +87,7 @@ const OrdersTable = () => {
     {}
   );
 
-  const [generatedPdf, setGeneratedPdf] = useState(false);
+  const [generatedPdf, setGeneratedPdf] = useState<number | null>();
 
   const lisToUse = filteredData.length > 0 ? filteredData : data;
 
@@ -510,7 +508,7 @@ const OrdersTable = () => {
 
   async function handleGeneratedPDF(order: Order) {
     try {
-      setGeneratedPdf(true);
+      setGeneratedPdf(order.orderId);
 
       const response = await api.post("/generate-pdf", order, {
         responseType: "blob",
@@ -527,9 +525,9 @@ const OrdersTable = () => {
       link.click();
       document.body.removeChild(link);
 
-      setGeneratedPdf(false);
+      setGeneratedPdf(null);
     } catch {
-      setGeneratedPdf(false);
+      setGeneratedPdf(null);
       toast.error("Ocorreu um erro ao tentar gerar o PDF");
       console.error("Ocorreu um erro ao tentar gerar o PDF");
     }
@@ -758,7 +756,29 @@ const OrdersTable = () => {
                                   })}
                               </select>
                             </td>
-                            <td className={`px-4 py-3 hover:underline`}>
+
+                            <td
+                              className={`flex gap-10 items-center  px-4 py-3 `}
+                            >
+                              {order.orderStatus > 1 && (
+                                <Button
+                                  className="w-[8rem]  rounded-xs bg-gray-100 text-red-900 hover:text-white border border-red-900 hover:border-gray-100"
+                                  onClick={() => handleGeneratedPDF(order)}
+                                >
+                                  {generatedPdf === order.orderId ? (
+                                    <div className="flex gap-2 items-center ">
+                                      <LoaderCircle className="animate-spin" />
+                                      <span className="text-xs">
+                                        BAIXANDO...
+                                      </span>
+                                    </div>
+                                  ) : (
+                                    <div className="flex gap-2 items-center ">
+                                      <FileDownIcon className="size-7" /> PDF
+                                    </div>
+                                  )}
+                                </Button>
+                              )}
                               {order.orderStatus !== 1 &&
                                 order.orderStatus !== 3 &&
                                 order.orderStatus !== 10 && (
@@ -834,25 +854,7 @@ const OrdersTable = () => {
 
                         <DialogContent className="flex flex-col border rounded-xs space-y-1 bg-gray-100 md:w-5/6 h-[86vh] overflow-y-scroll">
                           <DialogHeader>
-                            <div className="w-[95%] flex items-center justify-end">
-                              <Button
-                                className="w-fit rounded-xs bg-gray-100 text-red-900 hover:text-white border
-border-red-900 hover:border-white"
-                                onClick={() => handleGeneratedPDF(order)}
-                              >
-                                {generatedPdf ? (
-                                  <div className="flex gap-2 items-center ">
-                                    <LoaderCircle className="animate-spin" />
-                                    <span>BAIXANDO...</span>
-                                  </div>
-                                ) : (
-                                  <div className="flex gap-2 items-center ">
-                                    <FileDownIcon />
-                                    <span className="text-xl">PDF</span>
-                                  </div>
-                                )}
-                              </Button>
-                            </div>
+                            <div className="w-[95%] flex items-center justify-end"></div>
                             <div className="flex items-center">
                               <DialogTitle>
                                 {" "}
@@ -979,6 +981,11 @@ border-red-900 hover:border-white"
                               <tbody className="divide-y divide-gray-200">
                                 {order.products &&
                                   order.products.map((item) => {
+                                    const variation =
+                                      item.selectedVariation.nomeVariacao.split(
+                                        "-"
+                                      );
+
                                     return (
                                       <tr
                                         key={item.id}
@@ -991,36 +998,26 @@ border-red-900 hover:border-white"
                                               {item.nome}
                                             </span>
                                             <span className="flex-1 text-md text-gray-700">
-                                              {
-                                                item.selectedVariation
-                                                  .nomeVariacao
-                                              }
+                                              {variation[1]}
                                             </span>
                                             <div className="text-sm text-gray-500 flex gap-2">
                                               <span>
                                                 Altura: {item.altura} m
                                               </span>
-                                              {/*   <span>
-                                                  Comprimento:{" "}
-                                                  {item.comprimento}
-                                                </span> */}
                                               <span>
                                                 Largura: {item.largura} m
                                               </span>
+                                              <span>
+                                                Comprimento:{" "}
+                                                {item.comprimento === undefined
+                                                  ? 0
+                                                  : item.comprimento}{" "}
+                                                m
+                                              </span>
                                             </div>
-                                            <div className="flex-1 text-lg ">
-                                              {item.selectedVariation
-                                                .nomeVariacao ===
-                                              "Medida Padrao" ? (
-                                                <span className="text-sm text-red-900">
-                                                  Pronta Entrega
-                                                </span>
-                                              ) : (
-                                                <span className="text-sm text-red-900">
-                                                  Sob Medida
-                                                </span>
-                                              )}
-                                            </div>
+                                            <span className="text-sm text-red-900">
+                                              {variation[0]}
+                                            </span>
                                           </div>
                                           <div className="flex text-lg text-gray-700 items-center justify-center text-center h-full">
                                             <span>{item.unidade}</span>
@@ -1142,13 +1139,15 @@ border-red-900 hover:border-white"
                                       Desconto de
                                     </span>
                                     <span className="w-[8rem] truncate">
-                                      {order.totalDiscount?.toLocaleString(
-                                        "pt-BR",
-                                        {
-                                          style: "currency",
-                                          currency: "BRL",
-                                        }
-                                      )}
+                                      {order.totalDiscount
+                                        ? order.totalDiscount?.toLocaleString(
+                                            "pt-BR",
+                                            {
+                                              style: "currency",
+                                              currency: "BRL",
+                                            }
+                                          )
+                                        : "R$ 0,00"}
                                     </span>
                                   </td>
                                 </tr>
@@ -1166,7 +1165,7 @@ border-red-900 hover:border-white"
                                               currency: "BRL",
                                             }
                                           )
-                                        : 0.0}
+                                        : "R$ 0,00"}
                                     </span>
                                   </td>
                                 </tr>

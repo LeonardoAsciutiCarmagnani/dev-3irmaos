@@ -147,6 +147,8 @@ export const Checkout = () => {
         billingAddress,
         products: productsInCart,
         createdAt: dateOrder,
+        imagesUrls: [], // Imagens 3 irmãos
+        detailsPropostal: {},
         orderStatus: 1,
         totalValue: total,
       };
@@ -205,21 +207,7 @@ export const Checkout = () => {
                     <span className="font-semibold text-sm md:text-md text-gray-700">
                       {product.nome}
                     </span>
-                    {/*   <span className="text-gray-700 text-sm md:text-base font-semibold">
-                      {"R$ " +
-                        (
-                          product.price /
-                          (product.packageQuantity * product.boxQuantity)
-                        ).toFixed(2)}
-                      /Espt
-                    </span> */}
-                    {/*  <span className="font-semibold text-sm md:text-base text-gray-700">
-                      {product.price.toLocaleString("pt-BR", {
-                        style: "currency",
-                        currency: "BRL",
-                      })}
-                      / Cx
-                    </span> */}
+
                     {product.selectedVariation.nomeVariacao ===
                       "Medida Padrao" && (
                       <span className="font-semibold text-sm md:text-base text-gray-700">

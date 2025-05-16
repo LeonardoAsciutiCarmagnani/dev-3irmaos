@@ -114,7 +114,7 @@ const DetailsOrder = ({
 
   return (
     <div>
-      {user?.role !== "admin" && (
+      {user?.role === "admin" && (
         <Accordion type="single" collapsible>
           <AccordionItem value="item-1">
             <AccordionTrigger className="text-lg">
@@ -228,14 +228,15 @@ const DetailsOrder = ({
                       : "Selecione um vendedor"}
                   </div>
                 </PopoverTrigger>
-                <PopoverContent className="space-y-2">
+                <PopoverContent className="flex flex-col items-center space-y-2 w-fit">
+                  <span className="text-sm">Vendedores:</span>
                   {sellersList.map((seller) => (
                     <div
                       onClick={() => {
                         setSelectedSeller(seller);
                         setOpen(false);
                       }}
-                      className="border rounded-xs p-2 w-fit font-semibold hover:border-black hover:ring-1 hover:cursor-pointer"
+                      className="border rounded-xs p-2 w-fit text-center font-semibold hover:border-black hover:ring-1 hover:cursor-pointer"
                     >
                       {seller.name}
                     </div>
