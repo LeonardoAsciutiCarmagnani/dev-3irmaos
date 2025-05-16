@@ -46,6 +46,8 @@ import { IMaskInput } from "react-imask";
 import { Order } from "@/interfaces/Order";
 import { api } from "@/lib/axios";
 import hiperLogo from "@/assets/hiper_logo.svg";
+/* import logo from "@/assets/logo_3irmaos.png";
+import { generatePDF } from "../OrderPDF/ReactPDF"; */
 
 const OrdersTable = () => {
   const [date, setDate] = useState<DateRange>();
@@ -81,6 +83,8 @@ const OrdersTable = () => {
   const [localDiscounts, setLocalDiscounts] = useState<Record<string, string>>(
     {}
   );
+
+  const [generatedPdf, setGeneratedPdf] = useState(false);
 
   const lisToUse = filteredData.length > 0 ? filteredData : data;
 
@@ -401,7 +405,7 @@ const OrdersTable = () => {
         };
       });
 
-      console.log("updatedData => ", updatedData);
+      // console.log("updatedData => ", updatedData);
 
       return updatedData;
     });
@@ -499,6 +503,33 @@ const OrdersTable = () => {
     setShowCardOrder(orderId);
   }
 
+  async function handleGeneratedPDF(order: Order) {
+    try {
+      setGeneratedPdf(true);
+
+      const response = await api.post("/generate-pdf", order, {
+        responseType: "blob",
+      });
+
+      console.log(response);
+
+      const blob = new Blob([response.data], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `pedido-${order.orderId}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      setGeneratedPdf(false);
+    } catch {
+      setGeneratedPdf(false);
+      toast.error("Ocorreu um erro ao tentar gerar o PDF");
+      console.error("Ocorreu um erro ao tentar gerar o PDF");
+    }
+  }
+
   const formattedFrom = date?.from
     ? format(date.from, "dd/MM/yyyy")
     : "--/--/----";
@@ -525,7 +556,7 @@ const OrdersTable = () => {
       const updatedData = snapshot.docs.map((doc) => ({
         ...(doc.data() as Order),
       }));
-      console.log("Documentos => ", updatedData);
+      // console.log("Documentos => ", updatedData);
       setData(updatedData);
     });
 
@@ -798,6 +829,19 @@ const OrdersTable = () => {
 
                         <DialogContent className="flex flex-col border rounded-xs space-y-1 bg-gray-100 md:w-2/3 h-[86vh] overflow-y-scroll">
                           <DialogHeader>
+                            <Button
+                              className="w-fit"
+                              onClick={() => handleGeneratedPDF(order)}
+                            >
+                              {generatedPdf ? (
+                                <div className="flex gap-2">
+                                  <LoaderCircle className="animate-spin" />
+                                  <span>Baixando PDF...</span>
+                                </div>
+                              ) : (
+                                "Baixar PDF"
+                              )}
+                            </Button>
                             <div className="flex items-center">
                               <DialogTitle>
                                 {" "}

@@ -264,12 +264,6 @@ export const PDFPedido = () => {
                             <span>Altura: {item.altura}m</span>
                             <span>Largura: {item.largura}m</span>
                           </div>
-                          {/*  <div className="text-xs mt-1 text-red-700">
-                            {item.selectedVariation.nomeVariacao ===
-                            "Medida Padrao"
-                              ? "Pronta Entrega"
-                              : "Sob Medida"}
-                          </div> */}
                         </td>
                         <td className="px-2 py-2 border text-center">
                           {item.unidade}

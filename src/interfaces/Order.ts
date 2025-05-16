@@ -52,6 +52,7 @@ export interface DetailsPropostalProps {
   };
 }
 export interface Order {
+  logoBase64?: string;
   id: number;
   client: IClient;
   deliveryAddress: IDeliveryAddress;
