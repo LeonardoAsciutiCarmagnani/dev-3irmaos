@@ -17,6 +17,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
+import { useAuthStore } from "@/context/authContext";
 
 export const DetailsProduct = () => {
   const { state } = useLocation();
@@ -30,6 +31,7 @@ export const DetailsProduct = () => {
   });
   const [isSquareMeter, setIsSquareMeter] = useState(false);
   const [isSobMedida, setIsSobMedida] = useState(false);
+  const { user } = useAuthStore();
 
   const productSchema = z.object({
     comprimento:
@@ -119,6 +121,13 @@ export const DetailsProduct = () => {
   ];
 
   const onSubmit = (data: ProductFormData) => {
+    if (user?.role === "admin") {
+      toast.error("Administradores não podem comprar produtos.", {
+        duration: 5000,
+      });
+      return;
+    }
+
     const listImages = [
       {
         imagem: product.imagem,
@@ -534,7 +543,7 @@ export const DetailsProduct = () => {
                         Adicionar outros produtos
                       </Button>
                       <Button
-                        onClick={() => navigate("/orçamento")}
+                        onClick={() => navigate("/checkout")}
                         className="text-xs md:text-sm bg-green-700 text-white rounded-xs py-1 md:py-2 px-2 md:px-3 hover:bg-green-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled={productsInCart.length === 0}
                       >

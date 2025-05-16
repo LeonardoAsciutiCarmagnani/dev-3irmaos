@@ -49,7 +49,7 @@ const GetClients = ({ selectedClient, setSelectedClient }: GetClientsProps) => {
     <div className="flex items-start rounded-xs p-4 w-[120vh] justify-start gap-x-10 border border-gray-200 shadow-md shadow-gray-200 h-full">
       <div>
         <div>
-          <h1 className="text-xl font-semibold text-red-900">Cliente</h1>
+          <h1 className="text-md font-semibold text-red-900">Cliente</h1>
         </div>
         <div>
           <Popover open={open} onOpenChange={setOpen}>

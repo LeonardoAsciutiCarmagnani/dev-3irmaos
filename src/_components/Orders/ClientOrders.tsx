@@ -22,7 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { FileDownIcon, InfoIcon, LoaderCircle } from "lucide-react";
+import { InfoIcon, LoaderCircle } from "lucide-react";
 import {
   collection,
   doc,
@@ -37,7 +37,6 @@ import { toast } from "sonner";
 import DetailsOrder from "./DetailsOrder/DetailsOrder";
 import { IMaskInput } from "react-imask";
 import { useAuthStore } from "@/context/authContext";
-import { Link } from "react-router-dom";
 import Dropzone from "../DropzoneImage/DropzoneImage";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { Order } from "@/interfaces/Order";

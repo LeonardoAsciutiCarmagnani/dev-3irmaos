@@ -137,15 +137,17 @@ const Header = () => {
                       Sair
                     </Button>
                   </div>
-                  <div className="flex items-center gap-x-2 mt-4">
-                    <ScrollTextIcon className="text-red-900" size={25} />
-                    <Link
-                      to="/pedidos-e-orçamentos"
-                      className="text-sm md:text-md text-gray-900 font-semibold hover:underline hover:cursor-pointer hover:text-red-900"
-                    >
-                      Meus orçamentos
-                    </Link>
-                  </div>
+                  {user.role !== "admin" && (
+                    <div className="flex items-center gap-x-2 mt-4">
+                      <ScrollTextIcon className="text-red-900" size={25} />
+                      <Link
+                        to="/pedidos-e-orçamentos"
+                        className="text-sm md:text-md text-gray-900 font-semibold hover:underline hover:cursor-pointer hover:text-red-900"
+                      >
+                        Meus orçamentos
+                      </Link>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div>
@@ -174,7 +176,11 @@ const Header = () => {
             </PopoverContent>
           </Popover>
           {user && user.displayName ? (
-            <div className="hidden md:flex text-nowrap text-lg font-semibold text-gray-600 hover:cursor-default">
+            <div
+              className={`hidden md:flex text-nowrap text-lg font-semibold text-gray-600 hover:cursor-default ${
+                user?.role === "admin" ? "text-red-900" : ""
+              }`}
+            >
               {user.displayName.split(" ")[0]}
             </div>
           ) : null}

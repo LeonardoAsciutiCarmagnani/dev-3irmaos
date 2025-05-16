@@ -233,7 +233,7 @@ const CreateOrderADM = () => {
   };
 
   return (
-    <div className="flex flex-col items-start h-full gap-y-4 pl-4">
+    <div className="flex flex-col items-start h-[calc(100vh-4.5rem)] overflow-y-scroll gap-y-4 pl-4 border border-gray-200 shadow-md shadow-gray-200">
       <div className="w-full">
         <div className="p-2 flex items-center justify-between gap-x-12">
           <h1 className="text-2xl font-bold text-gray-800">{`Novo orçamento - #${budgetNumber}`}</h1>
@@ -244,15 +244,15 @@ const CreateOrderADM = () => {
         <div className="flex items-start justify-between gap-x-2 w-[180vh] h-[11rem]">
           <div className="border border-gray-200 shadow-md shadow-gray-200 h-full w-full p-2">
             <div className="mb-1">
-              <h2 className="text-red-900 font-semibold text-xl">Vendedor</h2>
+              <h2 className="text-red-900 font-semibold text-md">Vendedor</h2>
             </div>
             <Popover open={open} onOpenChange={setOpen}>
               <PopoverTrigger asChild>
                 <div
                   className="
-                     rounded-xs p-2 w-[20rem] font-semibold border border-gray-200 hover:ring-1 hover:cursor-pointer"
+                     rounded-xs p-2 w-[20rem] border border-gray-200 hover:ring-1 hover:cursor-pointer"
                 >
-                  {selectedSeller?.name ?? "Selecione um vendedor"}
+                  {selectedSeller?.name ?? "Selecione..."}
                 </div>
               </PopoverTrigger>
               <PopoverContent className="space-y-1 rounded-xs w-[20rem]">
@@ -391,7 +391,7 @@ const CreateOrderADM = () => {
         </div>
       </div>
 
-      <div className="flex items-center gap-x-2 justify-start w-[180vh]">
+      <div className="flex items-center gap-x-2 justify-end pb-2 w-[180vh]">
         <Button
           type="reset"
           className="bg-red-800 rounded-xs"
@@ -409,7 +409,7 @@ const CreateOrderADM = () => {
         </Button>
         <Button
           type="submit"
-          className="bg-green-700 rounded-xs"
+          className="bg-emerald-600 rounded-xs"
           onClick={postBudget}
           disabled={isLoading}
         >

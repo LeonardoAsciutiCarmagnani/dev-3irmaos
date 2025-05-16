@@ -378,7 +378,7 @@ const ClientsTable = () => {
   } = register("address.cep");
 
   return (
-    <div className="space-y-3 p-4 bg-white rounded-xs shadow w-full h-full">
+    <div className="space-y-3 p-4 bg-white rounded-xs shadow w-full h-[calc(100vh-4.5rem)] overflow-y-auto">
       <div className="relative">
         <FiSearch className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
         <input
