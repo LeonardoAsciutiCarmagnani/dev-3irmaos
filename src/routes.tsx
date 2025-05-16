@@ -6,7 +6,6 @@ import { CheckoutPage } from "./pages/Checkout";
 import AuthenticatedRoute from "./_components/ProtectedRoutes/AuthenticatedRoute";
 import LoginPage from "./pages/Login";
 import HomePage from "./_components/Home/index";
-import { PDFPedido } from "./_components/OrderPDF/OrderPDF";
 import CreateOrderPage from "./pages/CreateOrder";
 import ClientsTable from "./_components/Clients/Clientstable";
 import AdminRoute from "./_components/ProtectedRoutes/AdminRoute";
@@ -93,16 +92,7 @@ export const routes = createBrowserRouter([
       </AdminRoute>
     ),
   },
-  {
-    path: "/imprimir",
-    element: (
-      <AuthenticatedRoute>
-        <LayoutPage>
-          <PDFPedido />
-        </LayoutPage>
-      </AuthenticatedRoute>
-    ),
-  },
+
   {
     path: "/401",
     element: (

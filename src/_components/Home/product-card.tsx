@@ -11,7 +11,7 @@ const ProductCard = (Product: Product) => {
     ...Product.imagensAdicionais,
   ];
 
-  const CategoiesWithValue = ["Portas Pronta Entrega"];
+  const CategoriesWithValue = ["Portas Pronta Entrega"];
 
   return (
     <div
@@ -38,12 +38,12 @@ const ProductCard = (Product: Product) => {
         <div className="absolute -top-5 right-4 z-10">
           <Badge
             className={`px-3 py-1.5 font-semibold shadow-lg rounded-xs ${
-              !CategoiesWithValue.includes(Product.categoria)
+              !CategoriesWithValue.includes(Product.categoria)
                 ? "bg-blue-600 text-white"
                 : "bg-emerald-600 text-white"
             }`}
           >
-            {!CategoiesWithValue.includes(Product.categoria) ? (
+            {!CategoriesWithValue.includes(Product.categoria) ? (
               <span className="text-xs tracking-wide">VALOR SOB CONSULTA</span>
             ) : (
               <span className="text-xs tracking-wide">

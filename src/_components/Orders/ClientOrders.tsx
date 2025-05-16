@@ -456,39 +456,6 @@ const ClientOrdersTable = () => {
                               </div>
                               <div className="flex w-full p-2 rounded-xs items-center">
                                 <div className="flex flex-col w-full">
-                                  {order.orderStatus !== 1 && (
-                                    <div className="flex justify-end  w-full">
-                                      <Link
-                                        to={"/imprimir"}
-                                        state={{
-                                          id: order.orderId,
-                                          createdAt: order.createdAt,
-                                          client: order.client,
-                                          products: order.products,
-                                          clientImages: order.clientImages,
-                                          imagesUrls: order.imagesUrls,
-                                          detailsPropostal:
-                                            order.detailsPropostal,
-                                          deliveryAddress:
-                                            order.deliveryAddress,
-                                          totalValue: order.totalValue,
-                                          totalDiscount: order.totalDiscount,
-                                          discountTotalValue:
-                                            order.discountTotalValue,
-                                        }}
-                                      >
-                                        <Button
-                                          className="w-fit rounded-xs bg-gray-100 text-red-900 hover:text-white border
-border-red-900 hover:border-white"
-                                        >
-                                          <div className="flex gap-2 items-center ">
-                                            <FileDownIcon />
-                                            <span className="text-xl">PDF</span>
-                                          </div>
-                                        </Button>
-                                      </Link>
-                                    </div>
-                                  )}
                                   <div className="flex flex-col md:flex-row space-y-2 space-x-32 items-start">
                                     <div className=" flex flex-col justify-between">
                                       <div className="flex gap-2 items-center">
