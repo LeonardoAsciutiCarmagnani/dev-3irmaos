@@ -37,6 +37,8 @@ const CreateOrderADM = () => {
   const [totalWithoutFreteAndDiscount, setTotalWithoutFreteAndDiscount] =
     useState(0);
   const [totalDiscount, setTotalDiscount] = useState(0);
+  const [includedItens, setIncludedItens] = useState("");
+  const [notIncludedItems, setNotIncludedItems] = useState("");
 
   const postBudget = async () => {
     try {
@@ -124,6 +126,8 @@ const CreateOrderADM = () => {
           delivery: deliveryValue || undefined,
           time: timeEstimate || undefined,
           selectedSeller: selectedSeller || undefined,
+          itemsIncluded: includedItens,
+          itemsNotIncluded: notIncludedItems,
         },
         createdAt: format(new Date(), "dd/MM/yyyy HH:mm:ss"),
         orderStatus: 1,
@@ -328,20 +332,6 @@ const CreateOrderADM = () => {
               />
             </div>
 
-            {/* <div className="flex flex-col">
-              <label className="text-sm text-gray-600 mb-1">
-                Prazo de entrega (dias)
-              </label>
-              <input
-                type="number"
-                className="border border-gray-300 rounded-xs p-2"
-                value={deliveryValue || ""}
-                onChange={(e) =>
-                  setDeliveryValue(Number(e.target.value) || undefined)
-                }
-              />
-            </div> */}
-
             <div className="flex flex-col">
               <label className="text-sm text-gray-600 mb-1">
                 Prazo de entrega
@@ -354,6 +344,35 @@ const CreateOrderADM = () => {
                 placeholder="Ex: 1 mês, 2 meses, etc."
               />
             </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-x-4 w-full mt-2">
+          <div className="flex flex-col">
+            <label className="text-sm text-gray-600 mb-1 ">
+              Itens inclusos
+            </label>
+            <textarea
+              className="border border-gray-300 rounded-xs p-2 resize-none"
+              placeholder="Digite aqui quais itens estão inclusos no orçamento..."
+              value={includedItens}
+              onChange={(e) => setIncludedItens(e.target.value)}
+              rows={4}
+              cols={50}
+            />
+          </div>
+          <div className="flex flex-col">
+            <label className="text-sm text-gray-600 mb-1 ">
+              Itens não inclusos
+            </label>
+            <textarea
+              className="border border-gray-300 rounded-xs p-2 resize-none"
+              placeholder="Digite aqui quais itens não estão inclusos no orçamento..."
+              value={notIncludedItems}
+              onChange={(e) => setNotIncludedItems(e.target.value)}
+              rows={4}
+              cols={50}
+            />
           </div>
         </div>
       </div>
