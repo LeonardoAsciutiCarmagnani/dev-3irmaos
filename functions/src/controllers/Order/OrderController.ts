@@ -279,6 +279,13 @@ export class OrderController {
           }
           .section {
             margin-top: 20px;
+        
+          }
+          .section h2 {
+            page-break-after: avoid;      
+            break-after: avoid-page;      
+            margin-top: 0;
+            margin-bottom: 12px;
           }
           .flex {
             display: flex;
@@ -301,18 +308,40 @@ export class OrderController {
           .text-right {
             text-align: right;
           }
-          .images {
+          .images-grid {
             display: grid;
-            grid-template-columns: 40% 40%;
-            gap: 6rem;
-            margin-top: 20px;
-          }
-          .images img {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
             width: 100%;
-            height: 600px;
-            object-fit: contain;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            break-inside: avoid-column;
+            break-inside: avoid-page;
+          }
+
+          .image-container {
+            width: 100%;
+            height: 250px; /* Altura fixa para todos os containers */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 1px solid #ddd;
+          }
+
+          .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            page-break-inside: avoid;
+            break-inside: avoid-column;
+            break-inside: avoid-page;
+          }
+
+          @page {
+            margin: 20mm 10mm 10mm 10mm;  
+          }
+
+          @page :first {
+            margin-top: 10mm;           
           }
         </style>
       </head>
@@ -405,22 +434,38 @@ export class OrderController {
             </tbody>
             <tfoot>
               <tr>
-                <td colspan="6" class="text-right"><strong>Total:</strong>${totalValue?.toLocaleString(
+                <td colspan="6" class="text-right"><strong style="padding: 0px 4px">Total:</strong>${totalValue?.toLocaleString(
                   "pt-BR",
                   { style: "currency", currency: "BRL" }
                 )}</td>
               </tr>
               <tr>
-                <td colspan="6" class="text-right"><strong>Desconto total:</strong>${totalDiscount?.toLocaleString(
-                  "pt-BR",
-                  { style: "currency", currency: "BRL" }
-                )}</td>
+                <td colspan="6" class="text-right"><strong style="padding: 0px 4px">Desconto total:</strong>${
+                  totalDiscount
+                    ? totalDiscount.toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      })
+                    : "R$ 0,00"
+                }</td>
               </tr>
               <tr>
-                <td colspan="6" class="text-right"><strong>Total com desconto:</strong>${discountTotalValue?.toLocaleString(
-                  "pt-BR",
-                  { style: "currency", currency: "BRL" }
-                )}</td>
+               <td colspan="6" class="text-right">
+                  <strong style="padding: 0px 4px">
+                    Total com desconto:
+                  </strong>
+                  ${
+                    discountTotalValue
+                      ? discountTotalValue.toLocaleString("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        })
+                      : totalValue?.toLocaleString("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        })
+                  }
+                </td>
               </tr>
             </tfoot>
           </table>
@@ -431,14 +476,16 @@ export class OrderController {
             ? `
           <div class="section">
             <h2>Imagens de referência</h2>
-            <div class="images">
-              ${clientImages
-                .map(
-                  (src) =>
-                    `<img src="${src}" alt="Imagem fornecida pela 3 Irmãos" />`
-                )
-                .join("")}
-            </div>
+            <div class="images-grid">
+                  ${clientImages
+                    .map(
+                      (src) =>
+                        `<div class="image-container">
+                          <img src="${src}" alt="Imagem fornecida pelo cliente" />
+                        </div>`
+                    )
+                    .join("")}
+                </div>
           </div>`
             : ""
         }
@@ -446,17 +493,19 @@ export class OrderController {
           ${
             imagesUrls
               ? `
-          <div class="section">
-            <h2>Imagens ilustrativas</h2>
-            <div class="images">
-              ${imagesUrls
-                .map(
-                  (src) =>
-                    `<img src="${src}" alt="Imagem fornecida pela 3 Irmãos" />`
-                )
-                .join("")}
-            </div>
-          </div>`
+              <div class="section">
+                <h2>Imagens ilustrativas</h2>
+                <div class="images-grid">
+                  ${imagesUrls
+                    .map(
+                      (src) =>
+                        `<div class="image-container">
+                          <img src="${src}" alt="Imagem fornecida pela 3 Irmãos" />
+                        </div>`
+                    )
+                    .join("")}
+                </div>
+              </div>`
               : ""
           }
 
@@ -520,17 +569,21 @@ export class OrderController {
         </ul>
       </div>
 
-      <div style="margin-top: 24px;">
+      <div style="margin-top: 15px;">
         <p style="font-weight: 600;">📞 Vamos conversar e alinhar os próximos passos?</p>
-        <p style="font-weight: 600;">Atenciosamente,</p>
+        <p style="font-weight: 600; margin-top: 15px">Atenciosamente,</p>
 
-        <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 8px; font-weight: 600;">
-          <p>👤 ${detailsPropostal?.selectedSeller?.name}</p>
-          <p>📧 ${detailsPropostal?.selectedSeller?.email}</p>
-          <p>📞 ${detailsPropostal?.selectedSeller?.phone}</p>
-          <p>📸 @3irmaosmadeirademolicao</p>
-          <p>🌐 3irmaosmadeirademolicao.com.br</p>
-        </div>
+      <ul style="display: flex; flex-direction: column; gap: 4px; margin-top: 4px; font-weight: 600; list-style: none; padding: 0;">
+        <li>👤 ${detailsPropostal?.selectedSeller?.name || "Não informado"}</li>
+        <li>📧 ${
+          detailsPropostal?.selectedSeller?.email || "Não informado"
+        }</li>
+        <li>📞 ${
+          detailsPropostal?.selectedSeller?.phone || "Não informado"
+        }</li>
+        <li>📸 @3irmaosmadeirademolicao</li>
+        <li>🌐 3irmaosmadeirademolicao.com.br</li>
+      </ul>
       </div>
     </div>
   </body>
@@ -553,7 +606,7 @@ export class OrderController {
         .header("Content-Type", "application/pdf")
         .header(
           "Content-Disposition",
-          `attachment; filename=pedido-${orderId}.pdf`
+          `attachment; filename=Pedido ${orderId} - 3 Irmãos.pdf`
         )
         .send(pdfBuffer);
     } catch (error) {

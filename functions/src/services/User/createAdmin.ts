@@ -26,7 +26,7 @@ export class CreateAdmin {
 
       const querySnapshot = await firestore
         .collection("internal_users")
-        .where("clientDocument", "==", userData.email)
+        .where("document", "==", userData.email)
         .get();
 
       if (!querySnapshot.empty) {
