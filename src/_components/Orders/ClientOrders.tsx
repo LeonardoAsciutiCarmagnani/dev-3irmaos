@@ -456,7 +456,7 @@ const ClientOrdersTable = () => {
                                 <Button
                                   onClick={() => handleGeneratedPDF(order)}
                                 >
-                                  {generatedPdf ? (
+                                  {generatedPdf === order.orderId ? (
                                     <LoaderCircle className="animate-spin" />
                                   ) : (
                                     <FileDownIcon />
@@ -528,49 +528,51 @@ const ClientOrdersTable = () => {
                                         </span>
                                       </div>
                                     </div>
-                                    <div className=" flex flex-col justify-between">
-                                      <div className="flex gap-2 items-center">
-                                        <span className="font-semibold  text-gray-700">
-                                          Rua:
-                                        </span>
-                                        <span className="text-lg text-gray-700 ">
-                                          {order.deliveryAddress.street}
-                                        </span>
+                                    <div className="flex flex-col lg:flex-row">
+                                      <div className=" flex flex-col justify-between">
+                                        <div className="flex gap-2 items-center">
+                                          <span className="font-semibold  text-gray-700">
+                                            Rua:
+                                          </span>
+                                          <span className="text-lg text-gray-700 ">
+                                            {order.deliveryAddress.street}
+                                          </span>
+                                        </div>
+                                        <div className="flex gap-2 items-center">
+                                          <span className="font-semibold  text-gray-700">
+                                            Numero:
+                                          </span>
+                                          <span className="text-lg text-gray-700 ">
+                                            {order.deliveryAddress.number}
+                                          </span>
+                                        </div>
+                                        <div className="flex gap-2 items-center">
+                                          <span className="font-semibold  text-gray-700">
+                                            Bairro:
+                                          </span>
+                                          <span className="text-lg text-gray-700 truncate">
+                                            {order.deliveryAddress.neighborhood}
+                                          </span>
+                                        </div>
+                                        <div className="flex gap-2 items-center">
+                                          <span className="font-semibold  text-gray-700">
+                                            Cidade:
+                                          </span>
+                                          <span className="text-lg  text-gray-700 ">
+                                            {order.deliveryAddress.city} /{" "}
+                                            {order.deliveryAddress.state}
+                                          </span>
+                                        </div>
                                       </div>
-                                      <div className="flex gap-2 items-center">
-                                        <span className="font-semibold  text-gray-700">
-                                          Numero:
-                                        </span>
-                                        <span className="text-lg text-gray-700 ">
-                                          {order.deliveryAddress.number}
-                                        </span>
-                                      </div>
-                                      <div className="flex gap-2 items-center">
-                                        <span className="font-semibold  text-gray-700">
-                                          Bairro:
-                                        </span>
-                                        <span className="text-lg text-gray-700 truncate">
-                                          {order.deliveryAddress.neighborhood}
-                                        </span>
-                                      </div>
-                                      <div className="flex gap-2 items-center">
-                                        <span className="font-semibold  text-gray-700">
-                                          Cidade:
-                                        </span>
-                                        <span className="text-lg  text-gray-700 ">
-                                          {order.deliveryAddress.city} /{" "}
-                                          {order.deliveryAddress.state}
-                                        </span>
-                                      </div>
-                                    </div>
-                                    <div>
-                                      <div className="flex gap-2 items-center">
-                                        <span className="font-semibold  text-gray-700">
-                                          CEP:
-                                        </span>
-                                        <span className="text-gray-700 text-lg">
-                                          {order.deliveryAddress.cep}
-                                        </span>
+                                      <div>
+                                        <div className="flex gap-2 items-center">
+                                          <span className="font-semibold  text-gray-700">
+                                            CEP:
+                                          </span>
+                                          <span className="text-gray-700 text-lg">
+                                            {order.deliveryAddress.cep}
+                                          </span>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
@@ -581,7 +583,7 @@ const ClientOrdersTable = () => {
                               <div className="font-semibold text-lg">
                                 Produtos
                               </div>
-                              <div className="space-y-2 w-full border border-t-0">
+                              <div className="space-y-2 w-full border  border-gray-400 border-t-0">
                                 {/* Cabeçalho visível apenas em telas médias para cima */}
                                 <div className="hidden md:grid grid-cols-7 font-bold text-center border border-gray-700">
                                   <div className="col-span-2 text-base">
@@ -614,7 +616,7 @@ const ClientOrdersTable = () => {
                                       className="border-b px-2 flex flex-col md:grid md:grid-cols-7 md:items-center md:justify-center"
                                     >
                                       {/* Produto */}
-                                      <div className="col-span-2 border-r h-full">
+                                      <div className="col-span-2 border-gray-400 h-full">
                                         <p className="text-sm md:text-lg font-medium">
                                           {item.nome}
                                         </p>
@@ -633,7 +635,7 @@ const ClientOrdersTable = () => {
                                           {variation[0]}
                                         </p>
                                       </div>
-                                      <div className="mt-2 md:mt-0 md:flex justify-center items-center text-sm md:text-base">
+                                      <div className="mt-2 md:mt-0 md:flex justify-center items-center text-sm md:text-base border-gray-400 h-full">
                                         <span className="block md:hidden font-semibold">
                                           Unidade:
                                         </span>{" "}
@@ -648,7 +650,7 @@ const ClientOrdersTable = () => {
                                       </div>
 
                                       {/* Desconto */}
-                                      <div className="mt-2 md:mt-0 md:flex justify-center items-center text-sm md:text-base">
+                                      <div className="mt-2 md:mt-0 md:flex justify-center items-center text-sm md:text-base ">
                                         <span className="block md:hidden font-semibold">
                                           Desconto:
                                         </span>
@@ -668,7 +670,7 @@ const ClientOrdersTable = () => {
                                           value={String(item.desconto || 0)}
                                           unmask={true}
                                           disabled
-                                          className="rounded-xs p-0 md:px-2 py-1 text-center w-full"
+                                          className="rounded-xs p-0 md:px-2  text-center w-full "
                                         />
                                       </div>
 
@@ -702,7 +704,7 @@ const ClientOrdersTable = () => {
                                         <span className="block md:hidden font-semibold">
                                           Valor total:
                                         </span>
-                                        <span className="w-full">
+                                        <span className="w-full truncate">
                                           {(item.desconto
                                             ? item.preco * item.quantidade -
                                               item.desconto
@@ -736,21 +738,19 @@ const ClientOrdersTable = () => {
 
                                   {order.orderStatus !== 1 && (
                                     <>
-                                      <div className="flex justify-between w-full  gap-4  pt-2 border-t ">
-                                        <div className="w-full flex justify-end px-14">
+                                      <div className="w-full flex justify-end items-end border-t">
+                                        <div className="flex justify-between items-center w-full pt-2 md:w-auto px-14 ">
                                           <span className="font-semibold">
                                             Desconto de
                                           </span>
                                           <span className="w-[8rem] truncate text-right">
-                                            {order.totalDiscount
-                                              ? order.totalDiscount?.toLocaleString(
-                                                  "pt-BR",
-                                                  {
-                                                    style: "currency",
-                                                    currency: "BRL",
-                                                  }
-                                                )
-                                              : "R$ 0,00"}
+                                            {order.totalDiscount.toLocaleString(
+                                              "pt-BR",
+                                              {
+                                                style: "currency",
+                                                currency: "BRL",
+                                              }
+                                            )}
                                           </span>
                                         </div>
                                       </div>
@@ -772,21 +772,19 @@ const ClientOrdersTable = () => {
                                           </span>
                                         </div>
                                       </div>
-                                      <div className="flex justify-between w-full  gap-4 md:gap-10 pt-2 border-t">
-                                        <div className="w-full flex justify-end px-14">
+                                      <div className="w-full flex justify-end items-end border-t">
+                                        <div className="flex justify-between items-center w-full pt-2 pb-2 md:w-auto px-14 ">
                                           <span className="font-semibold">
                                             Frete
                                           </span>
                                           <span className="w-[8rem] truncate text-right">
-                                            {order.detailsPropostal.delivery
-                                              ? order.detailsPropostal.delivery.toLocaleString(
-                                                  "pt-BR",
-                                                  {
-                                                    style: "currency",
-                                                    currency: "BRL",
-                                                  }
-                                                )
-                                              : "R$ 0,00"}
+                                            {order.detailsPropostal.delivery.toLocaleString(
+                                              "pt-BR",
+                                              {
+                                                style: "currency",
+                                                currency: "BRL",
+                                              }
+                                            )}
                                           </span>
                                         </div>
                                       </div>

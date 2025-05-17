@@ -230,8 +230,9 @@ const DetailsOrder = ({
                 </PopoverTrigger>
                 <PopoverContent className="flex flex-col items-center space-y-2 w-fit">
                   <span className="text-sm">Vendedores:</span>
-                  {sellersList.map((seller) => (
+                  {sellersList.map((seller, index) => (
                     <div
+                      key={index}
                       onClick={() => {
                         setSelectedSeller(seller);
                         setOpen(false);

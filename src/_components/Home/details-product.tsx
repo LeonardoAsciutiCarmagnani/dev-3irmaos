@@ -30,25 +30,31 @@ export const DetailsProduct = () => {
     name: "",
   });
   const [isSquareMeter, setIsSquareMeter] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isSobMedida, setIsSobMedida] = useState(false);
+
+  //Controla a nomenclatura do input de comprimento
+  const [variationNameInput, setVariationNameInput] = useState("Profundidade");
+
   const { user } = useAuthStore();
 
   const productSchema = z.object({
     comprimento:
-      isSobMedida && !isSquareMeter
-        ? z.coerce.number().min(1, "Comprimento obrigatório")
-        : z.coerce.number(),
+      // (isSobMedida && !isSquareMeter) || product.nome.includes("Painel")
+      // ? z.coerce.number().min(1, "Comprimento obrigatório")
+      z.coerce.number(),
     altura:
-      isSobMedida && !isSquareMeter
-        ? z.coerce.number().min(1, "Altura obrigatória")
-        : z.coerce.number(),
+      // isSobMedida && !isSquareMeter
+      // ? z.coerce.number().min(1, "Altura obrigatória")
+      z.coerce.number(),
     largura:
-      isSobMedida && !isSquareMeter
-        ? z.coerce.number().min(1, "Largura obrigatória")
-        : z.coerce.number(),
-    quantidade: isSquareMeter
-      ? z.coerce.number().min(1, "Quantidade obrigatória")
-      : z.coerce.number().min(1, "Quantidade obrigatória"),
+      // isSobMedida && !isSquareMeter
+      // ? z.coerce.number().min(1, "Largura obrigatória")
+      z.coerce.number(),
+    quantidade:
+      // isSquareMeter
+      //   ? z.coerce.number().min(1, "Quantidade obrigatória")
+      z.coerce.number().min(1, "Quantidade obrigatória"),
   });
 
   type ProductFormData = z.infer<typeof productSchema>;
@@ -100,6 +106,21 @@ export const DetailsProduct = () => {
       setIsSquareMeter(true);
     }
 
+    const batenteVariaton = ["Portas Pronta Entrega", "Janelas e Esquadrias"];
+    const validationForNameProduct = ["Mesa", "mesa", "Mesas", "mesa"];
+
+    if (batenteVariaton.includes(product.categoria)) {
+      setVariationNameInput("Batente (Espessura da parede)");
+    } else if (
+      validationForNameProduct.some((item) =>
+        product.nome.toLowerCase().includes(item)
+      )
+    ) {
+      setVariationNameInput("Comprimento");
+    } else {
+      setVariationNameInput("Profundidade");
+    }
+
     setIsSobMedida(!typeProduct.typeProduct);
 
     if (typeProduct.typeProduct) {
@@ -125,6 +146,7 @@ export const DetailsProduct = () => {
   ];
 
   const onSubmit = (data: ProductFormData) => {
+    console.log("Chegou na função");
     if (user?.role === "admin") {
       toast.error("Administradores não podem comprar produtos.", {
         duration: 5000,
@@ -401,31 +423,33 @@ export const DetailsProduct = () => {
                       <div className="flex flex-col md:flex-row md:h-18 items-start md:justify-start space-y-2 gap-x-4 md:gap-x-8 md:space-y-0">
                         {!isSquareMeter ? (
                           <div className="flex flex-wrap gap-2 md:gap-x-6 items-center justify-start">
-                            <div>
-                              <label
-                                htmlFor="altura"
-                                className="text-xs md:text-sm font-medium text-gray-700 text-nowrap"
-                              >
-                                Altura (m)
-                              </label>
-                              <Input
-                                id="altura"
-                                type="number"
-                                step={"0.01"}
-                                {...register("altura")}
-                                disabled={
-                                  hasVariations
-                                    ? typeProduct.typeProduct
-                                    : false
-                                }
-                                className="w-[4.5rem] md:w-[5rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
-                              />
-                              {errors.altura && (
-                                <span className="text-red-500 text-xs md:text-sm">
-                                  {errors.altura.message}
-                                </span>
-                              )}
-                            </div>
+                            {!/(^|\s)mesas?(\s|$)/i.test(product.nome ?? "") ? (
+                              <div>
+                                <label
+                                  htmlFor="altura"
+                                  className="text-xs md:text-sm font-medium text-gray-700 text-nowrap"
+                                >
+                                  Altura (m)
+                                </label>
+                                <Input
+                                  id="altura"
+                                  type="number"
+                                  step={"0.01"}
+                                  {...register("altura")}
+                                  disabled={
+                                    hasVariations
+                                      ? typeProduct.typeProduct
+                                      : false
+                                  }
+                                  className="w-[4.5rem] md:w-[5rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
+                                />
+                                {errors.altura && (
+                                  <span className="text-red-500 text-xs md:text-sm">
+                                    {errors.altura.message}
+                                  </span>
+                                )}
+                              </div>
+                            ) : null}
 
                             <div>
                               <label
@@ -452,32 +476,35 @@ export const DetailsProduct = () => {
                                 </span>
                               )}
                             </div>
-
-                            <div>
-                              <label
-                                htmlFor="comprimento"
-                                className="text-xs md:text-sm font-medium text-gray-700 text-nowrap"
-                              >
-                                Profundidade (m)
-                              </label>
-                              <Input
-                                id="comprimento"
-                                type="number"
-                                step={"0.01"}
-                                {...register("comprimento")}
-                                disabled={
-                                  hasVariations
-                                    ? typeProduct.typeProduct
-                                    : false
-                                }
-                                className="w-[4.5rem] md:w-[4rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
-                              />
-                              {errors.comprimento && (
-                                <span className="text-red-500 text-xs md:text-sm">
-                                  {errors.comprimento.message}
-                                </span>
-                              )}
-                            </div>
+                            {!/(^|\s)painel?(\s|$)/i.test(
+                              product.nome ?? ""
+                            ) ? (
+                              <div>
+                                <label
+                                  htmlFor="comprimento"
+                                  className="text-xs md:text-sm font-medium text-gray-700 text-nowrap"
+                                >
+                                  {variationNameInput} (m)
+                                </label>
+                                <Input
+                                  id="comprimento"
+                                  type="number"
+                                  step={"0.01"}
+                                  {...register("comprimento")}
+                                  disabled={
+                                    hasVariations
+                                      ? typeProduct.typeProduct
+                                      : false
+                                  }
+                                  className="w-[4.5rem] md:w-[4rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
+                                />
+                              </div>
+                            ) : null}
+                            {errors.comprimento && (
+                              <span className="text-red-500 text-xs md:text-sm">
+                                {errors.comprimento.message}
+                              </span>
+                            )}
                           </div>
                         ) : (
                           <div className="flex gap-x-6 items-center justify-center">
@@ -538,13 +565,14 @@ export const DetailsProduct = () => {
 
                     <div className="flex justify-end gap-x-2 md:gap-x-4">
                       <Button
+                        type="button"
                         onClick={() => navigate("/")}
                         className="text-xs md:text-sm bg-gray-200 text-gray-700 rounded-xs py-1 md:py-2 px-2 md:px-3 hover:bg-gray-300 transition-colors"
                       >
                         Adicionar outros produtos
                       </Button>
                       <Button
-                        onClick={() => navigate("/checkout")}
+                        onClick={() => navigate("/orçamento")}
                         className="text-xs md:text-sm bg-green-700 text-white rounded-xs py-1 md:py-2 px-2 md:px-3 hover:bg-green-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled={productsInCart.length === 0}
                       >

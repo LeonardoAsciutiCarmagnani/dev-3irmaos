@@ -326,6 +326,7 @@ const OrdersTable = () => {
         if (order.orderId === orderId) {
           const updatedProducts = order.products.map((product) => {
             if (product.selectedVariation.id === productId) {
+              console.log("Desconto por produto => ", product.desconto);
               return {
                 ...product,
                 desconto: discount * product.quantidade,
@@ -335,11 +336,13 @@ const OrdersTable = () => {
           });
 
           const totalDiscount = updatedProducts.reduce((sum, product) => {
-            return sum + product.desconto;
+            return sum + (product.desconto ?? 0);
           }, 0);
 
           const discountTotalValue = updatedProducts.reduce((sum, product) => {
-            return sum + product.preco * product.quantidade - product.desconto;
+            return (
+              sum + product.preco * product.quantidade - (product.desconto ?? 0)
+            );
           }, 0);
 
           console.log("Calculo do total com desconto => ", discountTotalValue);
@@ -911,49 +914,51 @@ const OrdersTable = () => {
                                       </span>
                                     </div>
                                   </div>
-                                  <div className=" flex flex-col justify-between">
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        Rua:
-                                      </span>
-                                      <span className="text-lg text-gray-700 ">
-                                        {order.deliveryAddress.street}
-                                      </span>
+                                  <div className="flex flex-col lg:flex-row">
+                                    <div className=" flex flex-col justify-between">
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Rua:
+                                        </span>
+                                        <span className="text-lg text-gray-700 ">
+                                          {order.deliveryAddress.street}
+                                        </span>
+                                      </div>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Numero:
+                                        </span>
+                                        <span className="text-lg text-gray-700 ">
+                                          {order.deliveryAddress.number}
+                                        </span>
+                                      </div>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Bairro:
+                                        </span>
+                                        <span className="text-lg text-gray-700 truncate">
+                                          {order.deliveryAddress.neighborhood}
+                                        </span>
+                                      </div>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Cidade:
+                                        </span>
+                                        <span className="text-lg  text-gray-700 ">
+                                          {order.deliveryAddress.city} /{" "}
+                                          {order.deliveryAddress.state}
+                                        </span>
+                                      </div>
                                     </div>
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        Numero:
-                                      </span>
-                                      <span className="text-lg text-gray-700 ">
-                                        {order.deliveryAddress.number}
-                                      </span>
-                                    </div>
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        Bairro:
-                                      </span>
-                                      <span className="text-lg text-gray-700 truncate">
-                                        {order.deliveryAddress.neighborhood}
-                                      </span>
-                                    </div>
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        Cidade:
-                                      </span>
-                                      <span className="text-lg  text-gray-700 ">
-                                        {order.deliveryAddress.city} /{" "}
-                                        {order.deliveryAddress.state}
-                                      </span>
-                                    </div>
-                                  </div>
-                                  <div>
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        CEP:
-                                      </span>
-                                      <span className="text-gray-700 text-lg">
-                                        {order.deliveryAddress.cep}
-                                      </span>
+                                    <div>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          CEP:
+                                        </span>
+                                        <span className="text-gray-700 text-lg">
+                                          {order.deliveryAddress.cep}
+                                        </span>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
