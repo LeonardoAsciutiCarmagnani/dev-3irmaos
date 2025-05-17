@@ -22,7 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { InfoIcon, LoaderCircle } from "lucide-react";
+import { FileDownIcon, InfoIcon, LoaderCircle } from "lucide-react";
 import {
   collection,
   doc,
@@ -40,6 +40,7 @@ import { useAuthStore } from "@/context/authContext";
 import Dropzone from "../DropzoneImage/DropzoneImage";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { Order } from "@/interfaces/Order";
+import { api } from "@/lib/axios";
 
 type OrderStatusType = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 
@@ -57,6 +58,8 @@ const ClientOrdersTable = () => {
   const [sendPropostal, setSendPropostal] = useState(false);
 
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
+
+  const [generatedPdf, setGeneratedPdf] = useState<number | null>(null);
 
   /* Detalhes do orçamento */
 
@@ -245,6 +248,33 @@ const ClientOrdersTable = () => {
     }
   }
 
+  async function handleGeneratedPDF(order: Order) {
+    try {
+      setGeneratedPdf(order.orderId);
+
+      const response = await api.post("/generate-pdf", order, {
+        responseType: "blob",
+      });
+
+      console.log(response);
+
+      const blob = new Blob([response.data], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `Pedido #${order.orderId} - 3 Irmãos.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      setGeneratedPdf(null);
+    } catch {
+      setGeneratedPdf(null);
+      toast.error("Ocorreu um erro ao tentar gerar o PDF");
+      console.error("Ocorreu um erro ao tentar gerar o PDF");
+    }
+  }
+
   const formattedFrom = date?.from
     ? format(date.from, "dd/MM/yyyy")
     : "--/--/----";
@@ -422,7 +452,16 @@ const ClientOrdersTable = () => {
                               >
                                 {order.client.name}
                               </td>
-                              <td className={`px-4 py-3 `}>
+                              <td className={`px-4 py-3 flex gap-2`}>
+                                <Button
+                                  onClick={() => handleGeneratedPDF(order)}
+                                >
+                                  {generatedPdf ? (
+                                    <LoaderCircle className="animate-spin" />
+                                  ) : (
+                                    <FileDownIcon />
+                                  )}
+                                </Button>
                                 <div
                                   className={`w-fit rounded-xs p-2 text-white font-semibold text-xs hover:cursor-pointer  ${
                                     status?.color || "bg-zinc-300"
@@ -437,8 +476,7 @@ const ClientOrdersTable = () => {
                           <DialogContent className="flex flex-col p-1 md:p-2 rounded-xs w-full bg-gray-100 md:w-2/3 h-[80vh] overflow-y-scroll">
                             <DialogHeader>
                               <div className="flex items-center">
-                                <DialogTitle>
-                                  {" "}
+                                <DialogTitle className="flex flex-col">
                                   <span className="text-xl font-bold text-gray-700">
                                     {order.orderStatus === 1
                                       ? "Orçamento"
@@ -573,10 +611,10 @@ const ClientOrdersTable = () => {
                                   return (
                                     <div
                                       key={index}
-                                      className="border-b p-2 flex flex-col md:grid md:grid-cols-7 md:items-center md:justify-center"
+                                      className="border-b px-2 flex flex-col md:grid md:grid-cols-7 md:items-center md:justify-center"
                                     >
                                       {/* Produto */}
-                                      <div className="col-span-2">
+                                      <div className="col-span-2 border-r h-full">
                                         <p className="text-sm md:text-lg font-medium">
                                           {item.nome}
                                         </p>
@@ -584,9 +622,12 @@ const ClientOrdersTable = () => {
                                           {variation[1]}
                                         </p>
                                         <p className="text-sm text-gray-500">
-                                          Altura: {item.altura} | Largura:{" "}
-                                          {item.largura} | Comprimento:{" "}
-                                          {item.comprimento}
+                                          Altura: {item.altura} m | Largura:{" "}
+                                          {item.largura} m | Comprimento:{" "}
+                                          {item.comprimento === undefined
+                                            ? 0
+                                            : item.comprimento}{" "}
+                                          m
                                         </p>
                                         <p className="text-sm text-red-900">
                                           {variation[0]}
@@ -721,6 +762,24 @@ const ClientOrdersTable = () => {
                                           <span className="w-[8rem] truncate text-right">
                                             {order.discountTotalValue
                                               ? order.discountTotalValue.toLocaleString(
+                                                  "pt-BR",
+                                                  {
+                                                    style: "currency",
+                                                    currency: "BRL",
+                                                  }
+                                                )
+                                              : "R$ 0,00"}
+                                          </span>
+                                        </div>
+                                      </div>
+                                      <div className="flex justify-between w-full  gap-4 md:gap-10 pt-2 border-t">
+                                        <div className="w-full flex justify-end px-14">
+                                          <span className="font-semibold">
+                                            Frete
+                                          </span>
+                                          <span className="w-[8rem] truncate text-right">
+                                            {order.detailsPropostal.delivery
+                                              ? order.detailsPropostal.delivery.toLocaleString(
                                                   "pt-BR",
                                                   {
                                                     style: "currency",

@@ -339,8 +339,10 @@ const OrdersTable = () => {
           }, 0);
 
           const discountTotalValue = updatedProducts.reduce((sum, product) => {
-            return sum + product.preco - product.desconto;
+            return sum + product.preco * product.quantidade - product.desconto;
           }, 0);
+
+          console.log("Calculo do total com desconto => ", discountTotalValue);
 
           return {
             ...order,
@@ -396,7 +398,7 @@ const OrdersTable = () => {
         }, 0);
 
         const discountTotalValue = updatedProducts.reduce((sum, product) => {
-          return sum + product.preco - product.desconto;
+          return sum + product.preco * product.quantidade - product.desconto;
         }, 0);
 
         return {
@@ -559,7 +561,7 @@ const OrdersTable = () => {
       const updatedData = snapshot.docs.map((doc) => ({
         ...(doc.data() as Order),
       }));
-      // console.log("Documentos => ", updatedData);
+      console.log("Documentos => ", updatedData);
       setData(updatedData);
     });
 
@@ -980,7 +982,7 @@ const OrdersTable = () => {
                               </thead>
                               <tbody className="divide-y divide-gray-200">
                                 {order.products &&
-                                  order.products.map((item) => {
+                                  order.products.map((item, index) => {
                                     const variation =
                                       item.selectedVariation.nomeVariacao.split(
                                         "-"
@@ -988,7 +990,7 @@ const OrdersTable = () => {
 
                                     return (
                                       <tr
-                                        key={item.id}
+                                        key={index}
                                         className="flex flex-col rounded-xs w-full border-b border-gray-300 last:border-b-0"
                                       >
                                         <td className=" grid grid-cols-7 items-center  justify-around  px-2  w-full">
@@ -1166,6 +1168,25 @@ const OrdersTable = () => {
                                             }
                                           )
                                         : "R$ 0,00"}
+                                    </span>
+                                  </td>
+                                </tr>
+                                <tr className="border-t text-end">
+                                  <td className="flex justify-end gap-10 p-2">
+                                    <span className="font-semibold">Frete</span>
+                                    <span className="w-[8rem] truncate">
+                                      {order.detailsPropostal.delivery
+                                        ? order.detailsPropostal.delivery.toLocaleString(
+                                            "pt-BR",
+                                            {
+                                              style: "currency",
+                                              currency: "BRL",
+                                            }
+                                          )
+                                        : delivery.toLocaleString("pt-BR", {
+                                            style: "currency",
+                                            currency: "BRL",
+                                          })}
                                     </span>
                                   </td>
                                 </tr>
