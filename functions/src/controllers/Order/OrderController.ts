@@ -47,9 +47,9 @@ const createBudgetSchema = z.object({
     z.object({
       nome: z.string({ message: "Nome do produto obrigatório." }),
       quantidade: z.number().min(1, "Quantidade deve ser maior que 0."),
-      altura: z.number().min(1, "Altura deve ser maior que 0."),
-      largura: z.number().min(1, "Largura deve ser maior que 0."),
-      // comprimento: z.number().min(1, "Comprimento deve ser maior que 0."),
+      altura: z.number().optional().nullable(),
+      largura: z.number().optional().nullable(),
+      comprimento: z.number().optional().nullable(),
       categoria: z.string({ message: "Categoria obrigatória." }).nullable(),
       unidade: z.string({ message: "Unidade obrigatória." }),
       preco: z.number({ message: "Preço obrigatório." }),
@@ -123,20 +123,15 @@ const createOrderSchema = z.object({
     z.object({
       nome: z.string({ message: "Nome do produto obrigatório." }),
       quantidade: z.number().min(1, "Quantidade deve ser maior que 0."),
-      altura: z.number().min(1, "Altura deve ser maior que 0."),
-      largura: z.number().min(1, "Largura deve ser maior que 0."),
-      // comprimento: z.number().min(1, "Comprimento deve ser maior que 0."),
+      altura: z.number().optional().nullable(),
+      largura: z.number().optional().nullable(),
+      comprimento: z.number().optional().nullable(),
       categoria: z.string({ message: "Categoria obrigatória." }).nullable(),
       preco: z.number({ message: "Preço obrigatório." }),
       selectedVariation: z.object({
         id: z.string({ message: "ID da variação obrigatória." }),
         nomeVariacao: z.string({ message: "Nome da variação obrigatória." }),
       }),
-      listImages: z.array(
-        z.object({
-          imagem: z.string().nullable(),
-        })
-      ),
     })
   ),
   detailsPropostal: z
@@ -412,6 +407,10 @@ export class OrderController {
                     item.preco * item.quantidade - (item.desconto || 0) || 0;
                   const variation =
                     item.selectedVariation.nomeVariacao.split("-");
+                  console.log(
+                    "Variações enviada ao back-end =>",
+                    item.selectedVariation.nomeVariacao
+                  );
 
                   return `
                     <tr>
@@ -420,14 +419,20 @@ export class OrderController {
                          <span style="color: #7f1d1d">
                           ${variation[0]}
                         </span> 
-                        <span> - </span>
-                        <span >
-                          ${variation[1]}
-                        </span> <br/>
+                         ${
+                           variation[1]
+                             ? `
+                          <span> - </span>
+                          <span>
+                            ${variation[1]}
+                          </span>`
+                             : ""
+                         }
+                       <br/>
                         <small style="color:#000">
                        Altura: ${item.altura}m | Largura: ${
                     item.largura
-                  }m</small>
+                  }m | Comprimento: ${item.comprimento}m</small>
                       </td>
                       <td>${item.unidade}</td>
                       <td style="text-align:center">${item.quantidade}</td>
