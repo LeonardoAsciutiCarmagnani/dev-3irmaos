@@ -1,5 +1,5 @@
 import { admin } from "../../firebaseConfig";
-import { v4 as uuid } from "uuid";
+import { v4 as uuidv4 } from "uuid";
 
 interface AdmFirestore {
   Id: string;
@@ -20,13 +20,15 @@ export class CreateAdmin {
   public static async execute(
     userData: Omit<AdmFirestore, "Id" | "createdAt" | "updatedAt">
   ): Promise<CreateAdminResponse> {
-    const randomHash = uuid();
     try {
+      const randomHash = uuidv4();
       const firestore = admin.firestore();
+
+      console.log("UserData", userData);
 
       const querySnapshot = await firestore
         .collection("internal_users")
-        .where("document", "==", userData.email)
+        .where("email", "==", userData.email)
         .get();
 
       if (!querySnapshot.empty) {

@@ -76,7 +76,7 @@ class App {
     // router.post("/check-email", UserController.checkEmail);
     router.post("/post-order", OrderController.postOrderInHiper);
     router.post("/post-budget", OrderController.createBudget);
-    router.post("/create-adm", CreateAdmin.execute);
+    router.post("/create-adm", UserController.createAdmin);
     router.post("/generate-pdf", OrderController.generatePDF);
     // router.post("/find-CEP", CEPController.getCEP);
     // //PUT ROUTES
