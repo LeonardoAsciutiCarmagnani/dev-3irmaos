@@ -251,24 +251,25 @@ export class OrderController {
         <style>
           body {
             font-family: Arial, sans-serif;
-            padding: 20px;
             color: #333;
           }
           .header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid #000;
             padding-bottom: 10px;
+            gap: 20px;
           }
           .logo {
             width: 300px;
           }
           .company-info {
+            display: flex;
+            flex-direction: column;
             text-align: center;
           }
             .company-addres{
-            font-size: 14px;
+            font-size: 12px;
             }
             .company-phone{
             font-size: 14px;
@@ -278,8 +279,7 @@ export class OrderController {
             font-weight: bold;
           }
           .section {
-            margin-top: 20px;
-        
+            margin-top: 10px;
           }
           .section h2 {
             page-break-after: avoid;      
@@ -289,7 +289,6 @@ export class OrderController {
           }
           .flex {
             display: flex;
-            gap: 40px;
           }
           table {
             width: 100%;
@@ -335,7 +334,16 @@ export class OrderController {
             break-inside: avoid-column;
             break-inside: avoid-page;
           }
-
+          .client-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+          }
+          .flex-client-info{
+            display: flex;
+            justify-content: space-between;
+            gap: 40px;
+            }
           @page {
             margin: 20mm 10mm 10mm 10mm;  
           }
@@ -349,10 +357,10 @@ export class OrderController {
         <div class="header">
           <img class="logo" src="${logoDataUri}" alt="Logo" />
           <div class="company-info">
-            <p><strong>3 IRMÃOS ARTE EM MADEIRA DE DEMOLIÇÃO</strong></p>
-            <p><strong>CNPJ: 60.272.960/0001-32</strong></p>
-            <p class="company-addres">Rua Madagascar, 330 Jardim Margarida - Vargem Grande Paulista / SP - 06739-016</p>
-            <p class="company-phone">Telefone: (11) 94592-6335 / (11) 4159-6680</p>
+            <span><strong>3 IRMÃOS ARTE EM MADEIRA DE DEMOLIÇÃO</strong></span>
+            <span><strong>CNPJ: 60.272.960/0001-32</strong></span>
+            <span class="company-addres">Rua Madagascar, 330 Jardim Margarida - Vargem Grande Paulista / SP - 06739-016</span>
+            <span class="company-phone">Telefone: (11) 94592-6335 / (11) 4159-6680</span>
           </div>
         </div>
 
@@ -361,18 +369,18 @@ export class OrderController {
           <div>${createdAt}</div>
         </div>
 
-        <div class="section flex">
-          <div>
-            <p><strong>Cliente:</strong> ${client.name}</p>
-            <p><strong>Email:</strong> ${client.email}</p>
-            <p><strong>Telefone:</strong> ${client.phone}</p>
+        <div class="section flex-client-info">
+          <div class="client-info">
+            <span><strong>Cliente:</strong> ${client.name}</span>
+            <span><strong>Email:</strong> ${client.email}</span>
+            <span><strong>Telefone:</strong> ${client.phone}</span>
           </div>
-          <div>
-            <p><strong>Rua:</strong> ${billingAddress.street}</p>
-            <p><strong>Bairro:</strong> ${billingAddress.neighborhood}</p>
-            <p><strong>Cidade:</strong> ${billingAddress.city} / ${
+          <div class="client-info">
+            <span><strong>Rua:</strong> ${billingAddress.street}</span>
+            <span><strong>Bairro:</strong> ${billingAddress.neighborhood}</span>
+            <span><strong>Cidade:</strong> ${billingAddress.city} / ${
         billingAddress.state
-      }</p>
+      }</span>
       </div>
       <p><strong>CEP:</strong> ${billingAddress.cep}</p>
         </div>
@@ -380,7 +388,8 @@ export class OrderController {
         <div class="section">
           <p>
             Prezada(o) ${client.name},<br />
-            Obrigado pelo interesse na 3 Irmãos. Trabalhamos com madeira de demolição nobre, com peças feitas sob medida e acabamento artesanal. Abaixo seguem os detalhes do orçamento solicitado. Qualquer ajuste, é só me chamar.
+            Obrigado pelo interesse na 3 Irmãos. Trabalhamos com madeira de demolição nobre, com peças feitas sob medida e acabamento artesanal.
+             Abaixo seguem os detalhes do orçamento solicitado. Qualquer ajuste, é só me chamar.
           </p>
         </div>
 
@@ -401,18 +410,27 @@ export class OrderController {
                 .map((item) => {
                   const total =
                     item.preco * item.quantidade - (item.desconto || 0) || 0;
+                  const variation =
+                    item.selectedVariation.nomeVariacao.split("-");
+
                   return `
                     <tr>
                       <td>
                         ${item.nome}<br/>
-                        <small style="color: #888">${
-                          item.selectedVariation.nomeVariacao
-                        } | Altura: ${item.altura}m | Largura: ${
+                         <span style="color: #7f1d1d">
+                          ${variation[0]}
+                        </span> 
+                        <span> - </span>
+                        <span >
+                          ${variation[1]}
+                        </span> <br/>
+                        <small style="color:#000">
+                       Altura: ${item.altura}m | Largura: ${
                     item.largura
                   }m</small>
                       </td>
                       <td>${item.unidade}</td>
-                      <td style="align-items: center;">${item.quantidade}</td>
+                      <td style="text-align:center">${item.quantidade}</td>
                       <td>${
                         item.desconto?.toLocaleString("pt-BR", {
                           style: "currency",
@@ -467,6 +485,21 @@ export class OrderController {
                   }
                 </td>
               </tr>
+               <tr>
+               <td colspan="6" class="text-right">
+                  <strong style="padding: 0px 4px">
+                    Frete:
+                  </strong>
+                  ${
+                    detailsPropostal?.delivery
+                      ? detailsPropostal?.delivery.toLocaleString("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        })
+                      : "R$ 0,00"
+                  }
+                </td>
+              </tr>
             </tfoot>
           </table>
         </div>
@@ -475,7 +508,7 @@ export class OrderController {
           clientImages?.length > 0
             ? `
           <div class="section">
-            <h2>Imagens de referência</h2>
+            <span style="font-weight: bold; font-size: 18px;">Imagens de referência</span>
             <div class="images-grid">
                   ${clientImages
                     .map(
@@ -494,7 +527,7 @@ export class OrderController {
             imagesUrls
               ? `
               <div class="section">
-                <h2>Imagens ilustrativas</h2>
+                <span style="font-weight: bold; font-size: 18px;">Imagens ilustrativas</span>
                 <div class="images-grid">
                   ${imagesUrls
                     .map(
@@ -510,8 +543,8 @@ export class OrderController {
           }
 
       <div class="section">
-        <h2>Observações</h2>
-        <p style="white-space: pre-wrap; color: #555;">
+        <span style="font-weight: bold; font-size: 18px;">Observações</span>
+        <p style="white-space: pre-wrap; color: #000;">
           ${detailsPropostal?.obs || "Sem observações"}
         </p>
       </div>
@@ -519,7 +552,7 @@ export class OrderController {
       ${
         detailsPropostal?.itemsIncluded
           ? `<div class="section">
-            <h2>Itens incluídos</h2>
+            <span style="font-weight: bold; font-size: 18px;">Itens incluídos</span>
             <p style="white-space: pre-wrap;">${detailsPropostal.itemsIncluded}</p>
           </div>`
           : ""
@@ -528,14 +561,14 @@ export class OrderController {
       ${
         detailsPropostal?.itemsNotIncluded
           ? `<div class="section">
-            <h2 style="color: red;">Itens não incluídos</h2>
+            <span style="font-weight: bold; font-size: 18px; color: red;">Itens não incluídos</span>
             <p style="white-space: pre-wrap; color: red;">${detailsPropostal.itemsNotIncluded}</p>
           </div>`
           : ""
       }
 
   <div class="section">
-    <h2>Facilidade no pagamento e agilidade na entrega</h2>
+    <span style="font-weight: bold; font-size: 18px;">Facilidade no pagamento e agilidade na entrega</span>
     <ul style="padding-left: 20px;">
       <li><strong>Forma de pagamento:</strong> ${
         detailsPropostal?.payment || "Não informado"
@@ -561,15 +594,15 @@ export class OrderController {
         <span style="font-weight: bold; font-size: 18px;">
           Por que escolher a 3 Irmãos Arte em Madeira de Demolição?
         </span>
-        <ul style="padding-left: 24px; margin-top: 10px;">
-          <li style="margin-bottom: 6px;">✅ Mais de 40 anos de experiência, garantindo qualidade e compromisso.</li>
-          <li style="margin-bottom: 6px;">✅ Madeira nobre e sustentável, com excelente durabilidade.</li>
-          <li style="margin-bottom: 6px;">✅ Acabamento exclusivo, agregando valor ao seu imóvel.</li>
-          <li style="margin-bottom: 6px;">✅ Atendimento especializado, acompanhando cada etapa do seu projeto.</li>
-        </ul>
+      <ul style="display: flex; flex-direction: column; gap: 4px; margin-top: 4px; list-style: none; padding: 0;">
+        <li style="margin-bottom: 6px;">✅ Mais de 40 anos de experiência, garantindo qualidade e compromisso.</li>
+        <li style="margin-bottom: 6px;">✅ Madeira nobre e sustentável, com excelente durabilidade.</li>
+        <li style="margin-bottom: 6px;">✅ Acabamento exclusivo, agregando valor ao seu imóvel.</li>
+        <li style="margin-bottom: 6px;">✅ Atendimento especializado, acompanhando cada etapa do seu projeto.</li>
+       </ul>
       </div>
 
-      <div style="margin-top: 15px;">
+      <div>
         <p style="font-weight: 600;">📞 Vamos conversar e alinhar os próximos passos?</p>
         <p style="font-weight: 600; margin-top: 15px">Atenciosamente,</p>
 
