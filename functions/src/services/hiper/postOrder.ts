@@ -106,10 +106,10 @@ export class PostOrderService {
     } = data;
 
     const adjustedItens = products.map((item) => ({
-      produtoId: item.selectedVariation.id,
-      quantidade: item.quantidade,
-      precoUnitarioBruto: item.preco,
-      precoUnitarioLiquido: item.preco,
+      produtoId: item?.selectedVariation.id,
+      quantidade: item?.quantidade,
+      precoUnitarioBruto: item?.preco,
+      precoUnitarioLiquido: item?.preco,
     }));
 
     const dataForHiper = {

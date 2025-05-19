@@ -120,24 +120,27 @@ const createOrderSchema = z.object({
     ibge: z.string().optional(),
   }),
   products: z.array(
-    z.object({
-      nome: z.string({ message: "Nome do produto obrigatório." }),
-      quantidade: z.number().min(1, "Quantidade deve ser maior que 0."),
-      altura: z.number().min(1, "Altura deve ser maior que 0."),
-      largura: z.number().min(1, "Largura deve ser maior que 0."),
-      // comprimento: z.number().min(1, "Comprimento deve ser maior que 0."),
-      categoria: z.string({ message: "Categoria obrigatória." }).nullable(),
-      preco: z.number({ message: "Preço obrigatório." }),
-      selectedVariation: z.object({
-        id: z.string({ message: "ID da variação obrigatória." }),
-        nomeVariacao: z.string({ message: "Nome da variação obrigatória." }),
-      }),
-      listImages: z.array(
-        z.object({
-          imagem: z.string().nullable(),
-        })
-      ),
-    })
+    z
+      .object({
+        nome: z.string({ message: "Nome do produto obrigatório." }),
+        quantidade: z.number().min(1, "Quantidade deve ser maior que 0."),
+        altura: z.number().min(1, "Altura deve ser maior que 0."),
+        largura: z.number().min(1, "Largura deve ser maior que 0."),
+        // comprimento: z.number().min(1, "Comprimento deve ser maior que 0."),
+        categoria: z.string({ message: "Categoria obrigatória." }).nullable(),
+        preco: z.number({ message: "Preço obrigatório." }),
+        selectedVariation: z.object({
+          id: z.string({ message: "ID da variação obrigatória." }),
+          nomeVariacao: z.string({ message: "Nome da variação obrigatória." }),
+        }),
+        listImages: z.array(
+          z.object({
+            imagem: z.string().nullable(),
+          })
+        ),
+      })
+      .optional()
+      .nullable()
   ),
   detailsPropostal: z
     .object({
