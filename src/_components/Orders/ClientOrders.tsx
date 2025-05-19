@@ -52,7 +52,6 @@ const ClientOrdersTable = () => {
   const [data, setData] = useState<Order[]>([]);
   const [filteredData, setFilteredData] = useState<Order[]>(data);
 
-  const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState(0); // zero igual a todos os status
   const [showCardOrder, setShowCardOrder] = useState<number | null>(null);
   const [sendPropostal, setSendPropostal] = useState(false);
@@ -78,8 +77,6 @@ const ClientOrdersTable = () => {
 
       return (
         (statusFilter === 0 || order.orderStatus === statusFilter) &&
-        (searchTerm === "" ||
-          order.client.name.toLowerCase().includes(searchTerm.toLowerCase())) &&
         isWithinRange
       );
     });
@@ -325,14 +322,6 @@ const ClientOrdersTable = () => {
     <div className="space-y-2 py-2 md:p-4 bg-white rounded-xs shadow w-full h-full">
       {/* Filtros */}
       <div className="flex flex-col md:flex-row items-start md:items-center p-2 gap-4">
-        <input
-          type="text"
-          placeholder="Buscar cliente..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="border p-2 rounded-xs md:w-1/3"
-        />
-
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(Number(e.target.value))}
