@@ -632,8 +632,6 @@ export class OrderController {
 
       const browser = await puppeteer.launch({
         headless: true, // recomendação atual
-        args: ["--no-sandbox"],
-        executablePath: puppeteer.executablePath(), // <- ESSENCIAL no Firebase
       });
 
       const page = await browser.newPage();
