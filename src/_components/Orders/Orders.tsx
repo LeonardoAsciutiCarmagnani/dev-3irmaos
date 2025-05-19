@@ -497,6 +497,24 @@ const OrdersTable = () => {
         totalValue: orderToPush.totalValue,
       });
 
+      const pushObject = {
+        orderCode: orderToPush.orderId,
+        clientName: orderToPush.client.name,
+        clientPhone: orderToPush.client.phone,
+        createdAt: orderToPush.createdAt,
+      };
+
+      const response = await api.post("/send-push-proposalSent", pushObject);
+
+      if (response.data.error) {
+        toast.warning(
+          "Não foi possível enviar a mensagem: " + response.data.error,
+          {
+            id: "sendPropostalPush-error",
+          }
+        );
+      }
+
       setData((prevData) =>
         prevData.map((order) =>
           order.orderId === orderToPush.orderId
@@ -505,7 +523,9 @@ const OrdersTable = () => {
         )
       );
 
-      toast.success("Proposta enviada com sucesso!");
+      toast.success("Proposta enviada com sucesso", {
+        id: "sendPropostal-success",
+      });
     } catch (error) {
       console.error("Erro ao tentar atualizar o pedido:", error);
       toast.error("Ocorreu um erro ao tentar atualizar o pedido");

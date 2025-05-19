@@ -127,8 +127,8 @@ const Auth: React.FC = () => {
   const handleLogin = async (data: LoginData) => {
     try {
       await login(data.email.trim(), data.password.trim());
-      navigate("/");
       toast.success("Login realizado com sucesso!", { id: "login-success" });
+      navigate("/");
     } catch (err) {
       console.error(err);
       toast.error("E-mail ou senha incorretos.", { id: "login-error" });

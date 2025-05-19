@@ -16,6 +16,7 @@ const LayoutPage = ({ children }: { children: React.ReactNode }) => {
           position="top-right"
           duration={3000}
           closeButton={true}
+          expand={true}
           toastOptions={{
             style: {
               borderRadius: "0.125rem",

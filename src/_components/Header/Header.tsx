@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import logo from "@/assets/logo_3irmaos.png";
 
 const Header = () => {
   const { productsInCart, handleRemoveProduct } = productsContext();
@@ -31,7 +32,7 @@ const Header = () => {
         <HomeIcon className="font-bold text-gray-800" />
       </Link> */}
       <img
-        src="/src/assets/logo_3irmaos.png"
+        src={logo}
         alt="3 Irmãos"
         className="w-[8rem] hover:cursor-pointer"
         onClick={() => navigate("/")}
