@@ -4,18 +4,23 @@ import { Toaster } from "@/components/ui/sonner";
 
 const LayoutPage = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="bg-white flex flex-col h-full w-full overflow-hidden">
+    <div className="bg-white flex flex-col h-full w-full">
       <Header />
       <div className="flex flex-1">
         <div className="hidden md:flex">
           <Sidebar />
         </div>
-        <div className="flex-1 overflow-hidden">{children}</div>
+        <div className="flex-1 overflow-y-scroll">{children}</div>
         <Toaster
           richColors
           position="top-right"
           duration={3000}
           closeButton={true}
+          toastOptions={{
+            style: {
+              borderRadius: "0.125rem",
+            },
+          }}
         />
       </div>
     </div>

@@ -42,7 +42,7 @@ const Login: React.FC<LoginProps> = () => {
       await login(data.email.trim(), data.password.trim());
     } catch (error) {
       console.error("Erro de autenticação:", error);
-      toast.error("Login ou senha incorretos.", {
+      toast.error("E-mail ou senha incorretos.", {
         id: "login-error",
       });
     }

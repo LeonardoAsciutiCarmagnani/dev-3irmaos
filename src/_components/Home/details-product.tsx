@@ -543,7 +543,7 @@ export const DetailsProduct = () => {
                         Adicionar outros produtos
                       </Button>
                       <Button
-                        onClick={() => navigate("/checkout")}
+                        onClick={() => navigate("/orçamento")}
                         className="text-xs md:text-sm bg-green-700 text-white rounded-xs py-1 md:py-2 px-2 md:px-3 hover:bg-green-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled={productsInCart.length === 0}
                       >

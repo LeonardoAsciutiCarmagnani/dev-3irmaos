@@ -44,7 +44,7 @@ const Home = () => {
   ];
 
   return (
-    <div className="h-full w-full px-2 overflow-y-auto md:h-[calc(100vh-64px)] pt-2">
+    <div className="h-full w-full px-2 overflow-y-scroll md:h-[calc(100vh-64px)] pt-2">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 md:gap-1 h-full">
         {categorias.map((categoria) => (
           <div
