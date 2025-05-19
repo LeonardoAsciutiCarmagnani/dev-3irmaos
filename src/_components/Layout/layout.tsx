@@ -10,7 +10,7 @@ const LayoutPage = ({ children }: { children: React.ReactNode }) => {
         <div className="hidden md:flex">
           <Sidebar />
         </div>
-        <div className="flex-1 overflow-y-scroll">{children}</div>
+        <div className="flex-1">{children}</div>
         <Toaster
           richColors
           position="top-right"

@@ -310,10 +310,9 @@ const ClientsTable = () => {
         address: data.address,
       });
 
+      toast.success("Cliente atualizado com sucesso!");
       fetchClients();
       setShowCardClient(null);
-
-      toast.success("Cliente atualizado com sucesso!");
     } catch (err) {
       console.error("Error updating client:", err);
       toast.error("Ocorreu um erro ao tentar atualizar o cliente!");

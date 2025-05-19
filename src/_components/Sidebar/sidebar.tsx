@@ -105,14 +105,16 @@ const Sidebar = () => {
               to={item.path}
               end={item.path === "/"}
               className={({ isActive }) =>
-                `flex items-center p-2 text-[0.97rem] transition-colors ${
+                `group flex items-center p-2 text-[0.97rem] transition-colors ${
                   isActive
                     ? "bg-red-900 text-white"
                     : "text-gray-800 hover:bg-red-900 hover:text-white"
                 }`
               }
             >
-              {item.icon}
+              {React.cloneElement(item.icon, {
+                className: `${item.icon.props.className} group-hover:text-white`,
+              })}
               {open && <span className="ml-2">{item.label}</span>}
             </NavLink>
           ))}
