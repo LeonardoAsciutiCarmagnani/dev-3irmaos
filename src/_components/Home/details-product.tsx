@@ -510,7 +510,7 @@ export const DetailsProduct = () => {
                                 </div>
                                 <div>
                                   <span className="font-semibold text-red-900">
-                                    BANCADAS:
+                                    ARMÁRIOS E BANCADAS:
                                   </span>
                                   <div className="flex  gap-10">
                                     <div>
