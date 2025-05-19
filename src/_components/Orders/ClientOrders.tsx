@@ -281,12 +281,13 @@ const ClientOrdersTable = () => {
     { id: 1, option: "Orçamento", value: 1 },
     { id: 2, option: "Proposta recebida", value: 2 },
     { id: 3, option: "Proposta recusada", value: 3 },
-    { id: 4, option: "Aprovado", value: 4 },
-    { id: 5, option: "Pedido em produção", value: 5 },
-    { id: 6, option: "Faturado", value: 6 },
-    { id: 7, option: "Despachado", value: 7 },
-    { id: 8, option: "Pedido Concluído", value: 8 },
-    { id: 9, option: "Cancelado", value: 9 },
+    { id: 4, option: "Proposta aceita", value: 4 },
+    { id: 5, option: "Aprovado", value: 5 },
+    { id: 6, option: "Pedido em produção", value: 6 },
+    { id: 7, option: "Faturado", value: 7 },
+    { id: 8, option: "Despachado", value: 8 },
+    { id: 9, option: "Pedido Concluído", value: 9 },
+    { id: 10, option: "Cancelado", value: 10 },
   ];
 
   const statusMap: Record<OrderStatusType, { label: string; color: string }> = {
