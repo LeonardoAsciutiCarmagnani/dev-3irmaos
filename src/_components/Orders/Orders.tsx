@@ -51,8 +51,6 @@ import { IMaskInput } from "react-imask";
 import { Order } from "@/interfaces/Order";
 import { api } from "@/lib/axios";
 import hiperLogo from "@/assets/hiper_logo.svg";
-/* import logo from "@/assets/logo_3irmaos.png";
-import { generatePDF } from "../OrderPDF/ReactPDF"; */
 
 const OrdersTable = () => {
   const [date, setDate] = useState<DateRange>();
@@ -85,11 +83,11 @@ const OrdersTable = () => {
   const [itemsIncluded, setItemsIncluded] = useState("");
   const [itemsNotIncluded, setItemsNotIncluded] = useState("");
 
-  const [localDiscounts, setLocalDiscounts] = useState<Record<string, string>>(
-    {}
-  );
+  // const [localDiscounts, setLocalDiscounts] = useState<Record<string, number>>(
+  //   {}
+  // );
 
-  const [generatedPdf, setGeneratedPdf] = useState(false);
+  const [generatedPdf, setGeneratedPdf] = useState<number | null>();
 
   const lisToUse = filteredData.length > 0 ? filteredData : data;
 
@@ -298,24 +296,31 @@ const OrdersTable = () => {
     }
   }
 
-  function handleLocalDiscountChange(
+  /*  function handleLocalDiscountChange(
     orderId: number,
     productId: string,
     value: string
   ) {
+    console.log(
+      "Chamou a função handleLocalDiscountChange passando =>",
+      orderId,
+      productId,
+      value
+    );
     const key = `${orderId}-${productId}`;
+    const parsed = parseFloat(value || "0");
     setLocalDiscounts((prev) => ({
       ...prev,
-      [key]: value,
+      [key]: parsed,
     }));
   }
 
   function handleDiscountBlur(orderId: number, productId: string) {
     const key = `${orderId}-${productId}`;
     const value = localDiscounts[key];
-    const parsed = parseFloat(value || "0");
-    handleChangeDiscountProduct(orderId, productId, parsed);
-  }
+    console.log("Valor de parsed =>", value);
+    handleChangeDiscountProduct(orderId, productId, value);
+  } */
 
   function handleChangeDiscountProduct(
     orderId: number,
@@ -328,6 +333,7 @@ const OrdersTable = () => {
         if (order.orderId === orderId) {
           const updatedProducts = order.products.map((product) => {
             if (product.selectedVariation.id === productId) {
+              console.log("Desconto por produto => ", product.desconto);
               return {
                 ...product,
                 desconto: discount * product.quantidade,
@@ -337,12 +343,16 @@ const OrdersTable = () => {
           });
 
           const totalDiscount = updatedProducts.reduce((sum, product) => {
-            return sum + product.desconto;
+            return sum + (product.desconto ?? 0);
           }, 0);
 
           const discountTotalValue = updatedProducts.reduce((sum, product) => {
-            return sum + product.preco - product.desconto;
+            return (
+              sum + product.preco * product.quantidade - (product.desconto ?? 0)
+            );
           }, 0);
+
+          console.log("Calculo do total com desconto => ", discountTotalValue);
 
           return {
             ...order,
@@ -398,7 +408,7 @@ const OrdersTable = () => {
         }, 0);
 
         const discountTotalValue = updatedProducts.reduce((sum, product) => {
-          return sum + product.preco - product.desconto;
+          return sum + product.preco * product.quantidade - product.desconto;
         }, 0);
 
         return {
@@ -510,7 +520,7 @@ const OrdersTable = () => {
 
   async function handleGeneratedPDF(order: Order) {
     try {
-      setGeneratedPdf(true);
+      setGeneratedPdf(order.orderId);
 
       const response = await api.post("/generate-pdf", order, {
         responseType: "blob",
@@ -527,9 +537,9 @@ const OrdersTable = () => {
       link.click();
       document.body.removeChild(link);
 
-      setGeneratedPdf(false);
+      setGeneratedPdf(null);
     } catch {
-      setGeneratedPdf(false);
+      setGeneratedPdf(null);
       toast.error("Ocorreu um erro ao tentar gerar o PDF");
       console.error("Ocorreu um erro ao tentar gerar o PDF");
     }
@@ -561,7 +571,7 @@ const OrdersTable = () => {
       const updatedData = snapshot.docs.map((doc) => ({
         ...(doc.data() as Order),
       }));
-      // console.log("Documentos => ", updatedData);
+      console.log("Documentos => ", updatedData);
       setData(updatedData);
     });
 
@@ -758,7 +768,29 @@ const OrdersTable = () => {
                                   })}
                               </select>
                             </td>
-                            <td className={`px-4 py-3 hover:underline`}>
+
+                            <td
+                              className={`flex gap-10 items-center  px-4 py-3 `}
+                            >
+                              {order.orderStatus > 1 && (
+                                <Button
+                                  className="w-[8rem]  rounded-xs bg-gray-100 text-red-900 hover:text-white border border-red-900 hover:border-gray-100"
+                                  onClick={() => handleGeneratedPDF(order)}
+                                >
+                                  {generatedPdf === order.orderId ? (
+                                    <div className="flex gap-2 items-center ">
+                                      <LoaderCircle className="animate-spin" />
+                                      <span className="text-xs">
+                                        BAIXANDO...
+                                      </span>
+                                    </div>
+                                  ) : (
+                                    <div className="flex gap-2 items-center ">
+                                      <FileDownIcon className="size-7" /> PDF
+                                    </div>
+                                  )}
+                                </Button>
+                              )}
                               {order.orderStatus !== 1 &&
                                 order.orderStatus !== 3 &&
                                 order.orderStatus !== 10 && (
@@ -834,25 +866,7 @@ const OrdersTable = () => {
 
                         <DialogContent className="flex flex-col border rounded-xs space-y-1 bg-gray-100 md:w-5/6 h-[86vh] overflow-y-scroll">
                           <DialogHeader>
-                            <div className="w-[95%] flex items-center justify-end">
-                              <Button
-                                className="w-fit rounded-xs bg-gray-100 text-red-900 hover:text-white border
-border-red-900 hover:border-white"
-                                onClick={() => handleGeneratedPDF(order)}
-                              >
-                                {generatedPdf ? (
-                                  <div className="flex gap-2 items-center ">
-                                    <LoaderCircle className="animate-spin" />
-                                    <span>BAIXANDO...</span>
-                                  </div>
-                                ) : (
-                                  <div className="flex gap-2 items-center ">
-                                    <FileDownIcon />
-                                    <span className="text-xl">PDF</span>
-                                  </div>
-                                )}
-                              </Button>
-                            </div>
+                            <div className="w-[95%] flex items-center justify-end"></div>
                             <div className="flex items-center">
                               <DialogTitle>
                                 {" "}
@@ -907,49 +921,51 @@ border-red-900 hover:border-white"
                                       </span>
                                     </div>
                                   </div>
-                                  <div className=" flex flex-col justify-between">
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        Rua:
-                                      </span>
-                                      <span className="text-lg text-gray-700 ">
-                                        {order.deliveryAddress.street}
-                                      </span>
+                                  <div className="flex flex-col lg:flex-row">
+                                    <div className=" flex flex-col justify-between">
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Rua:
+                                        </span>
+                                        <span className="text-lg text-gray-700 ">
+                                          {order.deliveryAddress.street}
+                                        </span>
+                                      </div>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Numero:
+                                        </span>
+                                        <span className="text-lg text-gray-700 ">
+                                          {order.deliveryAddress.number}
+                                        </span>
+                                      </div>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Bairro:
+                                        </span>
+                                        <span className="text-lg text-gray-700 truncate">
+                                          {order.deliveryAddress.neighborhood}
+                                        </span>
+                                      </div>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          Cidade:
+                                        </span>
+                                        <span className="text-lg  text-gray-700 ">
+                                          {order.deliveryAddress.city} /{" "}
+                                          {order.deliveryAddress.state}
+                                        </span>
+                                      </div>
                                     </div>
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        Numero:
-                                      </span>
-                                      <span className="text-lg text-gray-700 ">
-                                        {order.deliveryAddress.number}
-                                      </span>
-                                    </div>
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        Bairro:
-                                      </span>
-                                      <span className="text-lg text-gray-700 truncate">
-                                        {order.deliveryAddress.neighborhood}
-                                      </span>
-                                    </div>
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        Cidade:
-                                      </span>
-                                      <span className="text-lg  text-gray-700 ">
-                                        {order.deliveryAddress.city} /{" "}
-                                        {order.deliveryAddress.state}
-                                      </span>
-                                    </div>
-                                  </div>
-                                  <div>
-                                    <div className="flex gap-2 items-center">
-                                      <span className="font-semibold  text-gray-700">
-                                        CEP:
-                                      </span>
-                                      <span className="text-gray-700 text-lg">
-                                        {order.deliveryAddress.cep}
-                                      </span>
+                                    <div>
+                                      <div className="flex gap-2 items-center">
+                                        <span className="font-semibold  text-gray-700">
+                                          CEP:
+                                        </span>
+                                        <span className="text-gray-700 text-lg">
+                                          {order.deliveryAddress.cep}
+                                        </span>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
@@ -978,10 +994,15 @@ border-red-900 hover:border-white"
                               </thead>
                               <tbody className="divide-y divide-gray-200">
                                 {order.products &&
-                                  order.products.map((item) => {
+                                  order.products.map((item, index) => {
+                                    const variation =
+                                      item.selectedVariation.nomeVariacao.split(
+                                        "-"
+                                      );
+
                                     return (
                                       <tr
-                                        key={item.id}
+                                        key={index}
                                         className="flex flex-col rounded-xs w-full border-b border-gray-300 last:border-b-0"
                                       >
                                         <td className=" grid grid-cols-7 items-center  justify-around  px-2  w-full">
@@ -991,36 +1012,26 @@ border-red-900 hover:border-white"
                                               {item.nome}
                                             </span>
                                             <span className="flex-1 text-md text-gray-700">
-                                              {
-                                                item.selectedVariation
-                                                  .nomeVariacao
-                                              }
+                                              {variation[1]}
                                             </span>
                                             <div className="text-sm text-gray-500 flex gap-2">
                                               <span>
                                                 Altura: {item.altura} m
                                               </span>
-                                              {/*   <span>
-                                                  Comprimento:{" "}
-                                                  {item.comprimento}
-                                                </span> */}
                                               <span>
                                                 Largura: {item.largura} m
                                               </span>
+                                              <span>
+                                                Comprimento:{" "}
+                                                {item.comprimento === undefined
+                                                  ? 0
+                                                  : item.comprimento}{" "}
+                                                m
+                                              </span>
                                             </div>
-                                            <div className="flex-1 text-lg ">
-                                              {item.selectedVariation
-                                                .nomeVariacao ===
-                                              "Medida Padrao" ? (
-                                                <span className="text-sm text-red-900">
-                                                  Pronta Entrega
-                                                </span>
-                                              ) : (
-                                                <span className="text-sm text-red-900">
-                                                  Sob Medida
-                                                </span>
-                                              )}
-                                            </div>
+                                            <span className="text-sm text-red-900">
+                                              {variation[0]}
+                                            </span>
                                           </div>
                                           <div className="flex text-lg text-gray-700 items-center justify-center text-center h-full">
                                             <span>{item.unidade}</span>
@@ -1044,30 +1055,23 @@ border-red-900 hover:border-white"
                                                     mapToRadix: ["."],
                                                   },
                                                 }}
-                                                value={
-                                                  localDiscounts[
-                                                    `${order.orderId}-${item.selectedVariation.id}`
-                                                  ] ??
-                                                  String(
-                                                    (item.desconto || 0) /
-                                                      item.quantidade
-                                                  )
-                                                }
+                                                value={String(
+                                                  (item.desconto || 0) /
+                                                    item.quantidade
+                                                )}
                                                 unmask={true}
                                                 disabled={order.orderStatus > 1}
-                                                onAccept={(value) =>
-                                                  handleLocalDiscountChange(
+                                                onAccept={(value) => {
+                                                  console.log(
+                                                    "Valor sendo enviado para a função =>",
+                                                    value
+                                                  );
+                                                  handleChangeDiscountProduct(
                                                     order.orderId,
                                                     item.selectedVariation.id,
-                                                    value
-                                                  )
-                                                }
-                                                onBlur={() =>
-                                                  handleDiscountBlur(
-                                                    order.orderId,
-                                                    item.selectedVariation.id
-                                                  )
-                                                }
+                                                    Number(value)
+                                                  );
+                                                }}
                                                 className="rounded-xs px-2 py-1 w-[8rem] text-center"
                                               />
                                             </div>
@@ -1122,7 +1126,7 @@ border-red-900 hover:border-white"
                                 <tr className="border-t text-end">
                                   <td className="flex justify-end gap-10 p-2">
                                     <span className="font-semibold">
-                                      Total de
+                                      Sub total
                                     </span>
                                     <span className="w-[8rem] truncate">
                                       {" "}
@@ -1139,34 +1143,62 @@ border-red-900 hover:border-white"
                                 <tr className="border-t text-end">
                                   <td className="flex justify-end gap-10 p-2">
                                     <span className="font-semibold flex-1 ">
-                                      Desconto de
+                                      Desconto
                                     </span>
                                     <span className="w-[8rem] truncate">
-                                      {order.totalDiscount?.toLocaleString(
-                                        "pt-BR",
-                                        {
-                                          style: "currency",
-                                          currency: "BRL",
-                                        }
-                                      )}
-                                    </span>
-                                  </td>
-                                </tr>
-                                <tr className="border-t text-end">
-                                  <td className="flex justify-end gap-10 p-2">
-                                    <span className="font-semibold">
-                                      Total com desconto
-                                    </span>
-                                    <span className="w-[8rem] truncate">
-                                      {order.discountTotalValue
-                                        ? order.discountTotalValue.toLocaleString(
+                                      {order.totalDiscount
+                                        ? order.totalDiscount?.toLocaleString(
                                             "pt-BR",
                                             {
                                               style: "currency",
                                               currency: "BRL",
                                             }
                                           )
-                                        : 0.0}
+                                        : "R$ 0,00"}
+                                    </span>
+                                  </td>
+                                </tr>
+
+                                <tr className="border-t text-end">
+                                  <td className="flex justify-end gap-10 p-2">
+                                    <span className="font-semibold">Frete</span>
+                                    <span className="w-[8rem] truncate">
+                                      {order.detailsPropostal.delivery
+                                        ? order.detailsPropostal.delivery.toLocaleString(
+                                            "pt-BR",
+                                            {
+                                              style: "currency",
+                                              currency: "BRL",
+                                            }
+                                          )
+                                        : delivery.toLocaleString("pt-BR", {
+                                            style: "currency",
+                                            currency: "BRL",
+                                          })}
+                                    </span>
+                                  </td>
+                                </tr>
+
+                                <tr className="border-t text-end">
+                                  <td className="flex justify-end gap-10 p-2">
+                                    <span className="font-semibold">Total</span>
+                                    <span className="w-[8rem] truncate">
+                                      {order.discountTotalValue
+                                        ? (
+                                            order.discountTotalValue +
+                                            (order.detailsPropostal.delivery ??
+                                              delivery)
+                                          ).toLocaleString("pt-BR", {
+                                            style: "currency",
+                                            currency: "BRL",
+                                          })
+                                        : order.discountTotalValue?.toLocaleString(
+                                            "pt-BR",
+                                            {
+                                              style: "currency",
+                                              currency: "BRL",
+                                            }
+                                          )}
                                     </span>
                                   </td>
                                 </tr>

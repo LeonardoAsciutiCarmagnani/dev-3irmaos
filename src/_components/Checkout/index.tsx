@@ -148,6 +148,8 @@ export const Checkout = () => {
         billingAddress,
         products: productsInCart,
         createdAt: dateOrder,
+        imagesUrls: [], // Imagens 3 irmãos
+        detailsPropostal: {},
         orderStatus: 1,
         totalValue: total,
       };
@@ -206,21 +208,18 @@ export const Checkout = () => {
                     <span className="font-semibold text-sm md:text-md text-gray-700">
                       {product.nome}
                     </span>
-                    {/*   <span className="text-gray-700 text-sm md:text-base font-semibold">
-                      {"R$ " +
-                        (
-                          product.price /
-                          (product.packageQuantity * product.boxQuantity)
-                        ).toFixed(2)}
-                      /Espt
-                    </span> */}
-                    {/*  <span className="font-semibold text-sm md:text-base text-gray-700">
-                      {product.price.toLocaleString("pt-BR", {
-                        style: "currency",
-                        currency: "BRL",
-                      })}
-                      / Cx
-                    </span> */}
+                    <div className="text-xs text-gray-700 flex gap-2">
+                      <span>Altura: {product.altura} m</span>
+                      <span>Largura: {product.largura} m</span>
+                      <span>
+                        Comprimento:{" "}
+                        {product.comprimento === undefined
+                          ? 0
+                          : product.comprimento}{" "}
+                        m
+                      </span>
+                    </div>
+
                     {product.selectedVariation.nomeVariacao ===
                       "Medida Padrao" && (
                       <span className="font-semibold text-sm md:text-base text-gray-700">
@@ -262,6 +261,11 @@ export const Checkout = () => {
                 Continuar comprando
               </Button>
             </Link>
+            <span className="text-xs text-red-900">
+              Caso você deseje informar algumas imagens de referência dos
+              produtos, você pode fazer isso acessando a pagina MEUS ORÇAMENTOS
+              e acessando seu orçamento terá a sessão de upload de imagens{" "}
+            </span>
           </div>
           <div className="flex flex-col gap-2 ">
             <div className="flex flex-col max-h-96 p-2 md:p-4 justify-between border border-gray-200 bg-gray-50 rounded-xs w-full md:w-lg">

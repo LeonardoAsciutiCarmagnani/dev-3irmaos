@@ -22,7 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { InfoIcon, LoaderCircle } from "lucide-react";
+import { FileDownIcon, InfoIcon, LoaderCircle } from "lucide-react";
 import {
   collection,
   doc,
@@ -40,6 +40,7 @@ import { useAuthStore } from "@/context/authContext";
 import Dropzone from "../DropzoneImage/DropzoneImage";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { Order } from "@/interfaces/Order";
+import { api } from "@/lib/axios";
 
 type OrderStatusType = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 
@@ -57,6 +58,8 @@ const ClientOrdersTable = () => {
   const [sendPropostal, setSendPropostal] = useState(false);
 
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
+
+  const [generatedPdf, setGeneratedPdf] = useState<number | null>(null);
 
   /* Detalhes do orçamento */
 
@@ -245,6 +248,33 @@ const ClientOrdersTable = () => {
     }
   }
 
+  async function handleGeneratedPDF(order: Order) {
+    try {
+      setGeneratedPdf(order.orderId);
+
+      const response = await api.post("/generate-pdf", order, {
+        responseType: "blob",
+      });
+
+      console.log(response);
+
+      const blob = new Blob([response.data], { type: "application/pdf" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `Pedido #${order.orderId} - 3 Irmãos.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      setGeneratedPdf(null);
+    } catch {
+      setGeneratedPdf(null);
+      toast.error("Ocorreu um erro ao tentar gerar o PDF");
+      console.error("Ocorreu um erro ao tentar gerar o PDF");
+    }
+  }
+
   const formattedFrom = date?.from
     ? format(date.from, "dd/MM/yyyy")
     : "--/--/----";
@@ -422,7 +452,16 @@ const ClientOrdersTable = () => {
                               >
                                 {order.client.name}
                               </td>
-                              <td className={`px-4 py-3 `}>
+                              <td className={`px-4 py-3 flex gap-2`}>
+                                <Button
+                                  onClick={() => handleGeneratedPDF(order)}
+                                >
+                                  {generatedPdf === order.orderId ? (
+                                    <LoaderCircle className="animate-spin" />
+                                  ) : (
+                                    <FileDownIcon />
+                                  )}
+                                </Button>
                                 <div
                                   className={`w-fit rounded-xs p-2 text-white font-semibold text-xs hover:cursor-pointer  ${
                                     status?.color || "bg-zinc-300"
@@ -437,8 +476,7 @@ const ClientOrdersTable = () => {
                           <DialogContent className="flex flex-col p-1 md:p-2 rounded-xs w-full bg-gray-100 md:w-2/3 h-[80vh] overflow-y-scroll">
                             <DialogHeader>
                               <div className="flex items-center">
-                                <DialogTitle>
-                                  {" "}
+                                <DialogTitle className="flex flex-col">
                                   <span className="text-xl font-bold text-gray-700">
                                     {order.orderStatus === 1
                                       ? "Orçamento"
@@ -453,7 +491,7 @@ const ClientOrdersTable = () => {
                                   </span>
                                 </DialogTitle>
                               </div>
-                              <div className="flex w-full p-2 rounded-xs items-center">
+                              <div className="flex w-full p-2 rounded-xs items-center ">
                                 <div className="flex flex-col w-full">
                                   <div className="flex flex-col md:flex-row space-y-2 space-x-32 items-start">
                                     <div className=" flex flex-col justify-between">
@@ -490,49 +528,51 @@ const ClientOrdersTable = () => {
                                         </span>
                                       </div>
                                     </div>
-                                    <div className=" flex flex-col justify-between">
-                                      <div className="flex gap-2 items-center">
-                                        <span className="font-semibold  text-gray-700">
-                                          Rua:
-                                        </span>
-                                        <span className="text-lg text-gray-700 ">
-                                          {order.deliveryAddress.street}
-                                        </span>
+                                    <div className="flex flex-col lg:flex-row">
+                                      <div className=" flex flex-col justify-between">
+                                        <div className="flex gap-2 items-center">
+                                          <span className="font-semibold  text-gray-700">
+                                            Rua:
+                                          </span>
+                                          <span className="text-lg text-gray-700 ">
+                                            {order.deliveryAddress.street}
+                                          </span>
+                                        </div>
+                                        <div className="flex gap-2 items-center">
+                                          <span className="font-semibold  text-gray-700">
+                                            Numero:
+                                          </span>
+                                          <span className="text-lg text-gray-700 ">
+                                            {order.deliveryAddress.number}
+                                          </span>
+                                        </div>
+                                        <div className="flex gap-2 items-center">
+                                          <span className="font-semibold  text-gray-700">
+                                            Bairro:
+                                          </span>
+                                          <span className="text-lg text-gray-700 truncate">
+                                            {order.deliveryAddress.neighborhood}
+                                          </span>
+                                        </div>
+                                        <div className="flex gap-2 items-center">
+                                          <span className="font-semibold  text-gray-700">
+                                            Cidade:
+                                          </span>
+                                          <span className="text-lg  text-gray-700 ">
+                                            {order.deliveryAddress.city} /{" "}
+                                            {order.deliveryAddress.state}
+                                          </span>
+                                        </div>
                                       </div>
-                                      <div className="flex gap-2 items-center">
-                                        <span className="font-semibold  text-gray-700">
-                                          Numero:
-                                        </span>
-                                        <span className="text-lg text-gray-700 ">
-                                          {order.deliveryAddress.number}
-                                        </span>
-                                      </div>
-                                      <div className="flex gap-2 items-center">
-                                        <span className="font-semibold  text-gray-700">
-                                          Bairro:
-                                        </span>
-                                        <span className="text-lg text-gray-700 truncate">
-                                          {order.deliveryAddress.neighborhood}
-                                        </span>
-                                      </div>
-                                      <div className="flex gap-2 items-center">
-                                        <span className="font-semibold  text-gray-700">
-                                          Cidade:
-                                        </span>
-                                        <span className="text-lg  text-gray-700 ">
-                                          {order.deliveryAddress.city} /{" "}
-                                          {order.deliveryAddress.state}
-                                        </span>
-                                      </div>
-                                    </div>
-                                    <div>
-                                      <div className="flex gap-2 items-center">
-                                        <span className="font-semibold  text-gray-700">
-                                          CEP:
-                                        </span>
-                                        <span className="text-gray-700 text-lg">
-                                          {order.deliveryAddress.cep}
-                                        </span>
+                                      <div>
+                                        <div className="flex gap-2 items-center">
+                                          <span className="font-semibold  text-gray-700">
+                                            CEP:
+                                          </span>
+                                          <span className="text-gray-700 text-lg">
+                                            {order.deliveryAddress.cep}
+                                          </span>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
@@ -543,7 +583,7 @@ const ClientOrdersTable = () => {
                               <div className="font-semibold text-lg">
                                 Produtos
                               </div>
-                              <div className="space-y-2 w-full border border-t-0">
+                              <div className="space-y-2 w-full border  border-gray-400 border-t-0">
                                 {/* Cabeçalho visível apenas em telas médias para cima */}
                                 <div className="hidden md:grid grid-cols-7 font-bold text-center border border-gray-700">
                                   <div className="col-span-2 text-base">
@@ -564,119 +604,125 @@ const ClientOrdersTable = () => {
                                   </div>
                                 </div>
 
-                                {order.products?.map((item, index) => (
-                                  <div
-                                    key={index}
-                                    className="border-b p-2 flex flex-col md:grid md:grid-cols-7 md:items-center md:justify-center"
-                                  >
-                                    {/* Produto */}
-                                    <div className="col-span-2">
-                                      <p className="text-sm md:text-lg font-medium">
-                                        {item.nome}
-                                      </p>
-                                      <p className="text-sm">
-                                        {item.selectedVariation.nomeVariacao}
-                                      </p>
-                                      <p className="text-sm text-gray-500">
-                                        Altura: {item.altura} | Largura:{" "}
-                                        {item.largura}
-                                      </p>
-                                      <p className="text-sm text-red-900">
-                                        {item.selectedVariation.nomeVariacao ===
-                                        "Medida Padrao"
-                                          ? "Pronta Entrega"
-                                          : "Sob Medida"}
-                                      </p>
-                                    </div>
-                                    <div className="mt-2 md:mt-0 md:flex justify-center items-center text-sm md:text-base">
-                                      <span className="block md:hidden font-semibold">
-                                        Unidade:
-                                      </span>{" "}
-                                      {item.unidade}
-                                    </div>
-                                    {/* Qtd */}
-                                    <div className="mt-2 md:mt-0 md:flex justify-center items-center text-sm md:text-base">
-                                      <span className="block md:hidden font-semibold">
-                                        Qtd:
-                                      </span>{" "}
-                                      {item.quantidade} x
-                                    </div>
+                                {order.products?.map((item, index) => {
+                                  const variation =
+                                    item.selectedVariation.nomeVariacao.split(
+                                      "-"
+                                    );
 
-                                    {/* Desconto */}
-                                    <div className="mt-2 md:mt-0 md:flex justify-center items-center text-sm md:text-base">
-                                      <span className="block md:hidden font-semibold">
-                                        Desconto:
-                                      </span>
-                                      <IMaskInput
-                                        mask="R$ num"
-                                        blocks={{
-                                          num: {
-                                            mask: Number,
-                                            scale: 2,
-                                            thousandsSeparator: ".",
-                                            padFractionalZeros: true,
-                                            normalizeZeros: true,
-                                            radix: ",",
-                                            mapToRadix: ["."],
-                                          },
-                                        }}
-                                        value={String(item.desconto || 0)}
-                                        unmask={true}
-                                        disabled
-                                        className="rounded-xs p-0 md:px-2 py-1 text-center w-full"
-                                      />
-                                    </div>
+                                  return (
+                                    <div
+                                      key={index}
+                                      className="border-b px-2 flex flex-col md:grid md:grid-cols-7 md:items-center md:justify-center"
+                                    >
+                                      {/* Produto */}
+                                      <div className="col-span-2 border-gray-400 h-full">
+                                        <p className="text-sm md:text-lg font-medium">
+                                          {item.nome}
+                                        </p>
+                                        <p className="text-sm">
+                                          {variation[1]}
+                                        </p>
+                                        <p className="text-sm text-gray-500">
+                                          Altura: {item.altura} m | Largura:{" "}
+                                          {item.largura} m | Comprimento:{" "}
+                                          {item.comprimento === undefined
+                                            ? 0
+                                            : item.comprimento}{" "}
+                                          m
+                                        </p>
+                                        <p className="text-sm text-red-900">
+                                          {variation[0]}
+                                        </p>
+                                      </div>
+                                      <div className="mt-2 md:mt-0 md:flex justify-center items-center text-sm md:text-base border-gray-400 h-full">
+                                        <span className="block md:hidden font-semibold">
+                                          Unidade:
+                                        </span>{" "}
+                                        {item.unidade}
+                                      </div>
+                                      {/* Qtd */}
+                                      <div className="mt-2 md:mt-0 md:flex justify-center items-center text-sm md:text-base">
+                                        <span className="block md:hidden font-semibold">
+                                          Qtd:
+                                        </span>{" "}
+                                        {item.quantidade} x
+                                      </div>
 
-                                    {/* Valor Unitário */}
-                                    <div className="mt-2 md:mt-0 md:flex justify-center items-center text-sm md:text-base">
-                                      <span className="block md:hidden font-semibold">
-                                        Valor unitário:
-                                      </span>
-                                      <IMaskInput
-                                        mask="R$ num"
-                                        blocks={{
-                                          num: {
-                                            mask: Number,
-                                            scale: 2,
-                                            thousandsSeparator: ".",
-                                            padFractionalZeros: true,
-                                            normalizeZeros: true,
-                                            radix: ",",
-                                            mapToRadix: ["."],
-                                          },
-                                        }}
-                                        value={String(item.preco)}
-                                        unmask={true}
-                                        disabled
-                                        className="rounded-xs p-0 md:px-2 py-1 text-center w-full"
-                                      />
-                                    </div>
+                                      {/* Desconto */}
+                                      <div className="mt-2 md:mt-0 md:flex justify-center items-center text-sm md:text-base ">
+                                        <span className="block md:hidden font-semibold">
+                                          Desconto:
+                                        </span>
+                                        <IMaskInput
+                                          mask="R$ num"
+                                          blocks={{
+                                            num: {
+                                              mask: Number,
+                                              scale: 2,
+                                              thousandsSeparator: ".",
+                                              padFractionalZeros: true,
+                                              normalizeZeros: true,
+                                              radix: ",",
+                                              mapToRadix: ["."],
+                                            },
+                                          }}
+                                          value={String(item.desconto || 0)}
+                                          unmask={true}
+                                          disabled
+                                          className="rounded-xs p-0 md:px-2  text-center w-full "
+                                        />
+                                      </div>
 
-                                    {/* Valor Total */}
-                                    <div className="text-center h-full flex flex-col  items-start justify-center gap-2 mt-2 md:mt-0 text-sm md:text-base ">
-                                      <span className="block md:hidden font-semibold">
-                                        Valor total:
-                                      </span>
-                                      <span className="w-full">
-                                        {(item.desconto
-                                          ? item.preco * item.quantidade -
-                                            item.desconto
-                                          : item.preco * item.quantidade
-                                        ).toLocaleString("pt-BR", {
-                                          style: "currency",
-                                          currency: "BRL",
-                                        })}
-                                      </span>
+                                      {/* Valor Unitário */}
+                                      <div className="mt-2 md:mt-0 md:flex justify-center items-center text-sm md:text-base">
+                                        <span className="block md:hidden font-semibold">
+                                          Valor unitário:
+                                        </span>
+                                        <IMaskInput
+                                          mask="R$ num"
+                                          blocks={{
+                                            num: {
+                                              mask: Number,
+                                              scale: 2,
+                                              thousandsSeparator: ".",
+                                              padFractionalZeros: true,
+                                              normalizeZeros: true,
+                                              radix: ",",
+                                              mapToRadix: ["."],
+                                            },
+                                          }}
+                                          value={String(item.preco)}
+                                          unmask={true}
+                                          disabled
+                                          className="rounded-xs p-0 md:px-2 py-1 text-center w-full"
+                                        />
+                                      </div>
+
+                                      {/* Valor Total */}
+                                      <div className="text-center h-full flex flex-col  items-start justify-center gap-2 mt-2 md:mt-0 text-sm md:text-base ">
+                                        <span className="block md:hidden font-semibold">
+                                          Valor total:
+                                        </span>
+                                        <span className="w-full truncate">
+                                          {(item.desconto
+                                            ? item.preco * item.quantidade -
+                                              item.desconto
+                                            : item.preco * item.quantidade
+                                          ).toLocaleString("pt-BR", {
+                                            style: "currency",
+                                            currency: "BRL",
+                                          })}
+                                        </span>
+                                      </div>
                                     </div>
-                                  </div>
-                                ))}
+                                  );
+                                })}
 
                                 {/* Totais */}
                                 <div className="flex flex-col items-end gap-2 ">
                                   <div className="flex justify-between  w-full md:w-auto px-14 ">
-                                    <span className="font-semibold">
-                                      Total de
-                                    </span>
+                                    <span className="font-semibold">Total</span>
                                     <span className="w-[8rem] truncate text-right">
                                       {order.totalValue.toLocaleString(
                                         "pt-BR",
@@ -690,38 +736,53 @@ const ClientOrdersTable = () => {
 
                                   {order.orderStatus !== 1 && (
                                     <>
-                                      <div className="flex justify-between w-full  gap-4  pt-2 border-t ">
-                                        <div className="w-full flex justify-end px-14">
+                                      <div className="w-full flex justify-end items-end border-t">
+                                        <div className="flex justify-between items-center w-full pt-2 md:w-auto px-14 ">
                                           <span className="font-semibold">
-                                            Desconto de
+                                            Desconto
                                           </span>
                                           <span className="w-[8rem] truncate text-right">
-                                            {order.totalDiscount
-                                              ? order.totalDiscount?.toLocaleString(
-                                                  "pt-BR",
-                                                  {
-                                                    style: "currency",
-                                                    currency: "BRL",
-                                                  }
-                                                )
-                                              : "R$ 0,00"}
+                                            {order.totalDiscount.toLocaleString(
+                                              "pt-BR",
+                                              {
+                                                style: "currency",
+                                                currency: "BRL",
+                                              }
+                                            )}
                                           </span>
                                         </div>
                                       </div>
-                                      <div className="flex justify-between w-full  gap-4 md:gap-10 pt-2 border-t">
+                                      <div className="w-full flex justify-end items-end border-t">
+                                        <div className="flex justify-between items-center w-full pt-2  md:w-auto px-14 ">
+                                          <span className="font-semibold">
+                                            Frete
+                                          </span>
+                                          <span className="w-[8rem] truncate text-right">
+                                            {order.detailsPropostal.delivery.toLocaleString(
+                                              "pt-BR",
+                                              {
+                                                style: "currency",
+                                                currency: "BRL",
+                                              }
+                                            )}
+                                          </span>
+                                        </div>
+                                      </div>
+                                      <div className="flex justify-between w-full  gap-4 md:gap-10 pt-2 pb-2 border-t">
                                         <div className="w-full flex justify-end px-14">
                                           <span className="font-semibold">
-                                            Total com desconto
+                                            Total
                                           </span>
                                           <span className="w-[8rem] truncate text-right">
                                             {order.discountTotalValue
-                                              ? order.discountTotalValue.toLocaleString(
-                                                  "pt-BR",
-                                                  {
-                                                    style: "currency",
-                                                    currency: "BRL",
-                                                  }
-                                                )
+                                              ? (
+                                                  order.discountTotalValue +
+                                                  order.detailsPropostal
+                                                    .delivery
+                                                ).toLocaleString("pt-BR", {
+                                                  style: "currency",
+                                                  currency: "BRL",
+                                                })
                                               : "R$ 0,00"}
                                           </span>
                                         </div>

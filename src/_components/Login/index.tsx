@@ -25,7 +25,7 @@ const formSchema = z.object({
 type FormSchema = z.infer<typeof formSchema>;
 
 type LoginProps = {
-  onSwitchToRegister: () => void;
+  onSwitchToRegister?: () => void;
 };
 
 const Login: React.FC<LoginProps> = () => {
