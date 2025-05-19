@@ -22,12 +22,12 @@ export function RouteSelect() {
   const [searchParams] = useSearchParams();
 
   // Recupera o parâmetro 'c' da URL, se existir
-  const initialParam = searchParams.get("c") || "";
+  const initialParam = searchParams.get("c") || "Selecione";
   const [value, setValue] = useState<string>(initialParam);
 
   // Sincroniza o estado do select com o parâmetro da URL
   useEffect(() => {
-    const currentCategory = searchParams.get("c") || "";
+    const currentCategory = searchParams.get("c") || "Selecione";
     if (currentCategory !== value) {
       setValue(currentCategory);
     }

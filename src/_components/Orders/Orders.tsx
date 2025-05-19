@@ -794,7 +794,7 @@ const OrdersTable = () => {
                             >
                               {order.orderStatus > 1 && (
                                 <Button
-                                  className="w-[8rem]  rounded-xs bg-gray-100 text-red-900 hover:text-white border border-red-900 hover:border-gray-100"
+                                  className="w-[8rem] rounded-xs bg-gray-100 text-red-900 hover:text-white border border-red-900 hover:border-gray-100"
                                   onClick={() => handleGeneratedPDF(order)}
                                 >
                                   {generatedPdf === order.orderId ? (

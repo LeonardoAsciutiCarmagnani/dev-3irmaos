@@ -12,7 +12,7 @@ const Home = () => {
 
   const categorias = [
     {
-      label: "Portas, Vitrais e Grades Antigas",
+      label: "Antiguidades",
       imageUrl:
         "https://hiper-gestao.s3.amazonaws.com/88f64a86-0b27-41c2-beba-076650f8ee25/imagem-de-produto/70dc2c26-abd4-4bae-bf11-b4cb9a57a0c9/original.jpeg",
     },
@@ -22,12 +22,12 @@ const Home = () => {
         "https://hiper-gestao.s3.amazonaws.com/88f64a86-0b27-41c2-beba-076650f8ee25/imagem-de-produto/ba20adcb-37a3-4eb7-8c84-35146f5878a1/original.jpeg",
     },
     {
-      label: "Assoalhos, Deck, Escada e Forro",
+      label: "Assoalhos, Escadas, Decks e Forros",
       imageUrl:
         "https://hiper-gestao.s3.amazonaws.com/88f64a86-0b27-41c2-beba-076650f8ee25/imagem-de-produto/3b63fefb-d27b-4c6b-b847-40bcb805a6c3/original.jpeg",
     },
     {
-      label: "Portas Duplas, Pivotantes e Internas",
+      label: "Portas Sob Medida",
       imageUrl:
         "https://hiper-gestao.s3.amazonaws.com/88f64a86-0b27-41c2-beba-076650f8ee25/imagem-de-produto/4e2eb499-669a-4703-aaaa-4f954b5ec039/original.jpeg",
     },
@@ -44,7 +44,7 @@ const Home = () => {
   ];
 
   return (
-    <div className="h-full w-full px-2 overflow-y-scroll md:h-[calc(100vh-64px)] pt-2">
+    <div className="w-full px-2 overflow-y-scroll h-[calc(100vh-70px)] py-2">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 md:gap-1 h-full">
         {categorias.map((categoria) => (
           <div
