@@ -393,7 +393,7 @@ export class OrderController {
             <thead>
               <tr>
                 <th>Produto</th>
-                <th>Un</th>
+                <th style="text-align:center">Un</th>
                 <th>Qtd</th>
                 <th>Desconto</th>
                 <th>Valor Unitário</th>
@@ -434,7 +434,7 @@ export class OrderController {
                     item.largura
                   }m | Comprimento: ${item.comprimento}m</small>
                       </td>
-                      <td>${item.unidade}</td>
+                      <td>${item.unidade ? item.unidade : "UN"}</td>
                       <td style="text-align:center">${item.quantidade}</td>
                       <td>${
                         item.desconto?.toLocaleString("pt-BR", {
@@ -457,13 +457,13 @@ export class OrderController {
             </tbody>
             <tfoot>
               <tr>
-                <td colspan="6" class="text-right"><strong style="padding: 0px 4px">Total:</strong>${totalValue?.toLocaleString(
+                <td colspan="6" class="text-right"><strong style="padding: 0px 4px">Sub Total:</strong>${totalValue?.toLocaleString(
                   "pt-BR",
                   { style: "currency", currency: "BRL" }
                 )}</td>
               </tr>
               <tr>
-                <td colspan="6" class="text-right"><strong style="padding: 0px 4px">Desconto total:</strong>${
+                <td colspan="6" class="text-right"><strong style="padding: 0px 4px">Desconto:</strong>${
                   totalDiscount
                     ? totalDiscount.toLocaleString("pt-BR", {
                         style: "currency",
@@ -472,25 +472,8 @@ export class OrderController {
                     : "R$ 0,00"
                 }</td>
               </tr>
+
               <tr>
-               <td colspan="6" class="text-right">
-                  <strong style="padding: 0px 4px">
-                    Total com desconto:
-                  </strong>
-                  ${
-                    discountTotalValue
-                      ? discountTotalValue.toLocaleString("pt-BR", {
-                          style: "currency",
-                          currency: "BRL",
-                        })
-                      : totalValue?.toLocaleString("pt-BR", {
-                          style: "currency",
-                          currency: "BRL",
-                        })
-                  }
-                </td>
-              </tr>
-               <tr>
                <td colspan="6" class="text-right">
                   <strong style="padding: 0px 4px">
                     Frete:
@@ -505,6 +488,22 @@ export class OrderController {
                   }
                 </td>
               </tr>
+              
+              <tr>
+               <td colspan="6" class="text-right">
+                  <strong style="padding: 0px 4px">
+                    Total:
+                  </strong>
+                  ${(discountTotalValue
+                    ? discountTotalValue + (detailsPropostal?.delivery || 0)
+                    : 0
+                  ).toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
+                </td>
+              </tr>
+               
             </tfoot>
           </table>
         </div>
@@ -589,9 +588,10 @@ export class OrderController {
       <li><strong>Valor final:</strong> R$ ${(discountTotalValue
         ? discountTotalValue + (detailsPropostal?.delivery || 0)
         : 0
-      )
-        .toFixed(2)
-        .replace(".", ",")}</li>
+      ).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      })}</li>
     </ul>
   </div>
   <div style="display: flex; flex-direction: column; gap: 16px;">
