@@ -37,7 +37,7 @@ const Home = () => {
         "https://hiper-gestao.s3.amazonaws.com/88f64a86-0b27-41c2-beba-076650f8ee25/imagem-de-produto/ecf0a448-f699-43d6-8a3c-a3c4c4cd2e0a/original.jpeg",
     },
     {
-      label: "Moveis, Painéis e Bancadas",
+      label: "Bancadas, Móveis e Painéis",
       imageUrl:
         "https://hiper-gestao.s3.amazonaws.com/88f64a86-0b27-41c2-beba-076650f8ee25/imagem-de-produto/b8611f73-46eb-493e-b576-b4b97f2ef0f9/original.jpeg",
     },

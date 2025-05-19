@@ -1126,7 +1126,7 @@ const OrdersTable = () => {
                                 <tr className="border-t text-end">
                                   <td className="flex justify-end gap-10 p-2">
                                     <span className="font-semibold">
-                                      Total de
+                                      Sub total
                                     </span>
                                     <span className="w-[8rem] truncate">
                                       {" "}
@@ -1143,7 +1143,7 @@ const OrdersTable = () => {
                                 <tr className="border-t text-end">
                                   <td className="flex justify-end gap-10 p-2">
                                     <span className="font-semibold flex-1 ">
-                                      Desconto de
+                                      Desconto
                                     </span>
                                     <span className="w-[8rem] truncate">
                                       {order.totalDiscount
@@ -1158,24 +1158,7 @@ const OrdersTable = () => {
                                     </span>
                                   </td>
                                 </tr>
-                                <tr className="border-t text-end">
-                                  <td className="flex justify-end gap-10 p-2">
-                                    <span className="font-semibold">
-                                      Total com desconto
-                                    </span>
-                                    <span className="w-[8rem] truncate">
-                                      {order.discountTotalValue
-                                        ? order.discountTotalValue.toLocaleString(
-                                            "pt-BR",
-                                            {
-                                              style: "currency",
-                                              currency: "BRL",
-                                            }
-                                          )
-                                        : "R$ 0,00"}
-                                    </span>
-                                  </td>
-                                </tr>
+
                                 <tr className="border-t text-end">
                                   <td className="flex justify-end gap-10 p-2">
                                     <span className="font-semibold">Frete</span>
@@ -1192,6 +1175,23 @@ const OrdersTable = () => {
                                             style: "currency",
                                             currency: "BRL",
                                           })}
+                                    </span>
+                                  </td>
+                                </tr>
+
+                                <tr className="border-t text-end">
+                                  <td className="flex justify-end gap-10 p-2">
+                                    <span className="font-semibold">Total</span>
+                                    <span className="w-[8rem] truncate">
+                                      {order.discountTotalValue
+                                        ? (
+                                            order.discountTotalValue +
+                                            order.detailsPropostal.delivery
+                                          ).toLocaleString("pt-BR", {
+                                            style: "currency",
+                                            currency: "BRL",
+                                          })
+                                        : "R$ 0,00"}
                                     </span>
                                   </td>
                                 </tr>

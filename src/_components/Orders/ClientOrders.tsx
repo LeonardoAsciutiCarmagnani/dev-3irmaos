@@ -722,9 +722,7 @@ const ClientOrdersTable = () => {
                                 {/* Totais */}
                                 <div className="flex flex-col items-end gap-2 ">
                                   <div className="flex justify-between  w-full md:w-auto px-14 ">
-                                    <span className="font-semibold">
-                                      Total de
-                                    </span>
+                                    <span className="font-semibold">Total</span>
                                     <span className="w-[8rem] truncate text-right">
                                       {order.totalValue.toLocaleString(
                                         "pt-BR",
@@ -741,7 +739,7 @@ const ClientOrdersTable = () => {
                                       <div className="w-full flex justify-end items-end border-t">
                                         <div className="flex justify-between items-center w-full pt-2 md:w-auto px-14 ">
                                           <span className="font-semibold">
-                                            Desconto de
+                                            Desconto
                                           </span>
                                           <span className="w-[8rem] truncate text-right">
                                             {order.totalDiscount.toLocaleString(
@@ -754,26 +752,8 @@ const ClientOrdersTable = () => {
                                           </span>
                                         </div>
                                       </div>
-                                      <div className="flex justify-between w-full  gap-4 md:gap-10 pt-2 border-t">
-                                        <div className="w-full flex justify-end px-14">
-                                          <span className="font-semibold">
-                                            Total com desconto
-                                          </span>
-                                          <span className="w-[8rem] truncate text-right">
-                                            {order.discountTotalValue
-                                              ? order.discountTotalValue.toLocaleString(
-                                                  "pt-BR",
-                                                  {
-                                                    style: "currency",
-                                                    currency: "BRL",
-                                                  }
-                                                )
-                                              : "R$ 0,00"}
-                                          </span>
-                                        </div>
-                                      </div>
                                       <div className="w-full flex justify-end items-end border-t">
-                                        <div className="flex justify-between items-center w-full pt-2 pb-2 md:w-auto px-14 ">
+                                        <div className="flex justify-between items-center w-full pt-2  md:w-auto px-14 ">
                                           <span className="font-semibold">
                                             Frete
                                           </span>
@@ -785,6 +765,25 @@ const ClientOrdersTable = () => {
                                                 currency: "BRL",
                                               }
                                             )}
+                                          </span>
+                                        </div>
+                                      </div>
+                                      <div className="flex justify-between w-full  gap-4 md:gap-10 pt-2 pb-2 border-t">
+                                        <div className="w-full flex justify-end px-14">
+                                          <span className="font-semibold">
+                                            Total
+                                          </span>
+                                          <span className="w-[8rem] truncate text-right">
+                                            {order.discountTotalValue
+                                              ? (
+                                                  order.discountTotalValue +
+                                                  order.detailsPropostal
+                                                    .delivery
+                                                ).toLocaleString("pt-BR", {
+                                                  style: "currency",
+                                                  currency: "BRL",
+                                                })
+                                              : "R$ 0,00"}
                                           </span>
                                         </div>
                                       </div>

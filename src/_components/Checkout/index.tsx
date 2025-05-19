@@ -263,7 +263,7 @@ export const Checkout = () => {
             </Link>
             <span className="text-xs text-red-900">
               Caso você deseje informar algumas imagens de referência dos
-              produtos, você pode fazer isso acessando a pagina meus orçamentos
+              produtos, você pode fazer isso acessando a pagina MEUS ORÇAMENTOS
               e acessando seu orçamento terá a sessão de upload de imagens{" "}
             </span>
           </div>
