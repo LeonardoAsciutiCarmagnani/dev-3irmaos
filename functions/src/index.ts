@@ -9,6 +9,8 @@ import { ProductController } from "./controllers/Product/productController";
 import { UserController } from "./controllers/User/UserController";
 import { OrderController } from "./controllers/Order/OrderController";
 import { CreateAdmin } from "./services/User/createAdmin";
+import proposalSent from "./services/chat4sales/push/proposalSent";
+import { PushController } from "./controllers/Push/PushController";
 
 const errorHandler = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -36,7 +38,25 @@ class App {
   }
 
   private setupMiddlewares(): void {
-    this.app.use(helmet());
+    // Modificação principal: CORS configurado de forma mais explícita
+    this.app.use((req, res, next) => {
+      res.set("Access-Control-Allow-Origin", "https://dev-3irmaos.web.app");
+      res.set(
+        "Access-Control-Allow-Methods",
+        "GET, POST, PUT, DELETE, OPTIONS"
+      );
+      res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+      res.set("Access-Control-Max-Age", "3600");
+
+      // Handle OPTIONS requests
+      if (req.method === "OPTIONS") {
+        res.status(204).send("");
+        return;
+      }
+
+      next();
+    });
+
     this.app.use(
       cors({
         origin: env.CORS_ORIGIN,
@@ -45,21 +65,6 @@ class App {
         credentials: false,
       })
     );
-
-    if (env.NODE_ENV === "development") {
-      this.app.use(morgan("dev"));
-    } else {
-      this.app.use(morgan("combined"));
-    }
-
-    this.app.use((req, res, next) => {
-      console.log(
-        `[${new Date().toISOString()}] ${req.method} ${req.originalUrl} - IP: ${
-          req.ip
-        }`
-      );
-      next();
-    });
   }
 
   private setupRoutes(): void {
@@ -78,6 +83,7 @@ class App {
     router.post("/post-budget", OrderController.createBudget);
     router.post("/create-adm", UserController.createAdmin);
     router.post("/generate-pdf", OrderController.generatePDF);
+    router.post("/send-push-proposalSent", PushController.sendProposal);
     // router.post("/find-CEP", CEPController.getCEP);
     // //PUT ROUTES
     // router.put("/prices-lists/:id", PricesListsController.putPriceListById);
@@ -121,4 +127,10 @@ const app = application.getApp();
 // Export for Firebase Functions
 console.log(`Server started in ${env.NODE_ENV} mode`);
 
-export const api = onRequest(app);
+export const api = onRequest(
+  {
+    cors: ["https://dev-3irmaos.web.app"],
+    maxInstances: 10,
+  },
+  app
+);
