@@ -430,9 +430,11 @@ export class OrderController {
                          }
                        <br/>
                         <small style="color:#000">
-                       Altura: ${item.altura}m | Largura: ${
-                    item.largura
-                  }m | Comprimento: ${item.comprimento}m</small>
+                       Altura: ${item.altura ? item.altura : "0"}m | Largura: ${
+                    item.largura ? item.largura : "0"
+                  }m | Comprimento: ${
+                    item.comprimento ? item.comprimento : "0"
+                  }m</small>
                       </td>
                       <td>${item.unidade ? item.unidade : "UN"}</td>
                       <td style="text-align:center">${item.quantidade}</td>
@@ -585,7 +587,7 @@ export class OrderController {
           ? `R$ ${detailsPropostal.delivery.toFixed(2).replace(".", ",")}`
           : "R$ 0,00"
       }</li>
-      <li><strong>Valor final:</strong> R$ ${(discountTotalValue
+      <li><strong>Valor final:</strong>${(discountTotalValue
         ? discountTotalValue + (detailsPropostal?.delivery || 0)
         : 0
       ).toLocaleString("pt-BR", {
