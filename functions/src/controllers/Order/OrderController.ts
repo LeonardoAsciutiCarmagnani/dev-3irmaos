@@ -585,7 +585,7 @@ export class OrderController {
           ? `R$ ${detailsPropostal.delivery.toFixed(2).replace(".", ",")}`
           : "R$ 0,00"
       }</li>
-      <li><strong>Valor final:</strong> R$ ${(discountTotalValue
+      <li><strong>Valor final:</strong>${(discountTotalValue
         ? discountTotalValue + (detailsPropostal?.delivery || 0)
         : 0
       ).toLocaleString("pt-BR", {
