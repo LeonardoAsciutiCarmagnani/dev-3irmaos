@@ -30,8 +30,8 @@ export const DetailsProduct = () => {
     name: "",
   });
   const [isSquareMeter, setIsSquareMeter] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [isSobMedida, setIsSobMedida] = useState(false);
+
+  // const [isSobMedida, setIsSobMedida] = useState(false);
 
   //Controla a nomenclatura do input de comprimento
   const [variationNameInput, setVariationNameInput] = useState("Profundidade");
@@ -121,7 +121,7 @@ export const DetailsProduct = () => {
       setVariationNameInput("Profundidade");
     }
 
-    setIsSobMedida(!typeProduct.typeProduct);
+    // setIsSobMedida(!typeProduct.typeProduct);
 
     if (typeProduct.typeProduct) {
       reset({
@@ -223,7 +223,7 @@ export const DetailsProduct = () => {
               </span>
             </div>
 
-            <div className="p-2 md:p-2.5 rounded-xs shadow-sm h-[45vh]">
+            <div className="p-2 md:p-2.5 rounded-xs shadow-sm ">
               <div className="flex-col space-y-2 md:space-y-3 justify-center md:justify-end gap-3 md:gap-4 p-1">
                 <div className="flex justify-between items-center">
                   <h2 className="text-sm md:text-lg font-semibold text-red-900">
@@ -425,7 +425,7 @@ export const DetailsProduct = () => {
                           <div className="flex flex-wrap gap-2 md:gap-x-6 items-center justify-start">
                             {product.categoria ===
                             "Bancadas, Móveis e Painéis" ? (
-                              <div className="space-y-2">
+                              <div className="space-y-2 overflow-y-scroll h-[10rem]">
                                 <div>
                                   <span className="font-semibold text-red-900">
                                     MESAS:

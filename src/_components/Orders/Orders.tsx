@@ -83,9 +83,9 @@ const OrdersTable = () => {
   const [itemsIncluded, setItemsIncluded] = useState("");
   const [itemsNotIncluded, setItemsNotIncluded] = useState("");
 
-  const [localDiscounts, setLocalDiscounts] = useState<Record<string, string>>(
-    {}
-  );
+  // const [localDiscounts, setLocalDiscounts] = useState<Record<string, number>>(
+  //   {}
+  // );
 
   const [generatedPdf, setGeneratedPdf] = useState<number | null>();
 
@@ -296,24 +296,31 @@ const OrdersTable = () => {
     }
   }
 
-  function handleLocalDiscountChange(
+  /*  function handleLocalDiscountChange(
     orderId: number,
     productId: string,
     value: string
   ) {
+    console.log(
+      "Chamou a função handleLocalDiscountChange passando =>",
+      orderId,
+      productId,
+      value
+    );
     const key = `${orderId}-${productId}`;
+    const parsed = parseFloat(value || "0");
     setLocalDiscounts((prev) => ({
       ...prev,
-      [key]: value,
+      [key]: parsed,
     }));
   }
 
   function handleDiscountBlur(orderId: number, productId: string) {
     const key = `${orderId}-${productId}`;
     const value = localDiscounts[key];
-    const parsed = parseFloat(value || "0");
-    handleChangeDiscountProduct(orderId, productId, parsed);
-  }
+    console.log("Valor de parsed =>", value);
+    handleChangeDiscountProduct(orderId, productId, value);
+  } */
 
   function handleChangeDiscountProduct(
     orderId: number,
@@ -1048,30 +1055,23 @@ const OrdersTable = () => {
                                                     mapToRadix: ["."],
                                                   },
                                                 }}
-                                                value={
-                                                  localDiscounts[
-                                                    `${order.orderId}-${item.selectedVariation.id}`
-                                                  ] ??
-                                                  String(
-                                                    (item.desconto || 0) /
-                                                      item.quantidade
-                                                  )
-                                                }
+                                                value={String(
+                                                  (item.desconto || 0) /
+                                                    item.quantidade
+                                                )}
                                                 unmask={true}
                                                 disabled={order.orderStatus > 1}
-                                                onAccept={(value) =>
-                                                  handleLocalDiscountChange(
+                                                onAccept={(value) => {
+                                                  console.log(
+                                                    "Valor sendo enviado para a função =>",
+                                                    value
+                                                  );
+                                                  handleChangeDiscountProduct(
                                                     order.orderId,
                                                     item.selectedVariation.id,
-                                                    value
-                                                  )
-                                                }
-                                                onBlur={() =>
-                                                  handleDiscountBlur(
-                                                    order.orderId,
-                                                    item.selectedVariation.id
-                                                  )
-                                                }
+                                                    Number(value)
+                                                  );
+                                                }}
                                                 className="rounded-xs px-2 py-1 w-[8rem] text-center"
                                               />
                                             </div>
@@ -1186,12 +1186,19 @@ const OrdersTable = () => {
                                       {order.discountTotalValue
                                         ? (
                                             order.discountTotalValue +
-                                            order.detailsPropostal.delivery
+                                            (order.detailsPropostal.delivery ??
+                                              delivery)
                                           ).toLocaleString("pt-BR", {
                                             style: "currency",
                                             currency: "BRL",
                                           })
-                                        : "R$ 0,00"}
+                                        : order.discountTotalValue?.toLocaleString(
+                                            "pt-BR",
+                                            {
+                                              style: "currency",
+                                              currency: "BRL",
+                                            }
+                                          )}
                                     </span>
                                   </td>
                                 </tr>
