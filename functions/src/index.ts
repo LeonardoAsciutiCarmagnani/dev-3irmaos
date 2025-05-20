@@ -73,27 +73,32 @@ class App {
     // ****API ROUTES**** \\
     //GET ROUTES
     router.get("/get-products", ProductController.GetAll);
-    // router.get("/prices-lists", PricesListsController.getAllPricesLists);
-    // router.get("/prices-lists/:id", PricesListsController.getPriceListById);
-    // //POST ROUTES
+
     router.post("/create-client", UserController.createClient);
-    // router.post("/create-prices-list", PricesListsController.createPriceList);
-    // router.post("/check-email", UserController.checkEmail);
+
     router.post("/post-order", OrderController.postOrderInHiper);
     router.post("/post-budget", OrderController.createBudget);
     router.post("/create-adm", UserController.createAdmin);
     router.post("/generate-pdf", OrderController.generatePDF);
+
+    // PUSH ROUTES
+
+    router.post("/send-push-createBudget", PushController.createdBudget);
     router.post("/send-push-proposalSent", PushController.sendProposal);
-    // router.post("/find-CEP", CEPController.getCEP);
-    // //PUT ROUTES
-    // router.put("/prices-lists/:id", PricesListsController.putPriceListById);
-    // router.put("/client/:id", UserController.putClientById);
-    // //DELETE ROUTES
-    // router.delete(
-    //   "/prices-lists/:id",
-    //   PricesListsController.deletePriceListById
-    // );
-    // router.delete("/client/:id", UserController.deleteUserById);
+    router.post("/send-push-proposalRejected", PushController.proposalRejected);
+    router.post("/send-push-proposalApproved", PushController.proposalApproved);
+    router.post(
+      "/send-push-proposalInProduction",
+      PushController.proposalInProduction
+    );
+    router.post(
+      "/send-push-proposalDispatched",
+      PushController.proposalDispatched
+    );
+    router.post(
+      "/send-push-proposalCompleted",
+      PushController.proposalCompleted
+    );
 
     this.app.use("/v1", router);
   }

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-interface proposalSentProps {
+interface proposalApprovedProps {
   orderCode: number;
   clientName: string;
   clientPhone: string;
@@ -8,11 +8,11 @@ interface proposalSentProps {
   orderStatus: number;
 }
 
-const proposalSent = async (props: proposalSentProps) => {
+const proposalApproved = async (props: proposalApprovedProps) => {
   try {
-    console.log("Enviando push (proposalSent) ", props);
+    console.log("Enviando push (proposalApproved) ", props);
     const response = await axios.post(
-      "https://enterprise-112api.chat4sales.com.br/w/94aa3529-2a62-4447-91c0-a65140279ae4",
+      "https://enterprise-112api.chat4sales.com.br/w/4c9578eb-9080-4d11-b655-0ff61eb0fafa",
       props
     );
     return response.data;
@@ -22,4 +22,4 @@ const proposalSent = async (props: proposalSentProps) => {
   }
 };
 
-export default proposalSent;
+export default proposalApproved;

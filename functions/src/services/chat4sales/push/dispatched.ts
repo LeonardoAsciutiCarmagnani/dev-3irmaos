@@ -1,18 +1,19 @@
 import axios from "axios";
 
-interface proposalSentProps {
+interface proposalDispatchedProps {
   orderCode: number;
   clientName: string;
   clientPhone: string;
   createdAt: string;
   orderStatus: number;
+  deliveryDate?: string;
 }
 
-const proposalSent = async (props: proposalSentProps) => {
+const proposalDispatched = async (props: proposalDispatchedProps) => {
   try {
-    console.log("Enviando push (proposalSent) ", props);
+    console.log("Enviando push (proposalDispatched) ", props);
     const response = await axios.post(
-      "https://enterprise-112api.chat4sales.com.br/w/94aa3529-2a62-4447-91c0-a65140279ae4",
+      "https://enterprise-112api.chat4sales.com.br/w/06af158c-b04a-40ed-92e8-731a1765090e",
       props
     );
     return response.data;
@@ -22,4 +23,4 @@ const proposalSent = async (props: proposalSentProps) => {
   }
 };
 
-export default proposalSent;
+export default proposalDispatched;
