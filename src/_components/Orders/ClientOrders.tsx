@@ -106,6 +106,11 @@ const ClientOrdersTable = () => {
         accessorKey: "status",
         cell: ({ row }) => row.getValue("status"),
       },
+      {
+        header: "PDF",
+        accessorKey: "PDF",
+        cell: ({ row }) => row.getValue("PDF"),
+      },
     ],
     []
   );
@@ -442,16 +447,7 @@ const ClientOrdersTable = () => {
                               >
                                 {order.client.name}
                               </td>
-                              <td className={`px-4 py-3 flex gap-2`}>
-                                <Button
-                                  onClick={() => handleGeneratedPDF(order)}
-                                >
-                                  {generatedPdf === order.orderId ? (
-                                    <LoaderCircle className="animate-spin" />
-                                  ) : (
-                                    <FileDownIcon />
-                                  )}
-                                </Button>
+                              <td className={`py-3 px-4`}>
                                 <div
                                   className={`w-fit rounded-xs p-2 text-white font-semibold text-xs hover:cursor-pointer  ${
                                     status?.color || "bg-zinc-300"
@@ -459,6 +455,21 @@ const ClientOrdersTable = () => {
                                 >
                                   {status?.label || "Status desconhecido"}
                                 </div>
+                              </td>
+                              <td>
+                                <Button
+                                  onClick={() => handleGeneratedPDF(order)}
+                                  className=" bg-transparent border-red-900 rounded-none hover:shadow-md hover:scale-105  hover:bg-transparent shadow-sm shadow-gray-300"
+                                >
+                                  {generatedPdf === order.orderId ? (
+                                    <LoaderCircle className="animate-spin text-red-900 hover:text-white" />
+                                  ) : (
+                                    <>
+                                      <FileDownIcon className="hover:text-white text-red-900" />
+                                      <h2 className="text-red-900">Download</h2>
+                                    </>
+                                  )}
+                                </Button>
                               </td>
                             </tr>
                           </DialogTrigger>

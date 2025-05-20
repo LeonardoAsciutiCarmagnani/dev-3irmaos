@@ -22,6 +22,7 @@ import { Badge } from "@/components/ui/badge";
 import axios from "axios";
 import logo from "@/assets/logo_3irmaos.png";
 import { api } from "@/lib/axios";
+import Loader from "@/_components/Loader/loader";
 
 // Schemas
 const loginSchema = z.object({
@@ -68,6 +69,7 @@ const Auth: React.FC = () => {
   const [mode, setMode] = useState<"login" | "register">("login");
   const [showPassword, setShowPassword] = useState(false);
   const [isIndividual, setIsIndividual] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuthStore();
   const navigate = useNavigate();
 
@@ -126,12 +128,15 @@ const Auth: React.FC = () => {
 
   const handleLogin = async (data: LoginData) => {
     try {
+      setIsLoading(true);
       await login(data.email.trim(), data.password.trim());
       toast.success("Login realizado com sucesso!", { id: "login-success" });
       navigate("/");
     } catch (err) {
       console.error(err);
       toast.error("E-mail ou senha incorretos.", { id: "login-error" });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -574,6 +579,7 @@ const Auth: React.FC = () => {
           </Form>
         </>
       )}
+      {isLoading && <Loader />}
     </div>
   );
 };

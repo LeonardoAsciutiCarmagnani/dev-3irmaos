@@ -141,7 +141,12 @@ const OrdersTable = () => {
         cell: ({ row }) => row.getValue("status"),
       },
       {
-        header: "",
+        header: "Envio Hiper",
+        accessorKey: "PDF",
+        cell: ({ row }) => row.getValue("PDF"),
+      },
+      {
+        header: "PDF",
         accessorKey: "hiper",
         cell: ({ row }) => row.getValue("hiper"),
       },
@@ -497,11 +502,14 @@ const OrdersTable = () => {
         totalValue: orderToPush.totalValue,
       });
 
+      const cleanedPhone = orderToPush.client.phone.replace(/\D/g, "");
+
       const pushObject = {
         orderCode: orderToPush.orderId,
         clientName: orderToPush.client.name,
-        clientPhone: orderToPush.client.phone,
+        clientPhone: cleanedPhone,
         createdAt: orderToPush.createdAt,
+        orderStatus: orderToPush.orderStatus,
       };
 
       const response = await api.post("/send-push-proposalSent", pushObject);
@@ -514,6 +522,8 @@ const OrdersTable = () => {
           }
         );
       }
+
+      toast.success("Mensagem enviada com sucesso!");
 
       setData((prevData) =>
         prevData.map((order) =>
@@ -792,25 +802,6 @@ const OrdersTable = () => {
                             <td
                               className={`flex gap-10 items-center  px-4 py-3 `}
                             >
-                              {order.orderStatus > 1 && (
-                                <Button
-                                  className="w-[8rem] rounded-xs bg-gray-100 text-red-900 hover:text-white border border-red-900 hover:border-gray-100"
-                                  onClick={() => handleGeneratedPDF(order)}
-                                >
-                                  {generatedPdf === order.orderId ? (
-                                    <div className="flex gap-2 items-center ">
-                                      <LoaderCircle className="animate-spin" />
-                                      <span className="text-xs">
-                                        BAIXANDO...
-                                      </span>
-                                    </div>
-                                  ) : (
-                                    <div className="flex gap-2 items-center ">
-                                      <FileDownIcon className="size-7" /> PDF
-                                    </div>
-                                  )}
-                                </Button>
-                              )}
                               {order.orderStatus !== 1 &&
                                 order.orderStatus !== 3 &&
                                 order.orderStatus !== 10 && (
@@ -880,6 +871,23 @@ const OrdersTable = () => {
                                     </PopoverContent>
                                   </Popover>
                                 )}
+                            </td>
+                            <td>
+                              {order.orderStatus > 1 && (
+                                <Button
+                                  onClick={() => handleGeneratedPDF(order)}
+                                  className=" bg-transparent border-red-900 rounded-none hover:shadow-md hover:scale-105  hover:bg-transparent shadow-sm shadow-gray-300"
+                                >
+                                  {generatedPdf === order.orderId ? (
+                                    <LoaderCircle className="animate-spin text-red-900 hover:text-white" />
+                                  ) : (
+                                    <>
+                                      <FileDownIcon className="hover:text-white text-red-900" />
+                                      <h2 className="text-red-900">Download</h2>
+                                    </>
+                                  )}
+                                </Button>
+                              )}
                             </td>
                           </tr>
                         </DialogTrigger>

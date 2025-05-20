@@ -47,14 +47,14 @@ const CreateOrderADM = () => {
 
       // Verifica se o cliente foi selecionado
       if (!client) {
-        alert("Selecione um cliente para continuar");
+        toast.error("Selecione um cliente para continuar");
         setIsLoading(false);
         return;
       }
 
       // Verifica se há produtos no orçamento
       if (productsInBudget.length === 0) {
-        alert("Adicione pelo menos um produto ao orçamento");
+        toast.error("Adicione pelo menos um produto ao orçamento");
         setIsLoading(false);
         return;
       }
@@ -148,7 +148,7 @@ const CreateOrderADM = () => {
 
       // Limpa os campos após sucesso
       if (response.status === 200 || response.status === 201) {
-        alert("Orçamento criado com sucesso!");
+        toast.success("Orçamento criado com sucesso!");
         setClient(null);
         setProductsInBudget([]);
         setFiles([]);

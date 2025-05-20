@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/context/authContext";
 import { productsContext } from "@/context/productsContext";
 import { api } from "@/lib/axios";
-import { LoaderCircle, Trash2 } from "lucide-react";
+import { InfoIcon, LoaderCircle, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -12,6 +12,7 @@ import RegisterModal from "./register-modal";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../Utils/FirebaseConfig";
 import { format } from "date-fns";
+import Loader from "../Loader/loader";
 
 interface IFireStoreProps {
   document: string;
@@ -36,6 +37,7 @@ export const Checkout = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [sendOrder, setSendOrder] = useState(false);
   const [userData, setUserData] = useState<IFireStoreProps | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [address, setAddress] = useState({
     cep: "",
     neighborhood: "",
@@ -135,6 +137,7 @@ export const Checkout = () => {
     const dateOrder = format(new Date(), "dd/MM/yyyy HH:mm:ss");
 
     try {
+      setIsLoading(true);
       const order = {
         client: {
           id: user.uid,
@@ -169,6 +172,8 @@ export const Checkout = () => {
       );
       setSendOrder(false);
       console.error("Erro ao enviar produtos para o servidor", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -261,11 +266,14 @@ export const Checkout = () => {
                 Continuar comprando
               </Button>
             </Link>
-            <span className="text-xs text-red-900">
-              Caso você deseje informar algumas imagens de referência dos
-              produtos, você pode fazer isso acessando a pagina MEUS ORÇAMENTOS
-              e acessando seu orçamento terá a sessão de upload de imagens{" "}
-            </span>
+            <div className="flex items-center gap-2 text-gray-700 p-2 bg-blue-50 rounded-xs border border-blue-200">
+              <InfoIcon className="text-blue-700" />
+              <span className="text-xs text-blue-700">
+                Caso deseje enviar imagens de referência dos produtos, acesse a
+                aba <strong>Meus Orçamentos</strong> e, no detalhe do seu
+                orçamento, utilize a seção de Envio de Imagens.
+              </span>
+            </div>
           </div>
           <div className="flex flex-col gap-2 ">
             <div className="flex flex-col max-h-96 p-2 md:p-4 justify-between border border-gray-200 bg-gray-50 rounded-xs w-full md:w-lg">
@@ -411,6 +419,7 @@ export const Checkout = () => {
         </>
       )}
       {modalIsOpen && <RegisterModal open={modalIsOpen} />}
+      {isLoading && <Loader />}
     </div>
   );
 };

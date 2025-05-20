@@ -108,7 +108,7 @@ const Sidebar = () => {
                 `group flex items-center p-2 text-[0.97rem] transition-colors ${
                   isActive
                     ? "bg-red-900 text-white"
-                    : "text-gray-800 hover:bg-red-900 hover:text-white"
+                    : "text-gray-800 hover:bg-red-900 hover:text-white hover:underline"
                 }`
               }
             >
