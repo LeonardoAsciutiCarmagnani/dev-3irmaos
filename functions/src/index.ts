@@ -129,8 +129,10 @@ console.log(`Server started in ${env.NODE_ENV} mode`);
 
 export const api = onRequest(
   {
+    region: "us-central1",
+    timeoutSeconds: 120,
+    memory: "1GiB",
     cors: ["https://dev-3irmaos.web.app"],
-    maxInstances: 10,
   },
   app
 );

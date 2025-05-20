@@ -2,10 +2,11 @@ import { Request, Response, NextFunction } from "express";
 import { z, ZodError } from "zod";
 import { CreateBudgetService } from "../../services/Order/createBudget";
 import { PostOrderService } from "../../services/hiper/postOrder";
-import puppeteer from "puppeteer";
 
 import { readFileSync } from "fs";
 import { resolve } from "path";
+import chromium from "chrome-aws-lambda";
+import puppeteer from "puppeteer-core";
 
 // Caminho absoluto a partir do arquivo compilado em dist/
 const logoPath = resolve(__dirname, "../../assets/logo_3irmaos.png");
@@ -240,6 +241,45 @@ export class OrderController {
         imagesUrls,
       } = data as BudgetType;
 
+      /*   ${
+          clientImages?.length > 0
+            ? `
+          <div class="section">
+            <span style="font-weight: bold; font-size: 18px;">Imagens de referência</span>
+            <div class="images-grid">
+                  ${clientImages
+                    .map(
+                      (src) =>
+                        `<div class="image-container">
+                          <img src="${src}" alt="Imagem fornecida pelo cliente" />
+                        </div>`
+                    )
+                    .join("")}
+                </div>
+          </div>`
+            : ""
+        }
+
+          ${
+            (imagesUrls?.length ?? 0) > 0
+              ? `
+              <div class="section">
+                <span style="font-weight: bold; font-size: 18px;">Imagens ilustrativas</span>
+                <div class="images-grid">
+                  ${(imagesUrls ?? [])
+                    .map(
+                      (src) =>
+                        `<div class="image-container">
+                          <img src="${src}" alt="Imagem fornecida pela 3 Irmãos" />
+                        </div>`
+                    )
+                    .join("")}
+                </div>
+              </div>`
+              : ""
+          }
+ */
+
       const htmlContent = `
     <html>
       <head>
@@ -407,10 +447,6 @@ export class OrderController {
                     item.preco * item.quantidade - (item.desconto || 0) || 0;
                   const variation =
                     item.selectedVariation.nomeVariacao.split("-");
-                  console.log(
-                    "Variações enviada ao back-end =>",
-                    item.selectedVariation.nomeVariacao
-                  );
 
                   return `
                     <tr>
@@ -510,44 +546,7 @@ export class OrderController {
           </table>
         </div>
 
-        ${
-          clientImages?.length > 0
-            ? `
-          <div class="section">
-            <span style="font-weight: bold; font-size: 18px;">Imagens de referência</span>
-            <div class="images-grid">
-                  ${clientImages
-                    .map(
-                      (src) =>
-                        `<div class="image-container">
-                          <img src="${src}" alt="Imagem fornecida pelo cliente" />
-                        </div>`
-                    )
-                    .join("")}
-                </div>
-          </div>`
-            : ""
-        }
-
-          ${
-            imagesUrls
-              ? `
-              <div class="section">
-                <span style="font-weight: bold; font-size: 18px;">Imagens ilustrativas</span>
-                <div class="images-grid">
-                  ${imagesUrls
-                    .map(
-                      (src) =>
-                        `<div class="image-container">
-                          <img src="${src}" alt="Imagem fornecida pela 3 Irmãos" />
-                        </div>`
-                    )
-                    .join("")}
-                </div>
-              </div>`
-              : ""
-          }
-
+      
       <div class="section">
         <span style="font-weight: bold; font-size: 18px;">Observações</span>
         <p style="white-space: pre-wrap; color: #000;">
@@ -630,23 +629,37 @@ export class OrderController {
 </html>
   `;
 
-      const browser = await puppeteer.launch({
-        headless: true, // recomendação atual
-      });
+      console.log("Iniciando Puppeteer...");
+
+      const isLocal = process.env.NODE_ENV !== "production";
+      console.log("isLocal => ", isLocal);
+
+      const browser = await (isLocal
+        ? (await import("puppeteer")).default.launch({ headless: true }) // puppeteer completo localmente
+        : puppeteer.launch({
+            args: chromium.args,
+            executablePath: await chromium.executablePath,
+            headless: chromium.headless,
+          }));
+      console.log("Browser iniciado.");
 
       const page = await browser.newPage();
+      // await page.setContent(htmlContent, { waitUntil: "domcontentloaded" });
       await page.setContent(htmlContent, { waitUntil: "networkidle0" });
+      console.log("Conteúdo carregado.");
 
       const pdfBuffer = await page.pdf({ format: "A4" });
+      console.log("PDF gerado.");
 
       await browser.close();
+      console.log("Browser fechado.");
 
       res
         .status(200)
         .header("Content-Type", "application/pdf")
         .header(
           "Content-Disposition",
-          `attachment; filename=Pedido ${orderId} - 3 Irmãos.pdf`
+          `inline; filename=Pedido ${orderId} - 3 Irmãos.pdf`
         )
         .send(pdfBuffer);
     } catch (error) {

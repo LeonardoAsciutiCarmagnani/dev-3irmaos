@@ -3,6 +3,8 @@
     {
       "source": ".",
       "codebase": "default",
+      "runtime": "nodejs20",
+      "memory": "1GiB",
       "ignore": [
         "node_modules",
         ".git",
