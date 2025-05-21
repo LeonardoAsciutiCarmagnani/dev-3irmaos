@@ -11,7 +11,7 @@ const ProductCard = (Product: Product) => {
     ...Product.imagensAdicionais,
   ];
 
-  const CategoriesWithValue = ["Portas Pronta Entrega"];
+  const CategoriesWithValue = ["Portas Pronta Entrega", "Antiguidades"];
 
   return (
     <div

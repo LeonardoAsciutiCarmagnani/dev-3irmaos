@@ -1,0 +1,20 @@
+{
+  "name": "APP - 3 Irmãos",
+  "short_name": "3 Irmãos",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "logo_irmaos.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "logo_irmao.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

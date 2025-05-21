@@ -13,6 +13,8 @@ import UnauthorizedPage from "./_components/ProtectedRoutes/NotAllowed/NotAllowe
 import ClientOrdersPage from "./pages/Orders/ClientOrders";
 import AdmOrdersPage from "./pages/Orders/AdmOrders";
 import ClientsPage from "./pages/Clients";
+import OutletLayout from "./_components/Layout/outletLayout";
+import ProductDetailsLayout from "./_components/Layout/productDetailsLayout";
 
 export const routes = createBrowserRouter([
   {
@@ -30,9 +32,9 @@ export const routes = createBrowserRouter([
   {
     path: "/produtos",
     element: (
-      <LayoutPage>
+      <OutletLayout>
         <ProductsPage />
-      </LayoutPage>
+      </OutletLayout>
     ),
   },
   {
@@ -48,9 +50,9 @@ export const routes = createBrowserRouter([
   {
     path: "/detalhes/:id",
     element: (
-      <LayoutPage>
+      <ProductDetailsLayout>
         <DetailsProduct />
-      </LayoutPage>
+      </ProductDetailsLayout>
     ),
   },
   {

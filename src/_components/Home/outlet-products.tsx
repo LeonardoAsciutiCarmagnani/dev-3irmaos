@@ -109,10 +109,8 @@ const OutletProducts = () => {
 
   return (
     <div className="overflow-hidden">
-      <RouteSelect />
-
-      <div className="flex items-center justify-end px-4 py-2 bg-gray-50 border-b">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center w-full justify-end px-4 py-1 bg-white border-b md:static 2xl:static fixed top-27 z-20">
+        <div className="flex items-center gap-2 ">
           <span className="text-sm text-gray-600">Ordenar por:</span>
           <select
             value={sortBy}
@@ -141,8 +139,8 @@ const OutletProducts = () => {
         </div>
       )}
 
-      <div className="h-[calc(100vh-6.3rem)] overflow-y-auto pb-20 bg-white">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-x-1 gap-y-2 p-4 w-full">
+      <div className="h-full overflow-y-auto pb-3 bg-white pt-7">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-x-1 gap-y-2 p-4 w-full ">
           {isLoading ? (
             <div className="col-span-full flex justify-center items-center h-40">
               <Loader />

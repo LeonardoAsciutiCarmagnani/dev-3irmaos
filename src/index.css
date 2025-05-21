@@ -76,6 +76,24 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
+@media (display-mode: standalone) {
+  body {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .layout {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .layout > main {
+    flex: 1;
+    overflow-y: auto;
+  }
+}
+
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);

@@ -44,8 +44,8 @@ const Home = () => {
   ];
 
   return (
-    <div className="w-full px-2 py-1 overflow-y-auto h-[calc(100vh-70px)]">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-1">
+    <div className="w-full px-2 py-1 overflow-y-auto pb-16">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-1 mb-4">
         {categorias.map((categoria) => (
           <div
             key={categoria.label}
@@ -55,15 +55,16 @@ const Home = () => {
               to={`/produtos?c=${categoria.label.toLowerCase()}`}
               className="block w-full h-full text-center text-gray-800 hover:text-white"
             >
-              <div className="relative w-full aspect-square">
+              <div className="relative w-full h-[8rem] md:h-[20rem] 2xl:h-[25rem] overflow-hidden">
                 <img
                   src={categoria.imageUrl}
                   alt={categoria.label}
-                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-500"
+                  loading="lazy"
                 />
               </div>
-              <div className="absolute bottom-0 w-full bg-gradient-to-t from-red-900 via-red-900/80 to-transparent p-2">
-                <h1 className="text-sm sm:text-base md:text-lg font-semibold text-white line-clamp-1">
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-red-900 via-red-900/80 to-transparent p-2">
+                <h1 className="text-sm sm:text-base md:text-lg font-semibold text-white truncate">
                   {categoria.label}
                 </h1>
               </div>
@@ -71,6 +72,8 @@ const Home = () => {
           </div>
         ))}
       </div>
+      {/* Espaço adicional para garantir visibilidade do último card */}
+      <div className="h-2"></div>
     </div>
   );
 };

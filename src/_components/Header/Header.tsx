@@ -12,6 +12,7 @@ import {
   // HomeIcon,
   Minus,
   ScrollTextIcon,
+  ShoppingCartIcon,
   Trash2,
 } from "lucide-react";
 import { useState } from "react";
@@ -46,7 +47,7 @@ const Header = () => {
             onClick={() => setOpen(!open)}
           >
             <div className="flex items-center justify-center gap-x-1">
-              <FileBoxIcon className="text-gray-700" size={30} />
+              <ShoppingCartIcon className="text-gray-900" size={30} />
               <span className="font-semibold text-red-900 text-lg md:text-xl">
                 {productsInCart.length}
               </span>
@@ -178,7 +179,7 @@ const Header = () => {
           </Popover>
           {user && user.displayName ? (
             <div
-              className={`hidden md:flex text-nowrap text-lg font-semibold text-gray-600 hover:cursor-default ${
+              className={`hidden md:flex text-nowrap text-lg font-semibold text-gray-800 hover:cursor-default ${
                 user?.role === "admin" ? "text-red-900" : ""
               }`}
             >

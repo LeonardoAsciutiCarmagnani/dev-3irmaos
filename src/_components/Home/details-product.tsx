@@ -193,7 +193,7 @@ export const DetailsProduct = () => {
           <div className="flex flex-col space-y-3 w-full h-full place-items-around">
             <div className="flex w-full p-2 rounded-xs bg-transparent shadow-sm justify-start shadow-gray-300">
               <div className="flex justify-start items-center w-fit px-2">
-                <h1 className="text-md md:text-lg font-bold uppercase text-black">
+                <h1 className="text-[1rem] md:text-lg font-extrabold uppercase text-black">
                   {product.nome}
                 </h1>
               </div>
@@ -536,7 +536,7 @@ export const DetailsProduct = () => {
                   </div>
                 </form>
 
-                <div className="flex justify-end gap-x-2 md:gap-x-4">
+                {/* <div className="flex justify-end gap-x-2 md:gap-x-4">
                   <Button
                     type="button"
                     onClick={() => navigate("/")}
@@ -551,7 +551,7 @@ export const DetailsProduct = () => {
                   >
                     Prosseguir com a cotação
                   </Button>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

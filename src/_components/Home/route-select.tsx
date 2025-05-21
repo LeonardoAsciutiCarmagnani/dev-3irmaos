@@ -1,20 +1,21 @@
-import { useState, useEffect } from "react";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
+import { useState, useEffect, useRef } from "react";
+// import {
+//   Select,
+//   SelectTrigger,
+//   SelectValue,
+//   SelectContent,
+//   SelectItem,
+// } from "@/components/ui/select";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { ChevronDown } from "lucide-react";
 
 const categorias = [
-  "Antiguidades",
-  "Janelas e Esquadrias",
-  "Assoalhos, Escadas, Decks e Forros",
-  "Portas Sob Medida",
-  "Portas Pronta Entrega",
-  "Bancadas, Móveis e Painéis",
+  "antiguidades",
+  "janelas e esquadrias",
+  "assoalhos, escadas, decks e forros",
+  "portas sob medida",
+  "portas pronta entrega",
+  "bancadas, móveis e painéis",
 ];
 
 export function RouteSelect() {
@@ -22,12 +23,14 @@ export function RouteSelect() {
   const [searchParams] = useSearchParams();
 
   // Recupera o parâmetro 'c' da URL, se existir
-  const initialParam = searchParams.get("c") || "Selecione";
+  const initialParam = searchParams.get("c") || "";
   const [value, setValue] = useState<string>(initialParam);
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   // Sincroniza o estado do select com o parâmetro da URL
   useEffect(() => {
-    const currentCategory = searchParams.get("c") || "Selecione";
+    const currentCategory = searchParams.get("c") || "";
     if (currentCategory !== value) {
       setValue(currentCategory);
     }
@@ -41,22 +44,52 @@ export function RouteSelect() {
   };
 
   return (
-    <div className="mb-2 flex items-center justify-center w-full md:hidden">
-      <Select value={value} onValueChange={handleValueChange}>
-        <SelectTrigger className="hover:cursor-default w-full max-w-xs text-center rounded-none font-semibold border-2 border-red-900 shadow-sm shadow-gray-200 text-gray-700 focus:outline-none focus:ring-0 focus:ring-offset-0">
-          <SelectValue
-            placeholder="Selecione uma categoria"
-            className="hover:cursor-default"
+    <div className="mb-4 flex items-center justify-center w-full md:hidden">
+      <div ref={dropdownRef} className="relative w-full max-w-xs">
+        {/* Trigger do dropdown */}
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex items-center justify-between w-full px-4 py-3 bg-white border-b-2 border-red-900 text-gray-800 font-medium transition-all duration-200 focus:outline-none group"
+        >
+          <span
+            className={`capitalize tracking-wide ${
+              !value ? "text-gray-500" : "text-gray-900"
+            }`}
+          >
+            {value || "Selecione uma rota"}
+          </span>
+          <ChevronDown
+            size={16}
+            className={`transition-transform duration-300 text-red-900 group-hover:text-red-800 ${
+              isOpen ? "rotate-180" : ""
+            }`}
           />
-        </SelectTrigger>
-        <SelectContent className="z-[10000] rounded-none border-none shadow-sm shadow-gray-300 focus:outline-none focus:ring-0 font-semibold text-gray-700">
-          {categorias.map((categoria) => (
-            <SelectItem key={categoria} value={categoria}>
-              {categoria}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+        </button>
+
+        {/* Menu dropdown */}
+        {isOpen && (
+          <div className="absolute left-0 right-0 mt-1 bg-white shadow-md z-300 border-t border-gray-100">
+            <div className="py-1">
+              {categorias.map((categoria) => (
+                <button
+                  key={categoria}
+                  onClick={() => {
+                    handleValueChange(categoria);
+                    setIsOpen(false);
+                  }}
+                  className={`w-full px-4 py-2.5 text-left transition-all duration-200 capitalize hover:bg-gray-50 ${
+                    value === categoria
+                      ? "font-medium text-red-900 bg-gray-50 border-l-2 border-red-900"
+                      : "text-gray-700 border-l-2 border-transparent"
+                  }`}
+                >
+                  {categoria}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
