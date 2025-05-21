@@ -48,7 +48,7 @@ const FooterProductDetails = () => {
                     <div className="w-full flex items-center justify-around">
                       <span className="text-gray-700 flex-1 text-sm flex items-center gap-x-2">
                         <strong>Quantidade:</strong>
-                        <div className="flex items-center gap-x-2">
+                        <div className="flex items-center gap-x-0.5">
                           <span>{product.quantidade}</span>
                           <span>{`(${product.unidade})`}</span>
                         </div>
@@ -66,23 +66,23 @@ const FooterProductDetails = () => {
                         )}
                       </Button>
                     </div>
-                    <div className="flex items-center justify-between w-full pt-2 border-t border-gray-300">
-                      <h1>Total:</h1>
-                      <span>
-                        {productsInCart
-                          .reduce(
-                            (total, product) =>
-                              total + product.preco * (product.quantidade ?? 0),
-                            0
-                          )
-                          .toLocaleString("pt-BR", {
-                            style: "currency",
-                            currency: "BRL",
-                          })}
-                      </span>
-                    </div>
                   </div>
                 ))}
+                <div className="flex items-center justify-between w-full py-2 border-b border-gray-300">
+                  <h1 className="text-gray-900 font-semibold">Total:</h1>
+                  <span className="text-emerald-600 font-semibold text-sm">
+                    {productsInCart
+                      .reduce(
+                        (total, product) =>
+                          total + product.preco * (product.quantidade ?? 0),
+                        0
+                      )
+                      .toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      })}
+                  </span>
+                </div>
               </>
             )}
           </PopoverContent>
@@ -101,6 +101,7 @@ const FooterProductDetails = () => {
           type="button"
           className="w-fit text-xs md:text-sm bg-emerald-600 text-white rounded-xs py-1 md:py-2 px-2 md:px-4 hover:bg-green-700 transition-colors"
           onClick={() => navigate("/orçamento")}
+          disabled={productsInCart.length === 0}
         >
           Prosseguir com orçamento
         </Button>

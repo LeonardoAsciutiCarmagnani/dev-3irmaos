@@ -21,19 +21,6 @@ const ProductDetailsLayout = ({ children }: { children: React.ReactNode }) => {
       <footer className="fixed bottom-0 left-0 w-full z-20 bg-white shadow">
         <FooterProductDetails />
       </footer>
-
-      <Toaster
-        richColors
-        position="top-right"
-        duration={3000}
-        closeButton={true}
-        expand={true}
-        toastOptions={{
-          style: {
-            borderRadius: "0.125rem",
-          },
-        }}
-      />
     </div>
   );
 };

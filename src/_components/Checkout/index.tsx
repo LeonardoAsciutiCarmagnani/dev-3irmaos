@@ -128,7 +128,6 @@ export const Checkout = () => {
 
   const handleSubmitBudget = async () => {
     if (!user?.uid) return toast.error("Usuário não autenticado.");
-
     if (!address.cep || !address.street || !address.city) {
       return toast.error("Endereço incompleto.");
     }
@@ -158,17 +157,41 @@ export const Checkout = () => {
       };
 
       console.log("Dados do pedido", order);
-
       const response = await api.post("/post-budget", order);
-      if (response.status === 201) {
-        toast.success("Orçamento enviado!");
-        setSendOrder(false);
-        navigate("/");
-        handlingClearCart();
+      console.log("Response do pedido: ", response.data.orderId);
+
+      const createdOrderId = response.data.orderId;
+
+      const budgetsRef = collection(db, "Budgets");
+      const q = query(budgetsRef, where("orderId", "==", createdOrderId));
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot.empty) {
+        console.warn(
+          "Nenhum orçamento encontrado no Firestore para orderId",
+          createdOrderId
+        );
       }
+
+      setSendOrder(false);
+      handlingClearCart();
+
+      toast.success("Orçamento enviado com sucesso!", {
+        duration: 8000,
+        description: `Número do orçamento: ${response.data.orderId}`,
+      });
+
+      navigate("/pedidos-e-orçamentos", {
+        state: {
+          highlightOrderId: createdOrderId,
+        },
+      });
     } catch (error) {
       toast.error(
-        "Erro ao enviar o pedido. Verifique os campos e tente novamente."
+        "Erro ao enviar o pedido. Verifique os campos e tente novamente.",
+        {
+          description: "Se o erro persistir, entre em contato com o suporte.",
+        }
       );
       setSendOrder(false);
       console.error("Erro ao enviar produtos para o servidor", error);
@@ -284,7 +307,7 @@ export const Checkout = () => {
                     <div className="flex items-center gap-2">
                       <strong className="w-20">CEP:</strong>
                       <Input
-                        className="text-gray-700 w-fit bg-gray-50"
+                        className="text-gray-700 w-fit bg-gray-50 rounded-xs"
                         value={billingAddress.cep}
                         onBlur={(e) => fetchAddress(e.target.value)}
                         onChange={(e) =>
@@ -298,7 +321,7 @@ export const Checkout = () => {
                     <div className="flex gap-2 items-center">
                       <strong className="w-20">Bairro:</strong>
                       <Input
-                        className="text-gray-700 w-fit bg-gray-50"
+                        className="text-gray-700 w-fit bg-gray-50 rounded-xs"
                         value={billingAddress.neighborhood}
                         onChange={(e) =>
                           setBillingAddress((prev) => ({
@@ -311,7 +334,7 @@ export const Checkout = () => {
                     <div className="flex gap-2 items-center">
                       <strong className="w-20">Rua:</strong>
                       <Input
-                        className="text-gray-700 w-fit bg-gray-50"
+                        className="text-gray-700 w-fit bg-gray-50 rounded-xs"
                         value={billingAddress.street}
                         onChange={(e) =>
                           setBillingAddress((prev) => ({
@@ -324,7 +347,7 @@ export const Checkout = () => {
                     <div className="flex gap-2 items-center">
                       <strong className="w-20">Número:</strong>
                       <Input
-                        className="text-gray-700 w-fit bg-gray-50"
+                        className="text-gray-700 w-fit bg-gray-50 rounded-xs"
                         value={billingAddress.number}
                         onChange={(e) =>
                           setBillingAddress((prev) => ({
@@ -337,7 +360,7 @@ export const Checkout = () => {
                     <div className="flex gap-2 items-center">
                       <strong className="w-20">Cidade:</strong>
                       <Input
-                        className="text-gray-700 w-fit bg-gray-50"
+                        className="text-gray-700 w-fit bg-gray-50 rounded-xs"
                         value={billingAddress.city}
                         onChange={(e) =>
                           setBillingAddress((prev) => ({
@@ -350,7 +373,7 @@ export const Checkout = () => {
                     <div className="flex gap-2 items-center">
                       <strong className="w-20">Estado:</strong>
                       <Input
-                        className="text-gray-700 w-fit bg-gray-50"
+                        className="text-gray-700 w-fit bg-gray-50 rounded-xs"
                         value={billingAddress.state}
                         onChange={(e) =>
                           setBillingAddress((prev) => ({

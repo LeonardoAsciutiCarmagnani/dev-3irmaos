@@ -22,7 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { FileDownIcon, InfoIcon, LoaderCircle } from "lucide-react";
+import { FileDownIcon, InfoIcon, LoaderCircle, SirenIcon } from "lucide-react";
 import {
   collection,
   doc,
@@ -41,10 +41,17 @@ import Dropzone from "../DropzoneImage/DropzoneImage";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { Order } from "@/interfaces/Order";
 import { api } from "@/lib/axios";
+import { useLocation } from "react-router-dom";
 
 type OrderStatusType = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 
+interface LocationState {
+  highlightOrderId?: number;
+}
+
 const ClientOrdersTable = () => {
+  const { state } = useLocation();
+  const { highlightOrderId } = (state as LocationState) || {};
   const { user } = useAuthStore();
 
   const [date, setDate] = useState<DateRange>();
@@ -107,9 +114,11 @@ const ClientOrdersTable = () => {
         cell: ({ row }) => row.getValue("status"),
       },
       {
-        header: "PDF",
+        header: () => <span className="hidden md:inline">PDF</span>,
         accessorKey: "PDF",
-        cell: ({ row }) => row.getValue("PDF"),
+        cell: ({ row }) => (
+          <span className="hidden md:flex">{row.getValue("PDF")}</span>
+        ),
       },
     ],
     []
@@ -411,6 +420,7 @@ const ClientOrdersTable = () => {
                     .map((order) => {
                       const status =
                         statusMap[order.orderStatus as OrderStatusType];
+                      const isLast = order.orderId === highlightOrderId;
 
                       return (
                         <Dialog
@@ -421,17 +431,32 @@ const ClientOrdersTable = () => {
                           <DialogTrigger asChild>
                             <tr
                               key={order.orderId}
-                              className={`hover:bg-gray-50 cursor-pointer text-sm `}
+                              className={`
+                                  cursor-pointer text-sm transition-colors duration-300
+                                  ${
+                                    isLast
+                                      ? " bg-green-50 border-green-400"
+                                      : "hover:bg-gray-50"
+                                  }
+                                `}
                               onDoubleClick={() =>
                                 handleShowCard(order.orderId)
                               }
                             >
                               <td
-                                className={`px-4 py-3 ${
+                                className={`px-4 py-3 flex items-center ${
                                   order.orderStatus === 10 && "line-through"
                                 }`}
                               >
                                 {order.orderId}
+                                {isLast && (
+                                  <div className="flex items-center gap-x-1 ml-2 bg-green-300 text-green-900 border border-green-400 text-xs font-semibold px-2 py-0.5 rounded-xs animate-pulse ">
+                                    <span>
+                                      <SirenIcon className="w-4 h-4 text-green-700" />
+                                    </span>
+                                    <span>NOVO</span>
+                                  </div>
+                                )}
                               </td>
                               <td
                                 className={`px-4 py-3 ${
@@ -449,14 +474,14 @@ const ClientOrdersTable = () => {
                               </td>
                               <td className={`py-3 px-4`}>
                                 <div
-                                  className={`w-fit rounded-xs p-2 text-white font-semibold text-xs hover:cursor-pointer  ${
+                                  className={`w-fit md:w-[13rem] 2xl:w-[15rem] rounded-xs px-4 py-1 text-center md:text-sm text-xs hover:cursor-pointer  ${
                                     status?.color || "bg-zinc-300"
                                   }`}
                                 >
                                   {status?.label || "Status desconhecido"}
                                 </div>
                               </td>
-                              <td>
+                              <td className="hidden md:flex">
                                 <Button
                                   onClick={() => handleGeneratedPDF(order)}
                                   className=" bg-transparent border-red-900 rounded-none hover:shadow-md hover:scale-105  hover:bg-transparent shadow-sm shadow-gray-300"

@@ -21,19 +21,6 @@ const LayoutPage = ({ children }: { children: React.ReactNode }) => {
       <footer className="sticky bottom-0 z-50 bg-white shadow">
         <Footer />
       </footer>
-
-      <Toaster
-        richColors
-        position="top-right"
-        duration={3000}
-        closeButton={true}
-        expand={true}
-        toastOptions={{
-          style: {
-            borderRadius: "0.125rem",
-          },
-        }}
-      />
     </div>
   );
 };

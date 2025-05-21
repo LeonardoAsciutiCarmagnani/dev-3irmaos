@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Product } from "@/interfaces/Product";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import {
   Carousel,
   CarouselContent,
@@ -21,9 +21,8 @@ import { useAuthStore } from "@/context/authContext";
 
 export const DetailsProduct = () => {
   const { state } = useLocation();
-  const navigate = useNavigate();
 
-  const { productsInCart, handleAddProduct } = productsContext();
+  const { handleAddProduct } = productsContext();
   const [product, setProduct] = useState<Product>(state);
   const [variationSelectedId, setVariationSelectedId] = useState({
     id: "",
@@ -168,10 +167,12 @@ export const DetailsProduct = () => {
     reset();
   };
 
+  const categorieWithValue = ["Portas Pronta Entrega"];
+
   return (
-    <div className="h-screen w-full overflow-auto">
-      <div className="flex flex-col justify-start items-start p-3 md:p-10 space-y-3 md:space-y-4">
-        <div className="flex flex-col md:flex-row gap-y-1 w-full gap-x-6 p-1 md:items-start">
+    <div className="h-screen w-full overflow-auto ">
+      <div className="flex flex-col justify-start items-start p-3 md:p-10 space-y-3 md:space-y-4 h-full">
+        <div className="flex flex-col h-full md:flex-row gap-y-1 w-full gap-x-6 p-1 md:items-start">
           {/* Imagem do produto - Ajustado para mobile */}
           <div className="md:w-3/5 w-full rounded-xs overflow-hidden transition-shadow duration-300 shadow-md border border-gray-100 shadow-gray-300  flex flex-col gap-y-1">
             <Carousel plugins={[Autoplay({ delay: 2500 }), Fade()]}>
@@ -181,7 +182,7 @@ export const DetailsProduct = () => {
                     <img
                       src={imagem.imagem}
                       alt={product.nome}
-                      className="w-full h-40 md:h-[72vh] object-cover"
+                      className="w-full h-[50vh] md:h-[72vh] object-cover"
                     />
                   </CarouselItem>
                 ))}
@@ -209,20 +210,23 @@ export const DetailsProduct = () => {
               </span>
             </div>
 
-            <div className="p-2 md:p-2.5 rounded-xs shadow-sm ">
+            <div className="p-2 md:p-2.5 rounded-xs ">
               <div className="flex-col space-y-2 md:space-y-3 justify-center md:justify-end gap-3 md:gap-4 p-1">
                 <div className="flex justify-between items-center">
-                  <h2 className="text-sm md:text-[1rem] font-semibold text-red-900">
-                    Disponibilidade
-                  </h2>
-                  <div className="flex items-center justify-end gap-1 text-end">
-                    <Badge className="text-green-700 font-bold text-base md:text-2xl bg-white border-b-green-700 border-3 rounded-none border-double">
+                  {!typeProduct && (
+                    <h2 className="text-sm md:text-[1rem] font-semibold text-red-900">
+                      Disponibilidade
+                    </h2>
+                  )}
+                  {categorieWithValue.includes(product.categoria) && (
+                    <Badge className="text-green-700 font-bold text-base md:text-2xl bg-white rounded-none border-double">
                       {product.preco.toLocaleString("pt-BR", {
                         style: "currency",
                         currency: "BRL",
                       })}
                     </Badge>
-                  </div>
+                  )}
+                  <div className="flex items-center justify-end gap-1 text-end"></div>
                 </div>
 
                 {/* Opções de tipo de produto */}
@@ -400,122 +404,101 @@ export const DetailsProduct = () => {
               )}
 
               {/* Formulário - SEMPRE DISPONÍVEL (inclusive para produtos sem variações) */}
-              <div className="mt-4">
-                <form onSubmit={handleSubmit(onSubmit)}>
-                  <div className="flex flex-col md:flex-row md:h-18 items-start md:justify-start space-y-2 gap-x-4 md:gap-x-8 md:space-y-0">
-                    {!isSquareMeter ? (
-                      <div className="flex flex-wrap gap-2 md:gap-x-6 items-center justify-start">
-                        <>
-                          <div>
-                            <label
-                              htmlFor="altura"
-                              className="text-xs md:text-sm font-medium text-gray-700 text-nowrap"
-                            >
-                              Altura (m)
-                            </label>
-                            <Input
-                              id="altura"
-                              type="number"
-                              step={"0.01"}
-                              {...register("altura")}
-                              disabled={
-                                hasVariations ? typeProduct.typeProduct : false
-                              }
-                              className="w-[4.5rem] md:w-[5rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
-                            />
-                            {errors.altura && (
-                              <span className="text-red-500 text-xs md:text-sm">
-                                {errors.altura.message}
-                              </span>
-                            )}
-                          </div>
-
-                          <div>
-                            <label
-                              htmlFor="largura"
-                              className="text-xs md:text-sm font-medium text-gray-700 text-nowrap"
-                            >
-                              Largura (m)
-                            </label>
-                            <Input
-                              id="largura"
-                              type="number"
-                              step={"0.01"}
-                              {...register("largura")}
-                              disabled={
-                                hasVariations ? typeProduct.typeProduct : false
-                              }
-                              className="w-[4.5rem] md:w-[5rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
-                            />
-                            {errors.largura && (
-                              <span className="text-red-500 text-xs md:text-sm">
-                                {errors.largura.message}
-                              </span>
-                            )}
-                          </div>
-
-                          <div>
-                            <label
-                              htmlFor="comprimento"
-                              className="text-xs md:text-sm font-medium text-gray-700 text-nowrap"
-                            >
-                              {variationNameInput} (m)
-                            </label>
-                            <Input
-                              id="comprimento"
-                              type="number"
-                              step={"0.01"}
-                              {...register("comprimento")}
-                              disabled={
-                                hasVariations ? typeProduct.typeProduct : false
-                              }
-                              className="w-[4.5rem] md:w-[4rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
-                            />
-                            {errors.comprimento && (
-                              <span className="text-red-500 text-xs md:text-sm">
-                                {errors.comprimento.message}
-                              </span>
-                            )}
-                          </div>
-                        </>
-                      </div>
-                    ) : (
-                      <div className="flex gap-x-6 items-center justify-center">
+            </div>
+            <div className="mt-4 ">
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <div className="flex flex-col md:flex-row md:h-18 items-start md:justify-start space-y-2 gap-x-4 md:gap-x-8 md:space-y-0 h-full">
+                  {!isSquareMeter ? (
+                    <div className="flex flex-wrap gap-2 md:gap-x-6 items-center justify-start">
+                      <>
                         <div>
                           <label
-                            htmlFor="metroQuadrado"
-                            className="text-xs md:text-sm font-medium text-gray-700"
+                            htmlFor="altura"
+                            className="text-xs md:text-sm font-medium text-gray-700 text-nowrap"
                           >
-                            Quantidade (m²)
+                            Altura (m)
                           </label>
                           <Input
-                            id="metroQuadrado"
+                            id="altura"
                             type="number"
                             step={"0.01"}
-                            {...register("quantidade")}
-                            className="w-[4.5rem] md:w-[4rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
+                            {...register("altura")}
+                            disabled={
+                              hasVariations ? typeProduct.typeProduct : false
+                            }
+                            className="w-[4.5rem] md:w-[5rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
                           />
-                          {errors.quantidade && (
+                          {errors.altura && (
                             <span className="text-red-500 text-xs md:text-sm">
-                              {errors.quantidade.message}
+                              {errors.altura.message}
                             </span>
                           )}
                         </div>
-                      </div>
-                    )}
-                    {!isSquareMeter && (
-                      <div className="mt-2 md:mt-0">
+
+                        <div>
+                          <label
+                            htmlFor="largura"
+                            className="text-xs md:text-sm font-medium text-gray-700 text-nowrap"
+                          >
+                            Largura (m)
+                          </label>
+                          <Input
+                            id="largura"
+                            type="number"
+                            step={"0.01"}
+                            {...register("largura")}
+                            disabled={
+                              hasVariations ? typeProduct.typeProduct : false
+                            }
+                            className="w-[4.5rem] md:w-[5rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
+                          />
+                          {errors.largura && (
+                            <span className="text-red-500 text-xs md:text-sm">
+                              {errors.largura.message}
+                            </span>
+                          )}
+                        </div>
+
+                        <div>
+                          <label
+                            htmlFor="comprimento"
+                            className="text-xs md:text-sm font-medium text-gray-700 text-nowrap"
+                          >
+                            {variationNameInput} (m)
+                          </label>
+                          <Input
+                            id="comprimento"
+                            type="number"
+                            step={"0.01"}
+                            {...register("comprimento")}
+                            disabled={
+                              hasVariations ? typeProduct.typeProduct : false
+                            }
+                            className="w-[4.5rem] md:w-[4rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
+                          />
+                          {errors.comprimento && (
+                            <span className="text-red-500 text-xs md:text-sm">
+                              {errors.comprimento.message}
+                            </span>
+                          )}
+                        </div>
+                      </>
+                    </div>
+                  ) : (
+                    <div className="flex gap-x-6 items-center justify-center">
+                      <div>
                         <label
-                          htmlFor="quantidade"
+                          htmlFor="metroQuadrado"
                           className="text-xs md:text-sm font-medium text-gray-700"
                         >
-                          Quantidade
+                          Quantidade (m²)
                         </label>
                         <Input
-                          id="quantidade"
+                          id="metroQuadrado"
                           type="number"
+                          step={"0.01"}
                           {...register("quantidade")}
-                          className="w-[4.5rem] md:w-[4.3rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600"
+                          className="w-[4.5rem] md:w-[4rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
                         />
                         {errors.quantidade && (
                           <span className="text-red-500 text-xs md:text-sm">
@@ -523,20 +506,42 @@ export const DetailsProduct = () => {
                           </span>
                         )}
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
+                  {!isSquareMeter && (
+                    <div className="mt-2 md:mt-0">
+                      <label
+                        htmlFor="quantidade"
+                        className="text-xs md:text-sm font-medium text-gray-700"
+                      >
+                        Quantidade
+                      </label>
+                      <Input
+                        id="quantidade"
+                        type="number"
+                        {...register("quantidade")}
+                        className="w-[4.5rem] md:w-[4.3rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600"
+                      />
+                      {errors.quantidade && (
+                        <span className="text-red-500 text-xs md:text-sm">
+                          {errors.quantidade.message}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
 
-                  <div className="flex justify-end mt-3 md:mt-4 mb-3 md:mb-4">
-                    <Button
-                      type="submit"
-                      className="w-fit text-xs md:text-sm bg-red-900 text-white rounded-xs py-1 md:py-2 px-2 md:px-4 hover:bg-red-700 transition-colors"
-                    >
-                      Adicionar produto
-                    </Button>
-                  </div>
-                </form>
+                <div className="flex justify-end items-end md:mt-4 mb-3 md:mb-4 h-[5rem]">
+                  <Button
+                    type="submit"
+                    className="w-fit text-xs md:text-sm bg-red-900 text-white rounded-xs py-1 md:py-2 px-2 md:px-4 hover:bg-red-700 transition-colors"
+                  >
+                    Adicionar produto
+                  </Button>
+                </div>
+              </form>
 
-                {/* <div className="flex justify-end gap-x-2 md:gap-x-4">
+              {/* <div className="flex justify-end gap-x-2 md:gap-x-4">
                   <Button
                     type="button"
                     onClick={() => navigate("/")}
@@ -552,7 +557,6 @@ export const DetailsProduct = () => {
                     Prosseguir com a cotação
                   </Button>
                 </div> */}
-              </div>
             </div>
           </div>
         </div>
