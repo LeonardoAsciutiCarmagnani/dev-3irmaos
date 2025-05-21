@@ -44,8 +44,8 @@ const Home = () => {
   ];
 
   return (
-    <div className="w-full px-2 overflow-y-scroll h-[calc(100vh-70px)] py-2">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 md:gap-1 h-full">
+    <div className="w-full px-2 py-1 overflow-y-auto h-[calc(100vh-70px)]">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-1">
         {categorias.map((categoria) => (
           <div
             key={categoria.label}
@@ -55,15 +55,15 @@ const Home = () => {
               to={`/produtos?c=${categoria.label.toLowerCase()}`}
               className="block w-full h-full text-center text-gray-800 hover:text-white"
             >
-              <div className="relative w-full aspect-square h-full">
+              <div className="relative w-full aspect-square">
                 <img
                   src={categoria.imageUrl}
                   alt={categoria.label}
-                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-800"
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
               </div>
-              <div className="absolute bottom-0 w-full bg-gradient-to-t from-red-900 via-red-900/80 to-red-900/10 backdrop-blur-xs p-1">
-                <h1 className="text-sm md:text-lg lg:text-lg font-semibold text-white/90 line-clamp-1">
+              <div className="absolute bottom-0 w-full bg-gradient-to-t from-red-900 via-red-900/80 to-transparent p-2">
+                <h1 className="text-sm sm:text-base md:text-lg font-semibold text-white line-clamp-1">
                   {categoria.label}
                 </h1>
               </div>

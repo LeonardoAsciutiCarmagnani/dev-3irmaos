@@ -31,30 +31,16 @@ export const DetailsProduct = () => {
   });
   const [isSquareMeter, setIsSquareMeter] = useState(false);
 
-  // const [isSobMedida, setIsSobMedida] = useState(false);
-
   //Controla a nomenclatura do input de comprimento
   const [variationNameInput, setVariationNameInput] = useState("Profundidade");
 
   const { user } = useAuthStore();
 
   const productSchema = z.object({
-    comprimento:
-      // (isSobMedida && !isSquareMeter) || product.nome.includes("Painel")
-      // ? z.coerce.number().min(1, "Comprimento obrigatório")
-      z.coerce.number(),
-    altura:
-      // isSobMedida && !isSquareMeter
-      // ? z.coerce.number().min(1, "Altura obrigatória")
-      z.coerce.number(),
-    largura:
-      // isSobMedida && !isSquareMeter
-      // ? z.coerce.number().min(1, "Largura obrigatória")
-      z.coerce.number(),
-    quantidade:
-      // isSquareMeter
-      //   ? z.coerce.number().min(1, "Quantidade obrigatória")
-      z.coerce.number().min(1, "Quantidade obrigatória"),
+    comprimento: z.coerce.number(),
+    altura: z.coerce.number(),
+    largura: z.coerce.number(),
+    quantidade: z.coerce.number().min(1, "Quantidade obrigatória"),
   });
 
   type ProductFormData = z.infer<typeof productSchema>;
@@ -68,7 +54,9 @@ export const DetailsProduct = () => {
     typeProduct: true,
     productVariationSelected: {
       id: hasVariations ? product.variacao?.[0]?.id || "" : "",
-      nomeVariacao: product.variacao?.[0]?.nomeVariacaoA || "",
+      nomeVariacao: hasVariations
+        ? product.variacao?.[0]?.nomeVariacaoA || ""
+        : "Padrão",
     },
   });
 
@@ -146,7 +134,6 @@ export const DetailsProduct = () => {
   ];
 
   const onSubmit = (data: ProductFormData) => {
-    console.log("Chegou na função");
     if (user?.role === "admin") {
       toast.error("Administradores não podem comprar produtos.", {
         duration: 5000,
@@ -184,16 +171,13 @@ export const DetailsProduct = () => {
   return (
     <div className="h-screen w-full overflow-auto">
       <div className="flex flex-col justify-start items-start p-3 md:p-10 space-y-3 md:space-y-4">
-        <div className="flex flex-col md:flex-row gap-y-3 w-full gap-x-6 p-1 md:items-center">
+        <div className="flex flex-col md:flex-row gap-y-1 w-full gap-x-6 p-1 md:items-start">
           {/* Imagem do produto - Ajustado para mobile */}
-          <div className="md:w-3/5 w-full rounded-xs overflow-hidden transition-shadow duration-300 shadow-md flex flex-col gap-y-1">
+          <div className="md:w-3/5 w-full rounded-xs overflow-hidden transition-shadow duration-300 shadow-md border border-gray-100 shadow-gray-300  flex flex-col gap-y-1">
             <Carousel plugins={[Autoplay({ delay: 2500 }), Fade()]}>
               <CarouselContent className="w-full">
                 {CarouselImages.map((imagem, index) => (
-                  <CarouselItem
-                    key={index}
-                    className="border border-gray-200 w-full"
-                  >
+                  <CarouselItem key={index} className="w-full">
                     <img
                       src={imagem.imagem}
                       alt={product.nome}
@@ -203,20 +187,22 @@ export const DetailsProduct = () => {
                 ))}
               </CarouselContent>
             </Carousel>
-            <div className="text-center line-clamp-2 p-2 bg-white rounded-xs px-4">
-              <span className="text-sm md:text-md font-normal text-gray-800">
-                {product.nome}
-              </span>
-            </div>
           </div>
 
           {/* Informações do produto - Ajustado para mobile */}
-          <div className="flex flex-col space-y-3 md:space-y-4 w-full">
-            <div className="flex flex-col w-full p-2 rounded-xs shadow-sm">
-              <div className="flex justify-center items-center">
-                <h1 className="text-red-900 text-md md:text-xl font-bold">
-                  Descrição do produto
+          <div className="flex flex-col space-y-3 w-full h-full place-items-around">
+            <div className="flex w-full p-2 rounded-xs bg-transparent shadow-sm justify-start shadow-gray-300">
+              <div className="flex justify-start items-center w-fit px-2">
+                <h1 className="text-md md:text-lg font-bold uppercase text-black">
+                  {product.nome}
                 </h1>
+              </div>
+            </div>
+            <div className="flex flex-col w-full p-2 rounded-xs shadow-sm">
+              <div className="flex justify-start items-center">
+                {/* <h1 className="text-red-900 text-md md:text-xl font-bold">
+                  Descrição do produto
+                </h1> */}
               </div>
               <span className="rounded-xs p-2 md:p-3 text-gray-700 text-xs md:text-sm font-normal antialiased">
                 {product.descricao ?? "Descrição não disponível"}
@@ -226,19 +212,17 @@ export const DetailsProduct = () => {
             <div className="p-2 md:p-2.5 rounded-xs shadow-sm ">
               <div className="flex-col space-y-2 md:space-y-3 justify-center md:justify-end gap-3 md:gap-4 p-1">
                 <div className="flex justify-between items-center">
-                  <h2 className="text-sm md:text-lg font-semibold text-red-900">
+                  <h2 className="text-sm md:text-[1rem] font-semibold text-red-900">
                     Disponibilidade
                   </h2>
-                  {typeProduct.typeProduct === true && (
-                    <div className="flex items-center justify-end gap-1 text-end">
-                      <Badge className="text-green-700 font-bold text-base md:text-2xl bg-white border-b-green-700 border-3 rounded-none border-double">
-                        {product.preco.toLocaleString("pt-BR", {
-                          style: "currency",
-                          currency: "BRL",
-                        })}
-                      </Badge>
-                    </div>
-                  )}
+                  <div className="flex items-center justify-end gap-1 text-end">
+                    <Badge className="text-green-700 font-bold text-base md:text-2xl bg-white border-b-green-700 border-3 rounded-none border-double">
+                      {product.preco.toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      })}
+                    </Badge>
+                  </div>
                 </div>
 
                 {/* Opções de tipo de produto */}
@@ -309,528 +293,266 @@ export const DetailsProduct = () => {
               </div>
 
               {/* Seção de variações */}
-              {hasVariations && (
+              {hasVariations && hasVariationB && (
                 <div className="flex flex-col space-y-2 place-items-stretch mt-3 md:mt-4">
                   {/* Seleção de variação B */}
-                  {hasVariationB && (
-                    <>
-                      <h1 className="text-sm md:text-lg font-semibold text-red-900">
-                        Escolha a variação:
-                      </h1>
-                      <div className="flex flex-wrap items-center justify-start w-full gap-x-2 gap-y-2">
-                        {product.variacao?.map((variation) => {
-                          const isMedidaPadrao =
-                            variation.nomeVariacaoA === "Medida Padrao";
-                          const isSobMedida =
-                            variation.nomeVariacaoA === "Sob Medida";
+                  <>
+                    <h1 className="text-sm md:text-[1rem] font-semibold text-red-900">
+                      Escolha a variação:
+                    </h1>
+                    <div className="flex flex-wrap items-center justify-start w-full gap-x-2 gap-y-2">
+                      {product.variacao?.map((variation) => {
+                        const isMedidaPadrao =
+                          variation.nomeVariacaoA === "Medida Padrao";
+                        const isSobMedida =
+                          variation.nomeVariacaoA === "Sob Medida";
 
-                          return (
-                            <div key={variation.id}>
-                              {typeProduct.typeProduct
-                                ? isMedidaPadrao && (
-                                    <div className="flex items-center gap-2">
-                                      <input
-                                        type="radio"
-                                        id={variation.id}
-                                        disabled={
-                                          variation.quantidadeEmEstoque <= 0
-                                        }
-                                        value={variation.id || ""}
-                                        checked={
-                                          variation.id ===
-                                          variationSelectedId.id
-                                        }
-                                        onChange={(e) => {
-                                          setVariationSelectedId({
-                                            id: e.target.value,
-                                            name: "",
-                                          });
-                                          setTypeProduct((prev) => {
-                                            return {
-                                              ...prev,
-                                              productVariationSelected: {
-                                                id: variation.id,
-                                                nomeVariacao: `${variation.nomeVariacaoA} - ${variation.nomeVariacaoB}`,
-                                              },
-                                            };
-                                          });
-                                        }}
-                                        className="h-4 md:h-5 w-4 md:w-5 text-gray-900 focus:ring-2 focus:ring-transparent rounded-xs text-xs md:text-sm accent-red-900"
-                                      />
-                                      <div className="flex flex-col items-center">
-                                        <label
-                                          htmlFor={variation.id}
-                                          className={`cursor-pointer text-xs md:text-sm font-semibold text-gray-900 ${
-                                            variation.quantidadeEmEstoque <=
-                                              0 && "line-through"
-                                          }`}
-                                        >
-                                          {variation.nomeVariacaoB}{" "}
-                                        </label>
-                                        {variation.quantidadeEmEstoque <= 0 && (
-                                          <Badge className="text-xs">
-                                            Sem estoque
-                                          </Badge>
-                                        )}
-                                      </div>
-                                    </div>
-                                  )
-                                : isSobMedida && (
-                                    <div className="flex items-center gap-2">
-                                      <input
-                                        type="radio"
-                                        id={variation.id}
-                                        value={variation.id || ""}
-                                        checked={
-                                          variation.id ===
-                                          variationSelectedId.id
-                                        }
-                                        onChange={(e) => {
-                                          setVariationSelectedId({
-                                            id: e.target.value,
-                                            name: "",
-                                          });
-                                          setTypeProduct((prev) => {
-                                            return {
-                                              ...prev,
-                                              productVariationSelected: {
-                                                id: variation.id,
-                                                nomeVariacao: `${variation.nomeVariacaoA} - ${variation.nomeVariacaoB}`,
-                                              },
-                                            };
-                                          });
-                                        }}
-                                        className="h-4 md:h-5 w-4 md:w-5 text-gray-900 focus:ring-2 focus:ring-transparent rounded-xs accent-red-900"
-                                      />
+                        return (
+                          <div key={variation.id}>
+                            {typeProduct.typeProduct
+                              ? isMedidaPadrao && (
+                                  <div className="flex items-center gap-2">
+                                    <input
+                                      type="radio"
+                                      id={variation.id}
+                                      disabled={
+                                        variation.quantidadeEmEstoque <= 0
+                                      }
+                                      value={variation.id || ""}
+                                      checked={
+                                        variation.id === variationSelectedId.id
+                                      }
+                                      onChange={(e) => {
+                                        setVariationSelectedId({
+                                          id: e.target.value,
+                                          name: "",
+                                        });
+                                        setTypeProduct((prev) => {
+                                          return {
+                                            ...prev,
+                                            productVariationSelected: {
+                                              id: variation.id,
+                                              nomeVariacao: `${variation.nomeVariacaoA} - ${variation.nomeVariacaoB}`,
+                                            },
+                                          };
+                                        });
+                                      }}
+                                      className="h-4 md:h-5 w-4 md:w-5 text-gray-900 focus:ring-2 focus:ring-transparent rounded-xs text-xs md:text-sm accent-red-900"
+                                    />
+                                    <div className="flex flex-col items-center">
                                       <label
                                         htmlFor={variation.id}
-                                        className="cursor-pointer text-xs md:text-md font-semibold text-gray-900"
+                                        className={`cursor-pointer text-xs md:text-sm font-semibold text-gray-900 ${
+                                          variation.quantidadeEmEstoque <= 0 &&
+                                          "line-through"
+                                        }`}
                                       >
-                                        {variation.nomeVariacaoB}
+                                        {variation.nomeVariacaoB}{" "}
                                       </label>
-                                    </div>
-                                  )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </>
-                  )}
-
-                  {/* Formulário */}
-                  <div>
-                    <form onSubmit={handleSubmit(onSubmit)}>
-                      <div className="flex flex-col md:flex-row md:h-18 items-start md:justify-start space-y-2 gap-x-4 md:gap-x-8 md:space-y-0">
-                        {!isSquareMeter ? (
-                          <div className="flex flex-wrap gap-2 md:gap-x-6 items-center justify-start">
-                            {product.categoria ===
-                            "Bancadas, Móveis e Painéis" ? (
-                              <div className="space-y-2 overflow-y-scroll h-[10rem]">
-                                <div>
-                                  <span className="font-semibold text-red-900">
-                                    MESAS:
-                                  </span>
-                                  <div className="flex  gap-10">
-                                    <div>
-                                      <label
-                                        htmlFor="altura"
-                                        className="text-xs md:text-sm font-medium text-gray-700 text-nowrap"
-                                      >
-                                        Altura (m)
-                                      </label>
-                                      <Input
-                                        id="altura"
-                                        type="number"
-                                        step={"0.01"}
-                                        {...register("altura")}
-                                        disabled={
-                                          hasVariations
-                                            ? typeProduct.typeProduct
-                                            : false
-                                        }
-                                        className="w-[4.5rem] md:w-[5rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
-                                      />
-                                      {errors.altura && (
-                                        <span className="text-red-500 text-xs md:text-sm">
-                                          {errors.altura.message}
-                                        </span>
-                                      )}
-                                    </div>
-                                    <div>
-                                      <label
-                                        htmlFor="largura"
-                                        className="text-xs md:text-sm font-medium text-gray-700 text-nowrap"
-                                      >
-                                        Largura (m)
-                                      </label>
-                                      <Input
-                                        id="largura"
-                                        type="number"
-                                        step={"0.01"}
-                                        {...register("largura")}
-                                        disabled={
-                                          hasVariations
-                                            ? typeProduct.typeProduct
-                                            : false
-                                        }
-                                        className="w-[4.5rem] md:w-[5rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
-                                      />
-                                      {errors.largura && (
-                                        <span className="text-red-500 text-xs md:text-sm">
-                                          {errors.largura.message}
-                                        </span>
-                                      )}
-                                    </div>
-                                    <div>
-                                      <label
-                                        htmlFor="comprimento"
-                                        className="text-xs md:text-sm font-medium text-gray-700 text-nowrap"
-                                      >
-                                        {variationNameInput} (m)
-                                      </label>
-                                      <Input
-                                        id="comprimento"
-                                        type="number"
-                                        step={"0.01"}
-                                        {...register("comprimento")}
-                                        disabled={
-                                          hasVariations
-                                            ? typeProduct.typeProduct
-                                            : false
-                                        }
-                                        className="w-[4.5rem] md:w-[4rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
-                                      />
-                                      {errors.comprimento && (
-                                        <span className="text-red-500 text-xs md:text-sm">
-                                          {errors.comprimento.message}
-                                        </span>
+                                      {variation.quantidadeEmEstoque <= 0 && (
+                                        <Badge className="text-xs">
+                                          Sem estoque
+                                        </Badge>
                                       )}
                                     </div>
                                   </div>
-                                </div>
-                                <div>
-                                  <span className="font-semibold text-red-900">
-                                    ARMÁRIOS E BANCADAS:
-                                  </span>
-                                  <div className="flex  gap-10">
-                                    <div>
-                                      <label
-                                        htmlFor="altura"
-                                        className="text-xs md:text-sm font-medium text-gray-700 text-nowrap"
-                                      >
-                                        Altura (m)
-                                      </label>
-                                      <Input
-                                        id="altura"
-                                        type="number"
-                                        step={"0.01"}
-                                        {...register("altura")}
-                                        disabled={
-                                          hasVariations
-                                            ? typeProduct.typeProduct
-                                            : false
-                                        }
-                                        className="w-[4.5rem] md:w-[5rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
-                                      />
-                                      {errors.altura && (
-                                        <span className="text-red-500 text-xs md:text-sm">
-                                          {errors.altura.message}
-                                        </span>
-                                      )}
-                                    </div>
-                                    <div>
-                                      <label
-                                        htmlFor="largura"
-                                        className="text-xs md:text-sm font-medium text-gray-700 text-nowrap"
-                                      >
-                                        Largura (m)
-                                      </label>
-                                      <Input
-                                        id="largura"
-                                        type="number"
-                                        step={"0.01"}
-                                        {...register("largura")}
-                                        disabled={
-                                          hasVariations
-                                            ? typeProduct.typeProduct
-                                            : false
-                                        }
-                                        className="w-[4.5rem] md:w-[5rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
-                                      />
-                                      {errors.largura && (
-                                        <span className="text-red-500 text-xs md:text-sm">
-                                          {errors.largura.message}
-                                        </span>
-                                      )}
-                                    </div>
-                                    <div>
-                                      <label
-                                        htmlFor="comprimento"
-                                        className="text-xs md:text-sm font-medium text-gray-700 text-nowrap"
-                                      >
-                                        {variationNameInput} (m)
-                                      </label>
-                                      <Input
-                                        id="comprimento"
-                                        type="number"
-                                        step={"0.01"}
-                                        {...register("comprimento")}
-                                        disabled={
-                                          hasVariations
-                                            ? typeProduct.typeProduct
-                                            : false
-                                        }
-                                        className="w-[4.5rem] md:w-[4rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
-                                      />
-                                      {errors.comprimento && (
-                                        <span className="text-red-500 text-xs md:text-sm">
-                                          {errors.comprimento.message}
-                                        </span>
-                                      )}
-                                    </div>
+                                )
+                              : isSobMedida && (
+                                  <div className="flex items-center gap-2">
+                                    <input
+                                      type="radio"
+                                      id={variation.id}
+                                      value={variation.id || ""}
+                                      checked={
+                                        variation.id === variationSelectedId.id
+                                      }
+                                      onChange={(e) => {
+                                        setVariationSelectedId({
+                                          id: e.target.value,
+                                          name: "",
+                                        });
+                                        setTypeProduct((prev) => {
+                                          return {
+                                            ...prev,
+                                            productVariationSelected: {
+                                              id: variation.id,
+                                              nomeVariacao: `${variation.nomeVariacaoA} - ${variation.nomeVariacaoB}`,
+                                            },
+                                          };
+                                        });
+                                      }}
+                                      className="h-4 md:h-5 w-4 md:w-5 text-gray-900 focus:ring-2 focus:ring-transparent rounded-xs accent-red-900"
+                                    />
+                                    <label
+                                      htmlFor={variation.id}
+                                      className="cursor-pointer text-xs md:text-md font-semibold text-gray-900"
+                                    >
+                                      {variation.nomeVariacaoB}
+                                    </label>
                                   </div>
-                                </div>
-                                <div>
-                                  <span className="font-semibold text-red-900">
-                                    PAINÉIS:
-                                  </span>
-                                  <div className="flex  gap-10">
-                                    <div>
-                                      <label
-                                        htmlFor="altura"
-                                        className="text-xs md:text-sm font-medium text-gray-700 text-nowrap"
-                                      >
-                                        Altura (m)
-                                      </label>
-                                      <Input
-                                        id="altura"
-                                        type="number"
-                                        step={"0.01"}
-                                        {...register("altura")}
-                                        disabled={
-                                          hasVariations
-                                            ? typeProduct.typeProduct
-                                            : false
-                                        }
-                                        className="w-[4.5rem] md:w-[5rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
-                                      />
-                                      {errors.altura && (
-                                        <span className="text-red-500 text-xs md:text-sm">
-                                          {errors.altura.message}
-                                        </span>
-                                      )}
-                                    </div>
-                                    <div>
-                                      <label
-                                        htmlFor="largura"
-                                        className="text-xs md:text-sm font-medium text-gray-700 text-nowrap"
-                                      >
-                                        Largura (m)
-                                      </label>
-                                      <Input
-                                        id="largura"
-                                        type="number"
-                                        step={"0.01"}
-                                        {...register("largura")}
-                                        disabled={
-                                          hasVariations
-                                            ? typeProduct.typeProduct
-                                            : false
-                                        }
-                                        className="w-[4.5rem] md:w-[5rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
-                                      />
-                                      {errors.largura && (
-                                        <span className="text-red-500 text-xs md:text-sm">
-                                          {errors.largura.message}
-                                        </span>
-                                      )}
-                                    </div>
-                                    <div>
-                                      <label
-                                        htmlFor="comprimento"
-                                        className="text-xs md:text-sm font-medium text-gray-700 text-nowrap"
-                                      >
-                                        {variationNameInput} (m)
-                                      </label>
-                                      <Input
-                                        id="comprimento"
-                                        type="number"
-                                        step={"0.01"}
-                                        {...register("comprimento")}
-                                        disabled={
-                                          hasVariations
-                                            ? typeProduct.typeProduct
-                                            : false
-                                        }
-                                        className="w-[4.5rem] md:w-[4rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
-                                      />
-                                      {errors.comprimento && (
-                                        <span className="text-red-500 text-xs md:text-sm">
-                                          {errors.comprimento.message}
-                                        </span>
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            ) : (
-                              <>
-                                <div>
-                                  <label
-                                    htmlFor="altura"
-                                    className="text-xs md:text-sm font-medium text-gray-700 text-nowrap"
-                                  >
-                                    Altura (m)
-                                  </label>
-                                  <Input
-                                    id="altura"
-                                    type="number"
-                                    step={"0.01"}
-                                    {...register("altura")}
-                                    disabled={
-                                      hasVariations
-                                        ? typeProduct.typeProduct
-                                        : false
-                                    }
-                                    className="w-[4.5rem] md:w-[5rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
-                                  />
-                                  {errors.altura && (
-                                    <span className="text-red-500 text-xs md:text-sm">
-                                      {errors.altura.message}
-                                    </span>
-                                  )}
-                                </div>
-
-                                <div>
-                                  <label
-                                    htmlFor="largura"
-                                    className="text-xs md:text-sm font-medium text-gray-700 text-nowrap"
-                                  >
-                                    Largura (m)
-                                  </label>
-                                  <Input
-                                    id="largura"
-                                    type="number"
-                                    step={"0.01"}
-                                    {...register("largura")}
-                                    disabled={
-                                      hasVariations
-                                        ? typeProduct.typeProduct
-                                        : false
-                                    }
-                                    className="w-[4.5rem] md:w-[5rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
-                                  />
-                                  {errors.largura && (
-                                    <span className="text-red-500 text-xs md:text-sm">
-                                      {errors.largura.message}
-                                    </span>
-                                  )}
-                                </div>
-
-                                <div>
-                                  <label
-                                    htmlFor="comprimento"
-                                    className="text-xs md:text-sm font-medium text-gray-700 text-nowrap"
-                                  >
-                                    {variationNameInput} (m)
-                                  </label>
-                                  <Input
-                                    id="comprimento"
-                                    type="number"
-                                    step={"0.01"}
-                                    {...register("comprimento")}
-                                    disabled={
-                                      hasVariations
-                                        ? typeProduct.typeProduct
-                                        : false
-                                    }
-                                    className="w-[4.5rem] md:w-[4rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
-                                  />
-                                  {errors.comprimento && (
-                                    <span className="text-red-500 text-xs md:text-sm">
-                                      {errors.comprimento.message}
-                                    </span>
-                                  )}
-                                </div>
-                              </>
-                            )}
+                                )}
                           </div>
-                        ) : (
-                          <div className="flex gap-x-6 items-center justify-center">
-                            <div>
-                              <label
-                                htmlFor="metroQuadrado"
-                                className="text-xs md:text-sm font-medium text-gray-700"
-                              >
-                                Quantidade (m²)
-                              </label>
-                              <Input
-                                id="metroQuadrado"
-                                type="number"
-                                step={"0.01"}
-                                {...register("quantidade")}
-                                className="w-[4.5rem] md:w-[4rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
-                              />
-                              {errors.quantidade && (
-                                <span className="text-red-500 text-xs md:text-sm">
-                                  {errors.quantidade.message}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        )}
-                        {!isSquareMeter && (
-                          <div className="mt-2 md:mt-0">
+                        );
+                      })}
+                    </div>
+                  </>
+                </div>
+              )}
+
+              {/* Formulário - SEMPRE DISPONÍVEL (inclusive para produtos sem variações) */}
+              <div className="mt-4">
+                <form onSubmit={handleSubmit(onSubmit)}>
+                  <div className="flex flex-col md:flex-row md:h-18 items-start md:justify-start space-y-2 gap-x-4 md:gap-x-8 md:space-y-0">
+                    {!isSquareMeter ? (
+                      <div className="flex flex-wrap gap-2 md:gap-x-6 items-center justify-start">
+                        <>
+                          <div>
                             <label
-                              htmlFor="quantidade"
-                              className="text-xs md:text-sm font-medium text-gray-700"
+                              htmlFor="altura"
+                              className="text-xs md:text-sm font-medium text-gray-700 text-nowrap"
                             >
-                              Quantidade
+                              Altura (m)
                             </label>
                             <Input
-                              id="quantidade"
+                              id="altura"
                               type="number"
-                              {...register("quantidade")}
-                              className="w-[4.5rem] md:w-[4.3rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600"
+                              step={"0.01"}
+                              {...register("altura")}
+                              disabled={
+                                hasVariations ? typeProduct.typeProduct : false
+                              }
+                              className="w-[4.5rem] md:w-[5rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
                             />
-                            {errors.quantidade && (
+                            {errors.altura && (
                               <span className="text-red-500 text-xs md:text-sm">
-                                {errors.quantidade.message}
+                                {errors.altura.message}
                               </span>
                             )}
                           </div>
+
+                          <div>
+                            <label
+                              htmlFor="largura"
+                              className="text-xs md:text-sm font-medium text-gray-700 text-nowrap"
+                            >
+                              Largura (m)
+                            </label>
+                            <Input
+                              id="largura"
+                              type="number"
+                              step={"0.01"}
+                              {...register("largura")}
+                              disabled={
+                                hasVariations ? typeProduct.typeProduct : false
+                              }
+                              className="w-[4.5rem] md:w-[5rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
+                            />
+                            {errors.largura && (
+                              <span className="text-red-500 text-xs md:text-sm">
+                                {errors.largura.message}
+                              </span>
+                            )}
+                          </div>
+
+                          <div>
+                            <label
+                              htmlFor="comprimento"
+                              className="text-xs md:text-sm font-medium text-gray-700 text-nowrap"
+                            >
+                              {variationNameInput} (m)
+                            </label>
+                            <Input
+                              id="comprimento"
+                              type="number"
+                              step={"0.01"}
+                              {...register("comprimento")}
+                              disabled={
+                                hasVariations ? typeProduct.typeProduct : false
+                              }
+                              className="w-[4.5rem] md:w-[4rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
+                            />
+                            {errors.comprimento && (
+                              <span className="text-red-500 text-xs md:text-sm">
+                                {errors.comprimento.message}
+                              </span>
+                            )}
+                          </div>
+                        </>
+                      </div>
+                    ) : (
+                      <div className="flex gap-x-6 items-center justify-center">
+                        <div>
+                          <label
+                            htmlFor="metroQuadrado"
+                            className="text-xs md:text-sm font-medium text-gray-700"
+                          >
+                            Quantidade (m²)
+                          </label>
+                          <Input
+                            id="metroQuadrado"
+                            type="number"
+                            step={"0.01"}
+                            {...register("quantidade")}
+                            className="w-[4.5rem] md:w-[4rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
+                          />
+                          {errors.quantidade && (
+                            <span className="text-red-500 text-xs md:text-sm">
+                              {errors.quantidade.message}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    {!isSquareMeter && (
+                      <div className="mt-2 md:mt-0">
+                        <label
+                          htmlFor="quantidade"
+                          className="text-xs md:text-sm font-medium text-gray-700"
+                        >
+                          Quantidade
+                        </label>
+                        <Input
+                          id="quantidade"
+                          type="number"
+                          {...register("quantidade")}
+                          className="w-[4.5rem] md:w-[4.3rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600"
+                        />
+                        {errors.quantidade && (
+                          <span className="text-red-500 text-xs md:text-sm">
+                            {errors.quantidade.message}
+                          </span>
                         )}
                       </div>
-
-                      <div className="flex justify-end mt-3 md:mt-4 mb-3 md:mb-4">
-                        <Button
-                          type="submit"
-                          className="w-fit text-xs md:text-sm bg-red-900 text-white rounded-xs py-1 md:py-2 px-2 md:px-4 hover:bg-red-700 transition-colors"
-                        >
-                          Adicionar produto
-                        </Button>
-                      </div>
-                    </form>
-
-                    <div className="flex justify-end gap-x-2 md:gap-x-4">
-                      <Button
-                        type="button"
-                        onClick={() => navigate("/")}
-                        className="text-xs md:text-sm bg-gray-200 text-gray-700 rounded-xs py-1 md:py-2 px-2 md:px-3 hover:bg-gray-300 transition-colors"
-                      >
-                        Adicionar outros produtos
-                      </Button>
-                      <Button
-                        onClick={() => navigate("/orçamento")}
-                        className="text-xs md:text-sm bg-green-700 text-white rounded-xs py-1 md:py-2 px-2 md:px-3 hover:bg-green-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        disabled={productsInCart.length === 0}
-                      >
-                        Prosseguir com a cotação
-                      </Button>
-                    </div>
+                    )}
                   </div>
+
+                  <div className="flex justify-end mt-3 md:mt-4 mb-3 md:mb-4">
+                    <Button
+                      type="submit"
+                      className="w-fit text-xs md:text-sm bg-red-900 text-white rounded-xs py-1 md:py-2 px-2 md:px-4 hover:bg-red-700 transition-colors"
+                    >
+                      Adicionar produto
+                    </Button>
+                  </div>
+                </form>
+
+                <div className="flex justify-end gap-x-2 md:gap-x-4">
+                  <Button
+                    type="button"
+                    onClick={() => navigate("/")}
+                    className="text-xs md:text-sm bg-gray-200 text-gray-700 rounded-xs py-1 md:py-2 px-2 md:px-3 hover:bg-gray-300 transition-colors"
+                  >
+                    Adicionar outros produtos
+                  </Button>
+                  <Button
+                    onClick={() => navigate("/orçamento")}
+                    className="text-xs md:text-sm bg-green-700 text-white rounded-xs py-1 md:py-2 px-2 md:px-3 hover:bg-green-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={productsInCart.length === 0}
+                  >
+                    Prosseguir com a cotação
+                  </Button>
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </div>

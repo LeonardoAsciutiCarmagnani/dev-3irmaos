@@ -33,9 +33,9 @@ const ProductCard = (Product: Product) => {
       {/* Detalhe decorativo */}
 
       {/* Conteúdo do produto com posicionamento mais dinâmico */}
-      <div className="flex flex-col justify-between flex-1 p-4 relative">
+      <div className="flex flex-col justify-between flex-1 p-3 relative">
         {/* Badge de preço com design mais destacado */}
-        <div className="absolute -top-5 right-4 z-10">
+        <div className="absolute -top-5 right-1 z-10">
           <Badge
             className={`px-3 py-1.5 font-semibold shadow-lg rounded-xs ${
               !CategoriesWithValue.includes(Product.categoria)
@@ -44,7 +44,9 @@ const ProductCard = (Product: Product) => {
             }`}
           >
             {!CategoriesWithValue.includes(Product.categoria) ? (
-              <span className="text-xs tracking-wide">VALOR SOB CONSULTA</span>
+              <span className="text-[0.7rem] tracking-wide">
+                VALOR SOB CONSULTA
+              </span>
             ) : (
               <span className="text-xs tracking-wide">
                 {Product.preco.toLocaleString("pt-BR", {
