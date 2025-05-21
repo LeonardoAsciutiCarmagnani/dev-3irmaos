@@ -299,8 +299,8 @@ export const Checkout = () => {
             </div>
           </div>
           <div className="flex flex-col gap-2 ">
-            <div className="flex flex-col max-h-96 p-2 md:p-4 justify-between border border-gray-200 bg-gray-50 rounded-xs w-full md:w-lg">
-              <span className="font-semibold">Endereço de entrega</span>
+            <div className="flex flex-col max-h-96 p-2 space-y-2 md:p-4 justify-between border border-gray-200 bg-gray-50 rounded-xs w-full md:w-lg">
+              <span className="font-semibold text-lg">Endereço de entrega</span>
               <div className="flex flex-col space-y-2 ">
                 {address.cep ? (
                   <>
@@ -392,22 +392,7 @@ export const Checkout = () => {
               </div>
             </div>
 
-            <div className="flex flex-col space-y-2 justify-between border border-gray-200 bg-gray-50 rounded-xs p-4 w-full md:w-lg">
-              <div className="flex flex-col items-center justify-between p-2">
-                <div className="flex items-center justify-between p-2 w-full">
-                  <span className="text-lg font-semibold">A partir de: </span>
-                  <span className="font-bold text-gray-900 text-xl">
-                    {total.toLocaleString("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    })}
-                  </span>
-                </div>
-                {/* <p className="text-xs font-semibold text-gray-500 italic">
-                  *Valor sujeito a alteração.*
-                </p> */}
-              </div>
-
+            <div className="flex flex-col space-y-2 justify-between  rounded-xs p-4 w-full md:w-lg">
               <Button
                 className="bg-green-700 hover:bg-green-800 hover:cursor-pointer w-full rounded-xs"
                 onClick={() => handleSubmitBudget()}
@@ -418,7 +403,7 @@ export const Checkout = () => {
                     <LoaderCircle className="animate-spin" /> Enviando...
                   </>
                 ) : (
-                  "Finalizar"
+                  "Enviar orçamento"
                 )}
               </Button>
             </div>
