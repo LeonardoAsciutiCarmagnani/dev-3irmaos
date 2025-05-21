@@ -614,7 +614,7 @@ const ClientOrdersTable = () => {
                                   return (
                                     <div
                                       key={index}
-                                      className="border-b px-2 flex flex-col md:grid md:grid-cols-7 md:items-center md:justify-center"
+                                      className="border-b   px-2 flex flex-col md:grid md:grid-cols-7 md:items-center md:justify-center"
                                     >
                                       {/* Produto */}
                                       <div className="col-span-2 border-gray-400 h-full">
@@ -624,14 +624,25 @@ const ClientOrdersTable = () => {
                                         <p className="text-sm">
                                           {variation[1]}
                                         </p>
-                                        <p className="text-sm text-gray-500">
-                                          Altura: {item.altura} m | Largura:{" "}
-                                          {item.largura} m | Comprimento:{" "}
-                                          {item.comprimento === undefined
-                                            ? 0
-                                            : item.comprimento}{" "}
-                                          m
-                                        </p>
+                                        {item.categoria !==
+                                          "Assoalhos, Escadas, Decks e Forros" && (
+                                          <p className="text-sm text-gray-500">
+                                            Altura: {item.altura} m | Largura:{" "}
+                                            {item.largura} m |{" "}
+                                            {item.categoria ===
+                                              "Janelas e Esquadrias" ||
+                                            item.categoria ===
+                                              "Portas Pronta Entrega" ||
+                                            item.categoria ===
+                                              "Portas Sob Medida"
+                                              ? "Batente (Espessura da parede)"
+                                              : "Comprimento"}{" "}
+                                            {item.comprimento === undefined
+                                              ? 0
+                                              : item.comprimento}{" "}
+                                            m
+                                          </p>
+                                        )}
                                         <p className="text-sm text-red-900">
                                           {variation[0]}
                                         </p>
@@ -651,89 +662,99 @@ const ClientOrdersTable = () => {
                                       </div>
 
                                       {/* Desconto */}
-                                      <div className="mt-2 md:mt-0 md:flex justify-center items-center text-sm md:text-base ">
-                                        <span className="block md:hidden font-semibold">
-                                          Desconto:
-                                        </span>
-                                        <IMaskInput
-                                          mask="R$ num"
-                                          blocks={{
-                                            num: {
-                                              mask: Number,
-                                              scale: 2,
-                                              thousandsSeparator: ".",
-                                              padFractionalZeros: true,
-                                              normalizeZeros: true,
-                                              radix: ",",
-                                              mapToRadix: ["."],
-                                            },
-                                          }}
-                                          value={String(item.desconto || 0)}
-                                          unmask={true}
-                                          disabled
-                                          className="rounded-xs p-0 md:px-2  text-center w-full "
-                                        />
-                                      </div>
+                                      {order.orderStatus !== 1 && (
+                                        <div className="mt-2 md:mt-0 md:flex justify-center items-center text-sm md:text-base ">
+                                          <span className="block md:hidden font-semibold">
+                                            Desconto:
+                                          </span>
+                                          <IMaskInput
+                                            mask="R$ num"
+                                            blocks={{
+                                              num: {
+                                                mask: Number,
+                                                scale: 2,
+                                                thousandsSeparator: ".",
+                                                padFractionalZeros: true,
+                                                normalizeZeros: true,
+                                                radix: ",",
+                                                mapToRadix: ["."],
+                                              },
+                                            }}
+                                            value={String(item.desconto || 0)}
+                                            unmask={true}
+                                            disabled
+                                            className="rounded-xs p-0 md:px-2  text-center w-full "
+                                          />
+                                        </div>
+                                      )}
 
                                       {/* Valor Unitário */}
-                                      <div className="mt-2 md:mt-0 md:flex justify-center items-center text-sm md:text-base">
-                                        <span className="block md:hidden font-semibold">
-                                          Valor unitário:
-                                        </span>
-                                        <IMaskInput
-                                          mask="R$ num"
-                                          blocks={{
-                                            num: {
-                                              mask: Number,
-                                              scale: 2,
-                                              thousandsSeparator: ".",
-                                              padFractionalZeros: true,
-                                              normalizeZeros: true,
-                                              radix: ",",
-                                              mapToRadix: ["."],
-                                            },
-                                          }}
-                                          value={String(item.preco)}
-                                          unmask={true}
-                                          disabled
-                                          className="rounded-xs p-0 md:px-2 py-1 text-center w-full"
-                                        />
-                                      </div>
+                                      {order.orderStatus !== 1 && (
+                                        <div className="mt-2 md:mt-0 md:flex justify-center items-center text-sm md:text-base">
+                                          <span className="block md:hidden font-semibold">
+                                            Valor unitário:
+                                          </span>
+                                          <IMaskInput
+                                            mask="R$ num"
+                                            blocks={{
+                                              num: {
+                                                mask: Number,
+                                                scale: 2,
+                                                thousandsSeparator: ".",
+                                                padFractionalZeros: true,
+                                                normalizeZeros: true,
+                                                radix: ",",
+                                                mapToRadix: ["."],
+                                              },
+                                            }}
+                                            value={String(item.preco)}
+                                            unmask={true}
+                                            disabled
+                                            className="rounded-xs p-0 md:px-2 py-1 text-center w-full"
+                                          />
+                                        </div>
+                                      )}
 
                                       {/* Valor Total */}
-                                      <div className="text-center h-full flex flex-col  items-start justify-center gap-2 mt-2 md:mt-0 text-sm md:text-base ">
-                                        <span className="block md:hidden font-semibold">
-                                          Valor total:
-                                        </span>
-                                        <span className="w-full truncate">
-                                          {(item.desconto
-                                            ? item.preco * item.quantidade -
-                                              item.desconto
-                                            : item.preco * item.quantidade
-                                          ).toLocaleString("pt-BR", {
-                                            style: "currency",
-                                            currency: "BRL",
-                                          })}
-                                        </span>
-                                      </div>
+                                      {order.orderStatus !== 1 && (
+                                        <div className="text-center h-full flex flex-col  items-start justify-center gap-2 mt-2 md:mt-0 text-sm md:text-base ">
+                                          <span className="block md:hidden font-semibold">
+                                            Valor total:
+                                          </span>
+                                          <span className="w-full truncate">
+                                            {(item.desconto
+                                              ? item.preco * item.quantidade -
+                                                item.desconto
+                                              : item.preco * item.quantidade
+                                            ).toLocaleString("pt-BR", {
+                                              style: "currency",
+                                              currency: "BRL",
+                                            })}
+                                          </span>
+                                        </div>
+                                      )}
                                     </div>
                                   );
                                 })}
 
                                 {/* Totais */}
                                 <div className="flex flex-col items-end gap-2 ">
-                                  <div className="flex justify-between  w-full md:w-auto px-14 ">
-                                    <span className="font-semibold">Total</span>
-                                    <span className="w-[8rem] truncate text-right">
-                                      {order.totalValue.toLocaleString(
-                                        "pt-BR",
-                                        {
-                                          style: "currency",
-                                          currency: "BRL",
-                                        }
-                                      )}
-                                    </span>
-                                  </div>
+                                  {order.orderStatus !== 1 && (
+                                    <div className="flex justify-between  w-full md:w-auto px-14 ">
+                                      <span className="font-semibold">
+                                        Total
+                                      </span>
+                                      <span className="w-[8rem] truncate text-right">
+                                        {order.totalValue.toLocaleString(
+                                          "pt-BR",
+                                          {
+                                            style: "currency",
+                                            currency: "BRL",
+                                          }
+                                        )}
+                                      </span>
+                                    </div>
+                                  )}
 
                                   {order.orderStatus !== 1 && (
                                     <>
@@ -854,29 +875,31 @@ const ClientOrdersTable = () => {
                               )}
                             </div>
                             {/* Imagens fornecidas pela 3 irmãos */}
-                            <div className="flex flex-col gap-4">
-                              <h1 className="font-semibold text-lg">
-                                Imagens ilustrativas
-                              </h1>
-                              <div className="flex gap-2 overflow-x-auto p-2">
-                                {order.imagesUrls &&
-                                order.imagesUrls.length > 0 ? (
-                                  order.imagesUrls
-                                    .map((image, index) => ({ image, index }))
-                                    .sort((a, b) => b.index - a.index)
-                                    .map(({ image, index }) => (
-                                      <img
-                                        key={index}
-                                        src={image}
-                                        alt="Imagem fornecida pela 3 irmãos"
-                                        className="size-40 rounded-xs hover:scale-105 transition-all duration-300"
-                                      />
-                                    ))
-                                ) : (
-                                  <span>Nenhuma imagem fornecida</span>
-                                )}
+                            {order.orderStatus !== 1 && (
+                              <div className="flex flex-col gap-4">
+                                <h1 className="font-semibold text-lg">
+                                  Imagens ilustrativas
+                                </h1>
+                                <div className="flex gap-2 overflow-x-auto p-2">
+                                  {order.imagesUrls &&
+                                  order.imagesUrls.length > 0 ? (
+                                    order.imagesUrls
+                                      .map((image, index) => ({ image, index }))
+                                      .sort((a, b) => b.index - a.index)
+                                      .map(({ image, index }) => (
+                                        <img
+                                          key={index}
+                                          src={image}
+                                          alt="Imagem fornecida pela 3 irmãos"
+                                          className="size-40 rounded-xs hover:scale-105 transition-all duration-300"
+                                        />
+                                      ))
+                                  ) : (
+                                    <span>Nenhuma imagem fornecida</span>
+                                  )}
+                                </div>
                               </div>
-                            </div>
+                            )}
 
                             {order.orderStatus !== 1 && (
                               <div>
