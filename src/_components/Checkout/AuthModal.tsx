@@ -223,9 +223,9 @@ const AuthModal = ({ open, mode, onModeChange, onClose }: Props) => {
           <div className="fixed inset-0 bg-black/50" onClick={onClose} />
 
           {/* Modal Content */}
-          <div className="relative bg-white w-[calc(100vw-3rem)] md:w-[calc(100vw-40rem)] rounded-xs shadow-lg max-h-[70vh] overflow-scroll">
+          <div className="relative bg-white w-[calc(100vw-3rem)] md:w-[calc(100vw-40rem)] rounded-xs shadow-lg max-h-fit overflow-hidden">
             {/* Header */}
-            <div className="px-6 pt-6 pb-4 border-b-4 bg-white border-red-900 sticky top-0 w-full rounded-t-xs">
+            <div className="px-6 pt-6 pb-4 border-b-1 bg-whitesticky top-0 w-full rounded-t-xs">
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-lg font-semibold">
@@ -237,8 +237,7 @@ const AuthModal = ({ open, mode, onModeChange, onClose }: Props) => {
                     {mode === "login" ? (
                       <div className="flex flex-col items-start justify-between">
                         <div>
-                          Para continuar com seu orçamento, precisamos que entre
-                          com sua conta
+                          Para continuar, precisamos que entre com sua conta
                         </div>
                         <div className="flex items-center gap-x-1 w-full justify-start">
                           <h1>Ainda não possui uma conta?</h1>
@@ -254,8 +253,7 @@ const AuthModal = ({ open, mode, onModeChange, onClose }: Props) => {
                     ) : (
                       <div className="flex flex-col items-start justify-between">
                         <div>
-                          Para continuar com seu orçamento, precisamos que crie
-                          sua conta.
+                          Para continuar, precisamos que crie uma conta.
                         </div>
                         <div className="flex items-center gap-x-1 w-full justify-start font-semibold">
                           <h1>Já possui uma conta?</h1>
