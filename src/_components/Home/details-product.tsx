@@ -391,7 +391,7 @@ export const DetailsProduct = () => {
                                       htmlFor={variation.id}
                                       className="cursor-pointer text-xs md:text-md font-semibold text-gray-900"
                                     >
-                                      {variation.nomeVariacaoB}
+                                      {variation.nomeVariacaoA}
                                     </label>
                                   </div>
                                 )}
