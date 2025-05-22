@@ -619,15 +619,19 @@ const ClientOrdersTable = () => {
                                   <div className="col-span-1 text-base">
                                     Qtd
                                   </div>
-                                  <div className="col-span-1 text-base">
-                                    Desconto
-                                  </div>
-                                  <div className="col-span-1 text-base">
-                                    Valor unitário
-                                  </div>
-                                  <div className="col-span-1 text-base">
-                                    Valor total
-                                  </div>
+                                  {order.orderStatus !== 1 && (
+                                    <>
+                                      <div className="col-span-1 text-base">
+                                        Desconto
+                                      </div>
+                                      <div className="col-span-1 text-base">
+                                        Valor unitário
+                                      </div>
+                                      <div className="col-span-1 text-base">
+                                        Valor total
+                                      </div>
+                                    </>
+                                  )}
                                 </div>
 
                                 {order.products?.map((item, index) => {
@@ -639,7 +643,11 @@ const ClientOrdersTable = () => {
                                   return (
                                     <div
                                       key={index}
-                                      className="border-b   px-2 flex flex-col md:grid md:grid-cols-7 md:items-center md:justify-center"
+                                      className={`px-2 flex flex-col md:grid md:grid-cols-7 md:items-center md:justify-center ${
+                                        index !== order.products.length - 1
+                                          ? "border-b"
+                                          : ""
+                                      }`}
                                     >
                                       {/* Produto */}
                                       <div className="col-span-2 border-gray-400 h-full">
@@ -650,24 +658,25 @@ const ClientOrdersTable = () => {
                                           {variation[1]}
                                         </p>
                                         {item.categoria !==
-                                          "Assoalhos, Escadas, Decks e Forros" && (
-                                          <p className="text-sm text-gray-500">
-                                            Altura: {item.altura} m | Largura:{" "}
-                                            {item.largura} m |{" "}
-                                            {item.categoria ===
-                                              "Janelas e Esquadrias" ||
-                                            item.categoria ===
-                                              "Portas Pronta Entrega" ||
-                                            item.categoria ===
-                                              "Portas Sob Medida"
-                                              ? "Batente (Espessura da parede)"
-                                              : "Comprimento"}{" "}
-                                            {item.comprimento === undefined
-                                              ? 0
-                                              : item.comprimento}{" "}
-                                            m
-                                          </p>
-                                        )}
+                                          "Assoalhos, Escadas, Decks e Forros" &&
+                                          item.categoria !== "Antiguidades" && (
+                                            <p className="text-sm text-gray-500">
+                                              Altura: {item.altura} m | Largura:{" "}
+                                              {item.largura} m |{" "}
+                                              {item.categoria ===
+                                                "Janelas e Esquadrias" ||
+                                              item.categoria ===
+                                                "Portas Pronta Entrega" ||
+                                              item.categoria ===
+                                                "Portas Sob Medida"
+                                                ? "Batente (Espessura da parede)"
+                                                : "Comprimento"}{" "}
+                                              {item.comprimento === undefined
+                                                ? 0
+                                                : item.comprimento}{" "}
+                                              m
+                                            </p>
+                                          )}
                                         <p className="text-sm text-red-900">
                                           {variation[0]}
                                         </p>
@@ -683,7 +692,7 @@ const ClientOrdersTable = () => {
                                         <span className="block md:hidden font-semibold">
                                           Qtd:
                                         </span>{" "}
-                                        {item.quantidade} x
+                                        {item.quantidade}
                                       </div>
 
                                       {/* Desconto */}
