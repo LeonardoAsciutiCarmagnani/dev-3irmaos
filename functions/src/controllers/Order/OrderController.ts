@@ -177,10 +177,7 @@ export class OrderController {
 
       console.log("Order Controller (CREATE) - Body received:", req.body);
 
-      const createdOrder: FirebaseFirestore.DocumentReference<
-        FirebaseFirestore.DocumentData,
-        FirebaseFirestore.DocumentData
-      > = await CreateBudgetService.execute(parsedBody);
+      const createdOrder = await CreateBudgetService.execute(parsedBody);
 
       if (createdOrder.success === false) {
         res.status(409).json({
