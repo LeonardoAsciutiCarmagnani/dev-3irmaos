@@ -11,6 +11,8 @@ import { OrderController } from "./controllers/Order/OrderController";
 import { CreateAdmin } from "./services/User/createAdmin";
 import proposalSent from "./services/chat4sales/push/proposalSent";
 import { PushController } from "./controllers/Push/PushController";
+import puppeteer from "puppeteer-core";
+import chromium from "chrome-aws-lambda";
 
 const errorHandler = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -25,6 +27,39 @@ const errorHandler = (
     success: false,
     message: err.message || "Internal Server Error",
   });
+};
+
+export const testPdfHandler = async (req: Request, res: Response) => {
+  const html = `<html><body><h1>PDF de Teste</h1></body></html>`;
+
+  try {
+    console.log("Lançando o Puppeteer...");
+
+    const executablePath = await chromium.executablePath;
+    if (!executablePath) {
+      throw new Error("Caminho do Chromium não encontrado!");
+    }
+    console.log("Caminho do Chromium:", executablePath);
+
+    const browser = await puppeteer.launch({
+      args: chromium.args,
+      executablePath,
+      headless: chromium.headless,
+      ignoreDefaultArgs: ["--disable-extensions"], // ajuda a reduzir falhas
+    });
+
+    const page = await browser.newPage();
+    await page.setContent(html, { waitUntil: "networkidle0" });
+
+    const pdf = await page.pdf({ format: "A4" });
+
+    await browser.close();
+
+    res.status(200).set("Content-Type", "application/pdf").send(pdf);
+  } catch (err) {
+    console.error("Erro ao gerar PDF:", err);
+    res.status(500).send("Erro ao gerar PDF");
+  }
 };
 
 class App {
@@ -76,10 +111,9 @@ class App {
 
     router.post("/create-client", UserController.createClient);
 
-    router.post("/post-order", OrderController.postOrderInHiper);
     router.post("/post-budget", OrderController.createBudget);
     router.post("/create-adm", UserController.createAdmin);
-    router.post("/generate-pdf", OrderController.generatePDF);
+    router.post("/generate-pdf", testPdfHandler);
 
     // PUSH ROUTES
 
@@ -134,7 +168,6 @@ console.log(`Server started in ${env.NODE_ENV} mode`);
 
 export const api = onRequest(
   {
-    region: "us-central1",
     timeoutSeconds: 120,
     memory: "1GiB",
     cors: ["https://dev-3irmaos.web.app"],

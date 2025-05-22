@@ -28,7 +28,19 @@ export class CreateBudgetService {
         detailsPropostal: data.detailsPropostal ?? {},
       });
 
-      return budgetCreated;
+      let budgetData = null;
+
+      budgetCreated.onSnapshot((snapshot) => {
+        budgetData = snapshot.data();
+        if (budgetData) {
+          console.log("Budget created with ID:", budgetData.orderId);
+          console.log("Budget data:", budgetData);
+        } else {
+          console.log("No such document!");
+        }
+      });
+
+      return budgetData;
     } catch (error) {
       console.error("Error in CreateBudgetService:", error);
       return {

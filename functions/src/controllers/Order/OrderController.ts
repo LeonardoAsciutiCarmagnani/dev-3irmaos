@@ -5,6 +5,7 @@ import { PostOrderService } from "../../services/hiper/postOrder";
 
 import { readFileSync } from "fs";
 import { resolve } from "path";
+
 import chromium from "chrome-aws-lambda";
 import puppeteer from "puppeteer-core";
 
@@ -172,14 +173,18 @@ export class OrderController {
 
       console.log("Order Controller (CREATE) - Body received:", req.body);
 
-      console.log("Order Controller (CREATE) - Creating Order:", parsedBody);
-      const createdOrder = await CreateBudgetService.execute(parsedBody);
+      const createdOrder: FirebaseFirestore.DocumentReference<
+        FirebaseFirestore.DocumentData,
+        FirebaseFirestore.DocumentData
+      > = await CreateBudgetService.execute(parsedBody);
 
-      if (createdOrder.success === false) {
+      console.log("Order Controller (CREATE) - Created Order:", createdOrder);
+
+      if (!createdOrder) {
         res.status(409).json(createdOrder);
       }
 
-      res.status(201).json(createdOrder);
+      res.status(201).json(createdOrder.id);
     } catch (error) {
       next(error);
     }
@@ -220,67 +225,41 @@ export class OrderController {
     }
   }
 
+  /*
+        const browser = await (isLocal
+        ? (await import("puppeteer")).default.launch({ headless: true }) // puppeteer completo localmente
+        : puppeteer.launch({
+            args: chromium.args,
+            executablePath: await chromium.executablePath,
+            headless: chromium.headless,
+          })); 
+
+
+ 
+
+       */
+
   public static async generatePDF(req: Request, res: Response) {
-    try {
-      const data = req.body;
-      console.log("Body received => ", data);
+    const data = req.body;
+    console.log("Body received => ", data);
 
-      const orderId = data.orderId;
-      const clientImages: string[] = data.clientImages;
+    const orderId = data.orderId;
+    const clientImages: string[] = data.clientImages;
 
-      const {
-        client,
-        deliveryAddress,
-        billingAddress,
-        detailsPropostal,
-        createdAt,
-        products,
-        totalValue,
-        totalDiscount,
-        discountTotalValue,
-        imagesUrls,
-      } = data as BudgetType;
+    const {
+      client,
+      deliveryAddress,
+      billingAddress,
+      detailsPropostal,
+      createdAt,
+      products,
+      totalValue,
+      totalDiscount,
+      discountTotalValue,
+      imagesUrls,
+    } = data as BudgetType;
 
-      /*   ${
-          clientImages?.length > 0
-            ? `
-          <div class="section">
-            <span style="font-weight: bold; font-size: 18px;">Imagens de referência</span>
-            <div class="images-grid">
-                  ${clientImages
-                    .map(
-                      (src) =>
-                        `<div class="image-container">
-                          <img src="${src}" alt="Imagem fornecida pelo cliente" />
-                        </div>`
-                    )
-                    .join("")}
-                </div>
-          </div>`
-            : ""
-        }
-
-          ${
-            (imagesUrls?.length ?? 0) > 0
-              ? `
-              <div class="section">
-                <span style="font-weight: bold; font-size: 18px;">Imagens ilustrativas</span>
-                <div class="images-grid">
-                  ${(imagesUrls ?? [])
-                    .map(
-                      (src) =>
-                        `<div class="image-container">
-                          <img src="${src}" alt="Imagem fornecida pela 3 Irmãos" />
-                        </div>`
-                    )
-                    .join("")}
-                </div>
-              </div>`
-              : ""
-          }
- */
-
-      const htmlContent = `
+    const htmlContent = `
     <html>
       <head>
         <style>
@@ -353,7 +332,7 @@ export class OrderController {
 
           .image-container {
             width: 100%;
-            height: 250px; /* Altura fixa para todos os containers */
+            height: 250px; 
             display: flex;
             align-items: center;
             justify-content: center;
@@ -389,7 +368,7 @@ export class OrderController {
         </style>
       </head>
       <body>
-        <div class="header">
+          <div class="header">
           <img class="logo" src="${logoDataUri}" alt="Logo" />
           <div class="company-info">
             <span><strong>3 IRMÃOS ARTE EM MADEIRA DE DEMOLIÇÃO</strong></span>
@@ -414,8 +393,8 @@ export class OrderController {
             <span><strong>Rua:</strong> ${billingAddress.street}</span>
             <span><strong>Bairro:</strong> ${billingAddress.neighborhood}</span>
             <span><strong>Cidade:</strong> ${billingAddress.city} / ${
-        billingAddress.state
-      }</span>
+      billingAddress.state
+    }</span>
       </div>
       <p><strong>CEP:</strong> ${billingAddress.cep}</p>
         </div>
@@ -546,6 +525,44 @@ export class OrderController {
           </table>
         </div>
 
+          ${
+            clientImages?.length > 0
+              ? `
+          <div class="section">
+            <span style="font-weight: bold; font-size: 18px;">Imagens de referência</span>
+            <div class="images-grid">
+                  ${clientImages
+                    .map(
+                      (src) =>
+                        `<div class="image-container">
+                          <img src="${src}" alt="Imagem fornecida pelo cliente" />
+                        </div>`
+                    )
+                    .join("")}
+                </div>
+          </div>`
+              : ""
+          }
+
+          ${
+            (imagesUrls?.length ?? 0) > 0
+              ? `
+              <div class="section">
+                <span style="font-weight: bold; font-size: 18px;">Imagens ilustrativas</span>
+                <div class="images-grid">
+                  ${(imagesUrls ?? [])
+                    .map(
+                      (src) =>
+                        `<div class="image-container">
+                          <img src="${src}" alt="Imagem fornecida pela 3 Irmãos" />
+                        </div>`
+                    )
+                    .join("")}
+                </div>
+              </div>`
+              : ""
+          }
+
       
       <div class="section">
         <span style="font-weight: bold; font-size: 18px;">Observações</span>
@@ -628,43 +645,45 @@ export class OrderController {
   </body>
 </html>
   `;
+    try {
+      console.log("Valor de htmlContent:", htmlContent);
 
-      console.log("Iniciando Puppeteer...");
+      console.log("Iniciando o Puppeteer...");
 
-      const isLocal = process.env.NODE_ENV !== "production";
-      console.log("isLocal => ", isLocal);
+      const path = await chromium.executablePath;
+      console.log("Caminho do executável do Chromium:", path);
+      const browser = await puppeteer.launch({
+        args: chromium.args,
+        executablePath: await chromium.executablePath,
+        headless: chromium.headless,
+      });
 
-      const browser = await (isLocal
-        ? (await import("puppeteer")).default.launch({ headless: true }) // puppeteer completo localmente
-        : puppeteer.launch({
-            args: chromium.args,
-            executablePath: await chromium.executablePath,
-            headless: chromium.headless,
-          }));
-      console.log("Browser iniciado.");
-
+      console.log("Criando nova página...");
       const page = await browser.newPage();
-      // await page.setContent(htmlContent, { waitUntil: "domcontentloaded" });
-      await page.setContent(htmlContent, { waitUntil: "networkidle0" });
-      console.log("Conteúdo carregado.");
+      console.log("Nova página criada.");
 
+      console.log("Setando conteúdo da página...");
+      await page.setContent(htmlContent, { waitUntil: "networkidle0" });
+      console.log("Conteúdo da página setado.");
+
+      console.log("Gerando PDF...");
       const pdfBuffer = await page.pdf({ format: "A4" });
       console.log("PDF gerado.");
 
+      console.log("Fechando navegador...");
       await browser.close();
-      console.log("Browser fechado.");
 
       res
         .status(200)
         .header("Content-Type", "application/pdf")
         .header(
           "Content-Disposition",
-          `inline; filename=Pedido ${orderId} - 3 Irmãos.pdf`
+          `attachment; filename=Pedido ${orderId} - 3 Irmãos.pdf`
         )
         .send(pdfBuffer);
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
-      res.status(500).json({ message: "Erro ao gerar PDF." });
+      res.status(500).json({ message: `Erro ao gerar PDF. ${error}` });
     }
   }
 }

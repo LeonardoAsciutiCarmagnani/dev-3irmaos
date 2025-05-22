@@ -3,7 +3,7 @@
     {
       "source": ".",
       "codebase": "default",
-      "runtime": "nodejs20",
+      "runtime": "nodejs18",
       "memory": "1GiB",
       "ignore": [
         "node_modules",
