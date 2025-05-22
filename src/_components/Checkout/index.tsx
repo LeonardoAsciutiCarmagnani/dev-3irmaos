@@ -8,11 +8,11 @@ import { InfoIcon, LoaderCircle, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import RegisterModal from "./register-modal";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../Utils/FirebaseConfig";
 import { format } from "date-fns";
 import Loader from "../Loader/loader";
+import AuthModal from "./AuthModal";
 
 interface IFireStoreProps {
   document: string;
@@ -25,6 +25,7 @@ interface IFireStoreProps {
     number: number;
     state: string;
     street: string;
+    complement: string;
   };
   ie?: string;
 }
@@ -38,6 +39,7 @@ export const Checkout = () => {
   const [sendOrder, setSendOrder] = useState(false);
   const [userData, setUserData] = useState<IFireStoreProps | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [authMode, setAuthMode] = useState<"login" | "register">("register");
   const [address, setAddress] = useState({
     cep: "",
     neighborhood: "",
@@ -46,6 +48,7 @@ export const Checkout = () => {
     city: "",
     state: "",
     ibge: "",
+    complement: "",
   });
   const [billingAddress, setBillingAddress] = useState({
     cep: "",
@@ -55,11 +58,14 @@ export const Checkout = () => {
     city: "",
     state: "",
     ibge: "",
+    complement: "",
   });
 
   const getUserAddress = async () => {
     if (!user?.uid) {
-      return toast.error("Usuário não autenticado.");
+      return toast.error("Usuário não autenticado.", {
+        id: "auth-error",
+      });
     }
 
     try {
@@ -119,7 +125,11 @@ export const Checkout = () => {
         city: data.localidade,
         state: data.uf,
         ibge: data.ibge,
+        complement: data.complemento,
       }));
+      toast.success("CEP encontrado com sucesso!", {
+        description: `CEP: ${data.cep} - ${data.logradouro}, ${data.bairro}, ${data.localidade} - ${data.uf} - ${data.complemento}`,
+      });
     } catch (error) {
       toast.error("CEP inválido ou não encontrado");
       console.error(error);
@@ -162,7 +172,7 @@ export const Checkout = () => {
 
       const createdOrderId = response.data.orderId;
 
-      const budgetsRef = collection(db, "Budgets");
+      const budgetsRef = collection(db, "budgets");
       const q = query(budgetsRef, where("orderId", "==", createdOrderId));
       const querySnapshot = await getDocs(q);
 
@@ -209,12 +219,14 @@ export const Checkout = () => {
   }, 0);
 
   useEffect(() => {
-    if (!user) {
+    if (!user && !modalIsOpen) {
       setModalIsOpen(true);
-    } else {
+    } else if (user && modalIsOpen) {
       setModalIsOpen(false);
     }
-  }, [user]);
+  }, [user, modalIsOpen]);
+
+  const closeModal = () => setModalIsOpen(false);
 
   useEffect(() => {
     getUserAddress();
@@ -291,16 +303,19 @@ export const Checkout = () => {
             </Link>
             <div className="flex items-center gap-2 text-gray-700 p-2 bg-blue-50 rounded-xs border border-blue-200">
               <InfoIcon className="text-blue-700" />
-              <span className="text-xs text-blue-700">
-                Caso deseje enviar imagens de referência dos produtos, acesse a
-                aba <strong>Meus Orçamentos</strong> e, no detalhe do seu
-                orçamento, utilize a seção de Envio de Imagens.
+              <span className="text-xs font-normal antialiased text-blue-700">
+                Caso deseje enviar imagens de referência, vá até a aba{" "}
+                <strong>Meus Orçamentos</strong> e, dentro do orçamento, utilize
+                a seção de Envio de Imagens.
               </span>
             </div>
           </div>
           <div className="flex flex-col gap-2 ">
             <div className="flex flex-col max-h-96 p-2 space-y-2 md:p-4 justify-between border border-gray-200 bg-gray-50 rounded-xs w-full md:w-lg">
               <span className="font-semibold text-lg">Endereço de entrega</span>
+              <h2 className="text-xs text-gray-500">
+                Você pode definir um novo endereço de entrega, caso necessário.
+              </h2>
               <div className="flex flex-col space-y-2 ">
                 {address.cep ? (
                   <>
@@ -323,6 +338,7 @@ export const Checkout = () => {
                       <Input
                         className="text-gray-700 w-fit bg-gray-50 rounded-xs"
                         value={billingAddress.neighborhood}
+                        disabled
                         onChange={(e) =>
                           setBillingAddress((prev) => ({
                             ...prev,
@@ -336,6 +352,7 @@ export const Checkout = () => {
                       <Input
                         className="text-gray-700 w-fit bg-gray-50 rounded-xs"
                         value={billingAddress.street}
+                        disabled
                         onChange={(e) =>
                           setBillingAddress((prev) => ({
                             ...prev,
@@ -362,6 +379,7 @@ export const Checkout = () => {
                       <Input
                         className="text-gray-700 w-fit bg-gray-50 rounded-xs"
                         value={billingAddress.city}
+                        disabled
                         onChange={(e) =>
                           setBillingAddress((prev) => ({
                             ...prev,
@@ -375,10 +393,24 @@ export const Checkout = () => {
                       <Input
                         className="text-gray-700 w-fit bg-gray-50 rounded-xs"
                         value={billingAddress.state}
+                        disabled
                         onChange={(e) =>
                           setBillingAddress((prev) => ({
                             ...prev,
                             state: e.target.value,
+                          }))
+                        }
+                      />
+                    </div>
+                    <div className="flex gap-2 items-center">
+                      <strong className="w-20">Comp. :</strong>
+                      <Input
+                        className="text-gray-700 w-fit bg-gray-50 rounded-xs"
+                        value={billingAddress.complement}
+                        onChange={(e) =>
+                          setBillingAddress((prev) => ({
+                            ...prev,
+                            complement: e.target.value,
                           }))
                         }
                       />
@@ -426,7 +458,12 @@ export const Checkout = () => {
           </div>
         </>
       )}
-      {modalIsOpen && <RegisterModal open={modalIsOpen} />}
+      <AuthModal
+        open={modalIsOpen}
+        mode={authMode}
+        onModeChange={setAuthMode}
+        onClose={closeModal}
+      />
       {isLoading && <Loader />}
     </div>
   );

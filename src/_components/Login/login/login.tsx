@@ -130,11 +130,10 @@ const Auth: React.FC = () => {
     try {
       setIsLoading(true);
       await login(data.email.trim(), data.password.trim());
-      toast.success("Login realizado com sucesso!", { id: "login-success" });
+
       navigate("/");
     } catch (err) {
       console.error(err);
-      toast.error("E-mail ou senha incorretos.", { id: "login-error" });
     } finally {
       setIsLoading(false);
     }

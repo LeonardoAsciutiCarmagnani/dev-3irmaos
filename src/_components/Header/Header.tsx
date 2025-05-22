@@ -28,7 +28,7 @@ const Header = () => {
   const [openUser, setOpenUser] = useState(false);
 
   return (
-    <div className="flex justify-around items-center border-b border-gray-200 w-screen ">
+    <div className="flex justify-around items-center border-b border-gray-200 w-screen">
       {/* <Link to="/" className="flex md:hidden">
         <HomeIcon className="font-bold text-gray-800" />
       </Link> */}
@@ -56,7 +56,7 @@ const Header = () => {
           <PopoverContent className="w-[300px] flex flex-col space-y-2 rounded-xs">
             {productsInCart.length === 0 ? (
               <span className="text-center text-sm text-gray-700 font-semibold">
-                Nenhum produto adicionado ao seu orçamento.
+                Nenhum produto adicionado ao seu carrinho.
               </span>
             ) : (
               <>
