@@ -88,8 +88,8 @@ export const DetailsProduct = () => {
   });
 
   useEffect(() => {
-    console.log("Product:", product);
-    if (product.unidade === "m²") {
+    console.log("Produto =>", product);
+    if (product.unidade === "m²" || product.categoria === "Antiguidades") {
       setIsSquareMeter(true);
     }
 
@@ -307,9 +307,9 @@ export const DetailsProduct = () => {
                     <div className="flex flex-wrap items-center justify-start w-full gap-x-2 gap-y-2">
                       {product.variacao?.map((variation) => {
                         const isMedidaPadrao =
-                          variation.nomeVariacaoA === "Medida Padrao";
+                          variation.nomeVariacaoB === "Ponta Entrega";
                         const isSobMedida =
-                          variation.nomeVariacaoA === "Sob Medida";
+                          variation.nomeVariacaoB === "Sob Medida";
 
                         return (
                           <div key={variation.id}>
@@ -391,7 +391,7 @@ export const DetailsProduct = () => {
                                       htmlFor={variation.id}
                                       className="cursor-pointer text-xs md:text-md font-semibold text-gray-900"
                                     >
-                                      {variation.nomeVariacaoB}
+                                      {variation.nomeVariacaoA}
                                     </label>
                                   </div>
                                 )}
@@ -402,9 +402,8 @@ export const DetailsProduct = () => {
                   </>
                 </div>
               )}
-
-              {/* Formulário - SEMPRE DISPONÍVEL (inclusive para produtos sem variações) */}
             </div>
+            {/* Formulário - SEMPRE DISPONÍVEL (inclusive para produtos sem variações) */}
             <div className="mt-4 ">
               <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="flex flex-col md:flex-row md:h-18 items-start md:justify-start space-y-2 gap-x-4 md:gap-x-8 md:space-y-0 h-full">
@@ -422,6 +421,7 @@ export const DetailsProduct = () => {
                             id="altura"
                             type="number"
                             step={"0.01"}
+                            min={0}
                             {...register("altura")}
                             disabled={
                               hasVariations ? typeProduct.typeProduct : false
@@ -446,6 +446,7 @@ export const DetailsProduct = () => {
                             id="largura"
                             type="number"
                             step={"0.01"}
+                            min={0}
                             {...register("largura")}
                             disabled={
                               hasVariations ? typeProduct.typeProduct : false
@@ -470,6 +471,7 @@ export const DetailsProduct = () => {
                             id="comprimento"
                             type="number"
                             step={"0.01"}
+                            min={0}
                             {...register("comprimento")}
                             disabled={
                               hasVariations ? typeProduct.typeProduct : false
@@ -491,12 +493,15 @@ export const DetailsProduct = () => {
                           htmlFor="metroQuadrado"
                           className="text-xs md:text-sm font-medium text-gray-700"
                         >
-                          Quantidade (m²)
+                          {product.categoria !== "Antiguidades"
+                            ? "  Quantidade (m²)"
+                            : "Quantidade"}
                         </label>
                         <Input
                           id="metroQuadrado"
                           type="number"
                           step={"0.01"}
+                          min={0}
                           {...register("quantidade")}
                           className="w-[4.5rem] md:w-[4rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
                         />

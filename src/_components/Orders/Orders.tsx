@@ -51,6 +51,7 @@ import { IMaskInput } from "react-imask";
 import { Order } from "@/interfaces/Order";
 import { api } from "@/lib/axios";
 import hiperLogo from "@/assets/hiper_logo.svg";
+import { ProductDimensionInput } from "./ProductDimensionInput/ProductDimensionInput";
 
 const OrdersTable = () => {
   const [date, setDate] = useState<DateRange>();
@@ -338,7 +339,7 @@ const OrdersTable = () => {
         if (order.orderId === orderId) {
           const updatedProducts = order.products.map((product) => {
             if (product.selectedVariation.id === productId) {
-              console.log("Desconto por produto => ", product.desconto);
+              // console.log("Desconto por produto => ", product.desconto);
               return {
                 ...product,
                 desconto: discount * product.quantidade,
@@ -357,7 +358,7 @@ const OrdersTable = () => {
             );
           }, 0);
 
-          console.log("Calculo do total com desconto => ", discountTotalValue);
+          // console.log("Calculo do total com desconto => ", discountTotalValue);
 
           return {
             ...order,
@@ -429,6 +430,42 @@ const OrdersTable = () => {
 
       return updatedData;
     });
+  }
+
+  function handleChangeDimesionsProduct(
+    orderId: number,
+    productId: string,
+    altura?: string,
+    largura?: string,
+    comprimento?: string
+  ) {
+    setData((prevData) =>
+      prevData.map((order) =>
+        order.orderId === orderId
+          ? {
+              ...order,
+              products: order.products.map((product) => {
+                const formattedAltura = altura?.replace(",", ".");
+                const formattedLargura = largura?.replace(",", ".");
+                const formattedComprimento = comprimento?.replace(",", ".");
+
+                return product.selectedVariation.id === productId
+                  ? {
+                      ...product,
+                      altura: altura ? Number(formattedAltura) : product.altura,
+                      largura: largura
+                        ? Number(formattedLargura)
+                        : product.largura,
+                      comprimento: comprimento
+                        ? Number(formattedComprimento)
+                        : product.comprimento,
+                    }
+                  : product;
+              }),
+            }
+          : order
+      )
+    );
   }
 
   function handleImagesSelected(files: File[]) {
@@ -1042,21 +1079,102 @@ const OrdersTable = () => {
                                             <span className="flex-1 text-md text-gray-700">
                                               {variation[1]}
                                             </span>
-                                            <div className="text-sm text-gray-500 flex gap-2">
-                                              <span>
-                                                Altura: {item.altura} m
-                                              </span>
-                                              <span>
-                                                Largura: {item.largura} m
-                                              </span>
-                                              <span>
-                                                Comprimento:{" "}
-                                                {item.comprimento === undefined
-                                                  ? 0
-                                                  : item.comprimento}{" "}
-                                                m
-                                              </span>
-                                            </div>
+                                            {item.categoria !==
+                                              "Assoalhos, Escadas, Decks e Forros" &&
+                                              item.categoria !==
+                                                "Antiguidades" && (
+                                                /*     <div className="flex flex-col gap-1 items-start justify-center text-sm text-gray-500">
+                                                  <div className="flex items-center">
+                                                    Altura:{" "}
+                                                    <Input
+                                                      value={
+                                                        alturaLocal
+                                                          ? alturaLocal
+                                                          : item.altura
+                                                      }
+                                                      className="w-[3rem]"
+                                                      onChange={(e) =>
+                                                        setAlturaLocal(
+                                                          e.target.value
+                                                        )
+                                                      }
+                                                      onBlur={() =>
+                                                        handleBlur(
+                                                          order.orderId,
+                                                          item.selectedVariation
+                                                            .id
+                                                        )
+                                                      }
+                                                    />
+                                                    m
+                                                  </div>
+                                                  <div className="flex items-center">
+                                                    Largura:{" "}
+                                                    <Input
+                                                      value={
+                                                        larguraLocal
+                                                          ? larguraLocal
+                                                          : item.largura
+                                                      }
+                                                      className="w-[3rem]"
+                                                      onChange={(e) =>
+                                                        setLarguraLocal(
+                                                          e.target.value
+                                                        )
+                                                      }
+                                                      onBlur={() =>
+                                                        handleBlur(
+                                                          order.orderId,
+                                                          item.selectedVariation
+                                                            .id
+                                                        )
+                                                      }
+                                                    />
+                                                    m
+                                                  </div>
+                                                  <div className="flex items-center">
+                                                    {item.categoria ===
+                                                      "Janelas e Esquadrias" ||
+                                                    item.categoria ===
+                                                      "Portas Pronta Entrega" ||
+                                                    item.categoria ===
+                                                      "Portas Sob Medida"
+                                                      ? "Batente (Espessura da parede)"
+                                                      : "Comprimento"}{" "}
+                                                    <Input
+                                                      value={
+                                                        comprimentoLocal
+                                                          ? comprimentoLocal
+                                                          : item.comprimento
+                                                      }
+                                                      className="w-[4rem]"
+                                                      onChange={(e) =>
+                                                        setComprimentoLocal(
+                                                          e.target.value
+                                                        )
+                                                      }
+                                                      onBlur={() =>
+                                                        handleBlur(
+                                                          order.orderId,
+                                                          item.selectedVariation
+                                                            .id
+                                                        )
+                                                      }
+                                                    />
+                                                    m
+                                                  </div>
+                                                </div> */
+                                                <ProductDimensionInput
+                                                  key={
+                                                    item.selectedVariation.id
+                                                  }
+                                                  orderId={order.orderId}
+                                                  product={item}
+                                                  onChange={
+                                                    handleChangeDimesionsProduct
+                                                  }
+                                                />
+                                              )}
                                             <span className="text-sm text-red-900">
                                               {variation[0]}
                                             </span>
@@ -1065,7 +1183,7 @@ const OrdersTable = () => {
                                             <span>{item.unidade}</span>
                                           </div>
                                           <div className="flex text-lg text-gray-700 items-center justify-center text-center h-full">
-                                            <span>{item.quantidade} x </span>
+                                            <span>{item.quantidade}</span>
                                           </div>
                                           {/* Coluna desconto */}
                                           <div className="flex gap-2  items-center justify-center text-center">
@@ -1090,10 +1208,6 @@ const OrdersTable = () => {
                                                 unmask={true}
                                                 disabled={order.orderStatus > 1}
                                                 onAccept={(value) => {
-                                                  console.log(
-                                                    "Valor sendo enviado para a função =>",
-                                                    value
-                                                  );
                                                   handleChangeDiscountProduct(
                                                     order.orderId,
                                                     item.selectedVariation.id,

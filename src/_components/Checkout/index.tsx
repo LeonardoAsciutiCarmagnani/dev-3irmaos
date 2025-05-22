@@ -168,9 +168,9 @@ export const Checkout = () => {
 
       console.log("Dados do pedido", order);
       const response = await api.post("/post-budget", order);
-      console.log("Response do pedido: ", response.data.orderId);
+      console.log("Response do pedido: ", response);
 
-      const createdOrderId = response.data.orderId;
+      const createdOrderId = response.data;
 
       const budgetsRef = collection(db, "budgets");
       const q = query(budgetsRef, where("orderId", "==", createdOrderId));
@@ -233,12 +233,17 @@ export const Checkout = () => {
     fetchAddress(address.cep);
   }, [user]);
 
+  const categoriesProducts = [
+    "Assoalhos, Escadas, Decks e Forros",
+    "Antiguidades",
+  ];
+
   return (
     <div className="flex border-gray-300 p-4 rounded-lg text-sm md:text-md overflow-y-auto">
       {productsInCart.length !== 0 ? (
         <div className="flex flex-col w-full md:flex-row gap-4 md:justify-around">
           <div className="flex flex-col space-y-4 w-full md:w-2/5 ">
-            <div className="space-y-2 w-full overflow-y-scroll p-2">
+            <div className="space-y-2 w-full overflow-y-scroll h-[20rem] p-2">
               {productsInCart.map((product, index) => (
                 <div
                   key={index}
@@ -248,17 +253,23 @@ export const Checkout = () => {
                     <span className="font-semibold text-sm md:text-md text-gray-700">
                       {product.nome}
                     </span>
-                    <div className="text-xs text-gray-700 flex gap-2">
-                      <span>Altura: {product.altura} m</span>
-                      <span>Largura: {product.largura} m</span>
-                      <span>
-                        Comprimento:{" "}
-                        {product.comprimento === undefined
-                          ? 0
-                          : product.comprimento}{" "}
-                        m
-                      </span>
-                    </div>
+                    {!categoriesProducts.includes(product.categoria) && (
+                      <div className="text-xs text-gray-700 flex gap-2">
+                        <span>Altura: {product.altura} m</span>
+                        <span>Largura: {product.largura} m</span>
+                        <span>
+                          {product.categoria === "Janelas e Esquadrias" ||
+                          product.categoria === "Portas Pronta Entrega" ||
+                          product.categoria === "Portas Sob Medida"
+                            ? "Batente (Espessura da parede)"
+                            : "Comprimento"}{" "}
+                          {product.comprimento === undefined
+                            ? 0
+                            : product.comprimento}{" "}
+                          m
+                        </span>
+                      </div>
+                    )}
 
                     {product.selectedVariation.nomeVariacao ===
                       "Medida Padrao" && (
