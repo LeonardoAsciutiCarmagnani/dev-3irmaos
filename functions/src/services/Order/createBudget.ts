@@ -15,7 +15,7 @@ export class CreateBudgetService {
       });
       const newId = lastId + 1;
 
-      const budgetCreated = await firestore.collection("budgets").add({
+      await firestore.collection("budgets").add({
         orderId: newId,
         client: data.client,
         deliveryAddress: data.deliveryAddress,
@@ -28,24 +28,17 @@ export class CreateBudgetService {
         detailsPropostal: data.detailsPropostal ?? {},
       });
 
-      let budgetData = null;
-
-      budgetCreated.onSnapshot((snapshot) => {
-        budgetData = snapshot.data();
-        if (budgetData) {
-          console.log("Budget created with ID:", budgetData.orderId);
-          console.log("Budget data:", budgetData);
-        } else {
-          console.log("No such document!");
-        }
-      });
-
-      return budgetData;
+      return {
+        success: true,
+        message: "Orçamento criado com sucesso.",
+        orderId: newId,
+      };
     } catch (error) {
       console.error("Error in CreateBudgetService:", error);
       return {
         success: false,
         message: "Erro ao criar orçamento.",
+        orderId: null,
       };
     }
   }

@@ -4,7 +4,7 @@ import { CreateBudgetService } from "../../services/Order/createBudget";
 import { PostOrderService } from "../../services/hiper/postOrder";
 
 import { readFileSync } from "fs";
-import { resolve } from "path";
+import { parse, resolve } from "path";
 
 import chromium from "chrome-aws-lambda";
 import puppeteer from "puppeteer-core";
@@ -178,13 +178,18 @@ export class OrderController {
         FirebaseFirestore.DocumentData
       > = await CreateBudgetService.execute(parsedBody);
 
-      console.log("Order Controller (CREATE) - Created Order:", createdOrder);
-
-      if (!createdOrder) {
-        res.status(409).json(createdOrder);
+      if (createdOrder.success === false) {
+        res.status(409).json({
+          success: false,
+          message: "Erro ao criar orçamento",
+        });
       }
 
-      res.status(201).json(createdOrder.id);
+      res.status(201).json({
+        success: true,
+        message: "Orçamento criado com sucesso",
+        orderId: createdOrder.orderId,
+      });
     } catch (error) {
       next(error);
     }
