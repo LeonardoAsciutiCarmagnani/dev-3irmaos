@@ -22,7 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { FileDownIcon, InfoIcon, LoaderCircle, SirenIcon } from "lucide-react";
+import { FileDownIcon, InfoIcon, LoaderCircle } from "lucide-react";
 import {
   collection,
   doc,
@@ -771,9 +771,9 @@ const ClientOrdersTable = () => {
                                 {/* Totais */}
                                 <div className="flex flex-col items-end gap-2 ">
                                   {order.orderStatus !== 1 && (
-                                    <div className="flex justify-between  w-full md:w-auto px-14 ">
+                                    <div className="flex justify-between  w-full md:w-auto px-14 border-t ">
                                       <span className="font-semibold">
-                                        Total
+                                        Sub total
                                       </span>
                                       <span className="w-[8rem] truncate text-right">
                                         {order.totalValue.toLocaleString(

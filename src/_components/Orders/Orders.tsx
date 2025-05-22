@@ -444,18 +444,24 @@ const OrdersTable = () => {
         order.orderId === orderId
           ? {
               ...order,
-              products: order.products.map((product) =>
-                product.selectedVariation.id === productId
+              products: order.products.map((product) => {
+                const formattedAltura = altura?.replace(",", ".");
+                const formattedLargura = largura?.replace(",", ".");
+                const formattedComprimento = comprimento?.replace(",", ".");
+
+                return product.selectedVariation.id === productId
                   ? {
                       ...product,
-                      altura: altura ? Number(altura) : product.altura,
-                      largura: largura ? Number(largura) : product.largura,
+                      altura: altura ? Number(formattedAltura) : product.altura,
+                      largura: largura
+                        ? Number(formattedLargura)
+                        : product.largura,
                       comprimento: comprimento
-                        ? parseFloat(comprimento)
+                        ? Number(formattedComprimento)
                         : product.comprimento,
                     }
-                  : product
-              ),
+                  : product;
+              }),
             }
           : order
       )
