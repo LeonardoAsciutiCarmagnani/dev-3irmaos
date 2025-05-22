@@ -18,6 +18,7 @@ const createClientSchema = z.object({
     number: z.coerce.number().min(1, "Número inválido."),
     state: z.string().length(2, "UF inválida."),
     street: z.string().min(3, "Logradouro inválido."),
+    complement: z.string().optional().default(""),
   }),
   password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres."),
 });

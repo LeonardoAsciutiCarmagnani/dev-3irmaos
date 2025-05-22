@@ -35,6 +35,7 @@ const createBudgetSchema = z.object({
     city: z.string({ message: "Cidade obrigatória." }),
     state: z.string({ message: "Estado obrigatório." }),
     ibge: z.string().optional(),
+    complement: z.string().optional().default(""),
   }),
   billingAddress: z.object({
     cep: z.string().min(8, "CEP deve ter 8 dígitos."),
@@ -44,6 +45,7 @@ const createBudgetSchema = z.object({
     city: z.string({ message: "Cidade obrigatória." }),
     state: z.string({ message: "Estado obrigatório." }),
     ibge: z.string().optional(),
+    complement: z.string().optional().default(""),
   }),
   products: z.array(
     z.object({
@@ -111,6 +113,7 @@ const createOrderSchema = z.object({
     city: z.string({ message: "Cidade obrigatória." }),
     state: z.string({ message: "Estado obrigatório." }),
     ibge: z.string().optional(),
+    complement: z.string().optional().default(""),
   }),
   billingAddress: z.object({
     cep: z.string().min(8, "CEP deve ter 8 dígitos."),
@@ -120,6 +123,7 @@ const createOrderSchema = z.object({
     city: z.string({ message: "Cidade obrigatória." }),
     state: z.string({ message: "Estado obrigatório." }),
     ibge: z.string().optional(),
+    complement: z.string().optional().default(""),
   }),
   products: z.array(
     z.object({
