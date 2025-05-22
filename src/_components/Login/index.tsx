@@ -17,12 +17,12 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 // Schema de validação de formulário
-const formSchema = z.object({
+const formLoginSchema = z.object({
   email: z.string().email("E-mail inválido"),
   password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
 });
 
-type FormSchema = z.infer<typeof formSchema>;
+type FormLoginSchema = z.infer<typeof formLoginSchema>;
 
 type LoginProps = {
   onSwitchToRegister?: () => void;
@@ -32,12 +32,12 @@ const Login: React.FC<LoginProps> = () => {
   const { login } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
 
-  const form = useForm<FormSchema>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<FormLoginSchema>({
+    resolver: zodResolver(formLoginSchema),
     defaultValues: { email: "", password: "" },
   });
 
-  const handleUserLogin = async (data: FormSchema) => {
+  const handleUserLogin = async (data: FormLoginSchema) => {
     try {
       await login(data.email.trim(), data.password.trim());
     } catch (error) {

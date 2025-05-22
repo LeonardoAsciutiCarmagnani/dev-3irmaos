@@ -388,8 +388,8 @@ const ClientOrdersTable = () => {
 
       {/* Tabela */}
 
-      <div className="flex w-full border rounded-xs overflow-y-auto max-h-[72vh]">
-        <table className="w-full overflow-y-scroll max-h-[73vh]">
+      <div className="flex w-full border rounded-xs overflow-y-auto max-h-[72vh] overflow-x-hidden">
+        <table className="w-full overflow-y-scroll max-h-[73vh] mx-2 ">
           <thead className="bg-gray-50">
             {table
               ? table.getHeaderGroups().map((headerGroup) => (
@@ -444,16 +444,13 @@ const ClientOrdersTable = () => {
                               }
                             >
                               <td
-                                className={`px-4 py-3 flex items-center ${
+                                className={`pl-3 py-3 flex items-center ${
                                   order.orderStatus === 10 && "line-through"
                                 }`}
                               >
                                 {order.orderId}
                                 {isLast && (
                                   <div className="flex items-center gap-x-1 ml-2 bg-green-300 text-green-900 border border-green-400 text-xs font-semibold px-2 py-0.5 rounded-xs animate-pulse ">
-                                    <span>
-                                      <SirenIcon className="w-4 h-4 text-green-700" />
-                                    </span>
                                     <span>NOVO</span>
                                   </div>
                                 )}
@@ -481,7 +478,7 @@ const ClientOrdersTable = () => {
                                   {status?.label || "Status desconhecido"}
                                 </div>
                               </td>
-                              <td className="hidden md:flex">
+                              <td className="hidden md:flex pt-1">
                                 <Button
                                   onClick={() => handleGeneratedPDF(order)}
                                   className=" bg-transparent border-red-900 rounded-none hover:shadow-md hover:scale-105  hover:bg-transparent shadow-sm shadow-gray-300"

@@ -1,24 +1,28 @@
 import { useAuthStore } from "@/context/authContext";
-import Loader from "@/_components/Loader/loader";
-import RegisterModal from "../Checkout/register-modal";
+import { Navigate } from "react-router-dom";
+import Loader from "../Loader/loader";
+import { toast } from "sonner";
 
-interface AuthenticatedRouteProps {
+interface AdminRouteProps {
   children: React.ReactNode;
 }
 
-const AuthenticatedRoute: React.FC<AuthenticatedRouteProps> = ({
-  children,
-}) => {
+const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
   const { user, loading } = useAuthStore();
 
-  if (loading) return <Loader />;
+  if (loading) {
+    return <Loader />;
+  }
+  if (!user) {
+    toast.error("Você precisa estar logado para acessar essa página", {
+      duration: 3000,
+      id: "unauthenticated",
+    });
 
-  return (
-    <>
-      <RegisterModal open={!user} />
-      {children}
-    </>
-  );
+    return <Navigate to="/" replace />;
+  }
+
+  return <>{children}</>;
 };
 
-export default AuthenticatedRoute;
+export default AdminRoute;

@@ -170,8 +170,8 @@ export const DetailsProduct = () => {
   const categorieWithValue = ["Portas Pronta Entrega"];
 
   return (
-    <div className="h-screen w-full overflow-auto ">
-      <div className="flex flex-col justify-start items-start p-3 md:p-10 space-y-3 md:space-y-4 h-full">
+    <div className=" w-full pb-4 ">
+      <div className="flex flex-col justify-start items-start p-3 md:p-10 space-y-3 md:space-y-4 ">
         <div className="flex flex-col h-full md:flex-row gap-y-1 w-full gap-x-6 p-1 md:items-start">
           {/* Imagem do produto - Ajustado para mobile */}
           <div className="md:w-3/5 w-full rounded-xs overflow-hidden transition-shadow duration-300 shadow-md border border-gray-100 shadow-gray-300  flex flex-col gap-y-1">
@@ -182,7 +182,7 @@ export const DetailsProduct = () => {
                     <img
                       src={imagem.imagem}
                       alt={product.nome}
-                      className="w-full h-[50vh] md:h-[72vh] object-cover"
+                      className="w-full h-[35vh] md:h-[72vh] object-cover"
                     />
                   </CarouselItem>
                 ))}
@@ -536,7 +536,7 @@ export const DetailsProduct = () => {
                   )}
                 </div>
 
-                <div className="flex justify-end items-end md:mt-4 mb-3 md:mb-4 h-[5rem]">
+                <div className="flex justify-end items-end md:mt-4 mb-3 md:mb-4 h-[2rem] pb-4">
                   <Button
                     type="submit"
                     className="w-fit text-xs md:text-sm bg-red-900 text-white rounded-xs py-1 md:py-2 px-2 md:px-4 hover:bg-red-700 transition-colors"
