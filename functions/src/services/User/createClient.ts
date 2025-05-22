@@ -17,6 +17,7 @@ interface Client {
     city: string;
     state: string;
     ibge: string;
+    complement: string;
   };
   password: string;
   createdAt: string;
@@ -39,6 +40,7 @@ interface UserFirestore {
     city: string;
     state: string;
     ibge: string;
+    complement: string;
   };
   createdAt: string;
   updatedAt: string;
@@ -56,17 +58,6 @@ export class CreateClient {
   ): Promise<CreateClientResponse> {
     const randomHash = uuid();
     try {
-      const firestore = admin.firestore();
-
-      const querySnapshot = await firestore
-        .collection("clients")
-        .where("clientDocument", "==", userData.document)
-        .get();
-
-      if (!querySnapshot.empty) {
-        return { success: false, error: "CPF/CNPJ já cadastrado." };
-      }
-
       const auth = admin.auth();
       const createdUser = await auth.createUser({
         displayName: userData.name,
