@@ -15,7 +15,7 @@ export class CreateBudgetService {
       });
       const newId = lastId + 1;
 
-      const budgetCreated = await firestore.collection("budgets").add({
+      await firestore.collection("budgets").add({
         orderId: newId,
         client: data.client,
         deliveryAddress: data.deliveryAddress,
@@ -28,12 +28,17 @@ export class CreateBudgetService {
         detailsPropostal: data.detailsPropostal ?? {},
       });
 
-      return budgetCreated;
+      return {
+        success: true,
+        message: "Orçamento criado com sucesso.",
+        orderId: newId,
+      };
     } catch (error) {
       console.error("Error in CreateBudgetService:", error);
       return {
         success: false,
         message: "Erro ao criar orçamento.",
+        orderId: null,
       };
     }
   }

@@ -5,7 +5,7 @@ import { PostOrderService } from "../../services/hiper/postOrder";
 import puppeteer from "puppeteer";
 
 import { readFileSync } from "fs";
-import { resolve } from "path";
+import { parse, resolve } from "path";
 
 // Caminho absoluto a partir do arquivo compilado em dist/
 const logoPath = resolve(__dirname, "../../assets/logo_3irmaos.png");
@@ -175,10 +175,17 @@ export class OrderController {
       const createdOrder = await CreateBudgetService.execute(parsedBody);
 
       if (createdOrder.success === false) {
-        res.status(409).json(createdOrder);
+        res.status(409).json({
+          success: false,
+          message: "Erro ao criar orçamento",
+        });
       }
 
-      res.status(201).json(createdOrder);
+      res.status(201).json({
+        success: true,
+        message: "Orçamento criado com sucesso",
+        orderId: createdOrder.orderId,
+      });
     } catch (error) {
       next(error);
     }
