@@ -177,6 +177,10 @@ export class OrderController {
 
       console.log("Order Controller (CREATE) - Body received:", req.body);
 
+      parsedBody.products.forEach((item) =>
+        console.log("Variações recebidas: ", item.selectedVariation.id)
+      );
+
       const createdOrder = await CreateBudgetService.execute(parsedBody);
 
       if (createdOrder.success === false) {
@@ -202,17 +206,21 @@ export class OrderController {
     next: NextFunction
   ) {
     try {
-      console.log("Dados Recebidos:", req.body);
-
       const parsedBody = createOrderSchema.parse(req.body);
 
       const userId = parsedBody.client.id;
 
+      const productId = parsedBody.products.map((item) => {
+        return item.selectedVariation.id;
+      });
+
+      console.log("Product IDs:", productId);
+
       console.log("Order Controller (CREATE) - Body received:", req.body);
 
-      console.log("Order Controller (CREATE) - Creating Order:", parsedBody);
       const createdOrder = await PostOrderService.postOrder(parsedBody, userId);
 
+      console.log("Order Controller (CREATE) - Creating Order:", createdOrder);
       if (createdOrder.success === false) {
         res.status(409).json(createdOrder);
       }

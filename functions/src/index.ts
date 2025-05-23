@@ -112,6 +112,7 @@ class App {
     router.post("/create-client", UserController.createClient);
 
     router.post("/post-budget", OrderController.createBudget);
+    router.post("/post-order", OrderController.postOrderInHiper);
     router.post("/create-adm", UserController.createAdmin);
     router.post("/generate-pdf", testPdfHandler);
 
