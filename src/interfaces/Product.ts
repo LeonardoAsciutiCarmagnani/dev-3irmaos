@@ -41,6 +41,7 @@ export interface Product {
     tipoVariacaoA: string | null;
     tipoVariacaoB: string | null;
   }[];
+  removido: boolean;
 }
 
 export interface ProductInCart {

@@ -22,6 +22,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const CreateOrderADM = () => {
   const [budgetNumber, setBudgetNumber] = useState(0);
@@ -40,6 +41,7 @@ const CreateOrderADM = () => {
   const [totalDiscount, setTotalDiscount] = useState(0);
   const [includedItens, setIncludedItens] = useState("");
   const [notIncludedItems, setNotIncludedItems] = useState("");
+  const navigate = useNavigate();
 
   const postBudget = async () => {
     try {
@@ -148,14 +150,8 @@ const CreateOrderADM = () => {
 
       // Limpa os campos após sucesso
       if (response.status === 200 || response.status === 201) {
+        navigate("/adm/pedidos-e-orçamentos");
         toast.success("Orçamento criado com sucesso!");
-        setClient(null);
-        setProductsInBudget([]);
-        setFiles([]);
-        setObservations("");
-        setPaymentMethod("");
-        setDeliveryValue(null);
-        setTimeEstimate("");
       }
     } catch (error) {
       console.error("Erro ao criar orçamento:", error);
@@ -241,7 +237,7 @@ const CreateOrderADM = () => {
             Emissão: {new Date().toLocaleDateString()}
           </h2>
         </div>
-        <div className="flex items-start justify-between gap-x-2 w-[180vh] h-[11rem]">
+        <div className="flex items-start justify-between gap-x-2 w-[180vh] h-[10rem]">
           <div className="border border-gray-200 shadow-md shadow-gray-200 h-full w-full p-2">
             <div className="mb-1">
               <h2 className="text-red-900 font-semibold text-md">Vendedor</h2>
@@ -270,7 +266,7 @@ const CreateOrderADM = () => {
               </PopoverContent>
             </Popover>
             {selectedSeller && (
-              <div className="p-1">
+              <div className="p-1 ">
                 <span className="text-xs text-gray-600">
                   Nome: {selectedSeller.name}
                 </span>

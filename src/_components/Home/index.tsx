@@ -55,7 +55,7 @@ const Home = () => {
               to={`/produtos?c=${categoria.label.toLowerCase()}`}
               className="block w-full h-full text-center text-gray-800 hover:text-white"
             >
-              <div className="relative w-full h-[8rem] md:h-[20rem] 2xl:h-[25rem] overflow-hidden">
+              <div className="relative w-full h-[16rem] md:h-[20rem] 2xl:h-[25rem] overflow-hidden">
                 <img
                   src={categoria.imageUrl}
                   alt={categoria.label}

@@ -193,7 +193,7 @@ export const Checkout = () => {
 
       navigate("/pedidos-e-orçamentos", {
         state: {
-          highlightOrderId: createdOrderId,
+          highlightOrderId: response.data.orderId,
         },
       });
     } catch (error) {
