@@ -190,6 +190,8 @@ export class OrderController {
         });
       }
 
+      console.log("Retornando para o front ... OrderId:", createdOrder.orderId);
+
       res.status(201).json({
         success: true,
         message: "Orçamento criado com sucesso",
