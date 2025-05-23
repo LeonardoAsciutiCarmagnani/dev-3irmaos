@@ -805,7 +805,7 @@ const ClientOrdersTable = () => {
                                             Desconto
                                           </span>
                                           <span className="w-[8rem] truncate text-right">
-                                            {order.totalDiscount.toLocaleString(
+                                            {order.totalDiscount?.toLocaleString(
                                               "pt-BR",
                                               {
                                                 style: "currency",

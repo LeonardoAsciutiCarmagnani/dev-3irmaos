@@ -117,7 +117,7 @@ const DetailsOrder = ({
       {user?.role === "admin" && (
         <Accordion type="single" collapsible>
           <AccordionItem value="item-1">
-            <AccordionTrigger className="text-lg">
+            <AccordionTrigger className="text-lg text-red-800 hover:cursor-pointer">
               Informar detalhes da proposta
             </AccordionTrigger>
             <AccordionContent className="flex flex-col space-y-2 ml-2">
@@ -349,15 +349,24 @@ const DetailsOrder = ({
             <div className="flex flex-col gap-2 font-semibold">
               <span className="flex gap-2">
                 <CircleUser />
-                {selectedSeller.name === undefined ? "" : selectedSeller.name}
+                {selectedSeller.name === "undefined" ||
+                selectedSeller.name === ""
+                  ? "Não informado"
+                  : selectedSeller.name}
               </span>
               <span className="flex gap-2">
                 <Mail />
-                {selectedSeller.email === undefined ? "" : selectedSeller.email}
+                {selectedSeller.email === undefined ||
+                selectedSeller.email === ""
+                  ? "Não informado"
+                  : selectedSeller.email}
               </span>
               <span className="flex gap-2 font-semibold">
                 <Phone />
-                {selectedSeller.phone === undefined ? "" : selectedSeller.phone}
+                {selectedSeller.phone === undefined ||
+                selectedSeller.phone === ""
+                  ? "Não informado"
+                  : selectedSeller.phone}
               </span>
               <span className="flex gap-2 font-semibold">
                 <Instagram />
