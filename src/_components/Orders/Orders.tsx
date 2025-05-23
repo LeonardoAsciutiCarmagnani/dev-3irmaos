@@ -26,6 +26,7 @@ import {
   FileDownIcon,
   InfoIcon,
   LoaderCircle,
+  MessageSquareText,
 } from "lucide-react";
 import Dropzone from "../DropzoneImage/DropzoneImage";
 import {
@@ -52,6 +53,7 @@ import { Order } from "@/interfaces/Order";
 import { api } from "@/lib/axios";
 import hiperLogo from "@/assets/hiper_logo.svg";
 import { ProductDimensionInput } from "./ProductDimensionInput/ProductDimensionInput";
+import { useNavigate } from "react-router-dom";
 
 const OrdersTable = () => {
   const [date, setDate] = useState<DateRange>();
@@ -70,6 +72,7 @@ const OrdersTable = () => {
   const [popoverHiperController, setPopoverHiperController] = useState<
     number | null
   >(null);
+  const navigate = useNavigate();
 
   /* Detalhes do orçamento */
   const [obs, setObs] = useState("");
@@ -234,9 +237,14 @@ const OrdersTable = () => {
     }
   }
 
-  async function handleStatusChange(id: number, newStatus: number) {
+  async function handleStatusChange(
+    id: number,
+    newStatus: number,
+    order?: Order
+  ) {
     console.log("Novo status => ", newStatus);
     console.log("Id do orçamento => ", id);
+    console.log("handleStatusChange chamada:", { id, newStatus, order });
 
     try {
       const collectionRef = collection(db, "budgets");
@@ -257,6 +265,72 @@ const OrdersTable = () => {
 
       if (!orderDocRef) return;
 
+      // ===== CÓDIGO DE PUSH NOTIFICATION MOVIDO PARA FORA =====
+      if (order) {
+        console.log("Processando push notification...");
+
+        try {
+          const {
+            orderId: orderCode,
+            client: { name: clientName, phone },
+            createdAt,
+            orderStatus,
+          } = order;
+
+          // Remove tudo que não for dígito
+          const cleanedPhone = phone.replace(/\D/g, "");
+
+          const pushObject = {
+            orderCode,
+            clientName,
+            clientPhone: cleanedPhone,
+            createdAt,
+            orderStatus,
+            deliveryDate: order.detailsPropostal?.time || "",
+          };
+
+          console.log("Push object criado:", pushObject);
+
+          // Mapa de status → rota da API
+          const statusEndpoints: Record<number, string> = {
+            1: "/send-push-createBudget",
+            2: "/send-push-proposalSent",
+            3: "/send-push-proposalRejected",
+            4: "/send-push-proposalApproved",
+            6: "/send-push-proposalInProduction",
+            8: "/send-push-proposalDispatched",
+            9: "/send-push-proposalCompleted",
+          };
+
+          const endpoint = statusEndpoints[newStatus];
+          console.log("Endpoint selecionado:", endpoint);
+
+          if (!endpoint) {
+            console.warn(`Status ${newStatus} não tem endpoint definido.`);
+          } else {
+            console.log(`Enviando push para ${endpoint}...`);
+            const response = await api.post(endpoint, pushObject);
+            console.log(`Push enviado para ${endpoint}:`, response.data);
+          }
+
+          toast.success("Notificação de status enviada com sucesso!", {
+            id: "push-notification-success",
+            icon: <MessageSquareText />,
+            duration: 3000,
+          });
+        } catch (error) {
+          console.error(`Erro ao enviar push:`, error);
+          toast.error("Não foi possível processar o envio da notificação.", {
+            id: "push-notification-error",
+            icon: <MessageSquareText />,
+            duration: 3000,
+          });
+        }
+      } else {
+        console.warn("Order não foi fornecido para push notification");
+      }
+
+      // ===== CÓDIGO ESPECÍFICO PARA STATUS 10 (EXCLUSÃO DE IMAGENS) =====
       if (newStatus === 10) {
         const listRef = ref(storage, "imagens/");
 
@@ -296,6 +370,12 @@ const OrdersTable = () => {
           order.orderId === id ? { ...order, status: newStatus } : order
         )
       );
+
+      toast.success("Status atualizado com sucesso!", {
+        id: "status-update-success",
+        icon: <CircleCheckBig />,
+        duration: 3000,
+      });
     } catch (error) {
       console.log("Ocorreu um erro ao tentar atualizar o pedido", error);
       toast.error("Ocorreu um erro ao tentar atualizar o pedido");
@@ -539,27 +619,6 @@ const OrdersTable = () => {
         totalValue: orderToPush.totalValue,
       });
 
-      const cleanedPhone = orderToPush.client.phone.replace(/\D/g, "");
-
-      const pushObject = {
-        orderCode: orderToPush.orderId,
-        clientName: orderToPush.client.name,
-        clientPhone: cleanedPhone,
-        createdAt: orderToPush.createdAt,
-        orderStatus: orderToPush.orderStatus,
-      };
-
-      const response = await api.post("/send-push-proposalSent", pushObject);
-
-      if (response.data.error) {
-        toast.warning(
-          "Não foi possível enviar a mensagem: " + response.data.error,
-          {
-            id: "sendPropostalPush-error",
-          }
-        );
-      }
-
       toast.success("Mensagem enviada com sucesso!");
 
       setData((prevData) =>
@@ -679,10 +738,10 @@ const OrdersTable = () => {
                 <span>{formattedTo}</span>
               </div>
             ) : (
-              <span className=" w-full">Filtrar por periodo</span>
+              <span className="w-full">Filtrar por periodo</span>
             )}
           </PopoverTrigger>
-          <PopoverContent className="w-full">
+          <PopoverContent className="w-full rounded-xs">
             <Calendar
               mode="range"
               selected={date}
@@ -695,6 +754,14 @@ const OrdersTable = () => {
         <Button onClick={() => filterOrders()} className="rounded-xs">
           Filtrar
         </Button>
+        <div>
+          <Button
+            className="rounded-xs bg-blue-400 hover:bg-blue-500 border-blue-500 border"
+            onClick={() => navigate("/adm/criar-orçamento")}
+          >
+            Novo orçamento
+          </Button>
+        </div>
       </div>
 
       <div className="flex flex-col md:flex-row justify-between px-2">
@@ -807,12 +874,18 @@ const OrdersTable = () => {
                                     : order.orderStatus === 10 && "bg-gray-400"
                                 }`}
                                 value={order.orderStatus}
-                                onChange={(e) =>
+                                onChange={(e) => {
+                                  console.log(
+                                    "Select onChange disparado:",
+                                    e.target.value
+                                  ); // Debug
+                                  console.log("Order:", order); // Debug
                                   handleStatusChange(
                                     order.orderId,
-                                    Number(e.target.value)
-                                  )
-                                }
+                                    Number(e.target.value),
+                                    order
+                                  );
+                                }}
                               >
                                 {selectedOptions &&
                                   selectedOptions.map((option) => {

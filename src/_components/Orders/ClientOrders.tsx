@@ -41,7 +41,7 @@ import Dropzone from "../DropzoneImage/DropzoneImage";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { Order } from "@/interfaces/Order";
 import { api } from "@/lib/axios";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 type OrderStatusType = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 
@@ -52,7 +52,6 @@ interface LocationState {
 const ClientOrdersTable = () => {
   const { state } = useLocation();
   const { highlightOrderId } = (state as LocationState) || {};
-  const { user } = useAuthStore();
 
   const [date, setDate] = useState<DateRange>();
 
@@ -62,10 +61,11 @@ const ClientOrdersTable = () => {
   const [statusFilter, setStatusFilter] = useState(0); // zero igual a todos os status
   const [showCardOrder, setShowCardOrder] = useState<number | null>(null);
   const [sendPropostal, setSendPropostal] = useState(false);
-
+  const { user } = useAuthStore();
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
 
   const [generatedPdf, setGeneratedPdf] = useState<number | null>(null);
+  const navigate = useNavigate();
 
   /* Detalhes do orçamento */
 
@@ -318,6 +318,15 @@ const ClientOrdersTable = () => {
   };
 
   useEffect(() => {
+    if (user?.role === "admin") {
+      toast.error("Administradores não podem acessar.", {
+        duration: 5000,
+        id: "error",
+        description:
+          "Para visualizar os pedidos e orçamentos, navegue para orçamentos.",
+      });
+      navigate("/");
+    }
     const collectionRef = collection(db, "budgets");
 
     const q = query(collectionRef, where("client.id", "==", user?.uid));
@@ -421,7 +430,8 @@ const ClientOrdersTable = () => {
                       const status =
                         statusMap[order.orderStatus as OrderStatusType];
                       const isLast = order.orderId === highlightOrderId;
-
+                      console.log("Order ID =>", order.orderId);
+                      console.log("highlightOrderId =>", highlightOrderId);
                       return (
                         <Dialog
                           key={order.orderId}

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Product } from "@/interfaces/Product";
 import Loader from "@/_components/Loader/loader";
 import { useSearchParams } from "react-router-dom";
-import { RouteSelect } from "./route-select";
 import {
   ArrowDownAZ,
   ArrowUpAZ,
@@ -82,7 +81,8 @@ const OutletProducts = () => {
     if (products.length > 0) {
       const primaryProducts = products.filter(
         (product) =>
-          product.produtoPrimarioId === "00000000-0000-0000-0000-000000000000"
+          product.produtoPrimarioId ===
+            "00000000-0000-0000-0000-000000000000" && product.removido === false
       );
 
       const currentSortOption =

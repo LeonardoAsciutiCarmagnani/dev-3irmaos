@@ -46,7 +46,7 @@ const GetClients = ({ selectedClient, setSelectedClient }: GetClientsProps) => {
   const label = selectedClient ? selectedClient.name : "Selecione...";
 
   return (
-    <div className="flex items-start rounded-xs p-4 w-[120vh] justify-start gap-x-10 border border-gray-200 shadow-md shadow-gray-200 h-full">
+    <div className="flex items-start rounded-xs p-4 w-[120vh] justify-start gap-x-10 border border-gray-200 shadow-md shadow-gray-200 h-fit">
       <div>
         <div>
           <h1 className="text-md font-semibold text-red-900">Cliente</h1>
@@ -69,26 +69,35 @@ const GetClients = ({ selectedClient, setSelectedClient }: GetClientsProps) => {
                 <CommandList>
                   <CommandEmpty>Nenhum cliente encontrado.</CommandEmpty>
                   <CommandGroup className="">
-                    {clients.map((client) => (
-                      <CommandItem
-                        key={client.Id}
-                        value={client.Id}
-                        onSelect={(currentValue) => {
-                          const client =
-                            clients.find((c) => c.Id === currentValue) || null;
-                          setSelectedClient(client);
-                          setOpen(false);
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4 text-red-900",
-                            value === client.Id ? "opacity-100" : "opacity-0"
-                          )}
-                        />
-                        {client.name} - {client.phone}
-                      </CommandItem>
-                    ))}
+                    {clients.map((client) => {
+                      const searchValue = client.name.toLowerCase();
+
+                      return (
+                        <CommandItem
+                          key={client.Id}
+                          value={searchValue}
+                          onSelect={(currentValue) => {
+                            const client =
+                              clients.find(
+                                (c) => c.name.toLowerCase() === currentValue
+                              ) || null;
+
+                            setSelectedClient(client);
+                            setOpen(false);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4 text-red-900",
+                              selectedClient?.Id === client.Id
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          />
+                          {client.name} - {client.phone}
+                        </CommandItem>
+                      );
+                    })}
                   </CommandGroup>
                 </CommandList>
               </Command>

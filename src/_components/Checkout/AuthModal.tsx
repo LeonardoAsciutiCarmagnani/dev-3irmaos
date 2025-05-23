@@ -53,7 +53,7 @@ const formSchema = z.object({
 
 const formLoginSchema = z.object({
   email: z.string().email("E-mail inválido"),
-  password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
+  password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres."),
 });
 
 type FormLoginSchema = z.infer<typeof formLoginSchema>;
@@ -239,7 +239,7 @@ const AuthModal = ({ open, mode, onModeChange, onClose }: Props) => {
                         <div>
                           Para continuar, precisamos que entre com sua conta
                         </div>
-                        <div className="flex items-center gap-x-1 w-full justify-start">
+                        <div className="flex items-center gap-x-1 w-full justify-start font-semibold">
                           <h1>Ainda não possui uma conta?</h1>
                           <Button
                             variant="link"

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Button } from "@/components/ui/button";
+import CurrencyInput from "react-currency-input-field";
 import {
   Command,
   CommandEmpty,
@@ -252,7 +253,7 @@ const GetProductsForm = ({
                               <span className="font-semibold text-gray-800">
                                 {produtoComVariacao.nome}
                               </span>
-                              <Badge className="bg-red-900">
+                              <Badge className="bg-red-900 rounded-xs">
                                 {nomeVariacao}
                               </Badge>
                             </div>
@@ -263,7 +264,10 @@ const GetProductsForm = ({
                 </PopoverTrigger>
                 <PopoverContent className="w-80 p-0 md:w-96 2xl:w-[36rem]">
                   <Command>
-                    <CommandInput placeholder="Busque pelo nome" />
+                    <CommandInput
+                      placeholder="Busque pelo nome do produto ou nome da variação."
+                      className="placeholder:text-xs"
+                    />
                     <CommandList>
                       <CommandEmpty>Nenhum produto encontrado.</CommandEmpty>
                       <CommandGroup>
@@ -279,10 +283,13 @@ const GetProductsForm = ({
                                 .filter(Boolean)
                                 .join(" - ");
 
+                              const searchValue =
+                                `${product.nome} ${nomeVariacao}`.toLowerCase();
+
                               return (
                                 <CommandItem
                                   key={v.id}
-                                  value={v.id}
+                                  value={searchValue}
                                   onSelect={() => {
                                     setSelectedVariacaoId(v.id);
                                     setOpen(false);
@@ -301,12 +308,12 @@ const GetProductsForm = ({
                                       <span className="font-medium">
                                         {product.nome}
                                       </span>
-                                      <Badge className="font-medium bg-red-900">
+                                      <Badge className="font-medium bg-red-900 rounded-xs">
                                         {nomeVariacao}
                                       </Badge>
                                     </div>
 
-                                    <Badge className="text-xs text-red-900 bg-gray-100">
+                                    <Badge className="text-xs text-red-900 bg-gray-100 rounded-xs">
                                       Cód: {v.codigo}
                                     </Badge>
                                   </div>
@@ -340,12 +347,18 @@ const GetProductsForm = ({
               <label className="text-sm text-gray-900 mb-1 block">
                 Valor Unitário
               </label>
-              <Input
-                type="number"
-                min={0}
-                step={0.01}
-                value={valorUnitario}
-                onChange={(e) => setValorUnitario(Number(e.target.value))}
+              <CurrencyInput
+                id="valor-unitario"
+                name="valor-unitario"
+                placeholder="R$ 0,00"
+                decimalsLimit={2}
+                decimalSeparator=","
+                groupSeparator="."
+                prefix="R$ "
+                value={valorUnitario || ""}
+                onValueChange={(value) =>
+                  setValorUnitario(value ? Number(value) : 0)
+                }
                 className="w-[7rem] rounded-xs"
               />
             </div>
@@ -355,12 +368,18 @@ const GetProductsForm = ({
               <label className="text-sm text-gray-900 mb-1 block">
                 Desconto Unitário
               </label>
-              <Input
-                type="number"
-                min={0}
-                step={0.01}
-                value={descontoUnitario}
-                onChange={(e) => setDescontoUnitario(Number(e.target.value))}
+              <CurrencyInput
+                id="desconto-unitario"
+                name="desconto-unitario"
+                placeholder="R$ 0,00"
+                decimalsLimit={2}
+                decimalSeparator=","
+                groupSeparator="."
+                prefix="R$ "
+                value={descontoUnitario || ""}
+                onValueChange={(value) =>
+                  setDescontoUnitario(value ? Number(value) : 0)
+                }
                 className="w-[7rem] rounded-xs"
               />
             </div>
@@ -370,11 +389,17 @@ const GetProductsForm = ({
               <label className="text-sm text-gray-900 mb-1 block">
                 Subtotal
               </label>
-              <Input
-                type="text"
-                value={formatCurrency(subtotal)}
-                readOnly
-                className="w-[7rem] bg-gray-50 rounded-xs"
+              <CurrencyInput
+                id="Subtotal"
+                name="Subtotal"
+                placeholder="R$ 0,00"
+                decimalsLimit={2}
+                decimalSeparator=","
+                groupSeparator="."
+                prefix="R$ "
+                value={subtotal || valorUnitario}
+                disabled
+                className="w-[7rem] rounded-xs"
               />
             </div>
 
