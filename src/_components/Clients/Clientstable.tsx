@@ -482,7 +482,7 @@ const ClientsTable = () => {
                               id="name"
                               defaultValue={client.name}
                               {...register("name")}
-                              className="mt-1 bg-white w-full"
+                              className="mt-1 bg-white w-full rounded-xs"
                             />
                           </div>
                           <div>
@@ -496,7 +496,7 @@ const ClientsTable = () => {
                               id="fantasyName"
                               defaultValue={client.fantasyName}
                               {...register("fantasyName")}
-                              className="mt-1 bg-white w-full"
+                              className="mt-1 bg-white w-full rounded-xs"
                             />
                           </div>
                           <div>
@@ -511,7 +511,7 @@ const ClientsTable = () => {
                               defaultValue={client.document}
                               disabled
                               {...register("document")}
-                              className="mt-1 bg-gray-100 w-full"
+                              className="mt-1 bg-gray-100 w-full rounded-xs"
                             />
                           </div>
                           <div>
@@ -526,7 +526,7 @@ const ClientsTable = () => {
                               defaultValue={client.email}
                               disabled
                               {...register("email")}
-                              className="mt-1 bg-gray-100 w-full"
+                              className="mt-1 bg-gray-100 w-full rounded-xs"
                             />
                           </div>
                           <div>
@@ -540,7 +540,7 @@ const ClientsTable = () => {
                               id="phone"
                               defaultValue={client.phone}
                               {...register("phone")}
-                              className="mt-1 bg-white w-full"
+                              className="mt-1 bg-white w-full rounded-xs"
                             />
                           </div>
                         </div>
@@ -568,7 +568,7 @@ const ClientsTable = () => {
                                   fetchAddress(e.target.value);
                                 }}
                                 onChange={rhfOnChange}
-                                className="mt-1 bg-white w-full"
+                                className="mt-1 bg-white w-full rounded-xs"
                               />
                             </div>
                             <div>
@@ -583,7 +583,7 @@ const ClientsTable = () => {
                                 value={client.address.neighborhood}
                                 readOnly
                                 {...register("address.neighborhood")}
-                                className="mt-1 bg-gray-100 w-full"
+                                className="mt-1 bg-gray-100 w-full rounded-xs"
                               />
                             </div>
                             <div>
@@ -598,7 +598,7 @@ const ClientsTable = () => {
                                 value={client.address.street}
                                 readOnly
                                 {...register("address.street")}
-                                className="mt-1 bg-gray-100 w-full"
+                                className="mt-1 bg-gray-100 w-full rounded-xs"
                               />
                             </div>
                             <div>
@@ -612,7 +612,7 @@ const ClientsTable = () => {
                                 id="number"
                                 defaultValue={client.address.number}
                                 {...register("address.number")}
-                                className="mt-1 bg-white w-full"
+                                className="mt-1 bg-white w-full rounded-xs"
                               />
                             </div>
                             <div>
@@ -627,7 +627,7 @@ const ClientsTable = () => {
                                 value={client.address.city}
                                 readOnly
                                 {...register("address.city")}
-                                className="mt-1 bg-gray-100 w-full"
+                                className="mt-1 bg-gray-100 w-full rounded-xs"
                               />
                             </div>
                             <div>
@@ -642,7 +642,7 @@ const ClientsTable = () => {
                                 value={client.address.state}
                                 readOnly
                                 {...register("address.state")}
-                                className="mt-1 bg-gray-100 w-full"
+                                className="mt-1 bg-gray-100 w-full rounded-xs"
                               />
                             </div>
                           </div>
@@ -667,14 +667,14 @@ const ClientsTable = () => {
                               type="email"
                               value={email}
                               disabled
-                              className="mt-1 bg-gray-100 w-full"
+                              className="mt-1 bg-gray-100 w-full rounded-xs"
                             />
                           </div>
                           <Button
                             size="sm"
                             onClick={handleResetPassword}
                             disabled={isLoading || isSubmittingResetForPassword}
-                            className="w-full"
+                            className="w-full rounded-xs"
                           >
                             {isSubmittingResetForPassword ? (
                               <Loader2 className="animate-spin mr-2" />
