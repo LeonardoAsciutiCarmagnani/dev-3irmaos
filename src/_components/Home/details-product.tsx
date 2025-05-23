@@ -44,18 +44,27 @@ export const DetailsProduct = () => {
 
   type ProductFormData = z.infer<typeof productSchema>;
 
+  const hasVariationBNullable =
+    product.variacao &&
+    product.variacao.every((variation) => variation.tipoVariacaoB === null);
+
+  console.log(hasVariationBNullable);
   // Verificar se o produto tem variações
   const hasVariations = product.variacao && product.variacao.length > 0;
+  console.log("hasVariations => ", hasVariations);
+
   // Verificar se o produto tem variação B (grade composta)
-  const hasVariationB = hasVariations && product.variacao?.[0]?.tipoVariacaoB;
+  const hasVariationB =
+    hasVariations && product.variacao?.every((v) => v.nomeVariacaoB !== null);
+  console.log("hasVariationB => ", hasVariationB);
 
   const [typeProduct, setTypeProduct] = useState({
-    typeProduct: true,
+    typeProduct: "",
     productVariationSelected: {
       id: hasVariations ? product.variacao?.[0]?.id || "" : "",
       nomeVariacao: hasVariations
         ? product.variacao?.[0]?.nomeVariacaoA || ""
-        : "Padrão",
+        : "",
     },
   });
 
@@ -87,7 +96,22 @@ export const DetailsProduct = () => {
         },
   });
 
+  useEffect(
+    () => console.log("Variação selecionada =>", typeProduct),
+    [typeProduct]
+  );
+
   useEffect(() => {
+    if (product.variacao === null) {
+      setTypeProduct({
+        typeProduct: "",
+        productVariationSelected: {
+          id: product.id,
+          nomeVariacao: "",
+        },
+      });
+    }
+
     console.log("Produto =>", product);
     if (product.unidade === "m²" || product.categoria === "Antiguidades") {
       setIsSquareMeter(true);
@@ -125,7 +149,7 @@ export const DetailsProduct = () => {
         quantidade: 1,
       });
     }
-  }, [typeProduct]);
+  }, []);
 
   const CarouselImages = [
     { imagem: product.imagem },
@@ -232,66 +256,137 @@ export const DetailsProduct = () => {
                 {/* Opções de tipo de produto */}
                 {hasVariations && (
                   <>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        name="typeProduct"
-                        id="sobmedida"
-                        value={
-                          product.variacao?.find(
-                            (v) => v.nomeVariacaoA === "Sob Medida"
-                          )?.nomeVariacaoA || ""
-                        }
-                        className="h-4 md:h-5 w-4 md:w-5 text-red-900 focus:ring-2 focus:ring-transparent rounded-xs accent-red-900"
-                        checked={typeProduct.typeProduct === false}
-                        onChange={() =>
-                          setTypeProduct(() => ({
-                            typeProduct: false,
-                            productVariationSelected: {
-                              id: product.variacao?.[1].id || "",
-                              nomeVariacao:
-                                product.variacao?.[1].nomeVariacaoA || "",
-                            },
-                          }))
-                        }
-                      />
-                      <label
-                        htmlFor="sobmedida"
-                        className="cursor-pointer text-xs md:text-sm font-semibold text-gray-900"
-                      >
-                        Sob medida
-                      </label>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        name="typeProduct"
-                        id="prontaentrega"
-                        value={
-                          product.variacao?.find(
-                            (v) => v.nomeVariacaoA === "Medida Padrao"
-                          )?.nomeVariacaoA || ""
-                        }
-                        className="h-4 md:h-5 w-4 md:w-5 text-gray-900 focus:ring-2 focus:ring-transparent rounded-xs accent-red-900"
-                        checked={typeProduct.typeProduct === true}
-                        onChange={() =>
-                          setTypeProduct(() => ({
-                            typeProduct: true,
-                            productVariationSelected: {
-                              id: product.variacao?.[0]?.id || "",
-                              nomeVariacao:
-                                product.variacao?.[0]?.nomeVariacaoA || "",
-                            },
-                          }))
-                        }
-                      />
-                      <label
-                        htmlFor="prontaentrega"
-                        className="cursor-pointer text-xs md:text-sm font-semibold text-gray-900"
-                      >
-                        Pronta entrega
-                      </label>
-                    </div>
+                    {hasVariationBNullable ? (
+                      <>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="radio"
+                            name="typeProduct"
+                            id="sobmedida"
+                            value={product.variacao?.[1].nomeVariacaoA}
+                            className="h-4 md:h-5 w-4 md:w-5 text-red-900 focus:ring-2 focus:ring-transparent rounded-xs accent-red-900"
+                            checked={
+                              typeProduct.typeProduct ===
+                              product.variacao?.[1].nomeVariacaoA
+                            }
+                            onChange={() =>
+                              setTypeProduct(() => ({
+                                typeProduct:
+                                  product.variacao?.[1].nomeVariacaoA || "",
+                                productVariationSelected: {
+                                  id: product.variacao?.[1].id || "",
+                                  nomeVariacao:
+                                    product.variacao?.[1].nomeVariacaoB || "",
+                                },
+                              }))
+                            }
+                          />
+                          <label
+                            htmlFor="sobmedida"
+                            className="cursor-pointer text-xs md:text-sm font-semibold text-gray-900"
+                          >
+                            {/* Sob Medida */}
+                            {product.variacao?.[1].nomeVariacaoA}
+                          </label>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="radio"
+                            name="typeProduct"
+                            id="prontaentrega"
+                            value={product.variacao?.[0].nomeVariacaoA}
+                            className="h-4 md:h-5 w-4 md:w-5 text-gray-900 focus:ring-2 focus:ring-transparent rounded-xs accent-red-900"
+                            checked={
+                              typeProduct.typeProduct ===
+                              product.variacao?.[0].nomeVariacaoA
+                            }
+                            onChange={() =>
+                              setTypeProduct(() => ({
+                                typeProduct:
+                                  product.variacao?.[0].nomeVariacaoA || "",
+                                productVariationSelected: {
+                                  id: product.variacao?.[0]?.id || "",
+                                  nomeVariacao:
+                                    product.variacao?.[0]?.nomeVariacaoB || "",
+                                },
+                              }))
+                            }
+                          />
+                          <label
+                            htmlFor="prontaentrega"
+                            className="cursor-pointer text-xs md:text-sm font-semibold text-gray-900"
+                          >
+                            {/* Pronta Entrega */}
+                            {product.variacao?.[0].nomeVariacaoA}
+                          </label>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="radio"
+                            name="typeProduct"
+                            id="sobmedida"
+                            value={product.variacao?.[1].nomeVariacaoB || ""}
+                            className="h-4 md:h-5 w-4 md:w-5 text-red-900 focus:ring-2 focus:ring-transparent rounded-xs accent-red-900"
+                            checked={
+                              typeProduct.typeProduct ===
+                              product.variacao?.[1].nomeVariacaoB
+                            }
+                            onChange={() =>
+                              setTypeProduct(() => ({
+                                typeProduct:
+                                  product.variacao?.[1].nomeVariacaoB || "",
+                                productVariationSelected: {
+                                  id: product.variacao?.[1].id || "",
+                                  nomeVariacao:
+                                    product.variacao?.[1].nomeVariacaoA || "",
+                                },
+                              }))
+                            }
+                          />
+                          <label
+                            htmlFor="sobmedida"
+                            className="cursor-pointer text-xs md:text-sm font-semibold text-gray-900"
+                          >
+                            {/* Sob Medida */}
+                            {product.variacao?.[1].nomeVariacaoB}
+                          </label>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="radio"
+                            name="typeProduct"
+                            id="prontaentrega"
+                            value={product.variacao?.[0].nomeVariacaoB || ""}
+                            className="h-4 md:h-5 w-4 md:w-5 text-gray-900 focus:ring-2 focus:ring-transparent rounded-xs accent-red-900"
+                            checked={
+                              typeProduct.typeProduct ===
+                              product.variacao?.[0]?.nomeVariacaoB
+                            }
+                            onChange={() =>
+                              setTypeProduct(() => ({
+                                typeProduct:
+                                  product.variacao?.[0]?.nomeVariacaoB || "",
+                                productVariationSelected: {
+                                  id: product.variacao?.[0]?.id || "",
+                                  nomeVariacao:
+                                    product.variacao?.[0]?.nomeVariacaoA || "",
+                                },
+                              }))
+                            }
+                          />
+                          <label
+                            htmlFor="prontaentrega"
+                            className="cursor-pointer text-xs md:text-sm font-semibold text-gray-900"
+                          >
+                            {/* Pronta Entrega */}
+                            {product.variacao?.[0].nomeVariacaoB}
+                          </label>
+                        </div>
+                      </>
+                    )}
                   </>
                 )}
               </div>
@@ -299,7 +394,7 @@ export const DetailsProduct = () => {
               {/* Seção de variações */}
               {hasVariations && hasVariationB && (
                 <div className="flex flex-col space-y-2 place-items-stretch mt-3 md:mt-4">
-                  {/* Seleção de variação B */}
+                  {/* Seleção de variação A */}
                   <>
                     <h1 className="text-sm md:text-[1rem] font-semibold text-red-900">
                       Escolha a variação:
@@ -307,94 +402,94 @@ export const DetailsProduct = () => {
                     <div className="flex flex-wrap items-center justify-start w-full gap-x-2 gap-y-2">
                       {product.variacao?.map((variation) => {
                         const isMedidaPadrao =
-                          variation.nomeVariacaoB === "Ponta Entrega";
+                          variation.nomeVariacaoB === "Pronta Entrega";
                         const isSobMedida =
                           variation.nomeVariacaoB === "Sob Medida";
 
                         return (
                           <div key={variation.id}>
-                            {typeProduct.typeProduct
-                              ? isMedidaPadrao && (
-                                  <div className="flex items-center gap-2">
-                                    <input
-                                      type="radio"
-                                      id={variation.id}
-                                      disabled={
-                                        variation.quantidadeEmEstoque <= 0
-                                      }
-                                      value={variation.id || ""}
-                                      checked={
-                                        variation.id === variationSelectedId.id
-                                      }
-                                      onChange={(e) => {
-                                        setVariationSelectedId({
-                                          id: e.target.value,
-                                          name: "",
-                                        });
-                                        setTypeProduct((prev) => {
-                                          return {
-                                            ...prev,
-                                            productVariationSelected: {
-                                              id: variation.id,
-                                              nomeVariacao: `${variation.nomeVariacaoA} - ${variation.nomeVariacaoB}`,
-                                            },
-                                          };
-                                        });
-                                      }}
-                                      className="h-4 md:h-5 w-4 md:w-5 text-gray-900 focus:ring-2 focus:ring-transparent rounded-xs text-xs md:text-sm accent-red-900"
-                                    />
-                                    <div className="flex flex-col items-center">
-                                      <label
-                                        htmlFor={variation.id}
-                                        className={`cursor-pointer text-xs md:text-sm font-semibold text-gray-900 ${
-                                          variation.quantidadeEmEstoque <= 0 &&
-                                          "line-through"
-                                        }`}
-                                      >
-                                        {variation.nomeVariacaoA}{" "}
-                                      </label>
-                                      {variation.quantidadeEmEstoque <= 0 && (
-                                        <Badge className="text-xs">
-                                          Sem estoque
-                                        </Badge>
-                                      )}
-                                    </div>
-                                  </div>
-                                )
-                              : isSobMedida && (
-                                  <div className="flex items-center gap-2">
-                                    <input
-                                      type="radio"
-                                      id={variation.id}
-                                      value={variation.id || ""}
-                                      checked={
-                                        variation.id === variationSelectedId.id
-                                      }
-                                      onChange={(e) => {
-                                        setVariationSelectedId({
-                                          id: e.target.value,
-                                          name: "",
-                                        });
-                                        setTypeProduct((prev) => {
-                                          return {
-                                            ...prev,
-                                            productVariationSelected: {
-                                              id: variation.id,
-                                              nomeVariacao: `${variation.nomeVariacaoA} - ${variation.nomeVariacaoB}`,
-                                            },
-                                          };
-                                        });
-                                      }}
-                                      className="h-4 md:h-5 w-4 md:w-5 text-gray-900 focus:ring-2 focus:ring-transparent rounded-xs accent-red-900"
-                                    />
-                                    <label
-                                      htmlFor={variation.id}
-                                      className="cursor-pointer text-xs md:text-md font-semibold text-gray-900"
-                                    >
-                                      {variation.nomeVariacaoA}
-                                    </label>
-                                  </div>
-                                )}
+                            {typeProduct.typeProduct === "Pronta Entrega" &&
+                            isMedidaPadrao ? (
+                              <div className="flex items-center gap-2">
+                                <input
+                                  type="radio"
+                                  id={variation.id}
+                                  disabled={variation.quantidadeEmEstoque <= 0}
+                                  value={variation.id || ""}
+                                  checked={
+                                    variation.id === variationSelectedId.id
+                                  }
+                                  onChange={(e) => {
+                                    setVariationSelectedId({
+                                      id: e.target.value,
+                                      name: "",
+                                    });
+                                    setTypeProduct((prev) => {
+                                      return {
+                                        ...prev,
+                                        productVariationSelected: {
+                                          id: variation.id,
+                                          nomeVariacao: `${variation.nomeVariacaoA} - ${variation.nomeVariacaoB}`,
+                                        },
+                                      };
+                                    });
+                                  }}
+                                  className="h-4 md:h-5 w-4 md:w-5 text-gray-900 focus:ring-2 focus:ring-transparent rounded-xs text-xs md:text-sm accent-red-900"
+                                />
+                                <div className="flex flex-col items-center">
+                                  <label
+                                    htmlFor={variation.id}
+                                    className={`cursor-pointer text-xs md:text-sm font-semibold text-gray-900 ${
+                                      variation.quantidadeEmEstoque <= 0 &&
+                                      "line-through"
+                                    }`}
+                                  >
+                                    {variation.nomeVariacaoA}{" "}
+                                  </label>
+                                  {variation.quantidadeEmEstoque <= 0 && (
+                                    <Badge className="text-xs">
+                                      Sem estoque
+                                    </Badge>
+                                  )}
+                                </div>
+                              </div>
+                            ) : (
+                              typeProduct.typeProduct === "Sob Medida" &&
+                              isSobMedida && (
+                                <div className="flex items-center gap-2">
+                                  <input
+                                    type="radio"
+                                    id={variation.id}
+                                    value={variation.id || ""}
+                                    checked={
+                                      variation.id === variationSelectedId.id
+                                    }
+                                    onChange={(e) => {
+                                      setVariationSelectedId({
+                                        id: e.target.value,
+                                        name: "",
+                                      });
+                                      setTypeProduct((prev) => {
+                                        return {
+                                          ...prev,
+                                          productVariationSelected: {
+                                            id: variation.id,
+                                            nomeVariacao: `${variation.nomeVariacaoA} - ${variation.nomeVariacaoB}`,
+                                          },
+                                        };
+                                      });
+                                    }}
+                                    className="h-4 md:h-5 w-4 md:w-5 text-gray-900 focus:ring-2 focus:ring-transparent rounded-xs accent-red-900"
+                                  />
+                                  <label
+                                    htmlFor={variation.id}
+                                    className="cursor-pointer text-xs md:text-md font-semibold text-gray-900"
+                                  >
+                                    {variation.nomeVariacaoA}
+                                  </label>
+                                </div>
+                              )
+                            )}
                           </div>
                         );
                       })}
@@ -424,7 +519,9 @@ export const DetailsProduct = () => {
                             min={0}
                             {...register("altura")}
                             disabled={
-                              hasVariations ? typeProduct.typeProduct : false
+                              hasVariations
+                                ? typeProduct.typeProduct === "Pronta Entrega"
+                                : false
                             }
                             className="w-[4.5rem] md:w-[5rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
                           />
@@ -449,7 +546,9 @@ export const DetailsProduct = () => {
                             min={0}
                             {...register("largura")}
                             disabled={
-                              hasVariations ? typeProduct.typeProduct : false
+                              hasVariations
+                                ? typeProduct.typeProduct === "Pronta Entrega"
+                                : false
                             }
                             className="w-[4.5rem] md:w-[5rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
                           />
@@ -474,7 +573,7 @@ export const DetailsProduct = () => {
                             min={0}
                             {...register("comprimento")}
                             disabled={
-                              hasVariations ? typeProduct.typeProduct : false
+                              typeProduct.typeProduct === "Pronta Entrega"
                             }
                             className="w-[4.5rem] md:w-[4rem] border border-gray-300 rounded-xs p-1 md:p-2 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:bg-gray-100 disabled:text-gray-500"
                           />
