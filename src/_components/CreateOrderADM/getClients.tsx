@@ -42,7 +42,6 @@ const GetClients = ({ selectedClient, setSelectedClient }: GetClientsProps) => {
     return () => unsubscribe();
   }, []);
 
-  const value = selectedClient?.Id ?? "";
   const label = selectedClient ? selectedClient.name : "Selecione...";
 
   return (

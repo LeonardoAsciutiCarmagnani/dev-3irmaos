@@ -231,14 +231,12 @@ const AuthModal = ({ open, mode, onModeChange, onClose }: Props) => {
                   <h2 className="text-lg font-semibold">
                     {mode === "login"
                       ? "Entre com sua conta"
-                      : "Crie sua conta"}
+                      : "Preencha os dados abaixo"}
                   </h2>
                   <div className="text-sm text-gray-600 mt-1">
                     {mode === "login" ? (
                       <div className="flex flex-col items-start justify-between">
-                        <div>
-                          Para continuar, precisamos que entre com sua conta
-                        </div>
+                        <div>Para continuar, entre com sua conta.</div>
                         <div className="flex items-center gap-x-1 w-full justify-start font-semibold">
                           <h1>Ainda não possui uma conta?</h1>
                           <Button
@@ -253,7 +251,8 @@ const AuthModal = ({ open, mode, onModeChange, onClose }: Props) => {
                     ) : (
                       <div className="flex flex-col items-start justify-between">
                         <div>
-                          Para continuar, precisamos que crie uma conta.
+                          Para continuar, precisamos que preencha todos os dados
+                          necessários para criar seu orçamento.
                         </div>
                         <div className="flex items-center gap-x-1 w-full justify-start font-semibold">
                           <h1>Já possui uma conta?</h1>
