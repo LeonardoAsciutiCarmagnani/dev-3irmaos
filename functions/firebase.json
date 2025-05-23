@@ -3,7 +3,7 @@
     {
       "source": ".",
       "codebase": "default",
-      "runtime": "nodejs18",
+      "runtime": "nodejs22",
       "memory": "1GiB",
       "ignore": [
         "node_modules",
