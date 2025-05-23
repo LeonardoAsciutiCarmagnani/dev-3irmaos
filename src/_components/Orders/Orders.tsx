@@ -416,33 +416,41 @@ const OrdersTable = () => {
     console.log(discount);
     setData((prev) => {
       const updatedData = prev.map((order) => {
+        if (order.orderId !== orderId) return order;
+
         if (order.orderId === orderId) {
           const updatedProducts = order.products.map((product) => {
             if (product.selectedVariation.id === productId) {
-              // console.log("Desconto por produto => ", product.desconto);
+              if (discount === undefined) discount = product.desconto;
               return {
                 ...product,
-                desconto: discount * product.quantidade,
+                desconto: discount,
               };
             }
             return product;
           });
 
+          const orderTotal = updatedProducts.reduce((sum, product) => {
+            return sum + (product.preco || 0) * product.quantidade;
+          }, 0);
+
           const totalDiscount = updatedProducts.reduce((sum, product) => {
-            return sum + (product.desconto ?? 0);
+            return sum + product.desconto * product.quantidade;
           }, 0);
 
           const discountTotalValue = updatedProducts.reduce((sum, product) => {
             return (
-              sum + product.preco * product.quantidade - (product.desconto ?? 0)
+              sum +
+              product.preco * product.quantidade -
+              product.desconto * product.quantidade
             );
           }, 0);
-
           // console.log("Calculo do total com desconto => ", discountTotalValue);
 
           return {
             ...order,
             products: updatedProducts,
+            totalValue: orderTotal,
             totalDiscount,
             discountTotalValue,
           };
@@ -490,11 +498,15 @@ const OrdersTable = () => {
         }, 0);
 
         const totalDiscount = updatedProducts.reduce((sum, product) => {
-          return sum + product.desconto;
+          return sum + product.desconto * product.quantidade;
         }, 0);
 
         const discountTotalValue = updatedProducts.reduce((sum, product) => {
-          return sum + product.preco * product.quantidade - product.desconto;
+          return (
+            sum +
+            product.preco * product.quantidade -
+            product.desconto * product.quantidade
+          );
         }, 0);
 
         return {
@@ -838,17 +850,14 @@ const OrdersTable = () => {
                               {order.createdAt}
                             </td>
                             <td
+                              onDoubleClick={() =>
+                                handleShowCard(order.orderId)
+                              }
                               className={`px-4 py-3 hover:underline ${
                                 order.orderStatus === 10 && "line-through"
                               }`}
                             >
-                              <span
-                                onDoubleClick={() =>
-                                  handleShowCard(order.orderId)
-                                }
-                              >
-                                {order.client.name}
-                              </span>
+                              <span>{order.client.name}</span>
                             </td>
                             <td className="px-4 py-3">
                               <select
@@ -875,11 +884,6 @@ const OrdersTable = () => {
                                 }`}
                                 value={order.orderStatus}
                                 onChange={(e) => {
-                                  console.log(
-                                    "Select onChange disparado:",
-                                    e.target.value
-                                  ); // Debug
-                                  console.log("Order:", order); // Debug
                                   handleStatusChange(
                                     order.orderId,
                                     Number(e.target.value),
@@ -1156,87 +1160,6 @@ const OrdersTable = () => {
                                               "Assoalhos, Escadas, Decks e Forros" &&
                                               item.categoria !==
                                                 "Antiguidades" && (
-                                                /*     <div className="flex flex-col gap-1 items-start justify-center text-sm text-gray-500">
-                                                  <div className="flex items-center">
-                                                    Altura:{" "}
-                                                    <Input
-                                                      value={
-                                                        alturaLocal
-                                                          ? alturaLocal
-                                                          : item.altura
-                                                      }
-                                                      className="w-[3rem]"
-                                                      onChange={(e) =>
-                                                        setAlturaLocal(
-                                                          e.target.value
-                                                        )
-                                                      }
-                                                      onBlur={() =>
-                                                        handleBlur(
-                                                          order.orderId,
-                                                          item.selectedVariation
-                                                            .id
-                                                        )
-                                                      }
-                                                    />
-                                                    m
-                                                  </div>
-                                                  <div className="flex items-center">
-                                                    Largura:{" "}
-                                                    <Input
-                                                      value={
-                                                        larguraLocal
-                                                          ? larguraLocal
-                                                          : item.largura
-                                                      }
-                                                      className="w-[3rem]"
-                                                      onChange={(e) =>
-                                                        setLarguraLocal(
-                                                          e.target.value
-                                                        )
-                                                      }
-                                                      onBlur={() =>
-                                                        handleBlur(
-                                                          order.orderId,
-                                                          item.selectedVariation
-                                                            .id
-                                                        )
-                                                      }
-                                                    />
-                                                    m
-                                                  </div>
-                                                  <div className="flex items-center">
-                                                    {item.categoria ===
-                                                      "Janelas e Esquadrias" ||
-                                                    item.categoria ===
-                                                      "Portas Pronta Entrega" ||
-                                                    item.categoria ===
-                                                      "Portas Sob Medida"
-                                                      ? "Batente (Espessura da parede)"
-                                                      : "Comprimento"}{" "}
-                                                    <Input
-                                                      value={
-                                                        comprimentoLocal
-                                                          ? comprimentoLocal
-                                                          : item.comprimento
-                                                      }
-                                                      className="w-[4rem]"
-                                                      onChange={(e) =>
-                                                        setComprimentoLocal(
-                                                          e.target.value
-                                                        )
-                                                      }
-                                                      onBlur={() =>
-                                                        handleBlur(
-                                                          order.orderId,
-                                                          item.selectedVariation
-                                                            .id
-                                                        )
-                                                      }
-                                                    />
-                                                    m
-                                                  </div>
-                                                </div> */
                                                 <ProductDimensionInput
                                                   key={
                                                     item.selectedVariation.id
@@ -1274,10 +1197,11 @@ const OrdersTable = () => {
                                                     mapToRadix: ["."],
                                                   },
                                                 }}
-                                                value={String(
-                                                  (item.desconto || 0) /
-                                                    item.quantidade
-                                                )}
+                                                value={
+                                                  item.desconto
+                                                    ? String(item.desconto)
+                                                    : "0"
+                                                }
                                                 unmask={true}
                                                 disabled={order.orderStatus > 1}
                                                 onAccept={(value) => {
@@ -1323,10 +1247,9 @@ const OrdersTable = () => {
                                             </div>
                                           </div>
                                           <div className="text-center h-full flex items-center justify-center  ">
-                                            {(item.desconto
-                                              ? item.preco * item.quantidade -
-                                                item.desconto
-                                              : item.preco * item.quantidade
+                                            {(
+                                              item.preco * item.quantidade -
+                                              item.desconto * item.quantidade
                                             ).toLocaleString("pt-BR", {
                                               style: "currency",
                                               currency: "BRL",
