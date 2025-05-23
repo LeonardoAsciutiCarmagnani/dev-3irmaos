@@ -351,7 +351,7 @@ export const DetailsProduct = () => {
                                           "line-through"
                                         }`}
                                       >
-                                        {variation.nomeVariacaoB}{" "}
+                                        {variation.nomeVariacaoA}{" "}
                                       </label>
                                       {variation.quantidadeEmEstoque <= 0 && (
                                         <Badge className="text-xs">
