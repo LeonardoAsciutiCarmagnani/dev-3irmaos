@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState, useMemo } from "react";
 import {
   useReactTable,
@@ -22,6 +23,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
+  BellRingIcon,
   CircleCheckBig,
   FileDownIcon,
   InfoIcon,
@@ -313,7 +315,7 @@ const OrdersTable = () => {
             console.log(`Push enviado para ${endpoint}:`, response.data);
           }
 
-          toast.success("Notificação de status enviada com sucesso!", {
+          toast.info("Notificação de status enviada com sucesso!", {
             id: "push-notification-success",
             icon: <MessageSquareText />,
             duration: 3000,
@@ -322,7 +324,7 @@ const OrdersTable = () => {
           console.error(`Erro ao enviar push:`, error);
           toast.error("Não foi possível processar o envio da notificação.", {
             id: "push-notification-error",
-            icon: <MessageSquareText />,
+            icon: <BellRingIcon />,
             duration: 3000,
           });
         }
@@ -607,31 +609,96 @@ const OrdersTable = () => {
         orderToPush.orderId
       );
 
-      const allImages = [...uploadedImages, ...(orderToPush.imagesUrls || [])];
+      // const allImages = [...uploadedImages, ...(orderToPush.imagesUrls || [])];
 
-      const updatedPriceInProduct = orderToPush.products.map((product) => ({
-        ...product,
-        preco: product.preco,
-      }));
+      // const updatedPriceInProduct = orderToPush.products.map((product) => ({
+      //   ...product,
+      //   preco: product.preco,
+      // }));
 
-      await updateDoc(orderDocRef, {
-        ...orderToPush,
-        orderStatus: 2,
-        products: updatedPriceInProduct,
-        imagesUrls: allImages,
-        detailsPropostal: {
-          obs,
-          payment,
-          time,
-          delivery,
-          selectedSeller,
-          itemsIncluded,
-          itemsNotIncluded,
-        },
-        totalValue: orderToPush.totalValue,
+      const cleanedPhone = orderToPush.client.phone.replace(/\D/g, "");
+
+      const pushObject = {
+        orderCode: orderToPush.orderId,
+        clientName: orderToPush.client.name,
+        clientPhone: cleanedPhone,
+        createdAt: orderToPush.createdAt,
+        orderStatus: orderToPush.orderStatus,
+        deliveryDate: orderToPush.detailsPropostal?.time || "",
+      };
+
+      function removeUndefined(obj: any): any {
+        if (Array.isArray(obj)) {
+          return obj.map(removeUndefined);
+        } else if (obj !== null && typeof obj === "object") {
+          return Object.entries(obj).reduce((acc, [key, value]) => {
+            if (value !== undefined) {
+              acc[key] = removeUndefined(value);
+            }
+            return acc;
+          }, {} as any);
+        }
+        return obj;
+      }
+
+      await updateDoc(
+        orderDocRef,
+        removeUndefined({
+          orderStatus: 2,
+          orderId: orderToPush.orderId,
+          totalValue: orderToPush.totalValue ?? 0,
+          discountTotalValue: orderToPush.discountTotalValue ?? 0,
+          totalDiscount: orderToPush.totalDiscount ?? 0,
+          imagesUrls: [
+            ...(uploadedImages || []),
+            ...(orderToPush.imagesUrls || []),
+          ],
+          products: orderToPush.products.map((p) => ({
+            categoria: p.categoria ?? "",
+            desconto: p.desconto ?? 0,
+            altura: p.altura ?? 0,
+            largura: p.largura ?? 0,
+            nome: p.nome ?? "",
+            preco: p.preco ?? 0,
+            quantidade: p.quantidade ?? 0,
+            selectedVariation: {
+              id: p.selectedVariation?.id ?? "",
+              nomeVariacao: p.selectedVariation?.nomeVariacao ?? "",
+            },
+          })),
+          billingAddress: {
+            ...orderToPush.deliveryAddress,
+          },
+          deliveryAddress: {
+            ...orderToPush.deliveryAddress,
+          },
+          client: {
+            ...orderToPush.client,
+          },
+          createdAt: orderToPush.createdAt ?? "",
+          detailsPropostal: {
+            obs: obs ?? "",
+            payment: payment ?? "",
+            time: time ?? "",
+            delivery: delivery ?? 0,
+            selectedSeller: {
+              email: selectedSeller?.email ?? "",
+              phone: selectedSeller?.phone ?? "",
+              name: selectedSeller?.name ?? "",
+            },
+            itemsIncluded: itemsIncluded ?? "",
+            itemsNotIncluded: itemsNotIncluded ?? "",
+          },
+        })
+      );
+
+      await api.post("/send-push-proposalSent", pushObject);
+
+      toast.info("Notificação de status enviada com sucesso!", {
+        id: "push-notification-success",
+        icon: <MessageSquareText />,
+        duration: 3000,
       });
-
-      toast.success("Mensagem enviada com sucesso!");
 
       setData((prevData) =>
         prevData.map((order) =>
@@ -640,9 +707,12 @@ const OrdersTable = () => {
             : order
         )
       );
+      setShowCardOrder(null);
 
-      toast.success("Proposta enviada com sucesso", {
-        id: "sendPropostal-success",
+      toast.success("Status atualizado com sucesso!", {
+        id: "status-update-success",
+        icon: <CircleCheckBig />,
+        duration: 3000,
       });
     } catch (error) {
       console.error("Erro ao tentar atualizar o pedido:", error);

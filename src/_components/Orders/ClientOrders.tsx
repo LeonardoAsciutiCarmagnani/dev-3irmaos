@@ -22,7 +22,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { FileDownIcon, InfoIcon, LoaderCircle } from "lucide-react";
+import {
+  CircleIcon,
+  FileDownIcon,
+  InfoIcon,
+  LoaderCircle,
+  ZoomInIcon,
+} from "lucide-react";
 import {
   collection,
   doc,
@@ -104,21 +110,24 @@ const ClientOrdersTable = () => {
           new Date(row.getValue("createdAt")).toLocaleDateString(),
       },
       {
-        header: "Cliente",
-        accessorKey: "customerName",
-        cell: ({ row }) => row.getValue("customerName"),
-      },
-      {
         header: "Status",
         accessorKey: "status",
         cell: ({ row }) => row.getValue("status"),
       },
       {
-        header: () => <span className="hidden md:inline">PDF</span>,
         accessorKey: "PDF",
+        header: () => "PDF",
+
+        headerProps: { className: "hidden md:table-cell" },
+
         cell: ({ row }) => (
-          <span className="hidden md:flex">{row.getValue("PDF")}</span>
+          <span className="hidden md:table-cell">{row.getValue("PDF")}</span>
         ),
+      },
+      {
+        header: "Ações",
+        accessorKey: "Details",
+        cell: ({ row }) => row.getValue("details"),
       },
     ],
     []
@@ -187,10 +196,6 @@ const ClientOrdersTable = () => {
       console.log("Ocorreu um erro ao tentar atualizar o pedido", error);
       toast.error("Ocorreu um erro ao tentar atualizar o pedido");
     }
-  }
-
-  function handleShowCard(orderId: number) {
-    setShowCardOrder(orderId);
   }
 
   function handleImagesSelected(files: File[]) {
@@ -304,17 +309,48 @@ const ClientOrdersTable = () => {
     { id: 10, option: "Cancelado", value: 10 },
   ];
 
-  const statusMap: Record<OrderStatusType, { label: string; color: string }> = {
-    1: { label: "Orçamento enviado", color: "bg-orange-300" },
-    2: { label: "Proposta recebida", color: "bg-amber-500" },
-    3: { label: "Proposta recusada", color: "bg-red-500" },
-    4: { label: "Proposta aceita", color: "bg-emerald-500" },
-    5: { label: "Proposta aprovada", color: "bg-emerald-500" },
-    6: { label: "Pedido em produção", color: "bg-yellow-500" },
-    7: { label: "Faturado", color: "bg-blue-500" },
-    8: { label: "Despachado", color: "bg-purple-500" },
-    9: { label: "Pedido concluído", color: "bg-green-600" },
-    10: { label: "Pedido cancelado", color: "bg-gray-500" },
+  const statusMap: Record<
+    OrderStatusType,
+    { label: string; color: string; bg: string }
+  > = {
+    1: {
+      label: "Orçamento enviado",
+      color: "text-orange-300",
+      bg: "bg-orange-100",
+    },
+    2: {
+      label: "Proposta recebida",
+      color: "text-amber-500",
+      bg: "bg-amber-100",
+    },
+    3: { label: "Proposta recusada", color: "text-red-500", bg: "bg-red-100" },
+    4: {
+      label: "Proposta aceita",
+      color: "text-emerald-500",
+      bg: "bg-emerald-100",
+    },
+    5: {
+      label: "Proposta aprovada",
+      color: "text-emerald-500",
+      bg: "bg-emerald-100",
+    },
+    6: {
+      label: "Pedido em produção",
+      color: "text-yellow-500",
+      bg: "bg-yellow-100",
+    },
+    7: { label: "Faturado", color: "text-blue-500", bg: "bg-blue-100" },
+    8: { label: "Despachado", color: "text-purple-500", bg: "bg-purple-100" },
+    9: {
+      label: "Pedido concluído",
+      color: "text-green-600",
+      bg: "bg-green-100",
+    },
+    10: {
+      label: "Pedido cancelado",
+      color: "text-gray-500",
+      bg: "bg-gray-100",
+    },
   };
 
   useEffect(() => {
@@ -403,17 +439,23 @@ const ClientOrdersTable = () => {
             {table
               ? table.getHeaderGroups().map((headerGroup) => (
                   <tr key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => (
-                      <th
-                        key={header.id}
-                        className="px-4 py-3 text-left text-sm font-medium text-gray-700"
-                      >
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                      </th>
-                    ))}
+                    {headerGroup.headers.map((header) => {
+                      const isPdfColumn = header.id === "PDF";
+                      return (
+                        <th
+                          key={header.id}
+                          className={`
+          px-4 py-3 text-left text-sm font-medium text-gray-700
+          ${isPdfColumn ? "hidden md:table-cell" : ""}
+        `}
+                        >
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                        </th>
+                      );
+                    })}
                   </tr>
                 ))
               : undefined}
@@ -449,9 +491,9 @@ const ClientOrdersTable = () => {
                                       : "hover:bg-gray-50"
                                   }
                                 `}
-                              onDoubleClick={() =>
-                                handleShowCard(order.orderId)
-                              }
+                              // onDoubleClick={() =>
+                              //   handleShowCard(order.orderId)
+                              // }
                             >
                               <td
                                 className={`pl-3 py-3 flex items-center ${
@@ -466,26 +508,31 @@ const ClientOrdersTable = () => {
                                 )}
                               </td>
                               <td
-                                className={`px-4 py-3 ${
+                                className={`px-3 py-3 ${
                                   order.orderStatus === 10 && "line-through"
                                 }`}
                               >
                                 {order.createdAt}
                               </td>
-                              <td
+                              {/* <td
                                 className={`px-4 py-3 ${
                                   order.orderStatus === 10 && "line-through"
                                 }`}
                               >
                                 {order.client.name}
-                              </td>
-                              <td className={`py-3 px-4`}>
-                                <div
-                                  className={`w-fit md:w-[13rem] 2xl:w-[15rem] rounded-xs px-4 py-1 text-center md:text-sm text-xs hover:cursor-pointer  ${
-                                    status?.color || "bg-zinc-300"
-                                  }`}
-                                >
-                                  {status?.label || "Status desconhecido"}
+                              </td> */}
+                              <td className={`py-1`}>
+                                <div className="w-fit flex gap-x-4 items-center gap-y-1 2xl:w-[15rem] rounded-xs px-4 py-1 text-center md:text-sm text-xs hover:cursor-pointer">
+                                  <CircleIcon
+                                    className={`${
+                                      status?.color ?? "bg-zinc-300"
+                                    } ${
+                                      status?.bg ?? "bg-zinc-100"
+                                    } rounded-full w-4.5 h-4.5`}
+                                  />
+                                  <h1>
+                                    {status?.label || "Status não definido"}
+                                  </h1>
                                 </div>
                               </td>
                               <td className="hidden md:flex pt-1">
@@ -502,6 +549,17 @@ const ClientOrdersTable = () => {
                                     </>
                                   )}
                                 </Button>
+                              </td>
+                              <td className="pt-1">
+                                <div
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setShowCardOrder(order.orderId);
+                                  }}
+                                  className="flex justify-start ml-5"
+                                >
+                                  <ZoomInIcon className="text-gray-400 " />
+                                </div>
                               </td>
                             </tr>
                           </DialogTrigger>
@@ -821,7 +879,7 @@ const ClientOrdersTable = () => {
                                             Frete
                                           </span>
                                           <span className="w-[8rem] truncate text-right">
-                                            {order.detailsPropostal.delivery.toLocaleString(
+                                            {order.detailsPropostal.delivery?.toLocaleString(
                                               "pt-BR",
                                               {
                                                 style: "currency",
