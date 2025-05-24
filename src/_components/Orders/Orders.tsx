@@ -910,7 +910,7 @@ const OrdersTable = () => {
                                 order.orderStatus === 10 && "line-through"
                               }`}
                             >
-                              {order.codeHiper ? order.codeHiper : "---"}
+                              {order.codeHiper ? order.codeHiper : "-"}
                             </td>
                             <td
                               className={`px-4 py-3 ${
@@ -1082,7 +1082,7 @@ const OrdersTable = () => {
                             <div className="flex items-center">
                               <DialogTitle>
                                 {" "}
-                                <span className="text-xl font-bold text-gray-700">
+                                <span className="text-md font-bold text-gray-700">
                                   {order.orderStatus === 1
                                     ? "Orçamento"
                                     : order.orderStatus === 2
@@ -1137,20 +1137,14 @@ const OrdersTable = () => {
                                     <div className=" flex flex-col justify-between">
                                       <div className="flex gap-2 items-center">
                                         <span className="font-semibold  text-gray-700">
-                                          Rua:
+                                          Logradouro:
                                         </span>
                                         <span className="text-lg text-gray-700 ">
-                                          {order.deliveryAddress.street}
-                                        </span>
-                                      </div>
-                                      <div className="flex gap-2 items-center">
-                                        <span className="font-semibold  text-gray-700">
-                                          Numero:
-                                        </span>
-                                        <span className="text-lg text-gray-700 ">
+                                          {order.deliveryAddress.street},{" "}
                                           {order.deliveryAddress.number}
                                         </span>
                                       </div>
+
                                       <div className="flex gap-2 items-center">
                                         <span className="font-semibold  text-gray-700">
                                           Bairro:
@@ -1164,12 +1158,10 @@ const OrdersTable = () => {
                                           Cidade:
                                         </span>
                                         <span className="text-lg  text-gray-700 ">
-                                          {order.deliveryAddress.city} /{" "}
+                                          {order.deliveryAddress.city} -{" "}
                                           {order.deliveryAddress.state}
                                         </span>
                                       </div>
-                                    </div>
-                                    <div>
                                       <div className="flex gap-2 items-center">
                                         <span className="font-semibold  text-gray-700">
                                           CEP:

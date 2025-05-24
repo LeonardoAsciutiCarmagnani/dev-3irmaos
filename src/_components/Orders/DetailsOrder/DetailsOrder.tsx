@@ -120,7 +120,7 @@ const DetailsOrder = ({
             <AccordionTrigger className="text-lg text-red-800 hover:cursor-pointer">
               Informar detalhes da proposta
             </AccordionTrigger>
-            <AccordionContent className="flex flex-col space-y-2 ml-2">
+            <AccordionContent className="flex flex-col space-y-2 ml-2 text-sm md:text-lg 2xl:text-lg">
               <div className="flex flex-col gap-2 w-1/2">
                 <label htmlFor="observacoes" className="font-semibold">
                   Observações:
@@ -137,7 +137,7 @@ const DetailsOrder = ({
               </div>
               <div className="flex flex-col gap-2 w-1/2">
                 <label htmlFor="itemsInclusos" className="font-semibold">
-                  Itens incluídos:
+                  Itens inclusos:
                 </label>
                 <Textarea
                   id="itemsInclusos"
@@ -151,7 +151,7 @@ const DetailsOrder = ({
               </div>
               <div className="flex flex-col gap-2 w-1/2">
                 <label htmlFor="itemsNaoInclusos" className="font-semibold">
-                  Itens não incluídos:
+                  Itens não inclusos:
                 </label>
                 <Textarea
                   id="itemsNaoInclusos"
@@ -248,7 +248,7 @@ const DetailsOrder = ({
           </AccordionItem>
         </Accordion>
       )}
-      <div className="flex flex-col w-full h-full  p-4">
+      <div className="flex flex-col w-full h-full p-4">
         <div className="flex flex-col space-y-4">
           <div className="flex flex-col items-start   max-w-full  text-wrap">
             <span className=" font-semibold text-lg">Observações:</span>
@@ -287,7 +287,7 @@ const DetailsOrder = ({
             </div>
           )}
           <div className="flex flex-col items-start justify-between ">
-            <span className=" font-semibold text-lg">
+            <span className=" font-semibold text-md md:text-lg 2xl:text-lg">
               Facilidade no pagamento e agilidade na entrega:
             </span>
             <div className="flex flex-col px-5">
@@ -314,7 +314,7 @@ const DetailsOrder = ({
               </li>
             </div>
           </div>
-          <div className="flex flex-col items-start justify-between ">
+          {/* <div className="flex flex-col items-start justify-between ">
             <span className="font-bold text-lg">
               Por que escolher a 3 Irmãos Arte em Madeira de Demolição ?
             </span>
@@ -339,7 +339,7 @@ const DetailsOrder = ({
                 projeto.
               </ul>
             </div>
-          </div>
+          </div> */}
           <div className="flex flex-col items-start justify-between space-y-3">
             <span className=" font-semibold">
               {" "}

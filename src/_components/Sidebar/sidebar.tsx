@@ -98,28 +98,6 @@ const Sidebar = () => {
           />
         </div>
 
-        <div className="flex flex-col">
-          {menuItems.map((item) => (
-            <NavLink
-              key={item.label}
-              to={item.path}
-              end={item.path === "/"}
-              className={({ isActive }) =>
-                `group flex items-center p-2 text-[0.97rem] transition-colors ${
-                  isActive
-                    ? "bg-red-900 text-white"
-                    : "text-gray-800 hover:bg-red-900 hover:text-white hover:underline"
-                }`
-              }
-            >
-              {React.cloneElement(item.icon, {
-                className: `${item.icon.props.className} group-hover:text-white`,
-              })}
-              {open && <span className="ml-2">{item.label}</span>}
-            </NavLink>
-          ))}
-        </div>
-
         <Accordion
           type="single"
           collapsible
@@ -179,6 +157,37 @@ const Sidebar = () => {
             )}
           </AccordionItem>
         </Accordion>
+
+        <div className="flex flex-col">
+          {menuItems.map((item) => (
+            <NavLink
+              key={item.label}
+              to={item.path}
+              end={item.path === "/"}
+              className={({ isActive }) =>
+                `group flex items-center p-2 text-[0.97rem] transition-colors ${
+                  isActive
+                    ? "bg-red-900 text-white"
+                    : "text-gray-800 hover:bg-red-900 hover:text-white hover:underline"
+                }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  {React.cloneElement(item.icon, {
+                    className: [
+                      item.icon.props.className,
+                      isActive
+                        ? "text-white"
+                        : "text-gray-800 group-hover:text-white",
+                    ].join(" "),
+                  })}
+                  {open && <span className="ml-2">{item.label}</span>}
+                </>
+              )}
+            </NavLink>
+          ))}
+        </div>
       </div>
     </div>
   );
