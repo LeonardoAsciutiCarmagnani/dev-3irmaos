@@ -110,7 +110,7 @@ class App {
     router.get("/get-products", ProductController.GetAll);
 
     router.post("/create-client", UserController.createClient);
-
+    router.post("/post-order", OrderController.postOrderInHiper);
     router.post("/post-budget", OrderController.createBudget);
     router.post("/post-order", OrderController.postOrderInHiper);
     router.post("/create-adm", UserController.createAdmin);
@@ -121,6 +121,7 @@ class App {
     router.post("/send-push-createBudget", PushController.createdBudget);
     router.post("/send-push-proposalSent", PushController.sendProposal);
     router.post("/send-push-proposalRejected", PushController.proposalRejected);
+    router.post("/send-push-proposalAccepted", PushController.proposalAccepted);
     router.post("/send-push-proposalApproved", PushController.proposalApproved);
     router.post(
       "/send-push-proposalInProduction",

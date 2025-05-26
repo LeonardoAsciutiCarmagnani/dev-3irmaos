@@ -7,6 +7,7 @@ import proposalInProduction from "../../services/chat4sales/push/inProduction";
 import proposalApproved from "../../services/chat4sales/push/proposalApproved";
 import proposalRejected from "../../services/chat4sales/push/proposalRejected";
 import createBudget from "../../services/chat4sales/push/createBudget";
+import proposalAccepted from "../../services/chat4sales/push/proposalAccepted";
 
 const bodyPushesSchema = z.object({
   orderCode: z.number(),
@@ -74,6 +75,26 @@ export class PushController {
 
       console.log("Retorno =>", proposalRejectedPush);
       res.status(201).json(proposalRejectedPush);
+    } catch (error) {
+      console.log("Erro ao enviar push:", error);
+      next(error);
+    }
+  }
+
+  public static async proposalAccepted(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const body = bodyPushesSchema.parse(req.body);
+
+      console.log("Proposal Accepted Push - Body received:", body);
+
+      const proposalAcceptedPush = await proposalAccepted(body);
+
+      console.log("Retorno =>", proposalAcceptedPush);
+      res.status(201).json(proposalAcceptedPush);
     } catch (error) {
       console.log("Erro ao enviar push:", error);
       next(error);
