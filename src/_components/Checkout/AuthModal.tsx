@@ -26,6 +26,7 @@ import { api } from "@/lib/axios";
 
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { useAuthStore } from "@/context/authContext";
+import PasswordRecovery from "../ForgotPassword/forgotPassword";
 
 const formSchema = z.object({
   Name: z.string().min(3, "Nome deve ter pelo menos 3 caracteres."),
@@ -230,23 +231,30 @@ const AuthModal = ({ open, mode, onModeChange, onClose }: Props) => {
                 <div>
                   <h2 className="text-lg font-semibold">
                     {mode === "login"
-                      ? "Entre com sua conta"
+                      ? "Precisamos de algumas informações"
                       : "Preencha os dados abaixo"}
                   </h2>
                   <div className="text-sm text-gray-600 mt-1">
                     {mode === "login" ? (
                       <div className="flex flex-col items-start justify-between">
-                        <div>Para continuar, entre com sua conta.</div>
                         <div className="flex items-center gap-x-1 w-full justify-start font-semibold">
-                          <h1>Ainda não possui uma conta?</h1>
-                          <Button
-                            variant="link"
-                            className="px-1 py-0 text-red-900 font-bold"
-                            onClick={() => onModeChange("register")}
-                          >
-                            Criar
-                          </Button>
+                          <h1>
+                            Para que possamos elaborar o seu orçamento,
+                            precisamos de alguns dados.
+                            <span>
+                              <Button
+                                variant="link"
+                                className="px-1 py-0 text-red-900 font-extrabold"
+                                onClick={() => onModeChange("register")}
+                              >
+                                Preencher agora
+                              </Button>
+                            </span>
+                          </h1>
                         </div>
+                        <span>
+                          Ou, caso já tenha uma conta, faça seu login abaixo:
+                        </span>
                       </div>
                     ) : (
                       <div className="flex flex-col items-start justify-between">
@@ -290,7 +298,7 @@ const AuthModal = ({ open, mode, onModeChange, onClose }: Props) => {
                               <Input
                                 {...field}
                                 type="email"
-                                className="border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm"
+                                className="border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm rounded-xs"
                               />
                             </FormControl>
                             <FormMessage />
@@ -309,7 +317,7 @@ const AuthModal = ({ open, mode, onModeChange, onClose }: Props) => {
                                 <Input
                                   {...field}
                                   type={showPassword ? "text" : "password"}
-                                  className="border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm"
+                                  className="border-gray-300 focus:border-red-500 focus:ring-red-500 text-sm rounded-xs"
                                 />
                               </FormControl>
                               <button
@@ -329,7 +337,7 @@ const AuthModal = ({ open, mode, onModeChange, onClose }: Props) => {
                         )}
                       />
 
-                      <div className="w-full flex justify-end pt-4">
+                      <div className="w-full flex justify-end">
                         <Button
                           type="submit"
                           className="rounded-xs"
@@ -340,6 +348,15 @@ const AuthModal = ({ open, mode, onModeChange, onClose }: Props) => {
                       </div>
                     </form>
                   </Form>
+                  <div>
+                    <h2 className="text-sm text-gray-500">
+                      Tem uma conta, mas não lembra sua senha? Clique{" "}
+                      <span>
+                        <PasswordRecovery />
+                      </span>{" "}
+                      para recuperar.
+                    </h2>
+                  </div>
                 </div>
               )}
 

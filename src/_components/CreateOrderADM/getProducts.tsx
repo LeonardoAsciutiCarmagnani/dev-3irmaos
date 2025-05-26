@@ -111,11 +111,26 @@ const GetProductsForm = ({
   }, []);
 
   // Atualizar o valor unitário quando um produto for selecionado
+
   useEffect(() => {
+    console.log("Debug - productId:", productId);
+    console.log("Debug - products:", products);
+
     if (productId) {
-      const selectedProduct = products.find((p) => p.id === selectedVariacaoId);
-      if (selectedProduct && selectedProduct.preco) {
-        setValorUnitario(selectedProduct.preco);
+      const selectedProduct = products.find((p) => p.id === productId);
+      console.log("Debug - selectedProduct:", selectedProduct);
+
+      if (selectedProduct) {
+        console.log("Debug - selectedProduct.preco:", selectedProduct.preco);
+        if (selectedProduct.preco) {
+          console.log(
+            "Debug - Definindo valorUnitario para:",
+            selectedProduct.preco
+          );
+          setValorUnitario(selectedProduct.preco);
+        }
+      } else {
+        console.log("Debug - Produto não encontrado");
       }
     }
   }, [productId, products]);
@@ -314,7 +329,10 @@ const GetProductsForm = ({
                                     </div>
 
                                     <Badge className="text-xs text-red-900 bg-gray-100 rounded-xs">
-                                      Cód: {v.codigo}
+                                      {product.preco?.toLocaleString("pt-BR", {
+                                        style: "currency",
+                                        currency: "BRL",
+                                      })}
                                     </Badge>
                                   </div>
                                 </CommandItem>
@@ -355,7 +373,7 @@ const GetProductsForm = ({
                 decimalSeparator=","
                 groupSeparator="."
                 prefix="R$ "
-                value={valorUnitario || ""}
+                value={valorUnitario}
                 onValueChange={(value) =>
                   setValorUnitario(value ? Number(value) : 0)
                 }

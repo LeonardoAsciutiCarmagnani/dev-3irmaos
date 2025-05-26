@@ -62,50 +62,50 @@ export const Checkout = () => {
   });
 
   const getUserAddress = async () => {
-    if (!user?.uid) {
-      return toast.error("Usuário não autenticado.", {
-        id: "auth-error",
-      });
-    }
+    // if (!user?.uid) {
+    //   return toast.error("Usuário não autenticado.", {
+    //     id: "auth-error",
+    //   });
+    // }
 
     try {
-      const refCollection = collection(db, "clients");
-      const q = query(refCollection, where("Id", "==", user.uid));
-      const querySnapshot = await getDocs(q);
+      if (user) {
+        const refCollection = collection(db, "clients");
+        const q = query(refCollection, where("Id", "==", user?.uid));
+        const querySnapshot = await getDocs(q);
 
-      if (querySnapshot.empty) {
-        return toast.error("Endereço não encontrado.");
+        if (querySnapshot.empty) {
+          return toast.error("Endereço não encontrado.");
+        }
+
+        const data = querySnapshot.docs[0]?.data();
+        if (!data || !data.phone) {
+          return toast.error("Dados do cliente incompletos.");
+        }
+
+        console.log("Dados do usuário vindos do fireStore =>", data);
+        const fireStoreData: IFireStoreProps = {
+          document: data.document,
+          clientPhone: data.phone,
+          clientAddress: data.address,
+          ie: data.ie,
+        };
+
+        if (!fireStoreData?.clientAddress) {
+          return toast.error("Endereço não cadastrado.");
+        }
+
+        setUserData({
+          document: fireStoreData.document,
+          clientPhone: fireStoreData.clientPhone,
+          ie: fireStoreData.ie,
+        });
+        setAddress(fireStoreData.clientAddress);
+        setBillingAddress(fireStoreData.clientAddress);
       }
-      // console.log("Dados depois da query => ", querySnapshot.docs[0]?.data());
-      const data = querySnapshot.docs[0]?.data();
-      if (!data || !data.phone) {
-        return toast.error("Dados do cliente incompletos.");
-      }
-
-      console.log("Dados do usuário vindos do fireStore =>", data);
-      const fireStoreData: IFireStoreProps = {
-        document: data.document,
-        clientPhone: data.phone,
-        clientAddress: data.address,
-        ie: data.ie,
-      };
-
-      // console.log("Dados do Firestore => ", fireStoreData);
-
-      if (!fireStoreData?.clientAddress) {
-        return toast.error("Endereço não cadastrado.");
-      }
-
-      setUserData({
-        document: fireStoreData.document,
-        clientPhone: fireStoreData.clientPhone,
-        ie: fireStoreData.ie,
-      });
-      setAddress(fireStoreData.clientAddress);
-      setBillingAddress(fireStoreData.clientAddress);
     } catch (error) {
       console.error("Erro ao buscar endereço:", error);
-      toast.error("Erro ao buscar endereço do usuário.");
+      // toast.error("Erro ao buscar endereço do usuário.");
     }
   };
 
@@ -129,6 +129,7 @@ export const Checkout = () => {
       }));
       toast.success("CEP encontrado com sucesso!", {
         description: `CEP: ${data.cep} - ${data.logradouro}, ${data.bairro}, ${data.localidade} - ${data.uf} - ${data.complemento}`,
+        id: "cep-found",
       });
     } catch (error) {
       toast.error("CEP inválido ou não encontrado");
@@ -229,8 +230,10 @@ export const Checkout = () => {
   const closeModal = () => setModalIsOpen(false);
 
   useEffect(() => {
-    getUserAddress();
-    fetchAddress(address.cep);
+    if (user) {
+      getUserAddress();
+      fetchAddress(address.cep);
+    }
   }, [user]);
 
   const categoriesProducts = [
@@ -243,7 +246,7 @@ export const Checkout = () => {
       {productsInCart.length !== 0 ? (
         <div className="flex flex-col w-full md:flex-row gap-4 md:justify-around">
           <div className="flex flex-col space-y-4 w-full md:w-2/5 ">
-            <div className="space-y-2 w-full overflow-y-scroll h-[20rem] p-2">
+            <div className="space-y-2 w-full overflow-y-scroll h-fit max-h-[20rem] p-2">
               {productsInCart.map((product, index) => (
                 <div
                   key={index}
@@ -413,7 +416,7 @@ export const Checkout = () => {
                         }
                       />
                     </div>
-                    <div className="flex gap-2 items-center">
+                    <div className="flex gap-2 items-center pb-2">
                       <strong className="w-20">Comp. :</strong>
                       <Input
                         className="text-gray-700 w-fit bg-gray-50 rounded-xs"

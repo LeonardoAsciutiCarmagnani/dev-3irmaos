@@ -92,7 +92,7 @@ const Dropzone: React.FC<ImageUploaderProps> = ({
 
   return (
     <div className="space-y-4  flex  items-start">
-      <div className="flex flex-col  gap-6 items-start">
+      <div className="flex flex-col gap-6 items-center">
         {/* Área do Dropzone */}
         <div
           {...getRootProps()}

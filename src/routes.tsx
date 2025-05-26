@@ -68,11 +68,9 @@ export const routes = createBrowserRouter([
   {
     path: "/orçamento",
     element: (
-      <AuthenticatedRoute>
-        <LayoutPage>
-          <CheckoutPage />
-        </LayoutPage>
-      </AuthenticatedRoute>
+      <LayoutPage>
+        <CheckoutPage />
+      </LayoutPage>
     ),
   },
   {

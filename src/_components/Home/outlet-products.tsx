@@ -140,7 +140,7 @@ const OutletProducts = () => {
       )}
 
       <div className="h-full overflow-y-auto pb-3 bg-white pt-7">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-x-1 gap-y-2 p-4 w-full ">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4 gap-x-1 gap-y-2 pb-8 min-h-fit w-full ">
           {isLoading ? (
             <div className="col-span-full flex justify-center items-center h-40">
               <Loader />

@@ -63,11 +63,11 @@ const Sidebar = () => {
   }, [user]);
 
   const categorias = [
+    "Portas Sob Medida",
+    "Portas Pronta Entrega",
     "Antiguidades",
     "Janelas e Esquadrias",
     "Assoalhos, Escadas, Decks e Forros",
-    "Portas Sob Medida",
-    "Portas Pronta Entrega",
     "Bancadas, Móveis e Painéis",
   ];
 

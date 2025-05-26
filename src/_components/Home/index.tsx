@@ -12,6 +12,16 @@ const Home = () => {
 
   const categorias = [
     {
+      label: "Portas Sob Medida",
+      imageUrl:
+        "https://hiper-gestao.s3.amazonaws.com/88f64a86-0b27-41c2-beba-076650f8ee25/imagem-de-produto/4e2eb499-669a-4703-aaaa-4f954b5ec039/original.jpeg",
+    },
+    {
+      label: "Portas Pronta Entrega",
+      imageUrl:
+        "https://hiper-gestao.s3.amazonaws.com/88f64a86-0b27-41c2-beba-076650f8ee25/imagem-de-produto/ecf0a448-f699-43d6-8a3c-a3c4c4cd2e0a/original.jpeg",
+    },
+    {
       label: "Antiguidades",
       imageUrl:
         "https://hiper-gestao.s3.amazonaws.com/88f64a86-0b27-41c2-beba-076650f8ee25/imagem-de-produto/70dc2c26-abd4-4bae-bf11-b4cb9a57a0c9/original.jpeg",
@@ -25,16 +35,6 @@ const Home = () => {
       label: "Assoalhos, Escadas, Decks e Forros",
       imageUrl:
         "https://hiper-gestao.s3.amazonaws.com/88f64a86-0b27-41c2-beba-076650f8ee25/imagem-de-produto/3b63fefb-d27b-4c6b-b847-40bcb805a6c3/original.jpeg",
-    },
-    {
-      label: "Portas Sob Medida",
-      imageUrl:
-        "https://hiper-gestao.s3.amazonaws.com/88f64a86-0b27-41c2-beba-076650f8ee25/imagem-de-produto/4e2eb499-669a-4703-aaaa-4f954b5ec039/original.jpeg",
-    },
-    {
-      label: "Portas Pronta Entrega",
-      imageUrl:
-        "https://hiper-gestao.s3.amazonaws.com/88f64a86-0b27-41c2-beba-076650f8ee25/imagem-de-produto/ecf0a448-f699-43d6-8a3c-a3c4c4cd2e0a/original.jpeg",
     },
     {
       label: "Bancadas, Móveis e Painéis",

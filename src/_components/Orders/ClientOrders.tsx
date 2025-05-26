@@ -23,6 +23,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
+  ChevronDownIcon,
   CircleIcon,
   FileDownIcon,
   InfoIcon,
@@ -48,6 +49,12 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { Order } from "@/interfaces/Order";
 import { api } from "@/lib/axios";
 import { useLocation, useNavigate } from "react-router-dom";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 type OrderStatusType = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 
@@ -118,7 +125,7 @@ const ClientOrdersTable = () => {
         accessorKey: "PDF",
         header: () => "PDF",
 
-        headerProps: { className: "hidden md:table-cell" },
+        headerProps: { className: "" },
 
         cell: ({ row }) => (
           <span className="hidden md:table-cell">{row.getValue("PDF")}</span>
@@ -315,40 +322,55 @@ const ClientOrdersTable = () => {
   > = {
     1: {
       label: "Orçamento enviado",
-      color: "text-orange-300",
-      bg: "bg-orange-100",
+      color: "text-yellow-600",
+      bg: "bg-yellow-50",
     },
     2: {
       label: "Proposta recebida",
-      color: "text-amber-500",
-      bg: "bg-amber-100",
+      color: "text-orange-600",
+      bg: "bg-orange-50",
     },
-    3: { label: "Proposta recusada", color: "text-red-500", bg: "bg-red-100" },
+    3: {
+      label: "Proposta recusada",
+      color: "text-red-600",
+      bg: "bg-red-50",
+    },
     4: {
       label: "Proposta aceita",
-      color: "text-emerald-500",
-      bg: "bg-emerald-100",
+      color: "text-green-600",
+      bg: "bg-green-50",
     },
     5: {
       label: "Proposta aprovada",
-      color: "text-emerald-500",
-      bg: "bg-emerald-100",
-    },
-    6: {
-      label: "Pedido em produção",
-      color: "text-yellow-500",
-      bg: "bg-yellow-100",
-    },
-    7: { label: "Faturado", color: "text-blue-500", bg: "bg-blue-100" },
-    8: { label: "Despachado", color: "text-purple-500", bg: "bg-purple-100" },
-    9: {
-      label: "Pedido concluído",
-      color: "text-green-600",
+      color: "text-green-700",
       bg: "bg-green-100",
     },
+
+    6: {
+      label: "Pedido em produção",
+      color: "text-sky-300",
+      bg: "bg-sky-300",
+    },
+    7: {
+      label: "Faturado",
+      color: "text-blue-400",
+      bg: "bg-blue-400",
+    },
+    8: {
+      label: "Despachado",
+      color: "text-blue-600",
+      bg: "bg-blue-600",
+    },
+    9: {
+      label: "Pedido concluído",
+      color: "text-blue-800",
+      bg: "bg-blue-800",
+    },
+
+    // Status Especial
     10: {
       label: "Pedido cancelado",
-      color: "text-gray-500",
+      color: "text-gray-500", // Cinza para "cancelado/neutro"
       bg: "bg-gray-100",
     },
   };
@@ -394,39 +416,152 @@ const ClientOrdersTable = () => {
             </option>
           ))}
         </select>
-        <Popover>
-          <PopoverTrigger className="flex items-center border p-2 w-52 rounded-xs hover:cursor-pointer">
-            {date?.from || date?.to ? (
-              <div className="flex gap-1 items-center  text-center ">
-                <span>{formattedFrom}</span>
-                <span className="border border-l-black h-[1rem]" />
-                <span className="border border-l-black h-[1rem]" />
-                <span>{formattedTo}</span>
+        <div className="flex items-center gap-x-4">
+          <Popover>
+            <PopoverTrigger className="flex items-center border p-2 w-52 rounded-xs hover:cursor-pointer">
+              {date?.from || date?.to ? (
+                <div className="flex gap-1 items-center  text-center ">
+                  <span>{formattedFrom}</span>
+                  <span className="border border-l-black h-[1rem]" />
+                  <span className="border border-l-black h-[1rem]" />
+                  <span>{formattedTo}</span>
+                </div>
+              ) : (
+                <span className=" w-full">Filtrar por periodo</span>
+              )}
+            </PopoverTrigger>
+            <PopoverContent className="w-full">
+              <Calendar
+                mode="range"
+                selected={date}
+                onSelect={setDate}
+                className="border p-2 rounded-xs"
+                lang={"pt-BR"}
+              />
+            </PopoverContent>
+          </Popover>
+          <Button onClick={() => filterOrders()} className="rounded-xs">
+            Filtrar
+          </Button>
+        </div>
+
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="status">
+            <AccordionTrigger>
+              <h3 className="text-sm md:text-lg font-semibold text-gray-800 flex items-center gap-x-2">
+                Status dos Pedidos{" "}
+                <span>
+                  <ChevronDownIcon />
+                </span>
+              </h3>
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="w-full p-4 bg-white rounded-xs border border-gray-200 shadow-sm">
+                <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
+                  <div className="space-y-3">
+                    {[1, 2, 3, 4, 5].map((key) => {
+                      const status = statusMap[key as OrderStatusType];
+                      return (
+                        <div key={key} className="flex items-center space-x-2">
+                          <div
+                            className={`w-4 h-4 rounded-full ${
+                              status.bg
+                            } border-2 ${status.color.replace(
+                              "text-",
+                              "border-"
+                            )}`}
+                          ></div>
+                          <span
+                            className={`text-sm font-medium ${status.color}`}
+                          >
+                            {status.label}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="space-y-3">
+                    {[6, 7, 8, 9, 10].map((key) => {
+                      const status = statusMap[key as OrderStatusType];
+                      return (
+                        <div key={key} className="flex items-center space-x-2">
+                          <div
+                            className={`w-4 h-4 rounded-full ${
+                              status.bg
+                            } border-2 ${status.color.replace(
+                              "text-",
+                              "border-"
+                            )}`}
+                          ></div>
+                          <span
+                            className={`text-sm font-medium ${status.color}`}
+                          >
+                            {status.label}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Versão Mobile - Grid 2 colunas */}
+                <div className="md:hidden grid grid-cols-2 gap-2">
+                  <div className="space-y-2">
+                    {[1, 2, 3, 4, 5].map((key) => {
+                      const status = statusMap[key as OrderStatusType];
+                      return (
+                        <div key={key} className="flex items-center space-x-2">
+                          <div
+                            className={`w-3 h-3 rounded-full ${
+                              status.bg
+                            } border ${status.color.replace(
+                              "text-",
+                              "border-"
+                            )} flex-shrink-0`}
+                          ></div>
+                          <span
+                            className={`text-md font-medium ${status.color} truncate`}
+                          >
+                            {status.label}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="space-y-2">
+                    {[6, 7, 8, 9, 10].map((key) => {
+                      const status = statusMap[key as OrderStatusType];
+                      return (
+                        <div key={key} className="flex items-center space-x-2">
+                          <div
+                            className={`w-3 h-3 rounded-full ${
+                              status.bg
+                            } border ${status.color.replace(
+                              "text-",
+                              "border-"
+                            )} flex-shrink-0`}
+                          ></div>
+                          <span
+                            className={`text-md font-medium ${status.color} truncate`}
+                          >
+                            {status.label}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
-            ) : (
-              <span className=" w-full">Filtrar por periodo</span>
-            )}
-          </PopoverTrigger>
-          <PopoverContent className="w-full">
-            <Calendar
-              mode="range"
-              selected={date}
-              onSelect={setDate}
-              className="border p-2 rounded-xs"
-              lang={"pt-BR"}
-            />
-          </PopoverContent>
-        </Popover>
-        <Button onClick={() => filterOrders()} className="rounded-xs">
-          Filtrar
-        </Button>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
 
       <div className="flex flex-col md:flex-row justify-between px-2">
         <div className="flex items-center gap-x-2">
           <InfoIcon className="w-4 h-4 text-blue-500" />
           <h2 className="text-[0.67rem] text-gray-500">
-            Para visualizar os detalhes do pedido, clique duas vezes sobre ele.
+            Para visualizar os detalhes do pedido, clique no ícone da lupa.
           </h2>
         </div>
       </div>
@@ -446,7 +581,7 @@ const ClientOrdersTable = () => {
                           key={header.id}
                           className={`
           px-4 py-3 text-left text-sm font-medium text-gray-700
-          ${isPdfColumn ? "hidden md:table-cell" : ""}
+          ${isPdfColumn ? "" : ""}
         `}
                         >
                           {flexRender(
@@ -530,12 +665,9 @@ const ClientOrdersTable = () => {
                                       status?.bg ?? "bg-zinc-100"
                                     } rounded-full w-4.5 h-4.5`}
                                   />
-                                  <h1>
-                                    {status?.label || "Status não definido"}
-                                  </h1>
                                 </div>
                               </td>
-                              <td className="hidden md:flex pt-1">
+                              <td className="pt-1">
                                 <Button
                                   onClick={() => handleGeneratedPDF(order)}
                                   className=" bg-transparent border-red-900 rounded-none hover:shadow-md hover:scale-105  hover:bg-transparent shadow-sm shadow-gray-300"

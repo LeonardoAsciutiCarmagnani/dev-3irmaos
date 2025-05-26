@@ -228,6 +228,26 @@ const OrdersTable = () => {
             : order
         )
       );
+
+      const cleanedPhone = orderToHiper.client.phone.replace(/\D/g, "");
+
+      const pushObject = {
+        orderCode: orderToHiper.orderId,
+        clientName: orderToHiper.client.name,
+        clientPhone: cleanedPhone,
+        createdAt: orderToHiper.createdAt,
+        orderStatus: newStatus,
+        deliveryDate: orderToHiper.detailsPropostal?.time || "",
+      };
+
+      api.post("/send-push-proposalApproved", pushObject);
+
+      toast.info("Notificação de status enviada com sucesso!", {
+        id: "push-notification-success",
+        icon: <MessageSquareText />,
+        duration: 3000,
+      });
+
       setLoadingSendOrderForHiper(null);
     } catch (error) {
       setLoadingSendOrderForHiper(null);
@@ -298,7 +318,8 @@ const OrdersTable = () => {
             1: "/send-push-createBudget",
             2: "/send-push-proposalSent",
             3: "/send-push-proposalRejected",
-            4: "/send-push-proposalApproved",
+            4: "/send-push-proposalAccepted",
+            5: "/send-push-proposalApproved",
             6: "/send-push-proposalInProduction",
             8: "/send-push-proposalDispatched",
             9: "/send-push-proposalCompleted",
