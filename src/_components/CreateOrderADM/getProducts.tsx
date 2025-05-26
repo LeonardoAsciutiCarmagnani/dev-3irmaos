@@ -111,29 +111,16 @@ const GetProductsForm = ({
   }, []);
 
   // Atualizar o valor unitário quando um produto for selecionado
-
   useEffect(() => {
-    console.log("Debug - productId:", productId);
-    console.log("Debug - products:", products);
-
-    if (productId) {
-      const selectedProduct = products.find((p) => p.id === productId);
-      console.log("Debug - selectedProduct:", selectedProduct);
-
-      if (selectedProduct) {
-        console.log("Debug - selectedProduct.preco:", selectedProduct.preco);
-        if (selectedProduct.preco) {
-          console.log(
-            "Debug - Definindo valorUnitario para:",
-            selectedProduct.preco
-          );
-          setValorUnitario(selectedProduct.preco);
-        }
-      } else {
-        console.log("Debug - Produto não encontrado");
+    if (selectedVariacaoId) {
+      const selectedProduct = products.find(
+        (p) => p.variacao && p.variacao.some((v) => v.id === selectedVariacaoId)
+      );
+      if (selectedProduct && selectedProduct.preco !== undefined) {
+        setValorUnitario(Number(selectedProduct.preco));
       }
     }
-  }, [productId, products]);
+  }, [selectedVariacaoId, products]);
 
   // Calcular o subtotal
   useEffect(() => {
