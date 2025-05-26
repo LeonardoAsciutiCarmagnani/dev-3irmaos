@@ -23,9 +23,11 @@ export class CreateBudgetService {
         products: data.products,
         createdAt: data.createdAt,
         orderStatus: data.orderStatus,
-        totalValue: data.totalValue,
         imagesUrls: data.imagesUrls ?? [],
         detailsPropostal: data.detailsPropostal ?? {},
+        discountTotalValue: data.discountTotalValue ?? 0,
+        totalDiscount: data.totalDiscount ?? 0,
+        totalValue: data.totalValue,
       });
 
       return {
