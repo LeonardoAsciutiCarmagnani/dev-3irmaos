@@ -1,5 +1,6 @@
 import * as admin from "firebase-admin";
 import credentials from "./credentials.json";
+import firebase from "firebase-admin";
 
 if (!admin.apps.length) {
   admin.initializeApp({
@@ -9,4 +10,4 @@ if (!admin.apps.length) {
 
 const firestore = admin.firestore();
 
-export { firestore, admin };
+export { firestore, admin, firebase };
