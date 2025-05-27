@@ -275,9 +275,13 @@ const ClientOrdersTable = () => {
     try {
       setGeneratedPdf(order.orderId);
 
-      const response = await api.post("/generate-pdf", order, {
-        responseType: "blob",
-      });
+      const response = await api.post(
+        "/generate-pdf-test",
+        { data: order },
+        {
+          responseType: "blob",
+        }
+      );
 
       console.log(response);
 
