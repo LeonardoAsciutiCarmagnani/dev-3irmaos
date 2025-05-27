@@ -4,7 +4,10 @@ import { onRequest } from "firebase-functions/v2/https";
 import env from "./config/env";
 import { ProductController } from "./controllers/Product/productController";
 import { UserController } from "./controllers/User/UserController";
-import { OrderController } from "./controllers/Order/OrderController";
+import {
+  BudgetType,
+  OrderController,
+} from "./controllers/Order/OrderController";
 import { PushController } from "./controllers/Push/PushController";
 import puppeteer from "puppeteer-core";
 import chromium from "chrome-aws-lambda";
@@ -52,6 +55,109 @@ export const pdfPlumHandler = async (req: Request, res: Response) => {
       });
     }
 
+    const {
+      client,
+      deliveryAddress,
+      billingAddress,
+      createdAt,
+      products,
+      imagesUrls,
+      detailsPropostal,
+      discountTotalValue,
+      totalValue,
+      totalDiscount,
+    } = data as BudgetType;
+
+    const formttedDetailsPropostalDelivery =
+      detailsPropostal?.delivery?.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      }) ||
+      (0).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      });
+
+    const formattedDiscountTotalValue =
+      discountTotalValue?.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      }) || "R$ 0,00";
+    const formattedTotalValue =
+      totalValue?.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      }) || "R$ 0,00";
+    const formttedTotalDiscount =
+      totalDiscount?.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+      }) || "R$ 0,00";
+
+    const detailsObservation = detailsPropostal?.obs
+      ? detailsPropostal?.obs
+      : "Sem observações";
+    const detailsPropostalPayment = detailsPropostal?.payment
+      ? detailsPropostal?.payment
+      : "Não informado";
+    const detailsPropostalTime = detailsPropostal?.time
+      ? detailsPropostal?.time
+      : "Não informado";
+    const detailsPropostalSellerName = detailsPropostal?.selectedSeller?.name
+      ? detailsPropostal?.selectedSeller?.name
+      : "Não informado";
+    const detailsPropostalSellerPhone = detailsPropostal?.selectedSeller?.phone
+      ? detailsPropostal?.selectedSeller?.phone
+      : "Não informado";
+    const detailsPropostalSellerEmail = detailsPropostal?.selectedSeller?.email
+      ? detailsPropostal?.selectedSeller?.email
+      : "Não informado";
+
+    const detailsPropostalFormatted = {
+      ...detailsPropostal,
+      obs: detailsObservation,
+      delivery: Number(formttedDetailsPropostalDelivery), // keep as number or undefined
+      payment: detailsPropostalPayment,
+      time: detailsPropostalTime,
+      selectedSeller: {
+        name: detailsPropostalSellerName,
+        phone: detailsPropostalSellerPhone,
+        email: detailsPropostalSellerEmail,
+      },
+    } as {
+      obs?: string | undefined;
+      payment?: string | undefined;
+      delivery?: number | undefined;
+      time?: string | undefined;
+      seller?: string | undefined;
+      sellerPhone?: string | undefined;
+      selectedSeller?: {
+        name: string;
+        phone: string;
+        email: string;
+      };
+    };
+
+    const formattedData = {
+      client,
+      deliveryAddress,
+      billingAddress,
+      createdAt,
+      products,
+      imagesUrls,
+      detailsPropostal: detailsPropostalFormatted,
+      formattedDiscountTotalValue,
+      formattedTotalValue,
+      formttedDetailsPropostalDelivery,
+      formttedTotalDiscount,
+    };
+
+    console.log(
+      "detalhes da proposta eviados para o PDFPLUM",
+      formattedData.detailsPropostal
+    );
+    console.log("Produtos enviados para o PDFPLUM", formattedData.products);
+
     const templateName = "Template teste";
 
     // URL da extensão PDFPLUM instalada no seu projeto
@@ -65,7 +171,7 @@ export const pdfPlumHandler = async (req: Request, res: Response) => {
     // Payload para o PDFPLUM
     const pdfPlumPayload = {
       templatePath: templatePath,
-      data: data,
+      data: formattedData,
       returnPdfInResponse: true, // Retorna PDF diretamente
       outputFileName: outputFileName || `${templateName}-${Date.now()}.pdf`,
     };
@@ -73,7 +179,7 @@ export const pdfPlumHandler = async (req: Request, res: Response) => {
     console.log("Chamando PDFPLUM", {
       templatePath,
       outputFileName: pdfPlumPayload.outputFileName,
-      data: data,
+      data: formattedData,
     });
 
     // Fazer a requisição para a extensão
