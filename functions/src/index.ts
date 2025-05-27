@@ -1,18 +1,16 @@
 import express, { Application, Request, Response, NextFunction } from "express";
 import cors from "cors";
 import { onRequest } from "firebase-functions/v2/https";
-
-import helmet from "helmet";
-import morgan from "morgan";
 import env from "./config/env";
 import { ProductController } from "./controllers/Product/productController";
 import { UserController } from "./controllers/User/UserController";
 import { OrderController } from "./controllers/Order/OrderController";
-import { CreateAdmin } from "./services/User/createAdmin";
-import proposalSent from "./services/chat4sales/push/proposalSent";
 import { PushController } from "./controllers/Push/PushController";
 import puppeteer from "puppeteer-core";
 import chromium from "chrome-aws-lambda";
+import { getFunctions } from "firebase-admin/functions";
+import { onCall } from "firebase-functions/v2/https";
+import axios from "axios";
 
 const errorHandler = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -29,36 +27,119 @@ const errorHandler = (
   });
 };
 
-export const testPdfHandler = async (req: Request, res: Response) => {
-  const html = `<html><body><h1>PDF de Teste</h1></body></html>`;
+interface PDFPlumRequest {
+  templateName: string; // Nome do template (ex: "orcamento", "contrato")
+  data: Record<string, any>; // Dados para preencher o template
+  outputFileName?: string; // Nome do arquivo final
+}
 
+interface PDFPlumResponse {
+  success: boolean;
+  message?: string;
+  fileName?: string;
+  downloadUrl?: string;
+}
+
+export const pdfPlumHandler = async (req: Request, res: Response) => {
   try {
-    console.log("Lançando o Puppeteer...");
+    const { data, outputFileName }: PDFPlumRequest = req.body;
 
-    const executablePath = await chromium.executablePath;
-    if (!executablePath) {
-      throw new Error("Caminho do Chromium não encontrado!");
+    // Validações básicas
+    if (!data) {
+      return res.status(400).json({
+        success: false,
+        message: "Data é obrigatório",
+      });
     }
-    console.log("Caminho do Chromium:", executablePath);
 
-    const browser = await puppeteer.launch({
-      args: chromium.args,
-      executablePath,
-      headless: chromium.headless,
-      ignoreDefaultArgs: ["--disable-extensions"], // ajuda a reduzir falhas
+    const templateName = "Template teste";
+
+    // URL da extensão PDFPLUM instalada no seu projeto
+    const pdfPlumUrl =
+      "https://us-central1-dev-3irmaos.cloudfunctions.net/ext-http-pdf-generator-executePdfGenerator";
+
+    // Construir o caminho do template
+    const templatePath =
+      "dev-3irmaos.firebasestorage.app/template/template.zip";
+
+    // Payload para o PDFPLUM
+    const pdfPlumPayload = {
+      templatePath: templatePath,
+      data: data,
+      returnPdfInResponse: true, // Retorna PDF diretamente
+      outputFileName: outputFileName || `${templateName}-${Date.now()}.pdf`,
+    };
+
+    console.log("Chamando PDFPLUM", {
+      templatePath,
+      outputFileName: pdfPlumPayload.outputFileName,
+      data: data,
     });
 
-    const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: "networkidle0" });
+    // Fazer a requisição para a extensão
+    const response = await axios.post(pdfPlumUrl, pdfPlumPayload, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      responseType: "arraybuffer",
+    });
 
-    const pdf = await page.pdf({ format: "A4" });
+    console.log("Reponse PDFPLUM", response);
 
-    await browser.close();
+    // Verificar se a resposta foi bem-sucedida
+    if (response.status !== 200) {
+      throw new Error(`PDFPLUM retornou status ${response.status}`);
+    }
 
-    res.status(200).set("Content-Type", "application/pdf").send(pdf);
-  } catch (err) {
-    console.error("Erro ao gerar PDF:", err);
-    res.status(500).send("Erro ao gerar PDF");
+    // Retornar o PDF diretamente
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${pdfPlumPayload.outputFileName}"`
+    );
+    res.setHeader("Content-Length", response.data.length.toString());
+
+    res.send(response.data);
+
+    console.log("PDF gerado com sucesso", {
+      fileName: pdfPlumPayload.outputFileName,
+    });
+  } catch (error: any) {
+    console.log("Erro ao gerar PDF com PDFPLUM", {
+      error: error.message,
+      stack: error.stack,
+      response: error.response?.data,
+    });
+
+    // Tratamento específico de erros
+    if (error.code === "ECONNABORTED") {
+      return res.status(408).json({
+        success: false,
+        message: "Timeout ao gerar PDF - tente novamente",
+      });
+    }
+
+    if (error.response?.status === 404) {
+      return res.status(404).json({
+        success: false,
+        message:
+          "Template não encontrado. Verifique se o arquivo existe no Storage.",
+      });
+    }
+
+    if (error.response?.status === 400) {
+      return res.status(400).json({
+        success: false,
+        message: "Erro nos dados enviados para geração do PDF",
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: "Erro interno ao gerar PDF",
+      details:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
+    });
   }
 };
 
@@ -109,14 +190,15 @@ class App {
     //GET ROUTES
     router.get("/get-products", ProductController.GetAll);
 
+    //POST ROUTES
+
     router.post("/create-client", UserController.createClient);
     router.post("/post-order", OrderController.postOrderInHiper);
     router.post("/post-budget", OrderController.createBudget);
     router.post("/create-adm", UserController.createAdmin);
-    router.post("/generate-pdf", testPdfHandler);
+    router.post("/generate-pdf-test", pdfPlumHandler);
 
     // PUSH ROUTES
-
     router.post("/send-push-createBudget", PushController.createdBudget);
     router.post("/send-push-proposalSent", PushController.sendProposal);
     router.post("/send-push-proposalRejected", PushController.proposalRejected);
