@@ -47,11 +47,13 @@ export const pdfPlumHandler = async (req: Request, res: Response) => {
     console.log("Dados recebidos para gerar PDF:", data);
 
     const {
+      orderId,
       client,
       deliveryAddress,
       billingAddress,
       createdAt,
       products,
+      clientImages,
       imagesUrls,
       detailsPropostal,
       discountTotalValue,
@@ -61,6 +63,7 @@ export const pdfPlumHandler = async (req: Request, res: Response) => {
 
     // CORREÇÃO: Manter valores numéricos como números, não converter strings formatadas
     const deliveryValue = detailsPropostal?.delivery || 0;
+    console.log("Valor da variavel deliveryValue =>", deliveryValue);
     const formattedDetailsPropostalDelivery = deliveryValue.toLocaleString(
       "pt-BR",
       {
@@ -70,10 +73,15 @@ export const pdfPlumHandler = async (req: Request, res: Response) => {
     );
 
     const formattedDiscountTotalValue =
-      discountTotalValue?.toLocaleString("pt-BR", {
+      ((discountTotalValue ?? 0) + deliveryValue)?.toLocaleString("pt-BR", {
         style: "currency",
         currency: "BRL",
       }) || "R$ 0,00";
+
+    console.log(
+      "Valor total com desconto formatado => ",
+      formattedDiscountTotalValue
+    );
     const formattedTotalValue =
       totalValue?.toLocaleString("pt-BR", {
         style: "currency",
@@ -95,8 +103,30 @@ export const pdfPlumHandler = async (req: Request, res: Response) => {
     const detailsProposalSellerEmail =
       detailsPropostal?.selectedSeller?.email || "Não informado";
 
+    const updatedProducts = products.map((product) => {
+      return {
+        ...product,
+        preco: product.preco.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        }),
+        desconto: product.desconto?.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        }),
+        totalValue: (
+          product.preco * product.quantidade -
+          (product.desconto ?? 0) * product.quantidade
+        ).toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        }),
+      };
+    });
+
     // CORREÇÃO: Criar objeto limpo sem conversões problemáticas
     const detailsProposalFormatted = {
+      ...detailsPropostal,
       obs: detailsObservation,
       delivery: deliveryValue, // Manter como número
       payment: detailsProposalPayment,
@@ -109,17 +139,19 @@ export const pdfPlumHandler = async (req: Request, res: Response) => {
     };
 
     const formattedData = {
+      orderId,
       client,
       deliveryAddress,
       billingAddress,
       createdAt,
-      products,
+      products: updatedProducts,
+      clientImages,
       imagesUrls,
       detailsPropostal: detailsProposalFormatted,
-      formattedDiscountTotalValue,
-      formattedTotalValue,
       formattedDetailsPropostalDelivery,
+      formattedTotalValue,
       formattedTotalDiscount,
+      formattedDiscountTotalValue,
     };
 
     console.log(
