@@ -122,6 +122,11 @@ const ClientOrdersTable = () => {
         cell: ({ row }) => row.getValue("status"),
       },
       {
+        header: "Ações",
+        accessorKey: "Details",
+        cell: ({ row }) => row.getValue("details"),
+      },
+      {
         accessorKey: "PDF",
         header: () => "PDF",
 
@@ -130,11 +135,6 @@ const ClientOrdersTable = () => {
         cell: ({ row }) => (
           <span className="hidden md:table-cell">{row.getValue("PDF")}</span>
         ),
-      },
-      {
-        header: "Ações",
-        accessorKey: "Details",
-        cell: ({ row }) => row.getValue("details"),
       },
     ],
     []
@@ -444,20 +444,21 @@ const ClientOrdersTable = () => {
             Filtrar
           </Button>
         </div>
-
+      </div>
+      <div className="pl-4">
         <Accordion type="single" collapsible className="w-full">
           <AccordionItem value="status">
             <AccordionTrigger>
               <h3 className="text-sm md:text-lg font-semibold text-gray-800 flex items-center gap-x-2">
                 Status dos Pedidos{" "}
                 <span>
-                  <ChevronDownIcon />
+                  <ChevronDownIcon color="darkred" />
                 </span>
               </h3>
             </AccordionTrigger>
             <AccordionContent>
-              <div className="w-full p-4 bg-white rounded-xs border border-gray-200 shadow-sm">
-                <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
+              <div className="w-[23rem] p-2 bg-white rounded-xs border border-gray-200 shadow-sm">
+                <div className="hidden md:grid grid-cols-2 gap-3">
                   <div className="space-y-3">
                     {[1, 2, 3, 4, 5].map((key) => {
                       const status = statusMap[key as OrderStatusType];
@@ -505,7 +506,7 @@ const ClientOrdersTable = () => {
                 </div>
 
                 {/* Versão Mobile - Grid 2 colunas */}
-                <div className="md:hidden grid grid-cols-2 gap-2">
+                <div className="md:hidden grid grid-cols-2 w-fit gap-2">
                   <div className="space-y-2">
                     {[1, 2, 3, 4, 5].map((key) => {
                       const status = statusMap[key as OrderStatusType];
@@ -597,7 +598,7 @@ const ClientOrdersTable = () => {
           </thead>
           {data.length !== 0 ? (
             <>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-gray-200 overflow-x-scroll">
                 {data &&
                   lisToUse
                     .sort((a, b) => {
@@ -668,21 +669,6 @@ const ClientOrdersTable = () => {
                                 </div>
                               </td>
                               <td className="pt-1">
-                                <Button
-                                  onClick={() => handleGeneratedPDF(order)}
-                                  className=" bg-transparent border-red-900 rounded-none hover:shadow-md hover:scale-105  hover:bg-transparent shadow-sm shadow-gray-300"
-                                >
-                                  {generatedPdf === order.orderId ? (
-                                    <LoaderCircle className="animate-spin text-red-900 hover:text-white" />
-                                  ) : (
-                                    <>
-                                      <FileDownIcon className="hover:text-white text-red-900" />
-                                      <h2 className="text-red-900">Download</h2>
-                                    </>
-                                  )}
-                                </Button>
-                              </td>
-                              <td className="pt-1">
                                 <div
                                   onClick={(e) => {
                                     e.stopPropagation();
@@ -692,6 +678,23 @@ const ClientOrdersTable = () => {
                                 >
                                   <ZoomInIcon className="text-gray-400 " />
                                 </div>
+                              </td>
+                              <td className="pt-1">
+                                <Button
+                                  onClick={() => handleGeneratedPDF(order)}
+                                  className=" bg-transparent border-red-900 rounded-none hover:shadow-md hover:scale-105  hover:bg-transparent shadow-sm shadow-gray-300"
+                                >
+                                  {generatedPdf === order.orderId ? (
+                                    <LoaderCircle className="animate-spin text-red-900 hover:text-white" />
+                                  ) : (
+                                    <>
+                                      <FileDownIcon className="hover:text-white text-red-900" />
+                                      <h2 className="text-red-900 hidden md:flex">
+                                        Download
+                                      </h2>
+                                    </>
+                                  )}
+                                </Button>
                               </td>
                             </tr>
                           </DialogTrigger>
