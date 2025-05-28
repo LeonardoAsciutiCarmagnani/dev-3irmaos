@@ -9,10 +9,6 @@ import {
   OrderController,
 } from "./controllers/Order/OrderController";
 import { PushController } from "./controllers/Push/PushController";
-import puppeteer from "puppeteer-core";
-import chromium from "chrome-aws-lambda";
-import { getFunctions } from "firebase-admin/functions";
-import { onCall } from "firebase-functions/v2/https";
 import axios from "axios";
 
 const errorHandler = (
@@ -36,13 +32,6 @@ interface PDFPlumRequest {
   outputFileName?: string; // Nome do arquivo final
 }
 
-interface PDFPlumResponse {
-  success: boolean;
-  message?: string;
-  fileName?: string;
-  downloadUrl?: string;
-}
-
 export const pdfPlumHandler = async (req: Request, res: Response) => {
   try {
     const { data, outputFileName }: PDFPlumRequest = req.body;
@@ -54,6 +43,8 @@ export const pdfPlumHandler = async (req: Request, res: Response) => {
         message: "Data é obrigatório",
       });
     }
+
+    console.log("Dados recebidos para gerar PDF:", data);
 
     const {
       client,
@@ -68,15 +59,15 @@ export const pdfPlumHandler = async (req: Request, res: Response) => {
       totalDiscount,
     } = data as BudgetType;
 
-    const formttedDetailsPropostalDelivery =
-      detailsPropostal?.delivery?.toLocaleString("pt-BR", {
+    // CORREÇÃO: Manter valores numéricos como números, não converter strings formatadas
+    const deliveryValue = detailsPropostal?.delivery || 0;
+    const formattedDetailsPropostalDelivery = deliveryValue.toLocaleString(
+      "pt-BR",
+      {
         style: "currency",
         currency: "BRL",
-      }) ||
-      (0).toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-      });
+      }
+    );
 
     const formattedDiscountTotalValue =
       discountTotalValue?.toLocaleString("pt-BR", {
@@ -88,54 +79,33 @@ export const pdfPlumHandler = async (req: Request, res: Response) => {
         style: "currency",
         currency: "BRL",
       }) || "R$ 0,00";
-    const formttedTotalDiscount =
+    const formattedTotalDiscount =
       totalDiscount?.toLocaleString("pt-BR", {
         style: "currency",
         currency: "BRL",
       }) || "R$ 0,00";
 
-    const detailsObservation = detailsPropostal?.obs
-      ? detailsPropostal?.obs
-      : "Sem observações";
-    const detailsPropostalPayment = detailsPropostal?.payment
-      ? detailsPropostal?.payment
-      : "Não informado";
-    const detailsPropostalTime = detailsPropostal?.time
-      ? detailsPropostal?.time
-      : "Não informado";
-    const detailsPropostalSellerName = detailsPropostal?.selectedSeller?.name
-      ? detailsPropostal?.selectedSeller?.name
-      : "Não informado";
-    const detailsPropostalSellerPhone = detailsPropostal?.selectedSeller?.phone
-      ? detailsPropostal?.selectedSeller?.phone
-      : "Não informado";
-    const detailsPropostalSellerEmail = detailsPropostal?.selectedSeller?.email
-      ? detailsPropostal?.selectedSeller?.email
-      : "Não informado";
+    const detailsObservation = detailsPropostal?.obs || "Sem observações";
+    const detailsProposalPayment = detailsPropostal?.payment || "Não informado";
+    const detailsProposalTime = detailsPropostal?.time || "Não informado";
+    const detailsProposalSellerName =
+      detailsPropostal?.selectedSeller?.name || "Não informado";
+    const detailsProposalSellerPhone =
+      detailsPropostal?.selectedSeller?.phone || "Não informado";
+    const detailsProposalSellerEmail =
+      detailsPropostal?.selectedSeller?.email || "Não informado";
 
-    const detailsPropostalFormatted = {
-      ...detailsPropostal,
+    // CORREÇÃO: Criar objeto limpo sem conversões problemáticas
+    const detailsProposalFormatted = {
       obs: detailsObservation,
-      delivery: Number(formttedDetailsPropostalDelivery), // keep as number or undefined
-      payment: detailsPropostalPayment,
-      time: detailsPropostalTime,
+      delivery: deliveryValue, // Manter como número
+      payment: detailsProposalPayment,
+      time: detailsProposalTime,
       selectedSeller: {
-        name: detailsPropostalSellerName,
-        phone: detailsPropostalSellerPhone,
-        email: detailsPropostalSellerEmail,
+        name: detailsProposalSellerName,
+        phone: detailsProposalSellerPhone,
+        email: detailsProposalSellerEmail,
       },
-    } as {
-      obs?: string | undefined;
-      payment?: string | undefined;
-      delivery?: number | undefined;
-      time?: string | undefined;
-      seller?: string | undefined;
-      sellerPhone?: string | undefined;
-      selectedSeller?: {
-        name: string;
-        phone: string;
-        email: string;
-      };
     };
 
     const formattedData = {
@@ -145,44 +115,50 @@ export const pdfPlumHandler = async (req: Request, res: Response) => {
       createdAt,
       products,
       imagesUrls,
-      detailsPropostal: detailsPropostalFormatted,
+      detailsPropostal: detailsProposalFormatted,
       formattedDiscountTotalValue,
       formattedTotalValue,
-      formttedDetailsPropostalDelivery,
-      formttedTotalDiscount,
+      formattedDetailsPropostalDelivery,
+      formattedTotalDiscount,
     };
 
     console.log(
-      "detalhes da proposta eviados para o PDFPLUM",
-      formattedData.detailsPropostal
+      "Detalhes da proposta enviados para o PDFPLUM:",
+      JSON.stringify(detailsProposalFormatted, null, 2)
     );
-    console.log("Produtos enviados para o PDFPLUM", formattedData.products);
+    console.log(
+      "Produtos enviados para o PDFPLUM:",
+      JSON.stringify(products, null, 2)
+    );
 
     const templateName = "Template teste";
 
-    // URL da extensão PDFPLUM instalada no seu projeto
     const pdfPlumUrl =
       "https://us-central1-dev-3irmaos.cloudfunctions.net/ext-http-pdf-generator-executePdfGenerator";
 
-    // Construir o caminho do template
     const templatePath =
       "dev-3irmaos.firebasestorage.app/template/template.zip";
 
-    // Payload para o PDFPLUM
     const pdfPlumPayload = {
       templatePath: templatePath,
       data: formattedData,
-      returnPdfInResponse: true, // Retorna PDF diretamente
+      returnPdfInResponse: true,
       outputFileName: outputFileName || `${templateName}-${Date.now()}.pdf`,
     };
 
-    console.log("Chamando PDFPLUM", {
-      templatePath,
-      outputFileName: pdfPlumPayload.outputFileName,
-      data: formattedData,
-    });
+    console.log(
+      "Chamando PDFPLUM:",
+      JSON.stringify(
+        {
+          templatePath,
+          outputFileName: pdfPlumPayload.outputFileName,
+          dataKeys: Object.keys(formattedData), // Log apenas as chaves para evitar logs gigantes
+        },
+        null,
+        2
+      )
+    );
 
-    // Fazer a requisição para a extensão
     const response = await axios.post(pdfPlumUrl, pdfPlumPayload, {
       headers: {
         "Content-Type": "application/json",
@@ -190,14 +166,10 @@ export const pdfPlumHandler = async (req: Request, res: Response) => {
       responseType: "arraybuffer",
     });
 
-    console.log("Reponse PDFPLUM", response);
-
-    // Verificar se a resposta foi bem-sucedida
     if (response.status !== 200) {
       throw new Error(`PDFPLUM retornou status ${response.status}`);
     }
 
-    // Retornar o PDF diretamente
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
       "Content-Disposition",
@@ -207,17 +179,16 @@ export const pdfPlumHandler = async (req: Request, res: Response) => {
 
     res.send(response.data);
 
-    console.log("PDF gerado com sucesso", {
+    console.log("PDF gerado com sucesso:", {
       fileName: pdfPlumPayload.outputFileName,
     });
   } catch (error: any) {
-    console.log("Erro ao gerar PDF com PDFPLUM", {
+    console.error("Erro ao gerar PDF com PDFPLUM:", {
       error: error.message,
       stack: error.stack,
       response: error.response?.data,
     });
 
-    // Tratamento específico de erros
     if (error.code === "ECONNABORTED") {
       return res.status(408).json({
         success: false,
@@ -260,7 +231,6 @@ class App {
   }
 
   private setupMiddlewares(): void {
-    // Modificação principal: CORS configurado de forma mais explícita
     this.app.use((req, res, next) => {
       res.set("Access-Control-Allow-Origin", "https://dev-3irmaos.web.app");
       res.set(
@@ -270,7 +240,6 @@ class App {
       res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
       res.set("Access-Control-Max-Age", "3600");
 
-      // Handle OPTIONS requests
       if (req.method === "OPTIONS") {
         res.status(204).send("");
         return;
@@ -328,16 +297,12 @@ class App {
   }
 
   private setupErrorHandling(): void {
-    // Middleware global de erros
     this.app.use(errorHandler);
 
-    // Captura rejeições de promises não tratadas
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
     process.on("unhandledRejection", (reason: any, promise) => {
       console.error("Unhandled Rejection:", reason);
     });
 
-    // Captura exceções não tratadas
     process.on("uncaughtException", (error: Error) => {
       console.error("Uncaught Exception:", error);
       process.exit(1);
@@ -349,11 +314,9 @@ class App {
   }
 }
 
-// Initialize app
 const application = new App();
 const app = application.getApp();
 
-// Export for Firebase Functions
 console.log(`Server started in ${env.NODE_ENV} mode`);
 
 export const api = onRequest(
