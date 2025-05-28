@@ -274,7 +274,7 @@ const ClientOrdersTable = () => {
   async function handleGeneratedPDF(order: Order) {
     try {
       setGeneratedPdf(order.orderId);
-
+      console.log("Order to generate PDF =>", order);
       const response = await api.post(
         "/generate-pdf-test",
         { data: order },
