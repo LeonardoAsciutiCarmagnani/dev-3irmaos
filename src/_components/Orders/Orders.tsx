@@ -448,6 +448,7 @@ const OrdersTable = () => {
               return {
                 ...product,
                 desconto: discount,
+                totalValue: discount * product.quantidade,
               };
             }
             return product;
@@ -679,6 +680,8 @@ const OrdersTable = () => {
             desconto: p.desconto ?? 0,
             altura: p.altura ?? 0,
             largura: p.largura ?? 0,
+            comprimento: p.comprimento ?? 0,
+            unidade: p.unidade ?? "",
             nome: p.nome ?? "",
             preco: p.preco ?? 0,
             quantidade: p.quantidade ?? 0,
@@ -1240,9 +1243,12 @@ const OrdersTable = () => {
                                             <span className="flex-1 text-lg text-gray-700">
                                               {item.nome}
                                             </span>
-                                            <span className="flex-1 text-md text-gray-700">
-                                              {variation[1]}
-                                            </span>
+                                            <div className="flex-1 text-md text-gray-700">
+                                              <span> {variation[1]} - </span>
+                                              <span className="text-sm text-red-900">
+                                                {variation[0]}
+                                              </span>
+                                            </div>
                                             {item.categoria !==
                                               "Assoalhos, Escadas, Decks e Forros" &&
                                               item.categoria !==
@@ -1258,9 +1264,6 @@ const OrdersTable = () => {
                                                   }
                                                 />
                                               )}
-                                            <span className="text-sm text-red-900">
-                                              {variation[0]}
-                                            </span>
                                           </div>
                                           <div className="flex text-lg text-gray-700 items-center justify-center text-center h-full">
                                             <span>{item.unidade}</span>

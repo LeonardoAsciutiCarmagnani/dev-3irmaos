@@ -612,8 +612,7 @@ const ClientOrdersTable = () => {
                       const status =
                         statusMap[order.orderStatus as OrderStatusType];
                       const isLast = order.orderId === highlightOrderId;
-                      console.log("Order ID =>", order.orderId);
-                      console.log("highlightOrderId =>", highlightOrderId);
+
                       return (
                         <Dialog
                           key={order.orderId}
@@ -684,21 +683,23 @@ const ClientOrdersTable = () => {
                                 </div>
                               </td>
                               <td className="pt-1">
-                                <Button
-                                  onClick={() => handleGeneratedPDF(order)}
-                                  className=" bg-transparent border-red-900 rounded-none hover:shadow-md hover:scale-105  hover:bg-transparent shadow-sm shadow-gray-300"
-                                >
-                                  {generatedPdf === order.orderId ? (
-                                    <LoaderCircle className="animate-spin text-red-900 hover:text-white" />
-                                  ) : (
-                                    <>
-                                      <FileDownIcon className="hover:text-white text-red-900" />
-                                      <h2 className="text-red-900 hidden md:flex">
-                                        Download
-                                      </h2>
-                                    </>
-                                  )}
-                                </Button>
+                                {order.orderStatus !== 1 && (
+                                  <Button
+                                    onClick={() => handleGeneratedPDF(order)}
+                                    className=" bg-transparent border-red-900 rounded-none hover:shadow-md hover:scale-105  hover:bg-transparent shadow-sm shadow-gray-300"
+                                  >
+                                    {generatedPdf === order.orderId ? (
+                                      <LoaderCircle className="animate-spin text-red-900 hover:text-white" />
+                                    ) : (
+                                      <>
+                                        <FileDownIcon className="hover:text-white text-red-900" />
+                                        <h2 className="text-red-900 hidden md:flex">
+                                          Download
+                                        </h2>
+                                      </>
+                                    )}
+                                  </Button>
+                                )}
                               </td>
                             </tr>
                           </DialogTrigger>
@@ -858,9 +859,15 @@ const ClientOrdersTable = () => {
                                         <p className="text-sm md:text-lg font-medium">
                                           {item.nome}
                                         </p>
-                                        <p className="text-sm">
-                                          {variation[1]}
-                                        </p>
+                                        <div className="flex gap-1 text-md text-gray-700">
+                                          <p className="text-sm">
+                                            {variation[1]} -
+                                          </p>
+                                          <span className="text-sm text-red-900">
+                                            {variation[0]}
+                                          </span>
+                                        </div>
+
                                         {item.categoria !==
                                           "Assoalhos, Escadas, Decks e Forros" &&
                                           item.categoria !== "Antiguidades" && (
@@ -881,9 +888,6 @@ const ClientOrdersTable = () => {
                                               m
                                             </p>
                                           )}
-                                        <p className="text-sm text-red-900">
-                                          {variation[0]}
-                                        </p>
                                       </div>
                                       <div className="mt-2 md:mt-0 md:flex justify-center items-center text-sm md:text-base border-gray-400 h-full">
                                         <span className="block md:hidden font-semibold">
@@ -976,9 +980,9 @@ const ClientOrdersTable = () => {
                                 })}
 
                                 {/* Totais */}
-                                <div className="flex flex-col items-end gap-2 ">
+                                <div className="flex flex-col items-end gap-2 border-t">
                                   {order.orderStatus !== 1 && (
-                                    <div className="flex justify-between  w-full md:w-auto px-14 border-t ">
+                                    <div className="flex justify-between  w-full md:w-auto px-14 mt-2">
                                       <span className="font-semibold">
                                         Sub total
                                       </span>

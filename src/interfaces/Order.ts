@@ -4,6 +4,7 @@ export interface ProductsInOrderProps {
   quantidade: number;
   preco: number;
   desconto: number;
+  totalValue: number;
   altura: number;
   largura: number;
   comprimento: number;
