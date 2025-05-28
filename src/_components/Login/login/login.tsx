@@ -23,6 +23,7 @@ import axios from "axios";
 import logo from "@/assets/logo_3irmaos.png";
 import { api } from "@/lib/axios";
 import Loader from "@/_components/Loader/loader";
+import PasswordRecovery from "@/_components/ForgotPassword/forgotPassword";
 
 // Schemas
 const loginSchema = z.object({
@@ -171,7 +172,11 @@ const Auth: React.FC = () => {
 
   return (
     <div className="max-w-md mx-auto p-6 bg-white rounded-xs shadow-lg flex flex-col max-h-[90vh] overflow-y-auto">
-      {mode === "login" && <img src={logo} alt="" className="mb-[1rem]" />}
+      {mode === "login" && (
+        <div className="w-full flex justify-center">
+          <img src={logo} alt="" className="mb-[1rem] w-[60%]" />
+        </div>
+      )}
       <div className="flex justify-center mb-6 space-x-4">
         <Button
           variant={mode === "login" ? "default" : "ghost"}
@@ -251,6 +256,15 @@ const Auth: React.FC = () => {
             <Button type="submit" className="w-full rounded-xs">
               Entrar
             </Button>
+            <div className="mt-2 ">
+              <h1>
+                Esqueceu sua senha? Clique{" "}
+                <span>
+                  <PasswordRecovery />
+                </span>{" "}
+                para recuperar.
+              </h1>
+            </div>
           </form>
         </Form>
       )}

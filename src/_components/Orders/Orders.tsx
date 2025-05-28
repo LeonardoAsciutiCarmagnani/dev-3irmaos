@@ -958,24 +958,24 @@ const OrdersTable = () => {
                               <select
                                 className={`w-40 rounded-xs p-1 text-white font-semibold text-xs md:text-sm hover:cursor-pointer ${
                                   order.orderStatus === 1
-                                    ? "bg-amber-500"
+                                    ? "bg-yellow-600"
                                     : order.orderStatus === 2
-                                    ? "bg-amber-500"
+                                    ? "bg-orange-600"
                                     : order.orderStatus === 3
-                                    ? "bg-red-500"
+                                    ? "bg-red-600"
                                     : order.orderStatus === 4
-                                    ? "bg-emerald-500"
-                                    : order.orderStatus === 5
-                                    ? "bg-emerald-500"
-                                    : order.orderStatus === 6
-                                    ? "bg-yellow-500"
-                                    : order.orderStatus === 7
-                                    ? "bg-blue-500"
-                                    : order.orderStatus === 8
-                                    ? "bg-purple-500"
-                                    : order.orderStatus === 9
                                     ? "bg-green-600"
-                                    : order.orderStatus === 10 && "bg-gray-400"
+                                    : order.orderStatus === 5
+                                    ? "bg-green-700"
+                                    : order.orderStatus === 6
+                                    ? "bg-sky-300"
+                                    : order.orderStatus === 7
+                                    ? "bg-blue-400"
+                                    : order.orderStatus === 8
+                                    ? "bg-blue-600"
+                                    : order.orderStatus === 9
+                                    ? "bg-green-800"
+                                    : order.orderStatus === 10 && "bg-gray-100"
                                 }`}
                                 value={order.orderStatus}
                                 onChange={(e) => {
