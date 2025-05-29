@@ -755,7 +755,7 @@ const OrdersTable = () => {
       setGeneratedPdf(order.orderId);
 
       const response = await api.post(
-        "/generate-pdf-test",
+        "/generate-pdf",
         { data: order },
         {
           responseType: "blob",
