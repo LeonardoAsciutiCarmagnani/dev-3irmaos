@@ -860,9 +860,11 @@ const ClientOrdersTable = () => {
                                           {item.nome}
                                         </p>
                                         <div className="flex gap-1 text-md text-gray-700">
-                                          <p className="text-sm">
-                                            {variation[1]} -
-                                          </p>
+                                          {variation[1] && (
+                                            <p className="text-sm">
+                                              {variation[1]} -
+                                            </p>
+                                          )}
                                           <span className="text-sm text-red-900">
                                             {variation[0]}
                                           </span>

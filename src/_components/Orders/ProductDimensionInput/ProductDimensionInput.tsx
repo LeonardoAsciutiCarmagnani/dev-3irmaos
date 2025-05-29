@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 type Props = {
   orderId: number;
   product: ProductsInOrderProps;
+  orderStatus: number;
   onChange: (
     orderId: number,
     productId: string,
@@ -13,7 +14,12 @@ type Props = {
   ) => void;
 };
 
-export function ProductDimensionInput({ orderId, product, onChange }: Props) {
+export function ProductDimensionInput({
+  orderId,
+  product,
+  orderStatus,
+  onChange,
+}: Props) {
   const [altura, setAltura] = useState(product.altura?.toString() || "");
   const [largura, setLargura] = useState(product.largura?.toString() || "");
   const [comprimento, setComprimento] = useState(
@@ -41,6 +47,7 @@ export function ProductDimensionInput({ orderId, product, onChange }: Props) {
           <input
             value={altura}
             onChange={(e) => setAltura(e.target.value)}
+            disabled={orderStatus > 1}
             onBlur={handleBlur}
             className="w-[3rem] border text-center"
           />
@@ -55,6 +62,7 @@ export function ProductDimensionInput({ orderId, product, onChange }: Props) {
             value={largura}
             onChange={(e) => setLargura(e.target.value)}
             onBlur={handleBlur}
+            disabled={orderStatus > 1}
             className="w-[3rem] border text-center"
           />
           m
@@ -77,6 +85,7 @@ export function ProductDimensionInput({ orderId, product, onChange }: Props) {
             value={comprimento}
             onChange={(e) => setComprimento(e.target.value)}
             onBlur={handleBlur}
+            disabled={orderStatus > 1}
             className="w-[3rem] border text-center"
           />
           m

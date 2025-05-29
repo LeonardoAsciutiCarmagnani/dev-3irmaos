@@ -1258,6 +1258,9 @@ const OrdersTable = () => {
                                                     item.selectedVariation.id
                                                   }
                                                   orderId={order.orderId}
+                                                  orderStatus={
+                                                    order.orderStatus
+                                                  }
                                                   product={item}
                                                   onChange={
                                                     handleChangeDimesionsProduct
