@@ -122,34 +122,43 @@ const createOrderSchema = z.object({
       largura: z.number().optional().nullable(),
       comprimento: z.number().optional().nullable(),
       categoria: z.string({ message: "Categoria obrigatória." }).nullable(),
+      unidade: z.string({ message: "Unidade obrigatória." }),
       preco: z.number({ message: "Preço obrigatório." }),
+      desconto: z.number().optional().nullable(),
       selectedVariation: z.object({
         id: z.string({ message: "ID da variação obrigatória." }),
         nomeVariacao: z.string({ message: "Nome da variação obrigatória." }),
       }),
     })
   ),
+  clientImages: z.array(z.string()).optional().nullable(),
+  imagesUrls: z.array(z.string()).optional().nullable(),
   detailsPropostal: z
     .object({
       obs: z.string().optional(),
       payment: z.string().optional(),
       delivery: z.number().optional(),
       time: z.string().optional(),
+      seller: z.string().optional(),
+      sellerPhone: z.string().optional(),
       selectedSeller: z
         .object({
           email: z.string(),
           name: z.string(),
           phone: z.string(),
         })
-        .optional()
-        .nullable(),
+        .nullable()
+        .optional(),
+      itemsIncluded: z.string().optional(),
+      itemsNotIncluded: z.string().optional(),
     })
     .nullable()
     .optional(),
   createdAt: z.string().optional(),
   orderStatus: z.number(),
-  totalValue: z.number().min(0, "Valor total inválido."),
-  imagesUrls: z.array(z.string()).optional(),
+  discountTotalValue: z.number().optional(),
+  totalDiscount: z.number().min(0, "Desconto inválido.").optional(),
+  totalValue: z.number().min(0, "Valor total inválido.").optional(),
 });
 
 export type BudgetType = z.infer<typeof createBudgetSchema>;

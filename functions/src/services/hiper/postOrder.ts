@@ -44,10 +44,12 @@ export class PostOrderService {
 
   public static async storeOrderInFirestore(
     orderId: number,
-    order: any,
+    order: OrderType,
     codeHiper: string,
     newOrderStatus: number
   ) {
+    console.log("Data chegando na função storeOrderInFireStore => ", order);
+
     const budgetsRef = firestore.collection("budgets");
 
     const snapshot = await budgetsRef.where("orderId", "==", orderId).get();
