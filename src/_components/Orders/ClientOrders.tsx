@@ -276,7 +276,7 @@ const ClientOrdersTable = () => {
       setGeneratedPdf(order.orderId);
       console.log("Order to generate PDF =>", order);
       const response = await api.post(
-        "/generate-pdf-test",
+        "/generate-pdf",
         { data: order },
         {
           responseType: "blob",
