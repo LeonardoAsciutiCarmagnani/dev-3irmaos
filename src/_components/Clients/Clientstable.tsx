@@ -52,6 +52,7 @@ import { sendPasswordResetEmail } from "firebase/auth";
 
 import { api } from "@/lib/axios";
 import Loader from "../Loader/loader";
+import { useNavigate } from "react-router-dom";
 // import { Card, CardContent, CardFooter } from "@/components/ui/card";
 
 const EditClientFormSchema = z.object({
@@ -92,7 +93,7 @@ const ClientsTable = () => {
   });
   const [searchTerm, setSearchTerm] = useState("");
   const [originalData, setOriginalData] = useState<Client[]>([]);
-
+  const navigate = useNavigate();
   const [email, setemail] = useState<string>("");
   const [isSubmittingResetForPassword, setIsSubmittingResetForPassword] =
     useState<boolean>(false);
@@ -378,15 +379,28 @@ const ClientsTable = () => {
 
   return (
     <div className="space-y-3 p-4 bg-white rounded-xs shadow w-full h-[calc(100vh-4.5rem)] overflow-y-auto">
-      <div className="relative">
-        <FiSearch className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-        <input
-          type="text"
-          placeholder="Buscar por nome do cliente..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 rounded-xs border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-        />
+      <div className="flex items-center justify-between">
+        <div className="relative">
+          <div>
+            <FiSearch className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Buscar por nome do cliente..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-[30rem] pl-10 pr-4 py-2 rounded-xs border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+            />
+          </div>
+        </div>
+
+        <div>
+          <Button
+            className="rounded-xs bg-blue-400 hover:bg-blue-500 border-blue-500 border"
+            onClick={() => navigate("/adm/novo-cliente")}
+          >
+            Novo cliente
+          </Button>
+        </div>
       </div>
       <div className="flex justify-between gap-x-2 p-2">
         <div className="flex items-center gap-x-2">

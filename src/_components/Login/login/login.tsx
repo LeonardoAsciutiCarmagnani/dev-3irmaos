@@ -52,6 +52,7 @@ const registerSchema = z
       city: z.string().min(2, "Cidade inválida."),
       state: z.string().length(2, "UF inválida."),
       ibge: z.string().min(7, "Código IBGE inválido."),
+      complement: z.string().optional(),
     }),
     password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres."),
     confirmPassword: z
@@ -96,6 +97,7 @@ const Auth: React.FC = () => {
         city: "",
         state: "",
         ibge: "",
+        complement: "",
       },
       password: "",
       confirmPassword: "",
@@ -116,6 +118,7 @@ const Auth: React.FC = () => {
         registerForm.setValue("address.state", data.uf);
         registerForm.setValue("address.ibge", data.ibge);
         registerForm.setValue("address.cep", data.cep);
+        registerForm.setValue("address.complement", data.complemento);
 
         toast.success("Endereço encontrado com sucesso!");
       } catch (error) {
@@ -158,6 +161,7 @@ const Auth: React.FC = () => {
           city: data.address.city,
           state: data.address.state,
           ibge: data.address.ibge,
+          complement: data.address.complement,
         },
         password: data.password,
       });
