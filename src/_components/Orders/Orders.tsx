@@ -29,6 +29,7 @@ import {
   InfoIcon,
   LoaderCircle,
   MessageSquareText,
+  ZoomInIcon,
 } from "lucide-react";
 import Dropzone from "../DropzoneImage/DropzoneImage";
 import {
@@ -124,6 +125,11 @@ const OrdersTable = () => {
         header: "ID",
         accessorKey: "orderId",
         cell: ({ row }) => row.getValue("orderId"),
+      },
+      {
+        header: "Detalhes",
+        accessorKey: "details",
+        cell: ({ row }) => row.getValue("details"),
       },
       {
         header: "ID Hiper",
@@ -746,10 +752,6 @@ const OrdersTable = () => {
     }
   }
 
-  function handleShowCard(orderId: number) {
-    setShowCardOrder(orderId);
-  }
-
   async function handleGeneratedPDF(order: Order) {
     try {
       setGeneratedPdf(order.orderId);
@@ -933,6 +935,17 @@ const OrdersTable = () => {
                             >
                               {order.orderId}
                             </td>
+                            <td className="pt-1">
+                              <div
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setShowCardOrder(order.orderId);
+                                }}
+                                className="flex justify-start ml-5 active:scale-90"
+                              >
+                                <ZoomInIcon className="text-gray-400 " />
+                              </div>
+                            </td>
                             <td
                               className={`px-4 py-3 ${
                                 order.orderStatus === 10 && "line-through"
@@ -948,9 +961,6 @@ const OrdersTable = () => {
                               {order.createdAt}
                             </td>
                             <td
-                              onDoubleClick={() =>
-                                handleShowCard(order.orderId)
-                              }
                               className={`px-4 py-3 hover:underline ${
                                 order.orderStatus === 10 && "line-through"
                               }`}
