@@ -58,6 +58,7 @@ export interface Order {
   id: number;
   client: IClient;
   deliveryAddress: IDeliveryAddress;
+  billingAddress: IDeliveryAddress;
   products: ProductsInOrderProps[];
   orderId: number;
   codeHiper: string;
