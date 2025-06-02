@@ -291,8 +291,18 @@ const DetailsOrder = ({
               Facilidade no pagamento e agilidade na entrega:
             </span>
             <div className="flex flex-col px-5">
-              <li className="">Forma de pagamento: {paymentMethod}</li>
-              <li className="">Prazo de entrega: {deliveryTime}</li>
+              <li className="">
+                Forma de pagamento:{" "}
+                {paymentMethod === undefined || paymentMethod === ""
+                  ? "Não informado"
+                  : paymentMethod}
+              </li>
+              <li className="">
+                Prazo de entrega:{" "}
+                {deliveryTime === undefined || deliveryTime === ""
+                  ? "Não informado"
+                  : deliveryTime}
+              </li>
               <li className="">
                 Frete:{" "}
                 {deliveryValue.toLocaleString("pt-BR", {

@@ -1178,8 +1178,8 @@ const OrdersTable = () => {
                                           Logradouro:
                                         </span>
                                         <span className="text-lg text-gray-700 ">
-                                          {order.deliveryAddress.street},{" "}
-                                          {order.deliveryAddress.number}
+                                          {order.billingAddress.street},{" "}
+                                          {order.billingAddress.number}
                                         </span>
                                       </div>
 
@@ -1188,7 +1188,7 @@ const OrdersTable = () => {
                                           Bairro:
                                         </span>
                                         <span className="text-lg text-gray-700 truncate">
-                                          {order.deliveryAddress.neighborhood}
+                                          {order.billingAddress.neighborhood}
                                         </span>
                                       </div>
                                       <div className="flex gap-2 items-center">
@@ -1196,8 +1196,8 @@ const OrdersTable = () => {
                                           Cidade:
                                         </span>
                                         <span className="text-lg  text-gray-700 ">
-                                          {order.deliveryAddress.city} -{" "}
-                                          {order.deliveryAddress.state}
+                                          {order.billingAddress.city} -{" "}
+                                          {order.billingAddress.state}
                                         </span>
                                       </div>
                                       <div className="flex gap-2 items-center">
@@ -1205,7 +1205,7 @@ const OrdersTable = () => {
                                           CEP:
                                         </span>
                                         <span className="text-gray-700 text-lg">
-                                          {order.deliveryAddress.cep}
+                                          {order.billingAddress.cep}
                                         </span>
                                       </div>
                                     </div>
@@ -1254,7 +1254,11 @@ const OrdersTable = () => {
                                               {item.nome}
                                             </span>
                                             <div className="flex-1 text-md text-gray-700">
-                                              <span> {variation[1]} - </span>
+                                              {variation[1] && (
+                                                <p className="text-sm">
+                                                  {variation[1]} -
+                                                </p>
+                                              )}
                                               <span className="text-sm text-red-900">
                                                 {variation[0]}
                                               </span>
