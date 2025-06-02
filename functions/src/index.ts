@@ -106,14 +106,22 @@ export const pdfPlumHandler = async (req: Request, res: Response) => {
     const updatedProducts = products.map((product) => {
       return {
         ...product,
+        showDimensions:
+          product.categoria !== "Assoalhos, Escadas, Decks e Forros" &&
+          product.categoria !== "Antiguidades",
         preco: product.preco.toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
         }),
-        desconto: product.desconto?.toLocaleString("pt-BR", {
-          style: "currency",
-          currency: "BRL",
-        }),
+        desconto: product.desconto
+          ? product.desconto.toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            })
+          : (0).toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            }),
         totalValue: (
           product.preco * product.quantidade -
           (product.desconto ?? 0) * product.quantidade
@@ -304,7 +312,7 @@ class App {
     router.post("/post-budget", OrderController.createBudget);
     router.post("/post-order", OrderController.postOrderInHiper);
     router.post("/create-adm", UserController.createAdmin);
-    router.post("/generate-pdf-test", pdfPlumHandler);
+    router.post("/generate-pdf", pdfPlumHandler);
 
     // PUSH ROUTES
     router.post("/send-push-createBudget", PushController.createdBudget);
