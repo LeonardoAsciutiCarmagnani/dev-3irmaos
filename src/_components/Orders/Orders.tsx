@@ -987,7 +987,7 @@ const OrdersTable = () => {
                                     : order.orderStatus === 8
                                     ? "bg-blue-600"
                                     : order.orderStatus === 9
-                                    ? "bg-green-800"
+                                    ? "bg-sky-700"
                                     : order.orderStatus === 10 && "bg-gray-100"
                                 }`}
                                 value={order.orderStatus}

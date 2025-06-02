@@ -28,6 +28,7 @@ import {
   FileDownIcon,
   InfoIcon,
   LoaderCircle,
+  MessageSquareText,
   ZoomInIcon,
 } from "lucide-react";
 import {
@@ -195,13 +196,46 @@ const ClientOrdersTable = () => {
             : order
         )
       );
+      if (newOrderStatus === 3) {
+        await api.post("/send-push-proposalRejected", {
+          orderCode: orderToPush.orderId,
+          clientName: orderToPush.client.name,
+          clientPhone: orderToPush.client.phone,
+          createdAt: orderToPush.createdAt,
+          orderStatus: newOrderStatus,
+        });
+        toast.info("Notificação de status enviada com sucesso!", {
+          id: "push-notification-success",
+          icon: <MessageSquareText />,
+          duration: 3000,
+        });
+      } else if (newOrderStatus === 4) {
+        await api.post("/send-push-proposalAccepted", {
+          orderCode: orderToPush.orderId,
+          clientName: orderToPush.client.name,
+          clientPhone: orderToPush.client.phone,
+          createdAt: orderToPush.createdAt,
+          orderStatus: newOrderStatus,
+        });
+        toast.info("Notificação de status enviada com sucesso!", {
+          id: "push-notification-success",
+          icon: <MessageSquareText />,
+          duration: 3000,
+        });
+      }
       setSendPropostal(false);
       setShowCardOrder(null);
-      toast.success("Status atualizado com sucesso !");
+      toast.success("Status atualizado com sucesso !", {
+        id: "status-success",
+        duration: 3000,
+      });
     } catch (error) {
       setSendPropostal(false);
       console.log("Ocorreu um erro ao tentar atualizar o pedido", error);
-      toast.error("Ocorreu um erro ao tentar atualizar o pedido");
+      toast.error("Ocorreu um erro ao tentar atualizar o pedido", {
+        id: "status-error",
+        duration: 3000,
+      });
     }
   }
 
@@ -327,48 +361,48 @@ const ClientOrdersTable = () => {
     1: {
       label: "Orçamento enviado",
       color: "text-yellow-600",
-      bg: "bg-yellow-50",
+      bg: "bg-yellow-200",
     },
     2: {
       label: "Proposta recebida",
       color: "text-orange-600",
-      bg: "bg-orange-50",
+      bg: "bg-orange-200",
     },
     3: {
       label: "Proposta recusada",
       color: "text-red-600",
-      bg: "bg-red-50",
+      bg: "bg-red-200",
     },
     4: {
       label: "Proposta aceita",
       color: "text-green-600",
-      bg: "bg-green-50",
+      bg: "bg-green-200",
     },
     5: {
       label: "Proposta aprovada",
-      color: "text-green-700",
-      bg: "bg-green-100",
+      color: "text-green-600",
+      bg: "bg-green-200",
     },
 
     6: {
       label: "Pedido em produção",
       color: "text-sky-300",
-      bg: "bg-sky-300",
+      bg: "bg-sky-200",
     },
     7: {
       label: "Faturado",
       color: "text-blue-400",
-      bg: "bg-blue-400",
+      bg: "bg-blue-200",
     },
     8: {
       label: "Despachado",
       color: "text-blue-600",
-      bg: "bg-blue-600",
+      bg: "bg-blue-200",
     },
     9: {
       label: "Pedido concluído",
-      color: "text-blue-800",
-      bg: "bg-blue-800",
+      color: "text-sky-700",
+      bg: "bg-sky-200",
     },
 
     // Status Especial

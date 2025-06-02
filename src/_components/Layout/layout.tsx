@@ -1,6 +1,5 @@
 import Header from "@/_components/Header/Header";
 import Sidebar from "../Sidebar/sidebar";
-import { Toaster } from "@/components/ui/sonner";
 import Footer from "../Footers/footer";
 
 const LayoutPage = ({ children }: { children: React.ReactNode }) => {
