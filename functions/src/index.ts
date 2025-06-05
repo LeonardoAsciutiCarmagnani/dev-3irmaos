@@ -94,6 +94,15 @@ export const pdfPlumHandler = async (req: Request, res: Response) => {
       }) || "R$ 0,00";
 
     const detailsObservation = detailsPropostal?.obs || "Sem observações";
+    const detailsItemsIncluded = detailsPropostal?.itemsIncluded
+      ?.trim()
+      .split("\n")
+      .filter((line) => line.trim() !== "");
+    const detailsItemsNotIncluded = detailsPropostal?.itemsNotIncluded
+      ?.trim()
+      .split("\n")
+      .filter((line) => line.trim() !== "");
+
     const detailsProposalPayment = detailsPropostal?.payment || "Não informado";
     const detailsProposalTime = detailsPropostal?.time || "Não informado";
     const detailsProposalSellerName =
@@ -139,6 +148,8 @@ export const pdfPlumHandler = async (req: Request, res: Response) => {
       delivery: deliveryValue, // Manter como número
       payment: detailsProposalPayment,
       time: detailsProposalTime,
+      itemsIncluded: detailsItemsIncluded,
+      itemsNotIncluded: detailsItemsNotIncluded,
       selectedSeller: {
         name: detailsProposalSellerName,
         phone: detailsProposalSellerPhone,
