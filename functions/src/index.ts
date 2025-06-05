@@ -94,6 +94,15 @@ export const pdfPlumHandler = async (req: Request, res: Response) => {
       }) || "R$ 0,00";
 
     const detailsObservation = detailsPropostal?.obs || "Sem observações";
+    const detailsItemsIncluded = detailsPropostal?.itemsIncluded
+      ?.trim()
+      .split("\n")
+      .filter((line) => line.trim() !== "");
+    const detailsItemsNotIncluded = detailsPropostal?.itemsNotIncluded
+      ?.trim()
+      .split("\n")
+      .filter((line) => line.trim() !== "");
+
     const detailsProposalPayment = detailsPropostal?.payment || "Não informado";
     const detailsProposalTime = detailsPropostal?.time || "Não informado";
     const detailsProposalSellerName =
@@ -106,14 +115,22 @@ export const pdfPlumHandler = async (req: Request, res: Response) => {
     const updatedProducts = products.map((product) => {
       return {
         ...product,
+        showDimensions:
+          product.categoria !== "Assoalhos, Escadas, Decks e Forros" &&
+          product.categoria !== "Antiguidades",
         preco: product.preco.toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
         }),
-        desconto: product.desconto?.toLocaleString("pt-BR", {
-          style: "currency",
-          currency: "BRL",
-        }),
+        desconto: product.desconto
+          ? product.desconto.toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            })
+          : (0).toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            }),
         totalValue: (
           product.preco * product.quantidade -
           (product.desconto ?? 0) * product.quantidade
@@ -131,6 +148,8 @@ export const pdfPlumHandler = async (req: Request, res: Response) => {
       delivery: deliveryValue, // Manter como número
       payment: detailsProposalPayment,
       time: detailsProposalTime,
+      itemsIncluded: detailsItemsIncluded,
+      itemsNotIncluded: detailsItemsNotIncluded,
       selectedSeller: {
         name: detailsProposalSellerName,
         phone: detailsProposalSellerPhone,
