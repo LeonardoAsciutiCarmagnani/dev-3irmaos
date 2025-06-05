@@ -26,7 +26,6 @@ import {
   BellRingIcon,
   CircleCheckBig,
   FileDownIcon,
-  InfoIcon,
   LoaderCircle,
   MessageSquareText,
   ZoomInIcon,
@@ -873,16 +872,6 @@ const OrdersTable = () => {
           >
             Novo orçamento
           </Button>
-        </div>
-      </div>
-
-      <div className="flex flex-col md:flex-row justify-between px-2">
-        <div className="flex items-center gap-x-2">
-          <InfoIcon className="w-4 h-4 text-blue-500" />
-          <h2 className="text-[0.67rem] text-gray-500">
-            Para visualizar os detalhes do pedido, clique duas vezes sobre o
-            nome do cliente.
-          </h2>
         </div>
       </div>
 

@@ -711,7 +711,7 @@ const ClientOrdersTable = () => {
                                     e.stopPropagation();
                                     setShowCardOrder(order.orderId);
                                   }}
-                                  className="flex justify-start ml-5"
+                                  className="flex justify-start ml-5 active:scale-90"
                                 >
                                   <ZoomInIcon className="text-gray-400 " />
                                 </div>
@@ -860,9 +860,13 @@ const ClientOrdersTable = () => {
                                   </div>
                                   {order.orderStatus !== 1 && (
                                     <>
-                                      <div className="col-span-1 text-base">
-                                        Desconto
-                                      </div>
+                                      {order.products.some(
+                                        (product) => product.desconto > 0
+                                      ) && (
+                                        <div className="col-span-1 text-base">
+                                          Desconto
+                                        </div>
+                                      )}
                                       <div className="col-span-1 text-base">
                                         Valor unitário
                                       </div>
@@ -940,31 +944,34 @@ const ClientOrdersTable = () => {
                                       </div>
 
                                       {/* Desconto */}
-                                      {order.orderStatus !== 1 && (
-                                        <div className="mt-2 md:mt-0 md:flex justify-center items-center text-sm md:text-base ">
-                                          <span className="block md:hidden font-semibold">
-                                            Desconto:
-                                          </span>
-                                          <IMaskInput
-                                            mask="R$ num"
-                                            blocks={{
-                                              num: {
-                                                mask: Number,
-                                                scale: 2,
-                                                thousandsSeparator: ".",
-                                                padFractionalZeros: true,
-                                                normalizeZeros: true,
-                                                radix: ",",
-                                                mapToRadix: ["."],
-                                              },
-                                            }}
-                                            value={String(item.desconto || 0)}
-                                            unmask={true}
-                                            disabled
-                                            className="rounded-xs p-0 md:px-2  text-center w-full "
-                                          />
-                                        </div>
-                                      )}
+                                      {order.orderStatus !== 1 &&
+                                        order.products.some(
+                                          (product) => product.desconto > 0
+                                        ) && (
+                                          <div className="mt-2 md:mt-0 md:flex justify-center items-center text-sm md:text-base ">
+                                            <span className="block md:hidden font-semibold">
+                                              Desconto:
+                                            </span>
+                                            <IMaskInput
+                                              mask="R$ num"
+                                              blocks={{
+                                                num: {
+                                                  mask: Number,
+                                                  scale: 2,
+                                                  thousandsSeparator: ".",
+                                                  padFractionalZeros: true,
+                                                  normalizeZeros: true,
+                                                  radix: ",",
+                                                  mapToRadix: ["."],
+                                                },
+                                              }}
+                                              value={String(item.desconto || 0)}
+                                              unmask={true}
+                                              disabled
+                                              className="rounded-xs p-0 md:px-2  text-center w-full "
+                                            />
+                                          </div>
+                                        )}
 
                                       {/* Valor Unitário */}
                                       {order.orderStatus !== 1 && (
@@ -1036,22 +1043,31 @@ const ClientOrdersTable = () => {
 
                                   {order.orderStatus !== 1 && (
                                     <>
-                                      <div className="w-full flex justify-end items-end border-t">
-                                        <div className="flex justify-between items-center w-full pt-2 md:w-auto px-14 ">
-                                          <span className="font-semibold">
-                                            Desconto
-                                          </span>
-                                          <span className="w-[8rem] truncate text-right">
-                                            {order.totalDiscount?.toLocaleString(
-                                              "pt-BR",
-                                              {
-                                                style: "currency",
-                                                currency: "BRL",
-                                              }
-                                            )}
-                                          </span>
+                                      {order.products.some(
+                                        (product) => product.desconto > 0
+                                      ) && (
+                                        <div className="w-full flex justify-end items-end border-t">
+                                          <div className="flex justify-between items-center w-full pt-2 md:w-auto px-14 ">
+                                            <span className="font-semibold">
+                                              Desconto
+                                            </span>
+                                            <span className="w-[8rem] truncate text-right">
+                                              {order.totalDiscount
+                                                ? order.totalDiscount.toLocaleString(
+                                                    "pt-BR",
+                                                    {
+                                                      style: "currency",
+                                                      currency: "BRL",
+                                                    }
+                                                  )
+                                                : (0).toLocaleString("pt-BR", {
+                                                    style: "currency",
+                                                    currency: "BRL",
+                                                  })}
+                                            </span>
+                                          </div>
                                         </div>
-                                      </div>
+                                      )}
                                       <div className="w-full flex justify-end items-end border-t">
                                         <div className="flex justify-between items-center w-full pt-2  md:w-auto px-14 ">
                                           <span className="font-semibold">
