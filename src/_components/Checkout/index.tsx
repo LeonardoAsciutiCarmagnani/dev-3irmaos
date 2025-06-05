@@ -161,7 +161,7 @@ export const Checkout = () => {
         billingAddress,
         products: productsInCart,
         createdAt: dateOrder,
-        imagesUrls: [], // Imagens 3 irmãos
+        imagesUrls: [],
         detailsPropostal: {},
         orderStatus: 1,
         totalValue: total,
@@ -171,30 +171,34 @@ export const Checkout = () => {
       const response = await api.post("/post-budget", order);
       console.log("Response do pedido: ", response);
 
-      const createdOrderId = response.data;
-
-      const budgetsRef = collection(db, "budgets");
-      const q = query(budgetsRef, where("orderId", "==", createdOrderId));
-      const querySnapshot = await getDocs(q);
-
-      if (querySnapshot.empty) {
-        console.warn(
-          "Nenhum orçamento encontrado no Firestore para orderId",
-          createdOrderId
-        );
-      }
+      const createdOrderId = response.data.orderId;
 
       setSendOrder(false);
       handlingClearCart();
 
+      if (response.status === 201) {
+        try {
+          const pushResponse = await api.post("/send-push-createBudget", {
+            orderCode: createdOrderId,
+            clientName: order.client.name,
+            clientPhone: order.client.phone,
+            createdAt: order.createdAt,
+            orderStatus: order.orderStatus,
+          });
+          console.log("Notificação enviada com sucesso!", pushResponse);
+        } catch (error) {
+          toast.error(`Erro ao enviar push: ${error}`);
+        }
+      }
+
       toast.success("Orçamento enviado com sucesso!", {
         duration: 8000,
-        description: `Número do orçamento: ${response.data.orderId}`,
+        description: `Número do orçamento: ${createdOrderId}`,
       });
 
       navigate("/pedidos-e-orçamentos", {
         state: {
-          highlightOrderId: response.data.orderId,
+          highlightOrderId: createdOrderId,
         },
       });
     } catch (error) {

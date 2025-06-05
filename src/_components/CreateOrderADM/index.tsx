@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/popover";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { MessageSquareText } from "lucide-react";
 
 const CreateOrderADM = () => {
   const [budgetNumber, setBudgetNumber] = useState(0);
@@ -126,7 +127,7 @@ const CreateOrderADM = () => {
         detailsPropostal: {
           obs: observations || "",
           payment: paymentMethod || "",
-          delivery: deliveryValue || "",
+          delivery: deliveryValue || 0,
           time: timeEstimate || "",
           selectedSeller: selectedSeller || "",
           itemsIncluded: includedItens || "",
@@ -148,9 +149,22 @@ const CreateOrderADM = () => {
       const response = await api.post("/post-budget", orderData);
       console.log("Resposta:", response);
 
-      // Limpa os campos após sucesso
       if (response.status === 200 || response.status === 201) {
         navigate("/adm/pedidos-e-orçamentos");
+        const response = await api.post("/send-push-createBudgetADM", {
+          orderCode: orderData.orderId,
+          clientName: orderData.client.name,
+          clientPhone: orderData.client.phone,
+          createdAt: orderData.createdAt,
+          orderStatus: orderData.orderStatus,
+        });
+        if (response.status === 201) {
+          toast.info("Notificação enviada com sucesso!", {
+            id: "push-notification-success",
+            icon: <MessageSquareText />,
+            duration: 3000,
+          });
+        }
         toast.success("Orçamento criado com sucesso!");
       }
     } catch (error) {

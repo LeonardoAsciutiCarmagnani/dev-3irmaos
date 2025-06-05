@@ -29,7 +29,7 @@ import { IMaskInput } from "react-imask";
 import { toast } from "sonner";
 import { z } from "zod";
 import { useNavigate } from "react-router-dom";
-import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+// import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../Utils/FirebaseConfig";
 
@@ -37,7 +37,7 @@ const CreateClient = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isIndividual, setIsIndividual] = useState(true);
   const navigate = useNavigate();
-  const auth = getAuth();
+  // const auth = getAuth();
 
   const formSchema = z.object({
     name: z.string().min(3, "Nome deve ter pelo menos 3 caracteres."),
@@ -66,15 +66,15 @@ const CreateClient = () => {
 
   type FormSchema = z.infer<typeof formSchema>;
 
-  function generateTemporaryPassword(length = 12) {
-    const charset = "abcdefghijklmnopqrstuvwxyz123456789!@#$";
-    let password = "";
-    for (let i = 0; i < length; i++) {
-      const randomIndex = Math.floor(Math.random() * charset.length);
-      password += charset.charAt(randomIndex);
-    }
-    return password;
-  }
+  // function generateTemporaryPassword(length = 12) {
+  //   const charset = "abcdefghijklmnopqrstuvwxyz123456789!@#$";
+  //   let password = "";
+  //   for (let i = 0; i < length; i++) {
+  //     const randomIndex = Math.floor(Math.random() * charset.length);
+  //     password += charset.charAt(randomIndex);
+  //   }
+  //   return password;
+  // }
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -95,7 +95,7 @@ const CreateClient = () => {
         ibge: "",
         complement: "",
       },
-      password: generateTemporaryPassword(12),
+      password: "madeira",
     },
   });
 
@@ -178,18 +178,30 @@ const CreateClient = () => {
         const response = await api.post("/create-client", createClientObject);
         console.log("Response Create Client:", response.data);
 
-        await sendPasswordResetEmail(auth, data.email);
+        // await sendPasswordResetEmail(auth, data.email);
 
-        toast.info("Senha provisória.", {
-          id: "reg-info",
-          duration: 20000,
-          description: `A senha provisória gerada é: ${data.password}`,
-        });
-        toast.success("Usuário criado com sucesso", {
-          id: "reg-success",
-          description: `Um e-mail foi enviado para o cliente configurar sua própria senha.`,
-          duration: 10000,
-        });
+        if (response.status === 201) {
+          try {
+            const responsePush = await api.post("/send-push-createClient", {
+              clientName: data.name,
+              clientPhone: data.phone.replace(/\D/g, ""),
+              clientEmail: data.email,
+              clientPassword: data.password,
+            });
+
+            console.log(responsePush);
+
+            toast.success("Notificação enviada com sucesso", {
+              id: "reg-success",
+              description: `O E-mail e senha foram enviados ao cliente para realizar o primeiro acesso.`,
+              duration: 10000,
+            });
+          } catch (error) {
+            toast.error(`Erro ao enviar notificação: ${error}`, {
+              id: "reg-error",
+            });
+          }
+        }
         navigate("/adm/clientes");
       }
     } catch (err) {

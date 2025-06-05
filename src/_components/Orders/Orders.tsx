@@ -90,10 +90,6 @@ const OrdersTable = () => {
   const [itemsIncluded, setItemsIncluded] = useState("");
   const [itemsNotIncluded, setItemsNotIncluded] = useState("");
 
-  // const [localDiscounts, setLocalDiscounts] = useState<Record<string, number>>(
-  //   {}
-  // );
-
   const [generatedPdf, setGeneratedPdf] = useState<number | null>();
 
   const lisToUse = filteredData.length > 0 ? filteredData : data;
@@ -321,7 +317,7 @@ const OrdersTable = () => {
 
           // Mapa de status → rota da API
           const statusEndpoints: Record<number, string> = {
-            1: "/send-push-createBudget",
+            // 1: "/send-push-createBudget",
             2: "/send-push-proposalSent",
             3: "/send-push-proposalRejected",
             4: "/send-push-proposalAccepted",
@@ -335,18 +331,18 @@ const OrdersTable = () => {
           console.log("Endpoint selecionado:", endpoint);
 
           if (!endpoint) {
-            console.warn(`Status ${newStatus} não tem endpoint definido.`);
+            console.error(`Status ${newStatus} não tem endpoint definido.`);
           } else {
             console.log(`Enviando push para ${endpoint}...`);
+
             const response = await api.post(endpoint, pushObject);
+            toast.info("Notificação de status enviada com sucesso!", {
+              id: "push-notification-success",
+              icon: <MessageSquareText />,
+              duration: 3000,
+            });
             console.log(`Push enviado para ${endpoint}:`, response.data);
           }
-
-          toast.info("Notificação de status enviada com sucesso!", {
-            id: "push-notification-success",
-            icon: <MessageSquareText />,
-            duration: 3000,
-          });
         } catch (error) {
           console.error(`Erro ao enviar push:`, error);
           toast.error("Não foi possível processar o envio da notificação.", {
@@ -410,32 +406,6 @@ const OrdersTable = () => {
       toast.error("Ocorreu um erro ao tentar atualizar o pedido");
     }
   }
-
-  /*  function handleLocalDiscountChange(
-    orderId: number,
-    productId: string,
-    value: string
-  ) {
-    console.log(
-      "Chamou a função handleLocalDiscountChange passando =>",
-      orderId,
-      productId,
-      value
-    );
-    const key = `${orderId}-${productId}`;
-    const parsed = parseFloat(value || "0");
-    setLocalDiscounts((prev) => ({
-      ...prev,
-      [key]: parsed,
-    }));
-  }
-
-  function handleDiscountBlur(orderId: number, productId: string) {
-    const key = `${orderId}-${productId}`;
-    const value = localDiscounts[key];
-    console.log("Valor de parsed =>", value);
-    handleChangeDiscountProduct(orderId, productId, value);
-  } */
 
   function handleChangeDiscountProduct(
     orderId: number,
@@ -723,13 +693,11 @@ const OrdersTable = () => {
       );
 
       await api.post("/send-push-proposalSent", pushObject);
-
       toast.info("Notificação de status enviada com sucesso!", {
         id: "push-notification-success",
         icon: <MessageSquareText />,
         duration: 3000,
       });
-
       setData((prevData) =>
         prevData.map((order) =>
           order.orderId === orderToPush.orderId
@@ -737,6 +705,7 @@ const OrdersTable = () => {
             : order
         )
       );
+
       setShowCardOrder(null);
 
       toast.success("Status atualizado com sucesso!", {
