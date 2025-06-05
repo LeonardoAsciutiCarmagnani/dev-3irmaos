@@ -258,7 +258,7 @@ const DetailsOrder = ({
                   Sem observações
                 </span>
               ) : (
-                <p className="flex    text-start whitespace-pre-wrap break-words">
+                <p className="w-full text-start whitespace-pre-wrap break-words">
                   {description}
                 </p>
               )}
@@ -268,7 +268,7 @@ const DetailsOrder = ({
             <div className="flex flex-col items-start   max-w-full  text-wrap">
               <span className=" font-semibold text-lg">Itens inclusos:</span>
               <div className="w-full px-5">
-                <p className="flex    text-start whitespace-pre-wrap break-words">
+                <p className="w-full  text-start whitespace-pre-wrap break-words">
                   {itemsIncluded}
                 </p>
               </div>
@@ -280,7 +280,7 @@ const DetailsOrder = ({
                 Itens não incluídos:
               </span>
               <div className="w-full px-5">
-                <p className="flex  text-red-500 text-start whitespace-pre-wrap break-words">
+                <p className="w-full  text-red-500 text-start whitespace-pre-wrap break-words">
                   {itemsNotIncluded}
                 </p>
               </div>
