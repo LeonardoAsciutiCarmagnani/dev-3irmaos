@@ -329,6 +329,8 @@ class App {
 
     // PUSH ROUTES
     router.post("/send-push-createBudget", PushController.createdBudget);
+    router.post("/send-push-createClient", PushController.createClient);
+    router.post("/send-push-createBudgetADM", PushController.createdBudgetADM);
     router.post("/send-push-proposalSent", PushController.sendProposal);
     router.post("/send-push-proposalRejected", PushController.proposalRejected);
     router.post("/send-push-proposalAccepted", PushController.proposalAccepted);
