@@ -111,6 +111,7 @@ export const pdfPlumHandler = async (req: Request, res: Response) => {
       detailsPropostal?.selectedSeller?.phone || "Não informado";
     const detailsProposalSellerEmail =
       detailsPropostal?.selectedSeller?.email || "Não informado";
+    const showDiscount = products.some((item) => item.desconto);
 
     const updatedProducts = products.map((product) => {
       return {
@@ -163,6 +164,7 @@ export const pdfPlumHandler = async (req: Request, res: Response) => {
       deliveryAddress,
       billingAddress,
       createdAt,
+      showDiscount,
       products: updatedProducts,
       clientImages,
       imagesUrls,
